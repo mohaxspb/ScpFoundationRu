@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+    package="ru.dante.scpfoundation"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="com.android.vending.BILLING" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
+
+    <application
+        android:name="ru.dante.scpfoundation.MyApplication"
+        android:allowBackup="true"
+        tools:replace="android:theme"
+        android:icon="@drawable/scp_icon3"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/SCP.Theme.Light">
+
+        <activity
+            android:label="@string/app_name"
+            android:name="ru.dante.scpfoundation.activities.ActivityMain">
+        </activity>
+        <activity
+            android:label="@string/app_name"
+            android:name="ru.dante.scpfoundation.activities.ActivityArticles">
+        </activity>
+        <activity
+            android:label="@string/app_name"
+            android:name="ru.dante.scpfoundation.activities.ActivityGallery">
+        </activity>
+        <activity
+            android:label="@string/settings"
+            android:name="ru.dante.scpfoundation.activities.ActivitySettings">
+        </activity>
+        <activity
+            android:label="@string/app_name"
+            android:name="ru.dante.scpfoundation.activities.ActivitySplashScreen"
+            android:configChanges="orientation"
+            android:exported="true"
+            android:noHistory="true"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+
+                <data
+                    android:host="scpfoundation.ru"/>
+                <data
+                    android:pathPattern=".*"/>
+                <data
+                    android:scheme="http"/>
+                <data
+                    android:pathPrefix="/"/>
+                <data
+                    android:path="/.*"/>
+            </intent-filter>
+        </activity>
+        <!--VK SDK-->
+        <activity
+            android:name="com.vk.sdk.VKServiceActivity"
+            android:label="ServiceActivity"
+            android:theme="@style/VK.Transparent"/>
+        <service android:name=".ServiceDownloadAll"/>
+        <receiver
+            android:name=".receivers.ReceiverTimer"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="ru.dante.scpfoundation.receivers.ReceiverTimer"/>
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".receivers.ReceiverBoot"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+    </application>
+
+</manifest>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/about"
+            android:checked="true"
+            android:title="Об организации" />
+        <item
+            android:id="@+id/news"
+            android:checked="true"
+            android:title="Новости" />
+        <item
+            android:id="@+id/new_articles"
+            android:checked="true"
+            android:title="Новые статьи" />
+        <item
+            android:id="@+id/random_page"
+            android:checked="true"
+            android:title="Случайная статья" />
+        <item
+            android:id="@+id/objects_I"
+            android:checked="true"
+            android:title="Объекты I" />
+        <item
+            android:id="@+id/objects_II"
+            android:checked="true"
+            android:title="Объекты II" />
+        <item
+            android:id="@+id/objects_III"
+            android:checked="true"
+            android:title="Объекты III" />
+        <item
+            android:id="@+id/objects_RU"
+            android:checked="true"
+            android:title="Объекты RU" />
+        <item
+            android:id="@+id/files"
+            android:checked="true"
+            android:title="Материалы" />
+        <item
+            android:id="@+id/stories"
+            android:checked="true"
+            android:title="Рассказы" />
+        <item
+            android:id="@+id/favorite"
+            android:checked="true"
+            android:title="Избранное"/>
+        <item
+            android:id="@+id/offline"
+            android:checked="true"
+            android:title="Статьи Offline"/>
+        <item
+            android:id="@+id/gallery"
+            android:checked="false"
+            android:checkable="false"
+            android:title="Галерея" />
+        <item
+            android:id="@+id/site_search"
+            android:checked="false"
+            android:title="Поиск" />
+    </group>
+</menu>

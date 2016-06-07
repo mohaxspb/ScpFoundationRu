@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="SCP.Theme.Light" parent="Base.Theme.Light">
+        <!--need it with android prefix to be able to autoapplying theme to toolbar that is not in collapsingToolbarLayout -->
+        <!--<item name="android:colorPrimary">@color/my_material_grey_800</item>-->
+        <!--<item name="android:colorPrimaryDark">@color/my_material_grey_900</item>-->
+        <!--<item name="android:colorAccent">@color/material_indigo_500</item>-->
+        <!---->
+        <item name="android:windowBackground">@color/material_blue_gray_50</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:navigationBarColor">@color/zbs_color_red</item>
+    </style>
+
+    <style name="SCP.Theme.Dark" parent="Base.Theme.Dark">
+        <!--need it with android prefix to be able to autoapplying theme to toolbar that is not in collapsingToolbarLayout -->
+        <!--<item name="android:colorPrimary">@color/my_material_grey_800</item>-->
+        <!--<item name="android:colorPrimaryDark">@color/my_material_grey_900</item>-->
+        <!--<item name="android:colorAccent">@color/material_indigo_500</item>-->
+        <!---->
+        <item name="android:windowBackground">@color/material_blue_gray_800</item>
+
+        <item name="android:windowTranslucentStatus">true</item><!--<item name="android:colorPrimary">@color/my_material_grey_800</item>
+        <item name="android:colorPrimaryDark">@color/my_material_grey_900</item>
+        <item name="android:colorAccent">@color/material_indigo_500</item>-->
+        <item name="android:navigationBarColor">@color/my_material_grey_900</item>
+    </style>
+
+    <style name="Theme.Preference.Light" parent="Base.Theme.Preference.Light">
+        <item name="android:windowActionBarOverlay">false</item>
+        <item name="android:windowBackground">@color/scp_default_light</item>
+        <item name="android:windowNoTitle">false</item>
+        <item name="android:windowActionBar">true</item>
+        <item name="android:navigationBarColor">@color/scp_default_light</item>
+    </style>
+
+    <style name="Theme.Preference.Dark" parent="Base.Theme.Preference.Dark">
+        <item name="android:windowActionBarOverlay">false</item>
+        <item name="android:windowBackground">@color/scp_default_dark</item>
+        <item name="android:windowNoTitle">false</item>
+        <item name="android:windowActionBar">true</item>
+        <item name="android:navigationBarColor">@color/my_material_grey_900</item>
+    </style>
+
+    <style name="MyDialogStyle" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorPrimary">@color/material_red_500</item>
+        <item name="colorPrimaryDark">@color/material_green_500</item>
+        <item name="colorAccent">@color/material_indigo_500</item>
+        <item name="android:textColor">@android:color/black</item>
+        <!--<item name="android:textColorPrimary">@color/material_amber_500</item>-->
+        <!--<item name="android:textColorSecondary">@color/material_amber_500</item>-->
+        <!--<item name="android:textColorTertiary">@color/material_indigo_500</item>-->
+        <!--<item name="android:background">@color/scp_default_light</item>-->
+        <item name="android:textColorAlertDialogListItem">@android:color/black</item>
+        <!--<item name="android:windowBackground">@android:color/transparent</item>-->
+    </style>
+
+</resources>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:key="key_design_category"
+        android:title="Общие">
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="key_design_night_mode"
+            android:summaryOff="Ночной режим"
+            android:summaryOn="Ночной режим"
+            android:switchTextOff="Выключено"
+            android:switchTextOn="Включено"/>
+    </PreferenceCategory>
+</PreferenceScreen>

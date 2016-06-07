@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/text_size_ui"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginLeft="5dp"
+        android:gravity="center_vertical"
+        android:layout_marginStart="5dp"
+
+        android:text="Размер текста в списках"/>
+
+    <SeekBar
+        android:id="@+id/seekbar_ui"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"/>
+
+    <TextView
+        android:id="@+id/text_size_article"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
+        android:gravity="center_vertical"
+
+        android:text="Размер текста в статьях"/>
+
+    <SeekBar
+        android:id="@+id/seekbar_article"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"/>
+
+</LinearLayout>

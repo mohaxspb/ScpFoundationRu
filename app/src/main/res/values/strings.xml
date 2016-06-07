@@ -1,0 +1,122 @@
+<resources>
+    <string name="app_name">SCP Foundation RU On/Off-line</string>
+    <string name="splash_screen_description">Подключаюсь к Фонду...</string>
+    <string name="key_new_articles_counter">key_new_articles_counter</string>
+    <string name="share_link">Поделится ссылкой</string>
+    <string name="pref_design_key_text_size_ui">pref_design_key_text_size_ui</string>
+    <string name="pref_design_key_text_size_article">pref_design_key_text_size_article</string>
+    <string name="login_advantages">Внимание персонал! Авторизация не обязательна. Дальнейшие инструкции вы можете получить у руководителя зоны содержания.</string>
+    <string name="unloged_dialog_title">Доступ закрыт</string>
+    <string name="unloged_dialog_content">Уровень доступа не подтвержден.\nПодтвердите авторизацию.</string>
+    <string name="pref_key_last_click_day">pref_key_last_click_day</string>
+    <string name="pref_key_click_in_day">pref_key_click_in_day</string>
+    <string name="dialog_info_content"><a href="http://creativecommons.org/licenses/by-nc-sa/3.0/\">Лицензия</a> \n\nИзображение загрузочного экрана принадлежит Андрею Дуксину</string>
+    <string name="pref_key_interstitial_counter">pref_key_interstitial_counter</string>
+    <string name="pref_key_interstitial_need_to_show">pref_key_interstitial_need_to_show</string>
+    <string name="pref_key_interstitial_no_ads_limit">pref_key_no_ads_limit</string>
+    <string name="admob_baner_id_interstitial">ca-app-pub-2231528705144312/4989766186</string>
+    <string name="abmob_baner_id_smart">ca-app-pub-2231528705144312/6466499387</string>
+    <string name="targeting_402_developer_id">6c21e744-81ee-43d9-9b05-36fc12d1a090</string>
+    <string name="yes">Да</string>
+    <string name="cancel">Отмена</string>
+    <string name="not_now">Не сейчас</string>
+    <string name="not_notify">Не напоминать</string>
+
+    <string name="rate_app_title">Оцените %s</string>
+    <string name="main_dialog_text">Фонд выражает благодарность за то, что Вы пользуетесь нашим приложением.\nХотите проголосовать за него?</string>
+    <string name="rate_title">Оцените приложение от 1 до 5 звезд</string>
+    <string name="help_us">Помогите нам стать лучше</string>
+    <string name="thanks_for_rate">Спасибо за Вашу оценку!</string>
+    <string name="feedback_hint">Расскажите что бы Вы хотели улучшить</string>
+
+    <string name="choose_email_provider">Выберите приложение для отправки email</string>
+    <string name="pref_offline">pref_offline</string>
+    <string name="pref_favorites">pref_favorites</string>
+    <string name="pref_authors_ru">pref_authors_ru</string>
+    <string name="pref_authors_eng">pref_authors_eng</string>
+    <string name="pref_translate">pref_translate</string>
+    <string name="authors_exists">authors_exists</string>
+    <string name="pref_about_list_key">pref_about_list_key</string>
+    <string name="pref_about_list_title">pref_about_list_title</string>
+    <string name="pref_header_notifications_title">Оповещения</string>
+    <string name="pref_header_notifications_summary">Настройка оповещений</string>
+    <string name="pref_header_system_title">Внутренние настройки</string>
+    <string name="pref_header_system_summary">Управление загрузками,очистка памяти</string>
+    <string name="pref_header_about_summary">Версия приложения и т.д.</string>
+    <string name="pref_header_about_title">О приложении</string>
+    <string name="pref_notifications_key_enable">pref_notifications_key_enable</string>
+    <string name="settings">Настройки</string>
+    <string name="key_design_night_mode">key_design_night_mode</string>
+    <string name="pref_notifications_key_period">pref_notifications_key_period</string>
+    <string name="pref_notifications_title_period">Частота уведомлений</string>
+    <string name="pref_about_version_key">pref_about_version_key</string>
+    <string name="pref_about_version_title">Текущая версия приложения</string>
+    <string name="pref_about_license_key">pref_about_license_key</string>
+    <string name="pref_about_license_title">Лицензия</string>
+    <string name="pref_about_market_key">pref_about_market_key</string>
+    <string name="pref_about_market_title">Приложение в маркете</string>
+    <string name="pref_key_first_article_url">pref_key_first_article_url</string>
+    <string name="pref_cleaning_img_key">pref_cleaning_img_key</string>
+    <string name="pref_cleaning_text_key">pref_cleaning_text_key</string>
+    <string name="pref_cleaning_img_title">Очистка кеша изображений</string>
+    <string name="pref_cleaning_text_title">Очистка кеша текста</string>
+    <string name="pref_system_close_app">pref_system_close_app</string>
+    <string name="pref_key_random_url">pref_key_random_url</string>
+    <string name="download_all_title">Что скачать?</string>
+    <string name="download">Скачать</string>
+    <string name="download_type_one_list">Загрузка спиcка объектов I</string>
+    <string name="download_type_two_list">Загрузка списка объектов II</string>
+    <string name="download_type_three_list">Загрузка списка объектов III</string>
+    <string name="download_type_ru_list">Загрузка списка объектов RU</string>
+    <string name="download_type_all_list">Загрузка списка всех объектов</string>
+    <string name="download_type_one">Загрузка объектов I</string>
+    <string name="download_type_two">Загрузка объектов II</string>
+    <string name="download_type_three">Загрузка объектов III</string>
+    <string name="download_type_ru">Загрузка объектов III</string>
+    <string name="download_type_all">Загрузка всех объектов</string>
+    <string name="download_error">Загрузка прервана</string>
+    <string name="download_done">Загрузка завершена</string>
+    <string name="download_list_error">Не удалось загрузить список статей</string>
+    <string name="stop_download">Остановить загрузку</string>
+    <string name="pref_arts_list">pref_arts_list</string>
+    <string name="downlad_art_list">Загружаю список статей</string>
+    <string-array name="download_types">
+        <item>Объекты I</item>
+        <item>Объекты II</item>
+        <item>Объекты III</item>
+        <item>Объекты RU</item>
+        <item>Все</item>
+    </string-array>
+    <string name="about_archive"><b>Списанные объекты</b>\n\n
+<p>Списанными называются объекты, которые оказались настолько плохими, что были не только удалены из основного списка, но и уничтожены в рамках вселенной Фонда и сохранены в качестве &quot;Стены позора&quot;. Наши англоязычные коллеги заявляют, что больше не будут проводить списаний, и просто удаляют объекты.</p>
+    \n\n<b>Обоснованные объекты</b>\n\n
+<p>Обоснованными называются бывшие объекты SCP, которые по каким-то причинам больше не считаются аномальными.</p>
+    \n\n<b>Архивные объекты</b>\n\n
+<p>Постфикc -ARC имеют те статьи, которые были сочтены недостаточно хорошими для того, чтобы числиться в общем списке, но всё же просто удалить их было нельзя, поскольку либо на них ссылаются другие статьи или рассказы, либо они просто чем-то дороги многим участникам англо- или рувики.</p>
+\n\n<b>Удалённые объекты</b>\n\n
+<p>Постфикс -V имеют те статьи, которые были безвозвратно удалены на англовики, но приглянулись участникам нашего филиала.</p>
+    </string>
+    <string name="no_search_results">Простите, результатов по вашему запросу не найдено.</string>
+    <string name="read_articles">read_articles</string>
+    <string name="pref_notifications_key_vibrate">pref_notifications_key_vibrate</string>
+    <string name="vibration_summary">Вибрация</string>
+    <string name="off">Выкл</string>
+    <string name="on">Вкл</string>
+    <string name="pref_notifications_key_led">pref_notifications_key_led</string>
+    <string name="led_summary">LED индикация</string>
+    <string name="thanks_for_subscription">Спасибо за поддержку!</string>
+    <string-array name="pref_notificdtion_period_entries">
+        <item>Раз в пол часа</item>
+        <item>Раз в час</item>
+        <item>Раз в два часа</item>
+        <item>Раз в шесть часов</item>
+    </string-array>
+    <string-array name="pref_notification_period_values">
+        <item>30</item>
+        <item>60</item>
+        <item>120</item>
+        <item>360</item>
+    </string-array>
+
+
+</resources>

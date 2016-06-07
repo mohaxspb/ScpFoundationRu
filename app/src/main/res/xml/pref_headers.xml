@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
+
+   <!-- <header
+        android:fragment="ru.kuchanov.tproger.fragment.preference.FragmentPreferenceDesign"
+        android:icon="?themeIconSmall"
+        android:summary="@string/pref_header_design_summary"
+        android:title="@string/pref_header_design_title"/>-->
+
+    <header
+        android:fragment="ru.dante.scpfoundation.fragments.FragmentPreferenceNotifications"
+        android:icon="@drawable/ic_vibration_white_48dp"
+        android:summary="@string/pref_header_notifications_summary"
+        android:title="@string/pref_header_notifications_title"/>
+
+    <header
+        android:fragment="ru.dante.scpfoundation.fragments.FragmentPreferenceSystem"
+        android:icon="@drawable/ic_settings_applications_white_48dp"
+        android:summary="@string/pref_header_system_summary"
+        android:title="@string/pref_header_system_title"/>
+
+    <header
+        android:fragment="ru.dante.scpfoundation.fragments.FragmentPreferenceAbout"
+        android:icon="@drawable/ic_info_outline_white_48dp"
+        android:summary="@string/pref_header_about_summary"
+        android:title="@string/pref_header_about_title"/>
+
+</preference-headers>

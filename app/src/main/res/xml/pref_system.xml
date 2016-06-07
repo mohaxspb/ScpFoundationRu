@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <Preference
+        android:key="@string/pref_cleaning_img_key"
+        android:title="@string/pref_cleaning_img_title">
+    </Preference>
+    <Preference
+        android:key="@string/pref_cleaning_text_key"
+        android:title="@string/pref_cleaning_text_title">
+    </Preference>
+    <SwitchPreference
+        android:defaultValue="false"
+        android:icon="@drawable/ic_cancel_white_48dp"
+        android:key="@string/pref_system_close_app"
+        android:summaryOff="Закрытие приложения(прибитие процесса)"
+        android:summaryOn="Закрытие приложения(прибитие процесса)"
+        android:switchTextOff="Выкл"
+        android:switchTextOn="Вкл"/>
+<!--    <PreferenceCategory
+        android:title="@string/pref_design_main_category_title">
+        <SwitchPreference
+            android:defaultValue="true"
+            android:icon="?autorenewIcon"
+            android:key="@string/pref_system_key_autorenew"
+            android:summaryOff="@string/pref_system_autorenew_summary"
+            android:summaryOn="@string/pref_system_autorenew_summary"
+            android:switchTextOff="@string/pref_key_off"
+            android:switchTextOn="@string/pref_key_on"/>
+
+        &lt;!&ndash;<ListPreference
+            android:icon="?viewModuleIcon"
+            android:key="@string/pref_design_key_col_num"
+            android:title="@string/pref_design_title_col_num"
+            android:entries="@array/pref_design_col_num_entries"
+            android:entryValues="@array/pref_design_col_num_values"
+            android:defaultValue="2"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null" />&ndash;&gt;
+    </PreferenceCategory>-->
+</PreferenceScreen>
