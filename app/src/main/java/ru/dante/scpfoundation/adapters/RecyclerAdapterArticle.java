@@ -15,6 +15,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -44,6 +45,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
     public static final int TYPE_SPOILER = 1;
     public static final int TYPE_IMAGE = 2;
     public static final int TYPE_TITLE = 3;
+    private static final int TYPE_TABLE = 4;
     private static final String LOG = RecyclerAdapterArticle.class.getSimpleName();
 
     //    private String articlesText;
@@ -81,6 +83,8 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                 return TYPE_IMAGE;
             case Spoiler:
                 return TYPE_SPOILER;
+            case Table:
+                return TYPE_TABLE;
         }
     }
 
@@ -91,6 +95,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
         View view;
         switch (viewType)
         {
+            default:
             case TYPE_TEXT:
                 view = new TextView(parent.getContext());
                 viewHolder = new ViewHolderText(view);
@@ -108,6 +113,9 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.article_item_title, parent, false);
                 viewHolder = new ViewHolderText(view);
                 break;
+            case TYPE_TABLE:
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_table, parent, false);
+                viewHolder = new ViewHolderTable(view);
         }
         return viewHolder;
     }
@@ -195,7 +203,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                     }
                 });
                 String title = document.getElementsByTag("span").text();
-               setTextSelectebleAndFixBug(holderImage.title);
+                setTextSelectebleAndFixBug(holderImage.title);
                 holderImage.title.setText(title);
                 break;
             case TYPE_SPOILER:
@@ -208,7 +216,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                 ArrayList<String> spoilerParts = DownloadArticle.getSpoilerParts(articlesTextParts.get(position - 1));
                 setTextSelectebleAndFixBug(viewHolderSpoiler.title);
                 viewHolderSpoiler.title.setText(spoilerParts.get(0));
-               setTextSelectebleAndFixBug(viewHolderSpoiler.content);
+                setTextSelectebleAndFixBug(viewHolderSpoiler.content);
                 viewHolderSpoiler.content.setLinksClickable(true);
                 viewHolderSpoiler.content.setMovementMethod(LinkMovementMethod.getInstance());
                 new SetTextViewHTML(ctx).setText(viewHolderSpoiler.content, spoilerParts.get(1));
@@ -244,6 +252,21 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                 holderTitle.textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, articleTextScale * textSizePrimary);
                 setTextSelectebleAndFixBug(holderTitle.textView);
                 holderTitle.textView.setText(article.getTitle());
+                break;
+            case TYPE_TABLE:
+//                Log.d(LOG, "Type image");
+                final ViewHolderTable holderTable = (ViewHolderTable) holder;
+                String fullHtml = "<!DOCTYPE html>\n" +
+                        "<html>\n" +
+                        "    <head>\n" +
+                        "        <meta charset=\"utf-8\">\n" +
+                        "        <style>table.wiki-content-table{border-collapse:collapse;border-spacing:0;margin:.5em auto}table.wiki-content-table td{border:1px solid #888;padding:.3em .7em}table.wiki-content-table th{border:1px solid #888;padding:.3em .7em;background-color:#eee}</style>\n" +
+                        "    </head>\n" +
+                        "    <body>";
+                fullHtml += articlesTextParts.get(position - 1);
+                fullHtml += "</body>\n" +
+                        "</html>";
+                holderTable.webView.loadData(fullHtml, "text/html; charset=UTF-8", null);
                 break;
         }
     }
@@ -289,7 +312,20 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
             title = (TextView) itemView.findViewById(R.id.title);
         }
     }
-    public static void setTextSelectebleAndFixBug(TextView textView){
+
+    public static class ViewHolderTable extends RecyclerView.ViewHolder
+    {
+        WebView webView;
+
+        public ViewHolderTable(View itemView)
+        {
+            super(itemView);
+            webView = (WebView) itemView;
+        }
+    }
+
+    public static void setTextSelectebleAndFixBug(TextView textView)
+    {
         textView.setTextIsSelectable(true);
 //        title.setOnTouchListener(new View.OnTouchListener()
 //        {

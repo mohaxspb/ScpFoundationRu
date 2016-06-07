@@ -79,6 +79,12 @@ public class DownloadArticle extends AsyncTask<Void, Void, Article>
                 listOfTextTypes.add(TextType.Spoiler);
                 continue;
             }
+            if (ourElement.tagName().equals("table"))
+            {
+                listOfTextTypes.add(TextType.Table);
+                continue;
+            }
+
             if (ourElement.className().equals("rimg"))
             {
                 listOfTextTypes.add(TextType.Image);
@@ -88,9 +94,8 @@ public class DownloadArticle extends AsyncTask<Void, Void, Article>
         }
 //        for (TextType type : listOfTextTypes)
 //        {
-            /*Log.e(LOG, type.toString());*/
+//            Log.e(LOG, type.toString());
 //        }
-
 
         return listOfTextTypes;
     }
@@ -238,7 +243,7 @@ public class DownloadArticle extends AsyncTask<Void, Void, Article>
 
     public enum TextType
     {
-        Text, Spoiler, Image
+        Text, Spoiler, Image, Table
     }
 
     public interface SetArticlesText
