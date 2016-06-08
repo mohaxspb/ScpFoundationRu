@@ -58,6 +58,7 @@ import ru.dante.scpfoundation.utils.RandomPage;
 import ru.dante.scpfoundation.utils.SetTextViewHTML;
 import ru.dante.scpfoundation.utils.VKUtils;
 import ru.dante.scpfoundation.utils.inapp.SubscriptionHelper;
+import ru.dante.scpfoundation.utils.instaleng.AppInstall;
 import ru.dante.scpfoundation.utils.prerate.PreRate;
 
 public class ActivityMain extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener
@@ -627,6 +628,8 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
 
 //        isActive = true;
         PreRate.init(this, "mohax.spb@gmail.com", "Отзыв по приложению").showIfNeed();
+        AppInstall.init (this).showIfNeed();
+
     }
 
 
