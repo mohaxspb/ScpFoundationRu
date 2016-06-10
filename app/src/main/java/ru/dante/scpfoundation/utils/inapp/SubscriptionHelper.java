@@ -1,6 +1,7 @@
 package ru.dante.scpfoundation.utils.inapp;
 
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import ru.dante.scpfoundation.fragments.FragmentDialogShowSubscription;
 
@@ -9,8 +10,12 @@ import ru.dante.scpfoundation.fragments.FragmentDialogShowSubscription;
  */
 public class SubscriptionHelper
 {
-    public static void showSubscriptionDialog(AppCompatActivity ctx){
-        FragmentDialogShowSubscription fragmentDialogShowSubscription=FragmentDialogShowSubscription.newInstance();
-        fragmentDialogShowSubscription.show(ctx.getFragmentManager(),FragmentDialogShowSubscription.LOG);
+    private static final String LOG = SubscriptionHelper.class.getSimpleName() ;
+
+    public static void showSubscriptionDialog(AppCompatActivity ctx)
+    {
+        Log.i(LOG,"showSubscriptionDialog");
+        FragmentDialogShowSubscription fragmentDialogShowSubscription = FragmentDialogShowSubscription.newInstance();
+        fragmentDialogShowSubscription.show(ctx.getFragmentManager(), FragmentDialogShowSubscription.LOG);
     }
 }

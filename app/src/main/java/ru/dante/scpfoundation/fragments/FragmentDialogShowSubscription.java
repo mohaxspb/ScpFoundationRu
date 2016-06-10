@@ -304,4 +304,3 @@ public class FragmentDialogShowSubscription extends DialogFragment
         }
     }
 }
-

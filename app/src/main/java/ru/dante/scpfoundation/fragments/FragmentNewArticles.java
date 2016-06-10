@@ -16,16 +16,20 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.OvershootInterpolator;
 
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 
+import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 import ru.dante.scpfoundation.Article;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.adapters.RecyclerAdapterNewArticles;
 import ru.dante.scpfoundation.otto.BusProvider;
+import ru.dante.scpfoundation.otto.EventAppInstall;
 import ru.dante.scpfoundation.otto.EventArticleDownloaded;
+import ru.dante.scpfoundation.otto.EventGiveMeMoney;
 import ru.dante.scpfoundation.utils.AttributeGetter;
 import ru.dante.scpfoundation.utils.DividerItemDecoration;
 import ru.dante.scpfoundation.utils.RecyclerViewOnScrollListener;
@@ -62,6 +66,18 @@ public class FragmentNewArticles extends Fragment implements DownloadNewArticles
     {
         super.onStop();
         BusProvider.getInstance().unregister(this);
+    }
+
+    @Subscribe
+    public void onAppInstallNeedToShow(EventAppInstall eventAppInstall)
+    {
+        ((RecyclerAdapterNewArticles)recyclerView.getAdapter()).showAppInstall();
+    }
+
+    @Subscribe
+    public void onGiveMeMoneyNeedToShow(EventGiveMeMoney eventGiveMeMoney)
+    {
+        ((RecyclerAdapterNewArticles)recyclerView.getAdapter()).showGiveMeMoney();
     }
 
     @Subscribe
@@ -148,7 +164,7 @@ public class FragmentNewArticles extends Fragment implements DownloadNewArticles
             {
                 currentPageToLoad = 1;
                 isLoadingFromTop = true;
-                DownloadNewArticles downloadNewArticles = new DownloadNewArticles(currentPageToLoad, FragmentNewArticles.this,ctx);
+                DownloadNewArticles downloadNewArticles = new DownloadNewArticles(currentPageToLoad, FragmentNewArticles.this, ctx);
                 downloadNewArticles.execute();
                 setLoading(true);
             }
@@ -156,10 +172,19 @@ public class FragmentNewArticles extends Fragment implements DownloadNewArticles
         recyclerView = (RecyclerView) v.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
+        recyclerView.setItemAnimator(new SlideInUpAnimator(new OvershootInterpolator(1f)));
+        recyclerView.getItemAnimator().setAddDuration(500);
+        recyclerView.getItemAnimator().setRemoveDuration(500);
+        recyclerView.getItemAnimator().setMoveDuration(500);
+        recyclerView.getItemAnimator().setChangeDuration(500);
+
 //        resetOnScrollListener();
+
         if (listArticles.size() == 0)
         {
-            DownloadNewArticles downloadNewArticles = new DownloadNewArticles(currentPageToLoad, this,ctx);
+            RecyclerAdapterNewArticles recyclerAdapterNewArticles = new RecyclerAdapterNewArticles(listArticles);
+            recyclerView.setAdapter(recyclerAdapterNewArticles);
+            DownloadNewArticles downloadNewArticles = new DownloadNewArticles(currentPageToLoad, this, ctx);
             downloadNewArticles.execute();
             setLoading(true);
         } else
@@ -189,7 +214,7 @@ public class FragmentNewArticles extends Fragment implements DownloadNewArticles
             public void onLoadMore()
             {
                 currentPageToLoad++;
-                DownloadNewArticles downloadNewArticles = new DownloadNewArticles(currentPageToLoad, FragmentNewArticles.this,ctx);
+                DownloadNewArticles downloadNewArticles = new DownloadNewArticles(currentPageToLoad, FragmentNewArticles.this, ctx);
                 downloadNewArticles.execute();
                 isLoadingFromTop = false;
                 setLoading(true);
@@ -235,11 +260,12 @@ public class FragmentNewArticles extends Fragment implements DownloadNewArticles
             recyclerView.getAdapter().notifyItemRangeInserted(previousListSize, this.listArticles.size());
         }
         resetOnScrollListener();
-        int firstVisibleItemPosition=((LinearLayoutManager)recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
-        int lastVisibleItemPosition=((LinearLayoutManager)recyclerView.getLayoutManager()).findLastVisibleItemPosition();
-        if (firstVisibleItemPosition==0&&lastVisibleItemPosition==listArticles.size()-1){
+        int firstVisibleItemPosition = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
+        int lastVisibleItemPosition = ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition();
+        if (firstVisibleItemPosition == 0 && lastVisibleItemPosition == listArticles.size() - 1)
+        {
             currentPageToLoad++;
-            DownloadNewArticles downloadNewArticles = new DownloadNewArticles(currentPageToLoad, FragmentNewArticles.this,ctx);
+            DownloadNewArticles downloadNewArticles = new DownloadNewArticles(currentPageToLoad, FragmentNewArticles.this, ctx);
             downloadNewArticles.execute();
             isLoadingFromTop = false;
             setLoading(true);

@@ -60,6 +60,7 @@ import ru.dante.scpfoundation.utils.VKUtils;
 import ru.dante.scpfoundation.utils.inapp.SubscriptionHelper;
 import ru.dante.scpfoundation.utils.instaleng.AppInstall;
 import ru.dante.scpfoundation.utils.prerate.PreRate;
+import ru.dante.scpfoundation.utils.wantmoney.GiveMeMoney;
 
 public class ActivityMain extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener
 {
@@ -106,6 +107,7 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
             Log.i(LOG, "onServiceConnected");
             mService = IInAppBillingService.Stub.asInterface(service);
             BusProvider.getInstance().post(new EventServiceConnected());
+            GiveMeMoney.init(ActivityMain.this).showIfNeed(mService);
         }
     };
 

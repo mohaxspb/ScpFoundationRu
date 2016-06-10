@@ -105,6 +105,11 @@
     <string name="pref_notifications_key_led">pref_notifications_key_led</string>
     <string name="led_summary">LED индикация</string>
     <string name="thanks_for_subscription">Спасибо за поддержку!</string>
+    <string name="app_install_adv">Фонд рад сообщить для всех заинтересованных сотрудников, что есть англиская версия приложения</string>
+    <string name="close">Закрыть</string>
+    <string name="install">Установить</string>
+    <string name="buy_subs">Поддержать</string>
+    <string name="givemymoney">Если вам нравится приложение, вы можете поддержать разработчиков</string>
     <string-array name="pref_notificdtion_period_entries">
         <item>Раз в пол часа</item>
         <item>Раз в час</item>

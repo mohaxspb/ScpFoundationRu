@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -26,9 +25,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
-import com.vk.sdk.VKSdk;
 
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 import ru.dante.scpfoundation.Const;
@@ -76,29 +73,6 @@ public class SetTextViewHTML
     }
 
     static final String LOG = SetTextViewHTML.class.getSimpleName();
-
-    private void showLoginDialog(final Context ctx)
-    {
-
-        MaterialDialog.Builder builder = new MaterialDialog.Builder(ctx)
-                .customView(R.layout.unloged_dialog, true)
-                .title(R.string.unloged_dialog_title)
-                .positiveText("Закрыть");
-        final MaterialDialog dialog = builder.build();
-        View auth = dialog.getCustomView().findViewById(R.id.login);
-        auth.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                dialog.dismiss();
-                VKSdk.login((AppCompatActivity) ctx);
-            }
-        });
-        TextView info = (TextView) dialog.getCustomView().findViewById(R.id.info);
-        info.setText("Вы привыси суточный лимит перехода по внутренним ссылкам (5 в сутки)\nДля продолжения авторизуйтесь");
-        dialog.show();
-    }
 
     protected void makeLinkClickable(SpannableStringBuilder strBuilder, final URLSpan span)
     {

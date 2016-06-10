@@ -11,6 +11,9 @@ import android.util.Log;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
+import ru.dante.scpfoundation.otto.BusProvider;
+import ru.dante.scpfoundation.otto.EventAppInstall;
+
 /**
  * Created by o.leonov on 06.10.2014.
  */
@@ -62,7 +65,7 @@ public class AppInstall
 
     public void showRateDialog()
     {
-        //TODO
+        BusProvider.getInstance().post(new EventAppInstall());
         Log.i(LOG, "Rate dialog called");
         // Ставим флаг, что надо показать позже(если пользователь в самом диалоге не выберет другой вариант)
         TimeSettings.setShowMode(cntxRef.get(), TimeSettings.SHOW_LATER);
