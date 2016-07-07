@@ -23,8 +23,8 @@ android {
         applicationId "ru.dante.scpfoundation"
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 113
-        versionName "1.1.3.Guinness"
+        versionCode 114
+        versionName "1.1.4.Baltika"
     }
     buildTypes {
         release {
