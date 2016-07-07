@@ -72,10 +72,8 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
     private Context ctx;
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
-//    private LinearLayout linearLayout;
     private Toolbar toolbar;
     private ActionBarDrawerToggle mDrawerToggle;
-//    private boolean drawerOpened;
     private SharedPreferences pref;
     private IInAppBillingService mService;
 
@@ -267,7 +265,6 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
                 Intent intent = new Intent(ctx, ActivitySettings.class);
                 ctx.startActivity(intent);
                 return true;
-
             case R.id.subscribe:
                 SubscriptionHelper.showSubscriptionDialog(this);
                 return true;
@@ -404,13 +401,10 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
                 public void onDrawerClosed(View view)
                 {
                     supportInvalidateOptionsMenu();
-//                    drawerOpened = false;
                 }
 
                 public void onDrawerOpened(View drawerView)
                 {
-//                    drawerOpened = true;
-//                    updateNavigationViewState(checkedDrawerItemId);
                 }
             };
             mDrawerToggle.setDrawerIndicatorEnabled(true);
@@ -433,7 +427,6 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
 
         disableNavigationViewScrollbars(navigationView);
 
-
         if (getIntent().hasExtra(KEY_URL))
         {
             String url = getIntent().getStringExtra(KEY_URL);
@@ -448,6 +441,9 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
                     onNavigationItemSelectedListener.onNavigationItemSelected(navigationView.getMenu().findItem(R.id.news));
                     break;
                 case Const.Urls.MAIN:
+                case Const.Urls.RATE:
+                    onNavigationItemSelectedListener.onNavigationItemSelected(navigationView.getMenu().findItem(R.id.rate_articles));
+                    break;
                 case Const.Urls.NEW_ARTICLES:
                     onNavigationItemSelectedListener.onNavigationItemSelected(navigationView.getMenu().findItem(R.id.new_articles));
                     break;
@@ -527,7 +523,7 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
             Fragment fragment = fragmentManager.findFragmentById(R.id.content_frame);
             if (fragment == null)
             {
-                onNavigationItemSelectedListener.onNavigationItemSelected(navigationView.getMenu().findItem(R.id.new_articles));
+                onNavigationItemSelectedListener.onNavigationItemSelected(navigationView.getMenu().findItem(R.id.rate_articles));
 
             } else
             {

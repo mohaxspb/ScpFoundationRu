@@ -15,6 +15,7 @@ public class Const
     public static class Urls
     {
         public static final String MAIN = "http://scpfoundation.ru/";
+        public static final String RATE = "http://scpfoundation.ru/top-rated-pages";
         public static final String NEW_ARTICLES = "http://scpfoundation.ru/most-recently-created";
         public static final String PROTOCOLS = "http://scpfoundation.ru/experiment-logs";
         public static final String INCEDENTS = "http://scpfoundation.ru/incident-reports";
@@ -31,7 +32,7 @@ public class Const
         public static final String OBJECTS_RU = "http://scpfoundation.ru/scp-list-ru";
         public static final String ABOUT_SCP = "http://scpfoundation.ru/about-the-scp-foundation";
         public static final String NEWS = "http://scpfoundation.ru/news";
-        public static final String[] ALL_LINKS_ARRAY = {MAIN, NEW_ARTICLES, PROTOCOLS, INCEDENTS, INTERVIEWS, OTHERS, STORIES, CANONS, GOI_HAB, ART_HUB, LEAKS, OBJECTS_1, OBJECTS_2, OBJECTS_3, OBJECTS_RU, NEWS};
+        public static final String[] ALL_LINKS_ARRAY = {MAIN,RATE, NEW_ARTICLES, PROTOCOLS, INCEDENTS, INTERVIEWS, OTHERS, STORIES, CANONS, GOI_HAB, ART_HUB, LEAKS, OBJECTS_1, OBJECTS_2, OBJECTS_3, OBJECTS_RU, NEWS};
         public static final String FAVORITES = "FAVORITES";
         public static final String OFFLINE = "OFFLINE";
         public static final String MATERIALS_ALL = "MATERIALS_ALL";

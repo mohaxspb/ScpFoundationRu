@@ -25,6 +25,7 @@ import ru.dante.scpfoundation.fragments.FragmentMaterialsAll;
 import ru.dante.scpfoundation.fragments.FragmentNewArticles;
 import ru.dante.scpfoundation.fragments.FragmentObjects;
 import ru.dante.scpfoundation.fragments.FragmentOffline;
+import ru.dante.scpfoundation.fragments.FragmentRateArticles;
 import ru.dante.scpfoundation.fragments.FragmentSearch;
 import ru.dante.scpfoundation.utils.RandomPage;
 
@@ -55,6 +56,9 @@ public class NavigationItemSelectedListenerMain implements NavigationView.OnNavi
         {
             case R.id.news:
                 title = "Новости";
+                break;
+            case R.id.rate_articles:
+                title = "Статьи по рейтингу";
                 break;
             case R.id.new_articles:
                 title = "Новые статьи";
@@ -136,6 +140,20 @@ public class NavigationItemSelectedListenerMain implements NavigationView.OnNavi
                 if (fragment == null)
                 {
                     fragment = new FragmentNewArticles();
+                }
+                fragmentTransaction.replace(R.id.content_frame, fragment, fragmentName);
+                fragmentTransaction.addToBackStack(fragmentName);
+                fragmentTransaction.commit();
+                break;
+            case R.id.rate_articles:
+                Log.d(LOG, "rate articles click");
+
+                fragment = new FragmentRateArticles();
+                fragmentName = ((FragmentRateArticles) fragment).LOG;
+                fragment = fragmentManager.findFragmentByTag(fragmentName);
+                if (fragment == null)
+                {
+                    fragment = new FragmentRateArticles();
                 }
                 fragmentTransaction.replace(R.id.content_frame, fragment, fragmentName);
                 fragmentTransaction.addToBackStack(fragmentName);
