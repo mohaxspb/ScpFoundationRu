@@ -23,8 +23,8 @@ android {
         applicationId "ru.dante.scpfoundation"
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 114
-        versionName "1.1.4.Baltika"
+        versionCode 115
+        versionName "1.1.5.Baltika.hotfix"
     }
     buildTypes {
         release {

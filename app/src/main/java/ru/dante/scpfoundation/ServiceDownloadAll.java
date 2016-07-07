@@ -157,9 +157,14 @@ public class ServiceDownloadAll extends IntentService
                     int max = args.getInt(KEY_MAX);
                     if (objects != null)
                     {
-                        downloadArticle(objects, position);
-                    }
-                    else
+                        if (position != objects.size())
+                        {
+                            downloadArticle(objects, position);
+                        }
+                        else {
+                            notifyDoneAndFinish();
+                        }
+                    } else
                     {
                         SharedPreferences preferences = getSharedPreferences(getString(R.string.pref_arts_list), MODE_PRIVATE);
                         for (Map.Entry<String, ?> entry : preferences.getAll().entrySet())
@@ -236,12 +241,11 @@ public class ServiceDownloadAll extends IntentService
             case Const.Urls.OBJECTS_2:
             case Const.Urls.OBJECTS_3:
             case Const.Urls.OBJECTS_RU:
-                ArrayList<Article> objects = DownloadObjects.getAllArticles(url,this);
+                ArrayList<Article> objects = DownloadObjects.getAllArticles(url, this);
                 if (objects != null)
                 {
                     createIntentForArticleDownload(this, objects, 0);
-                }
-                else
+                } else
                 {
                     //notify about error and remove notif;
                     notifyErrorAndFinish();
@@ -253,8 +257,7 @@ public class ServiceDownloadAll extends IntentService
                 if (numOfPages != null)
                 {
                     downloadArticlesList(1, numOfPages);
-                }
-                else
+                } else
                 {
                     //notify about error and remove notif;
                     Log.e(LOG, "numOfPages is NULL");
@@ -301,7 +304,7 @@ public class ServiceDownloadAll extends IntentService
             for (Article a : articles)
             {
                 //prevent total reloading of all lists
-                if(preferences.contains(a.getURL()))
+                if (preferences.contains(a.getURL()))
                 {
                     //start article download
                     createIntentForArticleDownload(this, 0, preferences.getAll().size());
@@ -311,8 +314,7 @@ public class ServiceDownloadAll extends IntentService
             }
             editor.apply();
             createIntentForArticlesListDownload(this, position + 1, max);
-        }
-        else
+        } else
         {
             Log.i(LOG, "downloadArticlesList articles is NULL");
             //notify about error and remove notif;
@@ -387,8 +389,7 @@ public class ServiceDownloadAll extends IntentService
             SharedPreferences preferences = getSharedPreferences(getString(R.string.pref_arts_list), MODE_PRIVATE);
             preferences.edit().remove(url).apply();
             createIntentForArticleDownload(this, position + 1, max);
-        }
-        else
+        } else
         {
             notifyErrorAndFinish();
         }
@@ -436,8 +437,7 @@ public class ServiceDownloadAll extends IntentService
         {
             OfflineUtils.updateOfflineOnDevice(this, object.getURL(), object.getTitle(), object.getArticlesText(), false);
             createIntentForArticleDownload(this, objects, position + 1);
-        }
-        else
+        } else
         {
             notifyErrorAndFinish();
         }
@@ -448,8 +448,7 @@ public class ServiceDownloadAll extends IntentService
         try
         {
             Thread.sleep(TimeUnit.SECONDS.toMillis(seconds));
-        }
-        catch (InterruptedException e)
+        } catch (InterruptedException e)
         {
             e.printStackTrace();
         }
