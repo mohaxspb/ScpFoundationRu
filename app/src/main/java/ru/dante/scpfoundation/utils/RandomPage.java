@@ -59,7 +59,7 @@ public class RandomPage
                 .followRedirects(false)
                 .build();
 
-        String url = "https://scpfoundation.net/wikidot_random_page";
+        String url = "https://beta.scpfoundation.net/wikidot_random_page";
 
         Request.Builder request = new Request.Builder();
         request.url(url);
