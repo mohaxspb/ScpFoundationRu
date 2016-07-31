@@ -106,16 +106,16 @@ public class FragmentMaterialsAll extends Fragment
                         fragmentTransaction.addToBackStack(null);
                         fragmentTransaction.commit();
                         break;
+//                    case 6:
+//                        showAccessDialog(ctx);
+//                        break;
+//                    case 7:
+//                        showAccessDialog(ctx);
+//                        break;
+//                    case 8:
+//                        showAccessDialog(ctx);
+//                        break;
                     case 6:
-                        showAccessDialog(ctx);
-                        break;
-                    case 7:
-                        showAccessDialog(ctx);
-                        break;
-                    case 8:
-                        showAccessDialog(ctx);
-                        break;
-                    case 9:
                         activityMain.addIdtoToListOfDrawerMenuPressedIds(null);
                         fragment = FragmentArticle.newInstance("http://scpfoundation.ru/the-leak", "За кадром");
                         fragmentTransaction.replace(R.id.content_frame, fragment);
