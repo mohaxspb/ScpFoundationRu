@@ -1,5 +1,7 @@
 package ru.dante.scpfoundation.fragments;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -12,23 +14,26 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.widget.ImageView;
 
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 
-import ru.dante.scpfoundation.utils.DividerItemDecoration;
-import ru.dante.scpfoundation.utils.parsing.DownloadProtocols;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.adapters.RecyclerAdapterProtocols;
 import ru.dante.scpfoundation.otto.BusProvider;
 import ru.dante.scpfoundation.otto.EventArticleDownloaded;
+import ru.dante.scpfoundation.utils.DividerItemDecoration;
+import ru.dante.scpfoundation.utils.parsing.DownloadProtocols;
 
 /**
  * Created for MyApplication by Dante on 16.01.2016  22:31.
  */
 public class FragmentMaterials extends Fragment implements DownloadProtocols.UpdateProtocol, SharedPreferences.OnSharedPreferenceChangeListener
 {
+    private ImageView loadingIndicator;
     private RecyclerView recyclerView;
     private static final String LOG = FragmentMaterials.class.getSimpleName();
     private ArrayList<String> listOfProtocols = new ArrayList<>();
@@ -93,6 +98,7 @@ public class FragmentMaterials extends Fragment implements DownloadProtocols.Upd
     {
         Log.d(LOG, "on create view called");
         View v = inflater.inflate(R.layout.fragment_article, container, false);
+        loadingIndicator=(ImageView) v.findViewById(R.id.loading_indicator);
         recyclerView = (RecyclerView) v.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
@@ -114,6 +120,13 @@ public class FragmentMaterials extends Fragment implements DownloadProtocols.Upd
         {
             DownloadProtocols downloadProtocols = new DownloadProtocols(url, this);
             downloadProtocols.execute();
+            loadingIndicator.setVisibility(View.VISIBLE);
+            loadingIndicator.animate().setInterpolator(new AccelerateDecelerateInterpolator()).rotationBy(360).setDuration(500).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    loadingIndicator.animate().setInterpolator(new AccelerateDecelerateInterpolator()).rotationBy(360).setDuration(500).setListener(this);
+                }
+            });
         } else
 
         {
@@ -138,6 +151,8 @@ public class FragmentMaterials extends Fragment implements DownloadProtocols.Upd
         {
             return;
         }
+        loadingIndicator.animate().cancel();
+        loadingIndicator.setVisibility(View.GONE);
         if (articles == null)
         {
             Log.e(LOG, "Connection lost");
