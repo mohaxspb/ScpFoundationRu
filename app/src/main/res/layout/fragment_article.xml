@@ -36,5 +36,5 @@
         android:layout_height="50dp"
         android:layout_gravity="center_horizontal|center_vertical"
         android:contentDescription="@string/app_name"
-        android:src="@drawable/ic_autorenew_black_48dp"/>
+        android:src="?loadingIndicator"/>
 </FrameLayout>

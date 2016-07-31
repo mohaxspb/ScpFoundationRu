@@ -1,6 +1,8 @@
 package ru.dante.scpfoundation;
 
 import android.app.Application;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKAccessTokenTracker;
@@ -35,5 +37,7 @@ public class MyApplication extends Application
         vkAccessTokenTracker.startTracking();
         VKSdk.initialize(getApplicationContext());
         super.onCreate();
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        pref.edit().remove(getString(R.string.pref_key_random_url)).apply();
     }
 }
