@@ -230,7 +230,6 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
     {
         Log.d(LOG, "onOptionsItemSelected");
 
-
         int id = item.getItemId();
 
         switch (id)

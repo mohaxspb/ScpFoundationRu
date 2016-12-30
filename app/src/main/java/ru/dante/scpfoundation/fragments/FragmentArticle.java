@@ -1,5 +1,7 @@
 package ru.dante.scpfoundation.fragments;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -22,6 +24,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -57,6 +61,7 @@ public class FragmentArticle extends Fragment implements DownloadArticle.SetArti
     String artTitle;
     Article article;
     public String LOG = FragmentArticle.class.getSimpleName();
+    private ImageView loadingIndicator;
     private boolean hasTabs = false;
     private static final String KEY_HAS_TABS = "KEY_HAS_TABS";
     private static final String KEY_TABS_TITLE = "KEY_TABS_TITLE";
@@ -129,6 +134,7 @@ public class FragmentArticle extends Fragment implements DownloadArticle.SetArti
     {
         Log.d(LOG, "on create view called");
         View v = inflater.inflate(R.layout.fragment_article, container, false);
+        loadingIndicator=(ImageView) v.findViewById(R.id.loading_indicator);
         recyclerView = (RecyclerView) v.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         tabLayout = (TabLayout) v.findViewById(R.id.tabLayout);
@@ -142,6 +148,15 @@ public class FragmentArticle extends Fragment implements DownloadArticle.SetArti
         {
             DownloadArticle downloadArticle = new DownloadArticle(url, this);
             downloadArticle.execute();
+            loadingIndicator.setVisibility(View.VISIBLE);
+            loadingIndicator.animate().setInterpolator(new AccelerateDecelerateInterpolator()).rotationBy(360).setDuration(500).setListener(new AnimatorListenerAdapter()
+            {
+                @Override
+                public void onAnimationEnd(Animator animation)
+                {
+                    loadingIndicator.animate().setInterpolator(new AccelerateDecelerateInterpolator()).rotationBy(360).setDuration(500).setListener(this);
+                }
+            });
         } else
         {
             Log.e(LOG, "hasTabs: " + hasTabs);
@@ -307,6 +322,8 @@ public class FragmentArticle extends Fragment implements DownloadArticle.SetArti
         {
             return;
         }
+        loadingIndicator.animate().cancel();
+        loadingIndicator.setVisibility(View.GONE);
         if (article == null)
         {
             Snackbar.make(recyclerView, "Connection lost", Snackbar.LENGTH_LONG).show();

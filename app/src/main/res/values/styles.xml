@@ -48,6 +48,7 @@
         <item name="iconOfflineAdd">@drawable/ic_bookmark_border_black_48dp</item>
         <item name="iconOfflineRemove">@drawable/ic_beenhere_black_48dp</item>
         <item name="iconEmptyImage">@drawable/ic_image_black_48dp</item>
+        <item name="loadingIndicator">@drawable/ic_autorenew_black_48dp</item>
         <item name="scrollbar">@drawable/scrollbar_light</item>
         <!--стили для библиотеки диалогов-->
         <item name="md_dark_theme">false</item>
@@ -113,6 +114,7 @@
         <item name="iconOfflineAdd">@drawable/ic_bookmark_border_white_48dp</item>
         <item name="iconOfflineRemove">@drawable/ic_beenhere_white_48dp</item>
         <item name="iconEmptyImage">@drawable/ic_image_white_48dp</item>
+        <item name="loadingIndicator">@drawable/ic_autorenew_blue_grey_50_48dp</item>
         <item name="scrollbar">@drawable/scrollbar_dark</item>
 
         <!--стили для библиотеки диалогов-->

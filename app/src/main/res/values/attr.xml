@@ -19,4 +19,5 @@
     <attr name="iconEmptyImage" format="reference"/>
     <attr name="windowbackgroundOverrided" format="color|reference"/>
     <attr name="scrollbar" format="reference"/>
+    <attr name="loadingIndicator" format="reference"/>
 </resources>

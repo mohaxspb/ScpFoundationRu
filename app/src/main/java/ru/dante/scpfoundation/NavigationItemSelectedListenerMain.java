@@ -217,6 +217,7 @@ public class NavigationItemSelectedListenerMain implements NavigationView.OnNavi
                 fragmentTransaction.commit();
                 break;
             case R.id.random_page:
+                Log.d(LOG, "random_page clicked");
                 if (pref.contains(activityMain.getString(R.string.pref_key_random_url)))
                 {
                     Intent intent = new Intent(activityMain, ActivityArticles.class);
