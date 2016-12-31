@@ -89,8 +89,10 @@ dependencies {
     compile 'com.github.bumptech.glide:glide:3.7.0'
     //mvp
     compile 'com.hannesdorfmann.mosby:mvp:2.0.1'
-    // Facebook
-    compile 'com.facebook.android:facebook-android-sdk:4.18.0'
+    // Vk
+    compile 'com.vk:androidsdk:1.6.7'
+    //dialogs
+    compile 'com.afollestad.material-dialogs:core:0.9.1.0'
     //fonts
     compile 'uk.co.chrisjenx:calligraphy:2.2.0'
     // Joda Time

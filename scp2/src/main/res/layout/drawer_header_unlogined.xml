@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/headerHeight"
+    android:background="?toolbarBackgroundGradient">
+
+    <ImageView
+        android:id="@+id/donate"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="30dp"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/ic_monetization_on_white_48dp"/>
+
+    <TextView
+        android:id="@+id/login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="16dp"
+        android:drawableTop="@drawable/ic_ab_app"
+        android:gravity="center"
+        android:text="@string/enter"
+        android:textColor="@color/material_blue_gray_50"
+        android:textSize="23sp"/>
+
+    <ImageView
+        android:id="@+id/info"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignBottom="@id/login"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="16dp"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/ic_help_outline_white_48dp"/>
+</RelativeLayout>
