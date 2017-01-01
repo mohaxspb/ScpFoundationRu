@@ -5,6 +5,7 @@ import ru.kuchanov.scp2.db.DbProviderFactory;
 import ru.kuchanov.scp2.manager.MyPreferenceManager;
 import ru.kuchanov.scp2.mvp.base.BasePresenter;
 import ru.kuchanov.scp2.mvp.contract.Main;
+import timber.log.Timber;
 
 /**
  * Created by y.kuchanov on 21.12.16.
@@ -19,6 +20,7 @@ public class MainPresenter extends BasePresenter<Main.View> implements Main.Pres
 
     @Override
     public void onCreate() {
+        Timber.d("onCreate");
         //TODO
     }
 }

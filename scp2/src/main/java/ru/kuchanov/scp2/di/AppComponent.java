@@ -3,7 +3,7 @@ package ru.kuchanov.scp2.di;
 import javax.inject.Singleton;
 
 import dagger.Component;
-import ru.kuchanov.scp2.MainActivity;
+import ru.kuchanov.scp2.ui.activity.MainActivity;
 import ru.kuchanov.scp2.di.module.AppModule;
 import ru.kuchanov.scp2.di.module.NetModule;
 import ru.kuchanov.scp2.di.module.PresentersModule;

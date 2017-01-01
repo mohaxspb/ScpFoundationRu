@@ -3,11 +3,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/drawer_layout"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="ru.kuchanov.scp2.MainActivity"
+    tools:context="ru.kuchanov.scp2.ui.activity.MainActivity"
     >
 
     <LinearLayout
@@ -22,8 +22,8 @@
             android:id="@+id/toolBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:title="@string/app_name"
             android:background="?toolbarBackgroundGradient"
+            app:title="@string/app_name"
             />
 
         <LinearLayout
