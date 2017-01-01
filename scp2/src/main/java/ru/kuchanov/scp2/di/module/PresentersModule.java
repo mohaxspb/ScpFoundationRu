@@ -9,11 +9,13 @@ import dagger.Provides;
 import ru.kuchanov.scp2.api.ApiClient;
 import ru.kuchanov.scp2.db.DbProviderFactory;
 import ru.kuchanov.scp2.manager.MyPreferenceManager;
+import ru.kuchanov.scp2.mvp.contract.Main;
+import ru.kuchanov.scp2.mvp.presenter.MainPresenter;
 
 /**
  * Created by y.kuchanov on 21.12.16.
- * <p>
- * for TappAwards
+ *
+ * for scp_ru
  */
 @Module
 public class PresentersModule {
@@ -27,16 +29,5 @@ public class PresentersModule {
             @NonNull ApiClient apiClient
             ) {
         return new MainPresenter(myPreferencesManager, dbProviderFactory, apiClient);
-    }
-
-    @Provides
-    @Singleton
-    @NonNull
-    Nominees.Presenter providesNomineesPresenter(
-            @NonNull MyPreferenceManager myPreferencesManager,
-            @NonNull DbProviderFactory dbProviderFactory,
-            @NonNull ApiClient apiClient
-    ) {
-        return new NomineesPresenter(myPreferencesManager, dbProviderFactory, apiClient);
     }
 }

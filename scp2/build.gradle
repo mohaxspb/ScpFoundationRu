@@ -21,7 +21,8 @@ android {
         versionName version
 
         manifestPlaceholders = [debuggable: true]
-        buildConfigField('String', 'BASE_API_URL', '\"http://tappawards.dev.cuberto.com/api/v1/\"')
+        buildConfigField "boolean", "TIMBER_ENABLE", "true"
+        buildConfigField('String', 'BASE_API_URL', '\"http://tappawards.dev.cuberto.com/api/v1/\"') //TODO replace
         buildConfigField('int', 'TIMEOUT_SECONDS_CONNECT', '60')
         buildConfigField('int', 'TIMEOUT_SECONDS_READ', '60')
         buildConfigField('int', 'TIMEOUT_SECONDS_WRITE', '60')
@@ -36,14 +37,11 @@ android {
     productFlavors {
         prod {
             manifestPlaceholders = [debuggable: false]
-            buildConfigField('String', 'BASE_API_URL', '\"http://tappawards.dev.cuberto.com/api/v1/\"')
-            //production server
+            buildConfigField "boolean", "TIMBER_ENABLE", "false"
         }
 
         dev {
             manifestPlaceholders = [debuggable: true]
-            buildConfigField('String', 'BASE_API_URL', '\"http://tappawards.dev.cuberto.com/api/v1/\"')
-            //test server
         }
     }
 
