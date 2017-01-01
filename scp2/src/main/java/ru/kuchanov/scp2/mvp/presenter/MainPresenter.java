@@ -23,4 +23,9 @@ public class MainPresenter extends BasePresenter<Main.View> implements Main.Pres
         Timber.d("onCreate");
         //TODO
     }
+
+    @Override
+    public void onNavigationItemClicked(int id) {
+        //TODO
+    }
 }
