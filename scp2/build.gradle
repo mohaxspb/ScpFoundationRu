@@ -1,0 +1,99 @@
+apply plugin: 'com.android.application'
+apply plugin: 'realm-android'
+apply plugin: 'me.tatarka.retrolambda'
+
+//here is script to generate version code from version name
+//which is set in gradle.properties as value of version var
+//which must be in format major, minor, patch, where patch goes from 0 to 99
+apply from: '../versioning.gradle'
+
+ext.supportLibraryVersion = '25.1.0'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "24.0.3"
+
+    defaultConfig {
+        applicationId "ru.kuchanov.scp2"
+        minSdkVersion 17
+        targetSdkVersion 25
+        versionCode buildVersionCode()
+        versionName version
+
+        manifestPlaceholders = [debuggable: true]
+        buildConfigField "boolean", "TIMBER_ENABLE", "true"
+        buildConfigField('String', 'BASE_API_URL', '\"http://tappawards.dev.cuberto.com/api/v1/\"') //TODO replace
+        buildConfigField('int', 'TIMEOUT_SECONDS_CONNECT', '60')
+        buildConfigField('int', 'TIMEOUT_SECONDS_READ', '60')
+        buildConfigField('int', 'TIMEOUT_SECONDS_WRITE', '60')
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    productFlavors {
+        prod {
+            manifestPlaceholders = [debuggable: false]
+            buildConfigField "boolean", "TIMBER_ENABLE", "false"
+        }
+
+        dev {
+            manifestPlaceholders = [debuggable: true]
+        }
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    //support libs
+    compile "com.android.support:appcompat-v7:$supportLibraryVersion"
+    compile "com.android.support:recyclerview-v7:$supportLibraryVersion"
+    compile "com.android.support:design:$supportLibraryVersion"
+    // HockeyApp
+    compile 'net.hockeyapp.android:HockeySDK:4.0.1'
+    //rx
+    compile 'io.reactivex:rxandroid:1.2.1'
+    compile 'io.reactivex:rxjava:1.2.2'
+    // Retrofit
+    compile('com.squareup.retrofit2:retrofit:2.1.0') {
+        exclude module: 'okhttp'
+    }
+    compile 'com.squareup.okhttp3:okhttp:3.5.0'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.5.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
+    compile 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
+    //jsoup
+    compile 'org.jsoup:jsoup:1.10.1'
+    //logs
+    compile 'com.jakewharton.timber:timber:4.3.1'
+    //dagger2
+    compile 'com.google.dagger:dagger:2.7'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.7'
+    //butterKnife
+    compile 'com.jakewharton:butterknife:8.4.0'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
+    //image
+    compile 'com.github.bumptech.glide:glide:3.7.0'
+    //mvp
+    compile 'com.hannesdorfmann.mosby:mvp:2.0.1'
+    // Vk
+    compile 'com.vk:androidsdk:1.6.7'
+    //dialogs
+    compile 'com.afollestad.material-dialogs:core:0.9.1.0'
+    //fonts
+    compile 'uk.co.chrisjenx:calligraphy:2.2.0'
+    // Joda Time
+}

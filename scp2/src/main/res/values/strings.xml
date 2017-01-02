@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">SCP2</string>
+    <string name="drawer_item_1">Об организации</string>
+    <string name="drawer_item_2">Новости</string>
+    <string name="drawer_item_3">Новые статьи</string>
+    <string name="drawer_item_4">Статьи по рейтингу</string>
+    <string name="drawer_item_5">Случайная статья</string>
+    <string name="drawer_item_6">Объекты I</string>
+    <string name="drawer_item_7">Объекты II</string>
+    <string name="drawer_item_8">Объекты III</string>
+    <string name="drawer_item_9">Объекты RU</string>
+    <string name="drawer_item_10">Материалы</string>
+    <string name="drawer_item_11">Рассказы</string>
+    <string name="drawer_item_12">Избранное</string>
+    <string name="drawer_item_13">Статьи Offline</string>
+    <string name="drawer_item_14">Галерея</string>
+    <string name="drawer_item_15">Поиск</string>
+    <string name="enter">Войти</string>
+</resources>

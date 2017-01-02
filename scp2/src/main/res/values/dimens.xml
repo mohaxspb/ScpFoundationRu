@@ -1,0 +1,8 @@
+<resources>
+    <dimen name="headerHeight">164dp</dimen>
+    <dimen name="defaultMargin">16dp</dimen>
+    <dimen name="text_size_primary">21sp</dimen>
+    <dimen name="text_size_secondary">19sp</dimen>
+    <dimen name="text_size_large">25sp</dimen>
+    <dimen name="defaultMarginSmall">8dp</dimen>
+</resources>

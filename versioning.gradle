@@ -1,0 +1,14 @@
+ext {
+    /**
+     *@see "http://stackoverflow.com/a/33782511/3212712"
+     *
+     * Builds an Android version code from the version of the project.
+     */
+    buildVersionCode = {
+        def (major, minor, patch, build) = version.toLowerCase().replaceAll('-', '').tokenize('.')
+
+        (major, minor, patch, build) = [major, minor, patch, build].collect{it.toInteger()}
+
+        (major * 1000000) + (minor * 10000) + (patch * 100) + build;
+    }
+}

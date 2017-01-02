@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="materials_titles">
+        <item>Протоколы экспериментов</item>
+        <item>Отчёты об инцидентах</item>
+        <item>Интервью с очевидцами</item>
+        <item>Шуточные SCP</item>
+        <item>Архивные SCP</item>
+        <item>Прочие материалы</item>
+        <!--<item>Рассказы</item>-->
+        <!--<item>Канон-хаб</item>-->
+        <!--<item>Материалы Связанных Организаций</item>-->
+        <!--<item>Работы SunnyClockwork</item>-->
+        <item>За кадром</item>
+    </string-array>
+    <!--for VK-->
+    <integer name="com_vk_sdk_AppId">5311741</integer>
+    <string name="pref_vk_authorized">pref_vk_authorized</string>
+    <string name="pref_vk">pref_vk</string>
+    <string name="pref_vk_name">pref_vk_name</string>
+    <string name="pref_vk_surname">pref_vk_surname</string>
+    <string name="pref_vk_avatar">pref_vk_avatar</string>
+</resources>
