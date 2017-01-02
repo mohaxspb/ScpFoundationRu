@@ -62,8 +62,7 @@ import ru.dante.scpfoundation.utils.instaleng.AppInstall;
 import ru.dante.scpfoundation.utils.prerate.PreRate;
 import ru.dante.scpfoundation.utils.wantmoney.GiveMeMoney;
 
-public class ActivityMain extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener
-{
+public class ActivityMain extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
     private String needToShowDialog;
     public static final String KEY_NEED_TO_SHOW_DIALOG = "KEY_NEED_TO_SHOW_DIALOG";
     private final static String KEY_LIST_OF_DRAWLER_MENU_PRESSED_ID = "KEY_LIST_OF_DRAWLER_MENU_PRESSED_ID";
@@ -78,30 +77,25 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
     private IInAppBillingService mService;
 
     @Override
-    protected void onSaveInstanceState(Bundle outState)
-    {
+    protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putIntegerArrayList(KEY_LIST_OF_DRAWLER_MENU_PRESSED_ID, listOfDrawerMenuPressedIds);
         outState.putString(KEY_NEED_TO_SHOW_DIALOG, needToShowDialog);
     }
 
-    public IInAppBillingService getIInAppBillingService()
-    {
+    public IInAppBillingService getIInAppBillingService() {
         return mService;
     }
 
-    ServiceConnection mServiceConn = new ServiceConnection()
-    {
+    ServiceConnection mServiceConn = new ServiceConnection() {
         @Override
-        public void onServiceDisconnected(ComponentName name)
-        {
+        public void onServiceDisconnected(ComponentName name) {
             Log.i(LOG, "onServiceDisconnected");
             mService = null;
         }
 
         @Override
-        public void onServiceConnected(ComponentName name, IBinder service)
-        {
+        public void onServiceConnected(ComponentName name, IBinder service) {
             Log.i(LOG, "onServiceConnected");
             mService = IInAppBillingService.Stub.asInterface(service);
             BusProvider.getInstance().post(new EventServiceConnected());
@@ -109,15 +103,11 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
         }
     };
 
-
-    public void addIdtoToListOfDrawerMenuPressedIds(Integer id)
-    {
+    public void addIdtoToListOfDrawerMenuPressedIds(Integer id) {
         listOfDrawerMenuPressedIds.add(id);
     }
 
-
-    public static void startActivityMain(String url, Context ctx)
-    {
+    public static void startActivityMain(String url, Context ctx) {
         Intent intent = new Intent(ctx, ActivityMain.class);
         intent.putExtra(KEY_URL, url);
         ctx.startActivity(intent);
@@ -184,38 +174,28 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
             Color.parseColor("#ECEFF1")
     };
     ColorStateList csIconDark = new ColorStateList(stateIcon, colorIconDark);
-    //
-//    ColorStateList csl2 = new ColorStateList(states, colors);
     ////////////
-
 
     //workaround from http://stackoverflow.com/a/30337653/3212712 to show menu icons
     @Override
-    protected boolean onPrepareOptionsPanel(View view, Menu menu)
-    {
-        if (menu != null)
-        {
-            if (menu.getClass().getSimpleName().equals("MenuBuilder"))
-            {
-                try
-                {
+    protected boolean onPrepareOptionsPanel(View view, Menu menu) {
+        if (menu != null) {
+            if (menu.getClass().getSimpleName().equals("MenuBuilder")) {
+                try {
                     Method m = menu.getClass().getDeclaredMethod("setOptionalIconsVisible", Boolean.TYPE);
                     m.setAccessible(true);
                     m.invoke(menu, true);
-                } catch (Exception e)
-                {
+                } catch (Exception e) {
                     Log.e(getClass().getSimpleName(), "onMenuOpened...unable to set icons for overflow menu", e);
                 }
             }
 
             boolean nightModeIsOn = this.pref.getBoolean("key_design_night_mode", false);
             MenuItem themeMenuItem = menu.findItem(R.id.night_mode_item);
-            if (nightModeIsOn)
-            {
+            if (nightModeIsOn) {
                 themeMenuItem.setIcon(R.drawable.ic_brightness_5_white_48dp);
                 themeMenuItem.setTitle("Дневной режим");
-            } else
-            {
+            } else {
                 themeMenuItem.setIcon(R.drawable.ic_brightness_3_white_48dp);
                 themeMenuItem.setTitle("Ночной режим");
             }
@@ -226,14 +206,12 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
 
     @SuppressLint("CommitPrefEdits")
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
+    public boolean onOptionsItemSelected(MenuItem item) {
         Log.d(LOG, "onOptionsItemSelected");
 
         int id = item.getItemId();
 
-        switch (id)
-        {
+        switch (id) {
             case android.R.id.home:
                 this.drawerLayout.openDrawer(GravityCompat.START);
                 return true;
@@ -272,46 +250,34 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
     }
 
     @Override
-    public void onBackPressed()
-    {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START))
-        {
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
-        } else
-        {
-            if (getSupportFragmentManager().getBackStackEntryCount() > 1)
-            {
+        } else {
+            if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
                 listOfDrawerMenuPressedIds.remove(listOfDrawerMenuPressedIds.size() - 1);
                 uncheckedAllNavigationItems(navigationView);
-                if (listOfDrawerMenuPressedIds.get(listOfDrawerMenuPressedIds.size() - 1) != null)
-                {
+                if (listOfDrawerMenuPressedIds.get(listOfDrawerMenuPressedIds.size() - 1) != null) {
                     navigationView.setCheckedItem(listOfDrawerMenuPressedIds.get(listOfDrawerMenuPressedIds.size() - 1));
                     toolbar.setTitle(NavigationItemSelectedListenerMain.getTitleById(listOfDrawerMenuPressedIds.get(listOfDrawerMenuPressedIds.size() - 1)));
-                } else
-                {
+                } else {
                     toolbar.setTitle(NavigationItemSelectedListenerMain.getTitleById(listOfDrawerMenuPressedIds.get(listOfDrawerMenuPressedIds.size() - 1)));
                 }
                 super.onBackPressed();
-            } else
-            {
+            } else {
 //                finish();
                 Intent i = new Intent(Intent.ACTION_MAIN);
                 i.addCategory(Intent.CATEGORY_HOME);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(i);
 
-                if (pref.getBoolean(getString(R.string.pref_system_close_app), false))
-                {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                    {
+                if (pref.getBoolean(getString(R.string.pref_system_close_app), false)) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         finishAndRemoveTask();
-                    } else
-                    {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-                        {
+                    } else {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                             finishAffinity();
-                        } else
-                        {
+                        } else {
                             finish();
                         }
                     }
@@ -322,15 +288,13 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
     }
 
     @Override
-    protected void onPostCreate(Bundle savedInstanceState)
-    {
+    protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         mDrawerToggle.syncState();
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig)
-    {
+    public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
@@ -338,16 +302,13 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
     private static final String LOG = ActivityMain.class.getSimpleName();
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
+    public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
-    private void uncheckedAllNavigationItems(NavigationView navigationView)
-    {
-        for (int i = 0; i < navigationView.getMenu().size(); i++)
-        {
+    private void uncheckedAllNavigationItems(NavigationView navigationView) {
+        for (int i = 0; i < navigationView.getMenu().size(); i++) {
             navigationView.getMenu().getItem(i).setChecked(false);
         }
     }
@@ -357,8 +318,7 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
 
     @SuppressLint("CommitPrefEdits")
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         PreferenceManager.setDefaultValues(this, R.xml.pref_design, true);
         PreferenceManager.setDefaultValues(this, R.xml.pref_notification, true);
         PreferenceManager.setDefaultValues(this, R.xml.pref_system, true);
@@ -366,18 +326,15 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
         pref.registerOnSharedPreferenceChangeListener(this);
         pref.edit().putInt(getResources().getString(R.string.key_new_articles_counter), 0).commit();
         boolean nightModeOn = pref.getBoolean("key_design_night_mode", false);
-        if (nightModeOn)
-        {
+        if (nightModeOn) {
             setTheme(R.style.SCP_Theme_Dark);
-        } else
-        {
+        } else {
             setTheme(R.style.SCP_Theme_Light);
         }
         super.onCreate(savedInstanceState);
         ctx = this;
         RandomPage.getRandomPage(ctx);
-        if (savedInstanceState != null)
-        {
+        if (savedInstanceState != null) {
             listOfDrawerMenuPressedIds = savedInstanceState.getIntegerArrayList(KEY_LIST_OF_DRAWLER_MENU_PRESSED_ID);
             needToShowDialog = savedInstanceState.getString(KEY_NEED_TO_SHOW_DIALOG, null);
         }
@@ -389,21 +346,17 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
         toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolBar);
         setSupportActionBar(toolbar);
         final ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null)
-        {
+        if (actionBar != null) {
             actionBar.setDisplayShowTitleEnabled(false);
 
             actionBar.setDisplayHomeAsUpEnabled(true);
 
-            mDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.app_name, R.string.app_name)
-            {
-                public void onDrawerClosed(View view)
-                {
+            mDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.app_name, R.string.app_name) {
+                public void onDrawerClosed(View view) {
                     supportInvalidateOptionsMenu();
                 }
 
-                public void onDrawerOpened(View drawerView)
-                {
+                public void onDrawerOpened(View drawerView) {
                 }
             };
             mDrawerToggle.setDrawerIndicatorEnabled(true);
@@ -412,12 +365,10 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
         }
 
         navigationView = (NavigationView) findViewById(R.id.navigation);
-        if (nightModeOn)
-        {
+        if (nightModeOn) {
             navigationView.setItemTextColor(cslDark);
             navigationView.setItemIconTintList(csIconDark);
-        } else
-        {
+        } else {
             navigationView.setItemTextColor(csl);
             navigationView.setItemIconTintList(csIcon);
         }
@@ -426,13 +377,11 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
 
         disableNavigationViewScrollbars(navigationView);
 
-        if (getIntent().hasExtra(KEY_URL))
-        {
+        if (getIntent().hasExtra(KEY_URL)) {
             String url = getIntent().getStringExtra(KEY_URL);
             Fragment fragment;
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            switch (url)
-            {
+            switch (url) {
                 case Const.Urls.ABOUT_SCP:
                     onNavigationItemSelectedListener.onNavigationItemSelected(navigationView.getMenu().findItem(R.id.about));
                     break;
@@ -516,16 +465,13 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
                     break;
             }
             getIntent().removeExtra(KEY_URL);
-        } else
-        {
+        } else {
             FragmentManager fragmentManager = getSupportFragmentManager();
             Fragment fragment = fragmentManager.findFragmentById(R.id.content_frame);
-            if (fragment == null)
-            {
+            if (fragment == null) {
                 onNavigationItemSelectedListener.onNavigationItemSelected(navigationView.getMenu().findItem(R.id.rate_articles));
 
-            } else
-            {
+            } else {
                 Log.d(LOG, "Fragment Already Exists");
                 toolbar.setTitle(NavigationItemSelectedListenerMain.getTitleById(listOfDrawerMenuPressedIds.get(listOfDrawerMenuPressedIds.size() - 1)));
             }
@@ -577,144 +523,118 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
         bindService(serviceIntent, mServiceConn, Context.BIND_AUTO_CREATE);
 
         //restoreDiLOG QITH IMAGE
-        if (needToShowDialog != null)
-        {
+        if (needToShowDialog != null) {
             SetTextViewHTML.showImageDialog(ctx, needToShowDialog);
         }
     }
 
     @Override
-    protected void onDestroy()
-    {
+    protected void onDestroy() {
         super.onDestroy();
 //        unregisterReceiver(broadcastReceiver);
         PreRate.clearDialogIfOpen();
-        if (mService != null)
-        {
+        if (mService != null) {
             unbindService(mServiceConn);
         }
     }
 
     @Override
-    public void onStart()
-    {
+    public void onStart() {
         super.onStart();
         BusProvider.getInstance().register(this);
     }
 
     @Override
-    public void onStop()
-    {
+    public void onStop() {
         super.onStop();
         BusProvider.getInstance().unregister(this);
     }
 
     @Override
-    protected void onPause()
-    {
+    protected void onPause() {
         YandexMetrica.onPauseActivity(this);
 //        isActive = false;
         super.onPause();
     }
 
     @Override
-    protected void onResume()
-    {
+    protected void onResume() {
         super.onResume();
         YandexMetrica.onResumeActivity(this);
 
 //        isActive = true;
         PreRate.init(this, "mohax.spb@gmail.com", "Отзыв по приложению").showIfNeed();
-        AppInstall.init (this).showIfNeed();
+        AppInstall.init(this).showIfNeed();
 
     }
 
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        if (!VKSdk.onActivityResult(requestCode, resultCode, data, new VKCallback<VKAccessToken>()
-        {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (!VKSdk.onActivityResult(requestCode, resultCode, data, new VKCallback<VKAccessToken>() {
             @Override
-            public void onResult(VKAccessToken res)
-            {
+            public void onResult(VKAccessToken res) {
                 // Пользователь успешно авторизовался
                 VKUtils.checkVKAuth((AppCompatActivity) ctx, navigationView);
             }
 
             @Override
-            public void onError(VKError error)
-            {
+            public void onError(VKError error) {
                 // Произошла ошибка авторизации (например, пользователь запретил авторизацию)
                 VKUtils.checkVKAuth((AppCompatActivity) ctx, navigationView);
             }
-        }))
-        {
-            if (requestCode == 1001)
-            {
+        })) {
+            if (requestCode == 1001) {
                 int responseCode = data.getIntExtra("RESPONSE_CODE", 0);
                 String purchaseData = data.getStringExtra("INAPP_PURCHASE_DATA");
                 String dataSignature = data.getStringExtra("INAPP_DATA_SIGNATURE");
 
-                if (resultCode == RESULT_OK)
-                {
-                    try
-                    {
+                if (resultCode == RESULT_OK) {
+                    try {
                         JSONObject jo = new JSONObject(purchaseData);
                         String sku = jo.getString("productId");
                         Log.i(LOG, "You have bought the " + sku + ". Excellent choice, adventurer!");
                         Toast.makeText(ctx, R.string.thanks_for_subscription, Toast.LENGTH_LONG).show();
-                    } catch (JSONException e)
-                    {
+                    } catch (JSONException e) {
                         Log.i(LOG, "Failed to parse purchase data.");
                         e.printStackTrace();
                     }
                 }
-            } else
-            {
+            } else {
                 super.onActivityResult(requestCode, resultCode, data);
             }
         }
     }
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
-    {
-        if (key.equals("key_design_night_mode"))
-        {
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals("key_design_night_mode")) {
             recreate();
         }
     }
 
-    private void disableNavigationViewScrollbars(NavigationView navigationView)
-    {
-        if (navigationView != null)
-        {
+    private void disableNavigationViewScrollbars(NavigationView navigationView) {
+        if (navigationView != null) {
             NavigationMenuView navigationMenuView = (NavigationMenuView) navigationView.getChildAt(0);
-            if (navigationMenuView != null)
-            {
+            if (navigationMenuView != null) {
                 navigationMenuView.setVerticalScrollBarEnabled(false);
             }
         }
     }
 
-    public void setNeedToShowDialog(String needToShowDialog)
-    {
+    public void setNeedToShowDialog(String needToShowDialog) {
         this.needToShowDialog = needToShowDialog;
     }
 
-    public ArrayList<Integer> getListOfDrawerMenuPressedIds()
-    {
+    public ArrayList<Integer> getListOfDrawerMenuPressedIds() {
         return listOfDrawerMenuPressedIds;
     }
 
-    public DrawerLayout getDrawerLayout()
-    {
+    public DrawerLayout getDrawerLayout() {
         return drawerLayout;
     }
 
-    public Toolbar getToolbar()
-    {
+    public Toolbar getToolbar() {
         return toolbar;
     }
 }

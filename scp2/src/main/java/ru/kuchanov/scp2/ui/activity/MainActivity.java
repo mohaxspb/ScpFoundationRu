@@ -2,6 +2,8 @@ package ru.kuchanov.scp2.ui.activity;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.view.GravityCompat;
+import android.view.MenuItem;
 
 import butterknife.ButterKnife;
 import ru.kuchanov.scp2.MyApplication;
@@ -15,21 +17,35 @@ public class MainActivity extends BaseDrawerActivity<Main.View, Main.Presenter> 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
+
         mPresenter.onCreate();
 
         mNavigationView.setNavigationItemSelectedListener(item -> {
-            onNavigationItemClicked(item.getItemId());
             mPresenter.onNavigationItemClicked(item.getItemId());
-            return false;
+            onNavigationItemClicked(item.getItemId());
+            mDrawerLayout.closeDrawer(GravityCompat.START);
+            return true;
         });
+    }
+
+    @Override
+    protected int getLayoutResId() {
+        return R.layout.activity_main;
+    }
+
+    @Override
+    protected void callInjections() {
+        MyApplication.getAppComponent().inject(this);
+    }
+
+    @Override
+    protected int getMenuResId() {
+        return R.menu.menu_main;
     }
 
     @NonNull
     @Override
     public Main.Presenter createPresenter() {
-        MyApplication.getAppComponent().inject(this);
         return mPresenter;
     }
 
@@ -37,47 +53,89 @@ public class MainActivity extends BaseDrawerActivity<Main.View, Main.Presenter> 
     public void onNavigationItemClicked(int id) {
         Timber.d("onNavigationItemClicked with id: %s", id);
         //TODO
-        String title = "";
+        String title;
         switch (id) {
             case R.id.about:
-                title = "Об организации";
+                title = getString(R.string.drawer_item_1);
                 break;
             case R.id.news:
-                title = "Новости";
+                title = getString(R.string.drawer_item_2);
                 break;
             case R.id.rate_articles:
-                title = "Статьи по рейтингу";
+                title = getString(R.string.drawer_item_3);
                 break;
             case R.id.new_articles:
-                title = "Новые статьи";
+                title = getString(R.string.drawer_item_4);
                 break;
             case R.id.objects_I:
-                title = "Объекты I";
+                title = getString(R.string.drawer_item_5);
                 break;
             case R.id.objects_II:
-                title = "Объекты II";
+                title = getString(R.string.drawer_item_6);
                 break;
             case R.id.objects_III:
-                title = "Объекты III";
+                title = getString(R.string.drawer_item_7);
                 break;
             case R.id.objects_RU:
-                title = "Объекты RU";
+                title = getString(R.string.drawer_item_8);
                 break;
             case R.id.favorite:
-                title = "Избранное";
+                title = getString(R.string.drawer_item_9);
                 break;
             case R.id.offline:
-                title = "Офлайн";
+                title = getString(R.string.drawer_item_10);
                 break;
             case R.id.stories:
-                title = "Рассказы";
+                title = getString(R.string.drawer_item_11);
                 break;
             case R.id.files:
-                title = "Материалы";
+                title = getString(R.string.drawer_item_12);
                 break;
             case R.id.site_search:
-                title = "Поиск";
+                title = getString(R.string.drawer_item_13);
+                break;
+            default:
+                title = "";
                 break;
         }
+        assert mToolbar != null;
+        mToolbar.setTitle(title);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Timber.d("onOptionsItemSelected with id: %s", item);
+
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                mDrawerLayout.openDrawer(GravityCompat.START);
+                return true;
+            case R.id.night_mode_item:
+                mMyPreferenceManager.setIsNightMode(!mMyPreferenceManager.isNightMode());
+                recreate();
+                return true;
+            case R.id.text_size:
+                //TODO
+//                FragmentDialogTextAppearance fragmentDialogTextAppearance = FragmentDialogTextAppearance.newInstance();
+//                fragmentDialogTextAppearance.show(getFragmentManager(), "ХЗ");
+                return true;
+            case R.id.info:
+                //TODO
+//                new MaterialDialog.Builder(ctx)
+//                        .content(R.string.dialog_info_content)
+//                        .title("О приложении")
+//                        .show();
+                return true;
+            case R.id.settings:
+                //TODO
+//                Intent intent = new Intent(ctx, ActivitySettings.class);
+//                ctx.startActivity(intent);
+                return true;
+            case R.id.subscribe:
+                //TODO
+//                SubscriptionHelper.showSubscriptionDialog(this);
+                return true;
+        }
+        return false;
     }
 }

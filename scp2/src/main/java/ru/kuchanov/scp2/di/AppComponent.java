@@ -8,6 +8,7 @@ import ru.kuchanov.scp2.di.module.AppModule;
 import ru.kuchanov.scp2.di.module.NetModule;
 import ru.kuchanov.scp2.di.module.PresentersModule;
 import ru.kuchanov.scp2.di.module.StorageModule;
+import ru.kuchanov.scp2.ui.base.BaseActivity;
 
 /**
  * Created by y.kuchanov on 21.12.16.

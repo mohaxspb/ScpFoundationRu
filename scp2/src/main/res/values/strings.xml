@@ -16,4 +16,8 @@
     <string name="drawer_item_14">Галерея</string>
     <string name="drawer_item_15">Поиск</string>
     <string name="enter">Войти</string>
+    <string name="settings">Настройки</string>
+    <string name="night_mode">Ночной режим</string>
+    <string name="text_size">Размер текста</string>
+    <string name="in_apps">Поддержка проекта</string>
 </resources>
