@@ -7,6 +7,7 @@ import io.realm.RealmModel;
 import io.realm.RealmObject;
 import io.realm.RealmResults;
 import io.realm.Sort;
+import ru.kuchanov.scp2.db.model.Article;
 import rx.Observable;
 
 /**
@@ -67,6 +68,15 @@ public class DbProvider {
 
     public <V extends RealmObject> Observable<RealmResults<V>> getRowsObservableAsync(Class<V> clazz) {
         return mRealm.where(clazz).findAllAsync().<RealmResults<V>>asObservable()
+                .filter(RealmResults::isLoaded)
+                .filter(RealmResults::isValid);
+    }
+
+    public Observable<RealmResults<Article>> getRecentArticlesSortedAsync(String field, Sort order) {
+        return mRealm.where(Article.class)
+                .notEqualTo(Article.FIELD_IS_IN_RECENT, Article.ORDER_NONE)
+                .findAllSortedAsync(field, order)
+                .asObservable()
                 .filter(RealmResults::isLoaded)
                 .filter(RealmResults::isValid);
     }

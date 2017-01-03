@@ -2,6 +2,7 @@ package ru.kuchanov.scp2.mvp.presenter;
 
 import java.util.List;
 
+import io.realm.Sort;
 import ru.kuchanov.scp2.api.ApiClient;
 import ru.kuchanov.scp2.db.DbProviderFactory;
 import ru.kuchanov.scp2.db.model.Article;
@@ -27,10 +28,33 @@ public class RecentArticlesPresenter extends BasePresenter<RecentArticles.View> 
     public void onCreate() {
         Timber.d("onCreate");
         //TODO
+        getDataFromDb();
+        getDataFromApi();
     }
 
     @Override
     public List<Article> getData() {
         return mData;
+    }
+
+    @Override
+    public void getDataFromDb() {
+        Timber.d("getDataFromDb");
+        mDbProviderFactory.getDbProvider().getRecentArticlesSortedAsync(Article.FIELD_IS_IN_RECENT, Sort.ASCENDING)
+                .subscribe(
+                        data -> {
+                            Timber.d("getDataFromDb data: %s", data);
+                            mData = data;
+                            getView().updateData(mData);
+                        },
+                        error -> {
+                            getView().showError(error);
+                        });
+    }
+
+    @Override
+    public void getDataFromApi() {
+        Timber.d("getDataFromApi");
+        //TODO
     }
 }

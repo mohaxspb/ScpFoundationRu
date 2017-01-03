@@ -2,8 +2,6 @@ package ru.kuchanov.scp2.mvp.base;
 
 import java.util.List;
 
-import io.realm.RealmObject;
-
 /**
  * Created by mohax on 25.12.2016.
  * <p>
@@ -24,5 +22,9 @@ public interface BaseListMvp {
 
     interface Presenter<D, V extends View> extends BaseDataPresenter<V> {
         List<D> getData();
+
+        void getDataFromDb();
+
+        void getDataFromApi();
     }
 }
