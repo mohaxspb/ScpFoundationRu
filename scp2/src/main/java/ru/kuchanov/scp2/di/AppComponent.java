@@ -9,6 +9,7 @@ import ru.kuchanov.scp2.di.module.PresentersModule;
 import ru.kuchanov.scp2.di.module.StorageModule;
 import ru.kuchanov.scp2.ui.fragment.AboutFragment;
 import ru.kuchanov.scp2.ui.activity.MainActivity;
+import ru.kuchanov.scp2.ui.fragment.RecentArticlesFragment;
 
 /**
  * Created by y.kuchanov on 21.12.16.
@@ -26,4 +27,6 @@ public interface AppComponent {
     void inject(MainActivity activity);
 
     void inject(AboutFragment fragment);
+
+    void inject(RecentArticlesFragment fragment);
 }

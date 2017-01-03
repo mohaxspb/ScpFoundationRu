@@ -9,8 +9,9 @@ import android.view.MenuItem;
 import ru.kuchanov.scp2.MyApplication;
 import ru.kuchanov.scp2.R;
 import ru.kuchanov.scp2.mvp.contract.Main;
-import ru.kuchanov.scp2.ui.fragment.AboutFragment;
 import ru.kuchanov.scp2.ui.base.BaseDrawerActivity;
+import ru.kuchanov.scp2.ui.fragment.AboutFragment;
+import ru.kuchanov.scp2.ui.fragment.RecentArticlesFragment;
 import timber.log.Timber;
 
 public class MainActivity extends BaseDrawerActivity<Main.View, Main.Presenter> implements Main.View {
@@ -76,36 +77,53 @@ public class MainActivity extends BaseDrawerActivity<Main.View, Main.Presenter> 
                 break;
             case R.id.rate_articles:
                 title = getString(R.string.drawer_item_3);
+                fragment = getSupportFragmentManager().findFragmentByTag(RecentArticlesFragment.TAG);
+                if (fragment == null) {
+                    fragment = RecentArticlesFragment.newInstance();
+                    getSupportFragmentManager().beginTransaction()
+                            .add(content.getId(), fragment, RecentArticlesFragment.TAG)
+                            .commit();
+                } else {
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(content.getId(), fragment, RecentArticlesFragment.TAG)
+                            .commit();
+                }
                 break;
             case R.id.new_articles:
                 title = getString(R.string.drawer_item_4);
                 break;
-            case R.id.objects_I:
+            case R.id.random_page:
                 title = getString(R.string.drawer_item_5);
                 break;
-            case R.id.objects_II:
+            case R.id.objects_I:
                 title = getString(R.string.drawer_item_6);
                 break;
-            case R.id.objects_III:
+            case R.id.objects_II:
                 title = getString(R.string.drawer_item_7);
                 break;
-            case R.id.objects_RU:
+            case R.id.objects_III:
                 title = getString(R.string.drawer_item_8);
                 break;
-            case R.id.favorite:
+            case R.id.objects_RU:
                 title = getString(R.string.drawer_item_9);
                 break;
-            case R.id.offline:
+            case R.id.files:
                 title = getString(R.string.drawer_item_10);
                 break;
             case R.id.stories:
                 title = getString(R.string.drawer_item_11);
                 break;
-            case R.id.files:
+            case R.id.favorite:
                 title = getString(R.string.drawer_item_12);
                 break;
-            case R.id.site_search:
+            case R.id.offline:
                 title = getString(R.string.drawer_item_13);
+                break;
+            case R.id.gallery:
+                title = getString(R.string.drawer_item_14);
+                break;
+            case R.id.site_search:
+                title = getString(R.string.drawer_item_15);
                 break;
             default:
                 title = "";

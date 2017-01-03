@@ -11,11 +11,11 @@
             android:checked="true"
             android:title="@string/drawer_item_2"/>
         <item
-            android:id="@+id/new_articles"
+            android:id="@+id/rate_articles"
             android:checked="true"
             android:title="@string/drawer_item_3"/>
         <item
-            android:id="@+id/rate_articles"
+            android:id="@+id/new_articles"
             android:checked="true"
             android:title="@string/drawer_item_4"/>
         <item

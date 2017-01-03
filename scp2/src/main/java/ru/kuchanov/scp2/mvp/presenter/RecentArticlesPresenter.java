@@ -6,10 +6,8 @@ import ru.kuchanov.scp2.api.ApiClient;
 import ru.kuchanov.scp2.db.DbProviderFactory;
 import ru.kuchanov.scp2.db.model.Article;
 import ru.kuchanov.scp2.manager.MyPreferenceManager;
-import ru.kuchanov.scp2.mvp.base.BaseListMvp;
 import ru.kuchanov.scp2.mvp.base.BasePresenter;
-import ru.kuchanov.scp2.mvp.contract.About;
-import ru.kuchanov.scp2.mvp.contract.Main;
+import ru.kuchanov.scp2.mvp.contract.RecentArticles;
 import timber.log.Timber;
 
 /**
@@ -17,9 +15,11 @@ import timber.log.Timber;
  * <p>
  * for TappAwards
  */
-public class AboutPresenter {/* extends BasePresenter<About.View> implements About.Presenter {
+public class RecentArticlesPresenter extends BasePresenter<RecentArticles.View> implements RecentArticles.Presenter {
 
-    public AboutPresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
+    private List<Article> mData;
+
+    public RecentArticlesPresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
         super(myPreferencesManager, dbProviderFactory, apiClient);
     }
 
@@ -31,6 +31,6 @@ public class AboutPresenter {/* extends BasePresenter<About.View> implements Abo
 
     @Override
     public List<Article> getData() {
-        return null;
-    }*/
+        return mData;
+    }
 }

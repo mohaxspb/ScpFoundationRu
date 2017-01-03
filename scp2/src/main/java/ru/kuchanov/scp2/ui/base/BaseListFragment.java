@@ -6,9 +6,9 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import butterknife.BindView;
+import io.realm.RealmObject;
 import ru.kuchanov.scp2.R;
 import ru.kuchanov.scp2.mvp.base.BaseListMvp;
-import ru.kuchanov.scp2.mvp.base.BaseMvpView;
 import ru.kuchanov.scp2.util.DimensionUtils;
 
 /**
@@ -16,7 +16,8 @@ import ru.kuchanov.scp2.util.DimensionUtils;
  * <p>
  * for scp_ru
  */
-public abstract class BaseListFragment<V> extends BaseFragment implements BaseMvpView, BaseListMvp.View<V> {
+public abstract class BaseListFragment<D, V extends BaseListMvp.View<D>, P extends BaseListMvp.Presenter<D, V>>
+        extends BaseFragment<V, P> implements BaseListMvp.View<D> {
 
     @BindView(R.id.root)
     protected View root;

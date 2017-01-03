@@ -9,10 +9,10 @@ import dagger.Provides;
 import ru.kuchanov.scp2.api.ApiClient;
 import ru.kuchanov.scp2.db.DbProviderFactory;
 import ru.kuchanov.scp2.manager.MyPreferenceManager;
-import ru.kuchanov.scp2.mvp.contract.About;
 import ru.kuchanov.scp2.mvp.contract.Main;
-import ru.kuchanov.scp2.mvp.presenter.AboutPresenter;
+import ru.kuchanov.scp2.mvp.contract.RecentArticles;
 import ru.kuchanov.scp2.mvp.presenter.MainPresenter;
+import ru.kuchanov.scp2.mvp.presenter.RecentArticlesPresenter;
 
 /**
  * Created by y.kuchanov on 21.12.16.
@@ -33,14 +33,25 @@ public class PresentersModule {
         return new MainPresenter(myPreferencesManager, dbProviderFactory, apiClient);
     }
 
+//    @Provides
+//    @Singleton
+//    @NonNull
+//    About.Presenter providesAboutPresenter(
+//            @NonNull MyPreferenceManager myPreferencesManager,
+//            @NonNull DbProviderFactory dbProviderFactory,
+//            @NonNull ApiClient apiClient
+//    ) {
+//        return new AboutPresenter(myPreferencesManager, dbProviderFactory, apiClient);
+//    }
+
     @Provides
     @Singleton
     @NonNull
-    About.Presenter providesAboutPresenter(
+    RecentArticles.Presenter providesAboutPresenter(
             @NonNull MyPreferenceManager myPreferencesManager,
             @NonNull DbProviderFactory dbProviderFactory,
             @NonNull ApiClient apiClient
     ) {
-        return new AboutPresenter(myPreferencesManager, dbProviderFactory, apiClient);
+        return new RecentArticlesPresenter(myPreferencesManager, dbProviderFactory, apiClient);
     }
 }

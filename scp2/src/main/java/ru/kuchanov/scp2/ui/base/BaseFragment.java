@@ -54,6 +54,7 @@ public abstract class BaseFragment<V extends BaseMvpView, P extends BaseDataPres
     public void onViewCreated(android.view.View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mUnbinder = ButterKnife.bind(this, view);
+        mPresenter.onCreate();
     }
 
     @Override
