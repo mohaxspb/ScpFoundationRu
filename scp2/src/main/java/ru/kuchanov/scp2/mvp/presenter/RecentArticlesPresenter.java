@@ -3,12 +3,15 @@ package ru.kuchanov.scp2.mvp.presenter;
 import java.util.List;
 
 import io.realm.Sort;
+import ru.kuchanov.scp2.Constants;
 import ru.kuchanov.scp2.api.ApiClient;
 import ru.kuchanov.scp2.db.DbProviderFactory;
 import ru.kuchanov.scp2.db.model.Article;
 import ru.kuchanov.scp2.manager.MyPreferenceManager;
 import ru.kuchanov.scp2.mvp.base.BasePresenter;
 import ru.kuchanov.scp2.mvp.contract.RecentArticles;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 /**
@@ -29,7 +32,7 @@ public class RecentArticlesPresenter extends BasePresenter<RecentArticles.View> 
         Timber.d("onCreate");
         //TODO
         getDataFromDb();
-        getDataFromApi();
+        getDataFromApi(Constants.Api.ZERO_OFFSET);
     }
 
     @Override
@@ -53,8 +56,19 @@ public class RecentArticlesPresenter extends BasePresenter<RecentArticles.View> 
     }
 
     @Override
-    public void getDataFromApi() {
+    public void getDataFromApi(int offset) {
         Timber.d("getDataFromApi");
-        //TODO
+        mApiClient.getRecentArticles(offset)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        data -> {
+                            Timber.d("getDataFromApi data: %s", data);
+                            //TODO save to DB
+                        }
+                        , error -> {
+                            Timber.e(error);
+                            getView().showError(error);
+                        });
     }
 }

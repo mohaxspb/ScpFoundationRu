@@ -74,9 +74,14 @@ public class MainActivity extends BaseDrawerActivity<Main.View, Main.Presenter> 
                 break;
             case R.id.news:
                 title = getString(R.string.drawer_item_2);
+                //TODO
                 break;
-            case R.id.rate_articles:
+            case R.id.mostRatedArticles:
                 title = getString(R.string.drawer_item_3);
+                //TODO
+                break;
+            case R.id.mostRecentArticles:
+                title = getString(R.string.drawer_item_4);
                 fragment = getSupportFragmentManager().findFragmentByTag(RecentArticlesFragment.TAG);
                 if (fragment == null) {
                     fragment = RecentArticlesFragment.newInstance();
@@ -89,41 +94,49 @@ public class MainActivity extends BaseDrawerActivity<Main.View, Main.Presenter> 
                             .commit();
                 }
                 break;
-            case R.id.new_articles:
-                title = getString(R.string.drawer_item_4);
-                break;
             case R.id.random_page:
                 title = getString(R.string.drawer_item_5);
+                //TODO
                 break;
             case R.id.objects_I:
                 title = getString(R.string.drawer_item_6);
+                //TODO
                 break;
             case R.id.objects_II:
                 title = getString(R.string.drawer_item_7);
+                //TODO
                 break;
             case R.id.objects_III:
                 title = getString(R.string.drawer_item_8);
+                //TODO
                 break;
             case R.id.objects_RU:
                 title = getString(R.string.drawer_item_9);
+                //TODO
                 break;
             case R.id.files:
                 title = getString(R.string.drawer_item_10);
+                //TODO
                 break;
             case R.id.stories:
                 title = getString(R.string.drawer_item_11);
+                //TODO
                 break;
             case R.id.favorite:
                 title = getString(R.string.drawer_item_12);
+                //TODO
                 break;
             case R.id.offline:
                 title = getString(R.string.drawer_item_13);
+                //TODO
                 break;
             case R.id.gallery:
                 title = getString(R.string.drawer_item_14);
+                //TODO
                 break;
             case R.id.site_search:
                 title = getString(R.string.drawer_item_15);
+                //TODO
                 break;
             default:
                 title = "";

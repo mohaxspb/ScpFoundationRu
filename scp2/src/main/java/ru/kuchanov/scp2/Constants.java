@@ -9,5 +9,7 @@ public interface Constants {
 
     interface Api {
 
+        int NUM_OF_ARTICLES_ON_RECENT_PAGE = 30;
+        int ZERO_OFFSET = 0;
     }
 }

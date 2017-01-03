@@ -25,6 +25,6 @@ public interface BaseListMvp {
 
         void getDataFromDb();
 
-        void getDataFromApi();
+        void getDataFromApi(int offset);
     }
 }

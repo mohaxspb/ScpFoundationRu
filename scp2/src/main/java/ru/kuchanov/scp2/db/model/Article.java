@@ -18,6 +18,8 @@ public class Article extends RealmObject {
     @PrimaryKey
     public String url;
 
+    public String title;
+
     public String text;
 
     public String authorName;
