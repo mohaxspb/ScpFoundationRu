@@ -27,6 +27,8 @@ public abstract class BaseActivity<V extends BaseMvpView, P extends MvpPresenter
 
     @BindView(R.id.root)
     protected View root;
+    @BindView(R.id.content)
+    protected View content;
     @Nullable
     @BindView(R.id.toolBar)
     protected Toolbar mToolbar;

@@ -2,13 +2,14 @@ package ru.kuchanov.scp2.ui.activity;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.view.MenuItem;
 
-import butterknife.ButterKnife;
 import ru.kuchanov.scp2.MyApplication;
 import ru.kuchanov.scp2.R;
 import ru.kuchanov.scp2.mvp.contract.Main;
+import ru.kuchanov.scp2.ui.fragment.AboutFragment;
 import ru.kuchanov.scp2.ui.base.BaseDrawerActivity;
 import timber.log.Timber;
 
@@ -54,9 +55,21 @@ public class MainActivity extends BaseDrawerActivity<Main.View, Main.Presenter> 
         Timber.d("onNavigationItemClicked with id: %s", id);
         //TODO
         String title;
+        Fragment fragment;
         switch (id) {
             case R.id.about:
                 title = getString(R.string.drawer_item_1);
+                fragment = getSupportFragmentManager().findFragmentByTag(AboutFragment.TAG);
+                if (fragment == null) {
+                    fragment = AboutFragment.newInstance();
+                    getSupportFragmentManager().beginTransaction()
+                            .add(content.getId(), fragment, AboutFragment.TAG)
+                            .commit();
+                } else {
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(content.getId(), fragment, AboutFragment.TAG)
+                            .commit();
+                }
                 break;
             case R.id.news:
                 title = getString(R.string.drawer_item_2);

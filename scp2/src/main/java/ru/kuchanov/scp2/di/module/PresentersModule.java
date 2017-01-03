@@ -9,12 +9,14 @@ import dagger.Provides;
 import ru.kuchanov.scp2.api.ApiClient;
 import ru.kuchanov.scp2.db.DbProviderFactory;
 import ru.kuchanov.scp2.manager.MyPreferenceManager;
+import ru.kuchanov.scp2.mvp.contract.About;
 import ru.kuchanov.scp2.mvp.contract.Main;
+import ru.kuchanov.scp2.mvp.presenter.AboutPresenter;
 import ru.kuchanov.scp2.mvp.presenter.MainPresenter;
 
 /**
  * Created by y.kuchanov on 21.12.16.
- *
+ * <p>
  * for scp_ru
  */
 @Module
@@ -27,7 +29,18 @@ public class PresentersModule {
             @NonNull MyPreferenceManager myPreferencesManager,
             @NonNull DbProviderFactory dbProviderFactory,
             @NonNull ApiClient apiClient
-            ) {
+    ) {
         return new MainPresenter(myPreferencesManager, dbProviderFactory, apiClient);
+    }
+
+    @Provides
+    @Singleton
+    @NonNull
+    About.Presenter providesAboutPresenter(
+            @NonNull MyPreferenceManager myPreferencesManager,
+            @NonNull DbProviderFactory dbProviderFactory,
+            @NonNull ApiClient apiClient
+    ) {
+        return new AboutPresenter(myPreferencesManager, dbProviderFactory, apiClient);
     }
 }
