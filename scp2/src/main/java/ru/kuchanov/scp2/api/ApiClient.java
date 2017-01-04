@@ -6,16 +6,12 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
-import retrofit2.Converter;
 import retrofit2.Retrofit;
 import ru.kuchanov.scp2.BuildConfig;
 import ru.kuchanov.scp2.Constants;
@@ -36,19 +32,10 @@ public class ApiClient {
     private final MyPreferenceManager mPreferencesManager;
     private final OkHttpClient mOkHttpClient;
 
-//    private final ApplicationsService mApplicationsService;
-//    private final UserService mUserService;
-
-    private final Converter<ResponseBody, Error> mConverter;
 
     public ApiClient(OkHttpClient okHttpClient, Retrofit retrofit, MyPreferenceManager preferencesManager) {
         mPreferencesManager = preferencesManager;
         mOkHttpClient = okHttpClient;
-
-        mConverter = retrofit.responseBodyConverter(Error.class, new Annotation[0]);
-
-//        mApplicationsService = retrofit.create(ApplicationsService.class);
-//        mUserService = retrofit.create(UserService.class);
     }
 
     private <T> Observable<T> bindWithUtils(Observable<T> observable) {
@@ -61,11 +48,7 @@ public class ApiClient {
 //                    }
 //                })
 //                .delay(2, TimeUnit.SECONDS)
-                .onErrorResumeNext(throwable -> {
-                    Timber.e("error catched: %s", throwable.getMessage());
-                    //TODO create own exception
-                    return Observable.error(throwable);
-                });
+                ;
     }
 
     public Observable<List<Article>> getRecentArticles(int offset) {
@@ -76,7 +59,6 @@ public class ApiClient {
                     .url("http://scpfoundation.ru/most-recently-created/p/" + page)
                     .build();
 
-//            Response response = null;
             String responseBody = null;
             try {
                 Response response = mOkHttpClient.newCall(request).execute();
@@ -103,10 +85,15 @@ public class ApiClient {
                     String url = BuildConfig.BASE_API_URL + tagA.attr("href");
                     String authorName = listOfElements.get(i)
                             .getElementsByAttributeValueContaining("class", "printuser").first().text();
+                    Element authorUrlNode = listOfElements.get(i)
+                            .getElementsByAttributeValueContaining("class", "printuser").first()
+                            .getElementsByTag("a").first();
+                    String authorUrl = authorUrlNode != null ? authorUrlNode.attr("href") : null;
                     Article article = new Article();
                     article.title = title;
                     article.url = url;
                     article.authorName = authorName;
+                    article.authorUrl = authorUrl;
                     articles.add(article);
                 }
                 subscriber.onNext(articles);

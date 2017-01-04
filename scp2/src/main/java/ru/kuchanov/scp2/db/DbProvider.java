@@ -105,13 +105,15 @@ public class DbProvider {
                                     .equalTo(Article.FIELD_URL, applicationToWrite.url)
                                     .findFirst();
                             if (applicationInDb != null) {
-                                //TODO add other fields
-//                                applicationToWrite.isInWinners = applicationInDb.isInWinners;
+                                applicationInDb.isInRecent = offset + i;
+                                applicationInDb.title = applicationToWrite.title;
+                                applicationInDb.authorName = applicationToWrite.authorName;
+                                applicationInDb.authorUrl = applicationToWrite.authorUrl;
+                            } else {
+                                applicationToWrite.isInRecent = offset + i;
+                                realm.insertOrUpdate(applicationToWrite);
                             }
-                            applicationToWrite.isInRecent = offset + i;
                         }
-                        //TODO we must update only needed fields or create new row, as we do not have text and other data
-                        realm.insertOrUpdate(apiData);
                     },
                     () -> {
                         subscriber.onNext(new Pair<>(apiData.size(), offset));
@@ -122,7 +124,6 @@ public class DbProvider {
                         subscriber.onError(error);
                         mRealm.close();
                     });
-
         });
     }
 }
