@@ -33,14 +33,11 @@ public class RecentArticlesPresenter extends BasePresenter<RecentArticles.View> 
     @Override
     public void onCreate() {
         Timber.d("onCreate");
-        getDataFromDb();
-        getDataFromApi(Constants.Api.ZERO_OFFSET);
     }
 
     @Override
     public void onDestroy() {
-        mData = null;
-        mDbProvider.close();
+        Timber.d("onCreate");
     }
 
     @Override

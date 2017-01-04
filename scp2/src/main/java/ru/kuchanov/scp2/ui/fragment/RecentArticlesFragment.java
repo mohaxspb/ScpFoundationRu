@@ -85,6 +85,9 @@ public class RecentArticlesFragment extends BaseListFragment<Article, RecentArti
 
         if (mPresenter.getData() != null) {
             mAdapter.setData(mPresenter.getData());
+        } else {
+            mPresenter.getDataFromDb();
+            mPresenter.getDataFromApi(Constants.Api.ZERO_OFFSET);
         }
 
         resetOnScrollListener();
