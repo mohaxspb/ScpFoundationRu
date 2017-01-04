@@ -23,7 +23,6 @@ import ru.kuchanov.scp2.api.error.ScpParseException;
 import ru.kuchanov.scp2.db.model.Article;
 import ru.kuchanov.scp2.manager.MyPreferenceManager;
 import rx.Observable;
-import rx.Subscriber;
 import timber.log.Timber;
 
 /**

@@ -12,6 +12,7 @@ public class Article extends RealmObject {
 
     public static final String FIELD_IS_IN_RECENT = "isInRecent";
     public static final int ORDER_NONE = -1;
+    public static final String FIELD_URL = "url";
 
     public int isInRecent = ORDER_NONE;
 

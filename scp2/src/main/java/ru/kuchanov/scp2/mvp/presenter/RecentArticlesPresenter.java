@@ -30,7 +30,6 @@ public class RecentArticlesPresenter extends BasePresenter<RecentArticles.View> 
     @Override
     public void onCreate() {
         Timber.d("onCreate");
-        //TODO
         getDataFromDb();
         getDataFromApi(Constants.Api.ZERO_OFFSET);
     }
@@ -61,10 +60,10 @@ public class RecentArticlesPresenter extends BasePresenter<RecentArticles.View> 
         mApiClient.getRecentArticles(offset)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .flatMap(apiData -> mDbProviderFactory.getDbProvider().saveRecentArticlesList(apiData, offset))
                 .subscribe(
                         data -> {
-                            Timber.d("getDataFromApi data: %s", data);
-                            //TODO save to DB
+                            Timber.d("getDataFromApi load data size: %s and offset: %s", data.first, data.second);
                         }
                         , error -> {
                             Timber.e(error);

@@ -1,6 +1,9 @@
 package ru.kuchanov.scp2.db;
 
+import android.util.Pair;
+
 import java.util.Collection;
+import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmModel;
@@ -79,5 +82,47 @@ public class DbProvider {
                 .asObservable()
                 .filter(RealmResults::isLoaded)
                 .filter(RealmResults::isValid);
+    }
+
+    public Observable<Pair<Integer, Integer>> saveRecentArticlesList(List<Article> apiData, int offset) {
+        return Observable.create(subscriber -> {
+            mRealm.executeTransactionAsync(
+                    realm -> {
+                        //remove all aps from nominees if we update list
+                        if (offset == 0) {
+                            List<Article> nomineesApps =
+                                    realm.where(Article.class)
+                                            .notEqualTo(Article.FIELD_IS_IN_RECENT, Article.ORDER_NONE)
+                                            .findAll();
+                            for (Article application : nomineesApps) {
+                                application.isInRecent = Article.ORDER_NONE;
+                            }
+                        }
+                        //check if we have app in db and update
+                        for (int i = 0; i < apiData.size(); i++) {
+                            Article applicationToWrite = apiData.get(i);
+                            Article applicationInDb = realm.where(Article.class)
+                                    .equalTo(Article.FIELD_URL, applicationToWrite.url)
+                                    .findFirst();
+                            if (applicationInDb != null) {
+                                //TODO add other fields
+//                                applicationToWrite.isInWinners = applicationInDb.isInWinners;
+                            }
+                            applicationToWrite.isInRecent = offset + i;
+                        }
+                        //TODO we must update only needed fields or create new row, as we do not have text and other data
+                        realm.insertOrUpdate(apiData);
+                    },
+                    () -> {
+                        subscriber.onNext(new Pair<>(apiData.size(), offset));
+                        subscriber.onCompleted();
+                        mRealm.close();
+                    },
+                    error -> {
+                        subscriber.onError(error);
+                        mRealm.close();
+                    });
+
+        });
     }
 }
