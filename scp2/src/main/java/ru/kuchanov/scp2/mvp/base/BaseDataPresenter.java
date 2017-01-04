@@ -10,4 +10,6 @@ import com.hannesdorfmann.mosby.mvp.MvpView;
  */
 public interface BaseDataPresenter<V extends MvpView> extends MvpPresenter<V> {
     void onCreate();
+
+    void onDestroy();
 }

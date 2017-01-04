@@ -25,6 +25,11 @@ public class MainPresenter extends BasePresenter<Main.View> implements Main.Pres
     }
 
     @Override
+    public void onDestroy() {
+        //TODO
+    }
+
+    @Override
     public void onNavigationItemClicked(int id) {
         //TODO
     }

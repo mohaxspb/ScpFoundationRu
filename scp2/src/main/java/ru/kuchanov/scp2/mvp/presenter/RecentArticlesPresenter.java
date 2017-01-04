@@ -6,6 +6,7 @@ import io.realm.RealmResults;
 import io.realm.Sort;
 import ru.kuchanov.scp2.Constants;
 import ru.kuchanov.scp2.api.ApiClient;
+import ru.kuchanov.scp2.db.DbProvider;
 import ru.kuchanov.scp2.db.DbProviderFactory;
 import ru.kuchanov.scp2.db.model.Article;
 import ru.kuchanov.scp2.manager.MyPreferenceManager;
@@ -23,6 +24,7 @@ import timber.log.Timber;
 public class RecentArticlesPresenter extends BasePresenter<RecentArticles.View> implements RecentArticles.Presenter {
 
     private RealmResults<Article> mData;
+    private DbProvider mDbProvider;
 
     public RecentArticlesPresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
         super(myPreferencesManager, dbProviderFactory, apiClient);
@@ -33,6 +35,12 @@ public class RecentArticlesPresenter extends BasePresenter<RecentArticles.View> 
         Timber.d("onCreate");
         getDataFromDb();
         getDataFromApi(Constants.Api.ZERO_OFFSET);
+    }
+
+    @Override
+    public void onDestroy() {
+        mData = null;
+        mDbProvider.close();
     }
 
     @Override
@@ -47,7 +55,8 @@ public class RecentArticlesPresenter extends BasePresenter<RecentArticles.View> 
         getView().showCenterProgress(true);
         getView().enableSwipeRefresh(false);
 
-        mDbProviderFactory.getDbProvider().getRecentArticlesSortedAsync(Article.FIELD_IS_IN_RECENT, Sort.ASCENDING)
+        mDbProvider = mDbProviderFactory.getDbProvider();
+        mDbProvider.getRecentArticlesSortedAsync(Article.FIELD_IS_IN_RECENT, Sort.ASCENDING)
                 .subscribe(
                         data -> {
                             Timber.d("getDataFromDb data: %s", data);

@@ -1,5 +1,6 @@
 package ru.kuchanov.scp2.ui.fragment;
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -103,6 +104,7 @@ public class RecentArticlesFragment extends BaseListFragment<Article, RecentArti
             return;
         }
         mAdapter.setData(data);
+        resetOnScrollListener();
     }
 
     private void resetOnScrollListener() {

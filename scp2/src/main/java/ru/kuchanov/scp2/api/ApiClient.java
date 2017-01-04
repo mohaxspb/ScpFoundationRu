@@ -53,14 +53,14 @@ public class ApiClient {
 
     private <T> Observable<T> bindWithUtils(Observable<T> observable) {
         return observable
-                .doOnError(throwable -> {
-                    try {
-                        Thread.sleep(2000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                })
-                .delay(2, TimeUnit.SECONDS)
+//                .doOnError(throwable -> {
+//                    try {
+//                        Thread.sleep(2000);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                })
+//                .delay(2, TimeUnit.SECONDS)
                 .onErrorResumeNext(throwable -> {
                     Timber.e("error catched: %s", throwable.getMessage());
                     //TODO create own exception

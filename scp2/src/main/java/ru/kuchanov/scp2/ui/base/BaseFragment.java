@@ -51,11 +51,13 @@ public abstract class BaseFragment<V extends BaseMvpView, P extends BaseDataPres
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        Timber.d("onCreateView");
         return inflater.inflate(getResId(), container, false);
     }
 
     @Override
     public void onViewCreated(android.view.View view, @Nullable Bundle savedInstanceState) {
+        Timber.d("onViewCreated");
         super.onViewCreated(view, savedInstanceState);
         mUnbinder = ButterKnife.bind(this, view);
         mPresenter.onCreate();
