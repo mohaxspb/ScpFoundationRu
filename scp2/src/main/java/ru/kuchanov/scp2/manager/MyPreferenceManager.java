@@ -15,6 +15,7 @@ public class MyPreferenceManager {
         String SESSION_ID = "SESSION_ID";
         String USER_ID = "USER_ID";
         String NIGHT_MODE = "NIGHT_MODE";
+        String TEXT_SCALE_UI = "TEXT_SCALE_UI";
     }
 
     private SharedPreferences mPreferences;
@@ -45,5 +46,13 @@ public class MyPreferenceManager {
 
     public boolean isNightMode() {
         return mPreferences.getBoolean(Keys.NIGHT_MODE, false);
+    }
+
+    public void setUiTextScale(float uiTextScale) {
+        mPreferences.edit().putFloat(Keys.TEXT_SCALE_UI, uiTextScale).apply();
+    }
+
+    public float getUiTextScale() {
+        return mPreferences.getFloat(Keys.TEXT_SCALE_UI, 1f);
     }
 }

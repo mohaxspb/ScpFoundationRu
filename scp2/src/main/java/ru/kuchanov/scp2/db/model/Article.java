@@ -10,28 +10,29 @@ import io.realm.annotations.PrimaryKey;
  */
 public class Article extends RealmObject {
 
+    public static final String FIELD_IS_IN_READEN = "isInReaden";
     public static final String FIELD_IS_IN_RECENT = "isInRecent";
     public static final int ORDER_NONE = -1;
     public static final String FIELD_URL = "url";
 
     public int isInRecent = ORDER_NONE;
+    public boolean isInReaden;
 
     @PrimaryKey
     public String url;
-
     public String title;
-
     public String text;
 
     public String authorName;
-
     public String authorUrl;
 
     @Override
     public String toString() {
         return "Article{" +
                 "isInRecent=" + isInRecent +
+                ", isInReaden=" + isInReaden +
                 ", url='" + url + '\'' +
+                ", title='" + title + '\'' +
                 ", text='" + text + '\'' +
                 ", authorName='" + authorName + '\'' +
                 ", authorUrl='" + authorUrl + '\'' +
