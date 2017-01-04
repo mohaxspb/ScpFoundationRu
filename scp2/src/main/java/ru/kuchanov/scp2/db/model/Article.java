@@ -27,8 +27,18 @@ public class Article extends RealmObject {
     public String title;
     public String text;
 
+    public int rating;
+
     public String authorName;
     public String authorUrl;
+    /**
+     * in format 01:06 01.07.2010
+     */
+    public String createdDate;
+    /**
+     * in format 01:06 01.07.2010
+     */
+    public String updatedDate;
 
     @Override
     public String toString() {
@@ -40,8 +50,11 @@ public class Article extends RealmObject {
                 ", url='" + url + '\'' +
                 ", title='" + title + '\'' +
                 ", text='" + text + '\'' +
+                ", rating=" + rating +
                 ", authorName='" + authorName + '\'' +
                 ", authorUrl='" + authorUrl + '\'' +
+                ", createdDate='" + createdDate + '\'' +
+                ", updatedDate='" + updatedDate + '\'' +
                 '}';
     }
 }

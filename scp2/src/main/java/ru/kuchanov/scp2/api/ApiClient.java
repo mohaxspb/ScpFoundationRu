@@ -78,22 +78,38 @@ public class ApiClient {
                 List<Article> articles = new ArrayList<>();
                 Elements listOfElements = pageContent.getElementsByTag("tr");
                 for (int i = 1/*start from 1 as first row is tables geader*/; i < listOfElements.size(); i++) {
-                    Elements listOfTd = listOfElements.get(i).getElementsByTag("td");
+                    Element tableRow = listOfElements.get(i);
+                    Elements listOfTd = tableRow.getElementsByTag("td");
+                    //title and url
                     Element firstTd = listOfTd.first();
                     Element tagA = firstTd.getElementsByTag("a").first();
                     String title = tagA.text();
                     String url = BuildConfig.BASE_API_URL + tagA.attr("href");
-                    String authorName = listOfElements.get(i)
-                            .getElementsByAttributeValueContaining("class", "printuser").first().text();
-                    Element authorUrlNode = listOfElements.get(i)
-                            .getElementsByAttributeValueContaining("class", "printuser").first()
-                            .getElementsByTag("a").first();
+                    //rating
+                    Element ratingNode = listOfTd.get(1);
+                    int rating = Integer.parseInt(ratingNode.text());
+                    //author
+                    Element spanWithAuthor = listOfTd.get(2)
+                            .getElementsByAttributeValueContaining("class", "printuser").first();
+                    String authorName = spanWithAuthor.text();
+                    Element authorUrlNode = spanWithAuthor.getElementsByTag("a").first();
                     String authorUrl = authorUrlNode != null ? authorUrlNode.attr("href") : null;
+
+                    //createdDate
+                    Element createdDateNode = listOfTd.get(3);
+                    String createdDate = createdDateNode.text().trim();
+                    //updatedDate
+                    Element updatedDateNode = listOfTd.get(4);
+                    String updatedDate = updatedDateNode.text().trim();
+
                     Article article = new Article();
                     article.title = title;
                     article.url = url;
+                    article.rating = rating;
                     article.authorName = authorName;
                     article.authorUrl = authorUrl;
+                    article.createdDate = createdDate;
+                    article.updatedDate = updatedDate;
                     articles.add(article);
                 }
                 subscriber.onNext(articles);

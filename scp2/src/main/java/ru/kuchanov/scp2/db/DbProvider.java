@@ -107,8 +107,14 @@ public class DbProvider {
                             if (applicationInDb != null) {
                                 applicationInDb.isInRecent = offset + i;
                                 applicationInDb.title = applicationToWrite.title;
+
+                                applicationInDb.rating = applicationToWrite.rating;
+
                                 applicationInDb.authorName = applicationToWrite.authorName;
                                 applicationInDb.authorUrl = applicationToWrite.authorUrl;
+
+                                applicationInDb.createdDate = applicationToWrite.createdDate;
+                                applicationInDb.updatedDate = applicationToWrite.updatedDate;
                             } else {
                                 applicationToWrite.isInRecent = offset + i;
                                 realm.insertOrUpdate(applicationToWrite);
