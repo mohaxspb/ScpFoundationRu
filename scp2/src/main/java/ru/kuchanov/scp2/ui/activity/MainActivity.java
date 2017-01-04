@@ -16,6 +16,16 @@ import timber.log.Timber;
 
 public class MainActivity extends BaseDrawerActivity<Main.View, Main.Presenter> implements Main.View {
 
+    private static final String STATE_CUR_DRAWER_ITEM_ID = "STATE_CUR_DRAWER_ITEM_ID";
+
+    private int mCurrentSelectedDrawerItemId = R.id.mostRatedArticles;
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(STATE_CUR_DRAWER_ITEM_ID, mCurrentSelectedDrawerItemId);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,39 +69,49 @@ public class MainActivity extends BaseDrawerActivity<Main.View, Main.Presenter> 
         Fragment fragment;
         switch (id) {
             case R.id.about:
+                mCurrentSelectedDrawerItemId = id;
                 title = getString(R.string.drawer_item_1);
                 fragment = getSupportFragmentManager().findFragmentByTag(AboutFragment.TAG);
                 if (fragment == null) {
                     fragment = AboutFragment.newInstance();
                     getSupportFragmentManager().beginTransaction()
                             .add(content.getId(), fragment, AboutFragment.TAG)
+                            .addToBackStack(AboutFragment.TAG)
                             .commit();
                 } else {
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(content.getId(), fragment, AboutFragment.TAG)
-                            .commit();
+//                    getSupportFragmentManager().beginTransaction()
+//                            .replace(content.getId(), fragment, AboutFragment.TAG)
+//                            .addToBackStack(AboutFragment.TAG)
+//                            .commit();
+                    getSupportFragmentManager().popBackStackImmediate(AboutFragment.TAG, 0);
                 }
                 break;
             case R.id.news:
+                mCurrentSelectedDrawerItemId = id;
                 title = getString(R.string.drawer_item_2);
                 //TODO
                 break;
             case R.id.mostRatedArticles:
+                mCurrentSelectedDrawerItemId = id;
                 title = getString(R.string.drawer_item_3);
                 //TODO
                 break;
             case R.id.mostRecentArticles:
+                mCurrentSelectedDrawerItemId = id;
                 title = getString(R.string.drawer_item_4);
                 fragment = getSupportFragmentManager().findFragmentByTag(RecentArticlesFragment.TAG);
                 if (fragment == null) {
                     fragment = RecentArticlesFragment.newInstance();
                     getSupportFragmentManager().beginTransaction()
                             .add(content.getId(), fragment, RecentArticlesFragment.TAG)
+                            .addToBackStack(RecentArticlesFragment.TAG)
                             .commit();
                 } else {
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(content.getId(), fragment, RecentArticlesFragment.TAG)
-                            .commit();
+//                    getSupportFragmentManager().beginTransaction()
+//                            .replace(content.getId(), fragment, RecentArticlesFragment.TAG)
+//                            .addToBackStack(RecentArticlesFragment.TAG)
+//                            .commit();
+                    getSupportFragmentManager().popBackStackImmediate(RecentArticlesFragment.TAG, 0);
                 }
                 break;
             case R.id.random_page:
@@ -99,34 +119,40 @@ public class MainActivity extends BaseDrawerActivity<Main.View, Main.Presenter> 
                 //TODO
                 break;
             case R.id.objects_I:
+                mCurrentSelectedDrawerItemId = id;
                 title = getString(R.string.drawer_item_6);
                 //TODO
                 break;
             case R.id.objects_II:
+                mCurrentSelectedDrawerItemId = id;
                 title = getString(R.string.drawer_item_7);
                 //TODO
                 break;
             case R.id.objects_III:
+                mCurrentSelectedDrawerItemId = id;
                 title = getString(R.string.drawer_item_8);
                 //TODO
                 break;
             case R.id.objects_RU:
+                mCurrentSelectedDrawerItemId = id;
                 title = getString(R.string.drawer_item_9);
                 //TODO
                 break;
             case R.id.files:
                 title = getString(R.string.drawer_item_10);
-                //TODO
+                //TODO launch new activity
                 break;
             case R.id.stories:
                 title = getString(R.string.drawer_item_11);
                 //TODO
                 break;
             case R.id.favorite:
+                mCurrentSelectedDrawerItemId = id;
                 title = getString(R.string.drawer_item_12);
                 //TODO
                 break;
             case R.id.offline:
+                mCurrentSelectedDrawerItemId = id;
                 title = getString(R.string.drawer_item_13);
                 //TODO
                 break;
@@ -135,6 +161,7 @@ public class MainActivity extends BaseDrawerActivity<Main.View, Main.Presenter> 
                 //TODO
                 break;
             case R.id.site_search:
+                mCurrentSelectedDrawerItemId = id;
                 title = getString(R.string.drawer_item_15);
                 //TODO
                 break;

@@ -97,8 +97,6 @@ public class RecyclerAdapterNewArticles extends RecyclerView.Adapter<RecyclerVie
                 bundle.putString("url", articles.get(position).getURL());
                 intent.putExtras(bundle);
                 ctx.startActivity(intent);
-
-//                CheckTimeToAds.starActivityOrShowAds(ctx,intent);
             }
         });
 //        (отмечание прочитанного)

@@ -12,10 +12,14 @@ public class Article extends RealmObject {
 
     public static final String FIELD_IS_IN_READEN = "isInReaden";
     public static final String FIELD_IS_IN_RECENT = "isInRecent";
+    public static final String FIELD_IS_IN_FAVORITE = "isInFavorite";
+    public static final String FIELD_IS_IN_MOST_RATED = "isInMostRated";
     public static final int ORDER_NONE = -1;
     public static final String FIELD_URL = "url";
 
     public int isInRecent = ORDER_NONE;
+    public int isInFavorite = ORDER_NONE;
+    public int isInMostRated = ORDER_NONE;
     public boolean isInReaden;
 
     @PrimaryKey
@@ -30,6 +34,8 @@ public class Article extends RealmObject {
     public String toString() {
         return "Article{" +
                 "isInRecent=" + isInRecent +
+                ", isInFavorite=" + isInFavorite +
+                ", isInMostRated=" + isInMostRated +
                 ", isInReaden=" + isInReaden +
                 ", url='" + url + '\'' +
                 ", title='" + title + '\'' +

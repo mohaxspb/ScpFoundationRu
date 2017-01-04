@@ -1,13 +1,6 @@
 package ru.kuchanov.scp2.ui.adapter;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.res.TypedArray;
-import android.graphics.Color;
-import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -60,7 +53,7 @@ public class RecyclerAdapterNewArticles extends RecyclerView.Adapter<RecyclerAda
 
     @Override
     public RecyclerAdapterNewArticles.ViewHolderText onCreateViewHolder(ViewGroup parent, int viewType) {
-        RecyclerAdapterNewArticles.ViewHolderText viewHolder = null;
+        RecyclerAdapterNewArticles.ViewHolderText viewHolder;
         View view;
         view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_new_articles, parent, false);
         viewHolder = new ViewHolderText(view);
@@ -69,12 +62,12 @@ public class RecyclerAdapterNewArticles extends RecyclerView.Adapter<RecyclerAda
 
     @Override
     public void onBindViewHolder(RecyclerAdapterNewArticles.ViewHolderText holder, int position) {
-        holder.bind(article);
+        holder.bind(mData.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return this.mData.size();
+        return mData == null ? 0 : mData.size();
     }
 
     public void setArticleClickListener(ArticleClickListener articleClickListener) {
@@ -99,92 +92,69 @@ public class RecyclerAdapterNewArticles extends RecyclerView.Adapter<RecyclerAda
         }
 
         void bind(Article article) {
-            Context ctx = itemView.getContext();
-            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ctx);
+            itemView.setOnClickListener(v -> {
+                if (mArticleClickListener != null) {
+                    mArticleClickListener.onArticleClicked(article);
+                }
+            });
+            Context context = itemView.getContext();
             float uiTextScale = mMyPreferenceManager.getUiTextScale();
-            int textSizePrimary = ctx.getResources().getDimensionPixelSize(R.dimen.text_size_primary);
+            int textSizePrimary = context.getResources().getDimensionPixelSize(R.dimen.text_size_primary);
             title.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * textSizePrimary);
             title.setText(article.title);
-            title.setOnClickListener(v -> {
-                article.setIsRead(true);
-                notifyItemChanged(position);
-                Intent intent = new Intent(ctx, ActivityArticles.class);
-                Bundle bundle = new Bundle();
-                bundle.putString("title", article.title);
-                bundle.putString("url", article.url);
-                intent.putExtras(bundle);
-                ctx.startActivity(intent);
-            });
-//        (отмечание прочитанного)
-            final SharedPreferences sharedPreferences = ctx.getSharedPreferences("read_articles", Context.MODE_PRIVATE);
-
-            if (sharedPreferences.contains(article.url)) {
-                int colorId;
-                int[] attrs = new int[]{R.attr.readTextColor};
-                TypedArray ta = ctx.obtainStyledAttributes(attrs);
-                colorId = ta.getColor(0, Color.RED);
-                ta.recycle();
-                title.setTextColor(colorId);
-                int readSelectedIcon = AttributeGetter.getDrawableId(ctx, R.attr.readIcon);
-                read.setImageResource(readSelectedIcon);
+//          (отмечание прочитанного)
+            int readIconId;
+            int readColorId;
+            if (article.isInReaden) {
+                readColorId = AttributeGetter.getColor(context, R.attr.readTextColor);
+                readIconId = AttributeGetter.getDrawableId(context, R.attr.readIcon);
             } else {
-                int colorId;
-                int[] attrs = new int[]{R.attr.newArticlesTextColor};
-                TypedArray ta = ctx.obtainStyledAttributes(attrs);
-                colorId = ta.getColor(0, Color.RED);
-                ta.recycle();
-                title.setTextColor(colorId);
-                int readUnSelectedIcon = AttributeGetter.getDrawableId(ctx, R.attr.readIconUnselected);
-                read.setImageResource(readUnSelectedIcon);
+                readColorId = AttributeGetter.getColor(context, R.attr.newArticlesTextColor);
+                readIconId = AttributeGetter.getDrawableId(context, R.attr.readIconUnselected);
             }
+            title.setTextColor(readColorId);
+            read.setImageResource(readIconId);
             read.setOnClickListener(v -> {
-                if (sharedPreferences.contains(article.getURL())) {
-                    sharedPreferences.edit().remove(article.getURL()).commit();
-                } else {
-                    sharedPreferences.edit().putBoolean(article.getURL(), true).commit();
+                if (mArticleClickListener != null) {
+                    mArticleClickListener.toggleReadenState(article);
                 }
-                notifyItemChanged(position);
             });
-
-//        (отмтка избранных статей)
-            if (FavoriteUtils.hasFavoriteWithURL(ctx, article.getURL())) {
-                int readSelectedIcon = AttributeGetter.getDrawableId(ctx, R.attr.favoriteIcon);
-                favorite.setImageResource(readSelectedIcon);
-
+//          (отмтка избранных статей)
+            int favsIconId;
+            if (article.isInFavorite != Article.ORDER_NONE) {
+                favsIconId = AttributeGetter.getDrawableId(context, R.attr.favoriteIcon);
             } else {
-                int readUnSelectedIcon = AttributeGetter.getDrawableId(ctx, R.attr.favoriteIconUnselected);
-                favorite.setImageResource(readUnSelectedIcon);
+                favsIconId = AttributeGetter.getDrawableId(context, R.attr.favoriteIconUnselected);
             }
+            favorite.setImageResource(favsIconId);
             favorite.setOnClickListener(v -> {
-                FavoriteUtils.updateFavoritesOnDevice(ctx, article.getURL(), article.getTitle());
-                notifyItemChanged(position);
+                if (mArticleClickListener != null) {
+                    mArticleClickListener.toggleFavoriteState(article);
+                }
             });
-        /*Кнопки Offline*/
-            if (OfflineUtils.hasOfflineWithURL(ctx, article.getURL())) {
-                int readSelectedIcon = AttributeGetter.getDrawableId(ctx, R.attr.iconOfflineRemove);
-                offline.setImageResource(readSelectedIcon);
+//          Кнопки Offline
+            int offlineIconId;
+            if (article.text != null) {
+                offlineIconId = AttributeGetter.getDrawableId(context, R.attr.iconOfflineRemove);
             } else {
-                int readUnSelectedIcon = AttributeGetter.getDrawableId(ctx, R.attr.iconOfflineAdd);
-                offline.setImageResource(readUnSelectedIcon);
+                offlineIconId = AttributeGetter.getDrawableId(context, R.attr.iconOfflineAdd);
             }
+            offline.setImageResource(offlineIconId);
             offline.setOnClickListener(v -> {
-                if (OfflineUtils.hasOfflineWithURL(ctx, article.getURL())) {
-                    String articletext = OfflineUtils.getTextByUrl(ctx, article.getURL());
-                    OfflineUtils.updateOfflineOnDevice(ctx, article.getURL(), article.getTitle(), articletext, true);
-                    notifyItemChanged(position);
-                } else {
-                    DownloadArticleForOffline articleForOffline = new DownloadArticleForOffline(ctx, article.getURL(), 0);
-                    articleForOffline.execute();
+                if (mArticleClickListener != null) {
+                    mArticleClickListener.onDownloadClicked(article);
                 }
             });
         }
     }
 
-    interface ArticleClickListener {
+    public interface ArticleClickListener {
         void onArticleClicked(Article article);
 
-        void toggleReadenState(Article article, boolean isReaden);
+        void toggleReadenState(Article article);
 
-        void toggleFavoriteState(Article article, boolean isFavorite);
+        void toggleFavoriteState(Article article);
+
+        void onDownloadClicked(Article article);
     }
 }

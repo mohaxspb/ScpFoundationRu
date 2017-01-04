@@ -19,6 +19,8 @@ import retrofit2.Converter;
 import retrofit2.Retrofit;
 import ru.kuchanov.scp2.BuildConfig;
 import ru.kuchanov.scp2.Constants;
+import ru.kuchanov.scp2.MyApplication;
+import ru.kuchanov.scp2.R;
 import ru.kuchanov.scp2.api.error.ScpParseException;
 import ru.kuchanov.scp2.db.model.Article;
 import ru.kuchanov.scp2.manager.MyPreferenceManager;
@@ -68,26 +70,32 @@ public class ApiClient {
 
     public Observable<List<Article>> getRecentArticles(int offset) {
         return bindWithUtils(Observable.<List<Article>>create(subscriber -> {
-            int page = offset / Constants.Api.NUM_OF_ARTICLES_ON_RECENT_PAGE;
+            int page = offset / Constants.Api.NUM_OF_ARTICLES_ON_RECENT_PAGE + 1/*as pages are not zero based*/;
 
             Request request = new Request.Builder()
                     .url("http://scpfoundation.ru/most-recently-created/p/" + page)
                     .build();
 
-            Response response;
+//            Response response = null;
+            String responseBody = null;
             try {
-                ArrayList<Article> articles = new ArrayList<>();
-                response = mOkHttpClient.newCall(request).execute();
-//            System.out.println(response.body().string());
-                Document doc = Jsoup.parse(response.body().string());
+                Response response = mOkHttpClient.newCall(request).execute();
+                responseBody = response.body().string();
+            } catch (IOException e) {
+                subscriber.onError(new IOException(MyApplication.getAppInstance().getString(R.string.error_connection)));
+                return;
+            }
+            try {
+                Document doc = Jsoup.parse(responseBody);
                 Element pageContent = doc.getElementsByClass("wiki-content-table").first();
                 if (pageContent == null) {
-                    subscriber.onError(new ScpParseException("page content is null"));
+                    subscriber.onError(new ScpParseException(MyApplication.getAppInstance().getString(R.string.error_parse)));
                     return;
                 }
 
-                ArrayList<Element> listOfElements = pageContent.getElementsByTag("tr");
-                for (int i = 1; i < listOfElements.size(); i++) {
+                List<Article> articles = new ArrayList<>();
+                Elements listOfElements = pageContent.getElementsByTag("tr");
+                for (int i = 1/*start from 1 as first row is tables geader*/; i < listOfElements.size(); i++) {
                     Elements listOfTd = listOfElements.get(i).getElementsByTag("td");
                     Element firstTd = listOfTd.first();
                     Element tagA = firstTd.getElementsByTag("a").first();
@@ -103,8 +111,9 @@ public class ApiClient {
                 }
                 subscriber.onNext(articles);
                 subscriber.onCompleted();
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (Exception e) {
+                Timber.e(e, "error while get arts list");
+                subscriber.onError(e);
             }
         }));
     }

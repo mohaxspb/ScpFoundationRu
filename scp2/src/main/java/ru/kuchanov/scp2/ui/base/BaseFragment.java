@@ -2,6 +2,7 @@ package ru.kuchanov.scp2.ui.base;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,12 +10,15 @@ import android.view.ViewGroup;
 
 import com.hannesdorfmann.mosby.mvp.MvpFragment;
 
+import java.io.IOException;
+
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import ru.kuchanov.scp2.R;
+import ru.kuchanov.scp2.api.error.ScpParseException;
 import ru.kuchanov.scp2.mvp.base.BaseDataPresenter;
 import ru.kuchanov.scp2.mvp.base.BaseMvpView;
 import timber.log.Timber;
@@ -55,7 +59,13 @@ public abstract class BaseFragment<V extends BaseMvpView, P extends BaseDataPres
         super.onViewCreated(view, savedInstanceState);
         mUnbinder = ButterKnife.bind(this, view);
         mPresenter.onCreate();
+        initViews();
     }
+
+    /**
+     * called
+     */
+    protected abstract void initViews();
 
     @Override
     public void onDestroyView() {
@@ -71,5 +81,20 @@ public abstract class BaseFragment<V extends BaseMvpView, P extends BaseDataPres
         } else {
             return 0;
         }
+    }
+
+    @Override
+    public void showError(Throwable throwable) {
+        Timber.e(throwable, "showError");
+        if (!isAdded()) {
+            return;
+        }
+        String message = throwable.getMessage();
+        if (throwable instanceof IOException) {
+            message = getString(R.string.error_connection);
+        } else if (throwable instanceof ScpParseException) {
+            message = getString(R.string.error_parse);
+        }
+        Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
     }
 }

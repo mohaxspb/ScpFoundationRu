@@ -2,6 +2,7 @@ package ru.kuchanov.scp2.ui.base;
 
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -27,6 +28,8 @@ public abstract class BaseListFragment<D, V extends BaseListMvp.View<D>, P exten
     @Nullable
     @BindView(R.id.swipeRefresh)
     protected SwipeRefreshLayout mSwipeRefreshLayout;
+    @BindView(R.id.recyclerView)
+    protected RecyclerView mRecyclerView;
 
     @Override
     public void showSwipeProgress(boolean show) {
@@ -58,7 +61,7 @@ public abstract class BaseListFragment<D, V extends BaseListMvp.View<D>, P exten
         }
 
         int screenHeight = DimensionUtils.getScreenHeight();
-        mSwipeRefreshLayout.setProgressViewEndTarget(false, screenHeight - getActionBarHeight() * 3);
+        mSwipeRefreshLayout.setProgressViewEndTarget(false, screenHeight - getActionBarHeight() * 2);
 
         mSwipeRefreshLayout.setRefreshing(show);
     }

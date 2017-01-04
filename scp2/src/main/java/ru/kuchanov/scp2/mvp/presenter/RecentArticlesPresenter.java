@@ -2,6 +2,7 @@ package ru.kuchanov.scp2.mvp.presenter;
 
 import java.util.List;
 
+import io.realm.RealmResults;
 import io.realm.Sort;
 import ru.kuchanov.scp2.Constants;
 import ru.kuchanov.scp2.api.ApiClient;
@@ -21,7 +22,7 @@ import timber.log.Timber;
  */
 public class RecentArticlesPresenter extends BasePresenter<RecentArticles.View> implements RecentArticles.Presenter {
 
-    private List<Article> mData;
+    private RealmResults<Article> mData;
 
     public RecentArticlesPresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
         super(myPreferencesManager, dbProviderFactory, apiClient);
@@ -42,14 +43,24 @@ public class RecentArticlesPresenter extends BasePresenter<RecentArticles.View> 
     @Override
     public void getDataFromDb() {
         Timber.d("getDataFromDb");
+
+        getView().showCenterProgress(true);
+        getView().enableSwipeRefresh(false);
+
         mDbProviderFactory.getDbProvider().getRecentArticlesSortedAsync(Article.FIELD_IS_IN_RECENT, Sort.ASCENDING)
                 .subscribe(
                         data -> {
                             Timber.d("getDataFromDb data: %s", data);
                             mData = data;
                             getView().updateData(mData);
+                            getView().showCenterProgress(false);
+                            if (mData.isEmpty()) {
+                                getView().enableSwipeRefresh(true);
+                            }
                         },
                         error -> {
+                            getView().showCenterProgress(false);
+                            getView().enableSwipeRefresh(true);
                             getView().showError(error);
                         });
     }
@@ -57,6 +68,22 @@ public class RecentArticlesPresenter extends BasePresenter<RecentArticles.View> 
     @Override
     public void getDataFromApi(int offset) {
         Timber.d("getDataFromApi");
+        if (mData != null && mData.isLoaded() && mData.isValid() && !mData.isEmpty()) {
+            getView().showCenterProgress(false);
+            if (offset != 0) {
+                getView().enableSwipeRefresh(true);
+                getView().showBottomProgress(true);
+            } else {
+                getView().enableSwipeRefresh(true);
+                getView().showSwipeProgress(true);
+            }
+        } else {
+            getView().showSwipeProgress(false);
+            getView().showBottomProgress(false);
+            getView().enableSwipeRefresh(false);
+
+            getView().showCenterProgress(true);
+        }
         mApiClient.getRecentArticles(offset)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -64,10 +91,22 @@ public class RecentArticlesPresenter extends BasePresenter<RecentArticles.View> 
                 .subscribe(
                         data -> {
                             Timber.d("getDataFromApi load data size: %s and offset: %s", data.first, data.second);
+
+                            getView().showCenterProgress(false);
+                            getView().enableSwipeRefresh(true);
+                            getView().showSwipeProgress(false);
+                            getView().showBottomProgress(false);
+                            getView().showCenterProgress(false);
                         }
                         , error -> {
                             Timber.e(error);
                             getView().showError(error);
+
+                            getView().showCenterProgress(false);
+                            getView().enableSwipeRefresh(true);
+                            getView().showSwipeProgress(false);
+                            getView().showBottomProgress(false);
+                            getView().showCenterProgress(false);
                         });
     }
 }
