@@ -2,7 +2,7 @@
 
 buildscript {
     repositories {
-        jcenter()
+        jcenter({url "http://jcenter.bintray.com/"})
         mavenCentral()
     }
     dependencies {
@@ -16,7 +16,7 @@ buildscript {
 
 allprojects {
     repositories {
-        jcenter()
+        jcenter({url "http://jcenter.bintray.com/"})
         mavenCentral()
         maven { url "https://jitpack.io" }
     }

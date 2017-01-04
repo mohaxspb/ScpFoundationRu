@@ -80,8 +80,8 @@ dependencies {
     //logs
     compile 'com.jakewharton.timber:timber:4.3.1'
     //dagger2
-    compile 'com.google.dagger:dagger:2.7'
-    annotationProcessor 'com.google.dagger:dagger-compiler:2.7'
+    compile 'com.google.dagger:dagger:2.8'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.8'
     //butterKnife
     compile 'com.jakewharton:butterknife:8.4.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
@@ -89,11 +89,11 @@ dependencies {
     compile 'com.github.bumptech.glide:glide:3.7.0'
     //mvp
     compile 'com.hannesdorfmann.mosby:mvp:2.0.1'
+//    compile 'com.hannesdorfmann.mosby:mvp:3.0.0-SNAPSHOT'
     // Vk
     compile 'com.vk:androidsdk:1.6.7'
     //dialogs
     compile 'com.afollestad.material-dialogs:core:0.9.1.0'
     //fonts
     compile 'uk.co.chrisjenx:calligraphy:2.2.0'
-    // Joda Time
 }

@@ -17,8 +17,8 @@ import ru.kuchanov.scp2.util.DimensionUtils;
  * <p>
  * for scp_ru
  */
-public abstract class BaseListFragment<D, V extends BaseListMvp.View<D>, P extends BaseListMvp.Presenter<D, V>>
-        extends BaseFragment<V, P> implements BaseListMvp.View<D> {
+public abstract class BaseListFragment<V extends BaseListMvp.View, P extends BaseListMvp.Presenter<V>>
+        extends BaseFragment<V, P> implements BaseListMvp.View {
 
     @BindView(R.id.root)
     protected View root;

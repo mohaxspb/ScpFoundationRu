@@ -3,14 +3,18 @@ package ru.kuchanov.scp2.ui.activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.view.MenuItem;
+
+import java.util.List;
 
 import ru.kuchanov.scp2.MyApplication;
 import ru.kuchanov.scp2.R;
 import ru.kuchanov.scp2.mvp.contract.Main;
 import ru.kuchanov.scp2.ui.base.BaseDrawerActivity;
 import ru.kuchanov.scp2.ui.fragment.AboutFragment;
+import ru.kuchanov.scp2.ui.fragment.RatedArticlesFragment;
 import ru.kuchanov.scp2.ui.fragment.RecentArticlesFragment;
 import timber.log.Timber;
 
@@ -71,6 +75,7 @@ public class MainActivity extends BaseDrawerActivity<Main.View, Main.Presenter> 
             case R.id.about:
                 mCurrentSelectedDrawerItemId = id;
                 title = getString(R.string.drawer_item_1);
+                //TODO
                 fragment = getSupportFragmentManager().findFragmentByTag(AboutFragment.TAG);
                 if (fragment == null) {
                     fragment = AboutFragment.newInstance();
@@ -94,24 +99,33 @@ public class MainActivity extends BaseDrawerActivity<Main.View, Main.Presenter> 
             case R.id.mostRatedArticles:
                 mCurrentSelectedDrawerItemId = id;
                 title = getString(R.string.drawer_item_3);
-                //TODO
+                hideFragment();
+                fragment = getSupportFragmentManager().findFragmentByTag(RatedArticlesFragment.TAG);
+                if (fragment == null) {
+                    fragment = RatedArticlesFragment.newInstance();
+                    getSupportFragmentManager().beginTransaction()
+                            .add(content.getId(), fragment, RatedArticlesFragment.TAG)
+                            .commit();
+                } else {
+                    getSupportFragmentManager().beginTransaction()
+                            .show(fragment)
+                            .commit();
+                }
                 break;
             case R.id.mostRecentArticles:
                 mCurrentSelectedDrawerItemId = id;
                 title = getString(R.string.drawer_item_4);
+                hideFragment();
                 fragment = getSupportFragmentManager().findFragmentByTag(RecentArticlesFragment.TAG);
                 if (fragment == null) {
                     fragment = RecentArticlesFragment.newInstance();
                     getSupportFragmentManager().beginTransaction()
                             .add(content.getId(), fragment, RecentArticlesFragment.TAG)
-                            .addToBackStack(RecentArticlesFragment.TAG)
                             .commit();
                 } else {
-//                    getSupportFragmentManager().beginTransaction()
-//                            .replace(content.getId(), fragment, RecentArticlesFragment.TAG)
-//                            .addToBackStack(RecentArticlesFragment.TAG)
-//                            .commit();
-                    getSupportFragmentManager().popBackStackImmediate(RecentArticlesFragment.TAG, 0);
+                    getSupportFragmentManager().beginTransaction()
+                            .show(fragment)
+                            .commit();
                 }
                 break;
             case R.id.random_page:
@@ -171,6 +185,18 @@ public class MainActivity extends BaseDrawerActivity<Main.View, Main.Presenter> 
         }
         assert mToolbar != null;
         mToolbar.setTitle(title);
+    }
+
+    private void hideFragment() {
+        List<Fragment> fragments = getSupportFragmentManager().getFragments();
+        if (fragments == null || fragments.isEmpty()) {
+            return;
+        }
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        for (Fragment fragment : fragments) {
+            transaction.hide(fragment);
+        }
+        transaction.commit();
     }
 
     @Override

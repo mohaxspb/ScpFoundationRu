@@ -27,7 +27,7 @@ import ru.kuchanov.scp2.util.AttributeGetter;
  * <p>
  * for scp_ru
  */
-public class RecyclerAdapterNewArticles extends RecyclerView.Adapter<RecyclerAdapterNewArticles.ViewHolderText> {
+public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAdapterListArticles.ViewHolderText> {
 
     @Inject
     MyPreferenceManager mMyPreferenceManager;
@@ -37,7 +37,7 @@ public class RecyclerAdapterNewArticles extends RecyclerView.Adapter<RecyclerAda
 
     private ArticleClickListener mArticleClickListener;
 
-    public RecyclerAdapterNewArticles() {
+    public RecyclerAdapterListArticles() {
         MyApplication.getAppComponent().inject(this);
     }
 
@@ -52,8 +52,8 @@ public class RecyclerAdapterNewArticles extends RecyclerView.Adapter<RecyclerAda
     }
 
     @Override
-    public RecyclerAdapterNewArticles.ViewHolderText onCreateViewHolder(ViewGroup parent, int viewType) {
-        RecyclerAdapterNewArticles.ViewHolderText viewHolder;
+    public RecyclerAdapterListArticles.ViewHolderText onCreateViewHolder(ViewGroup parent, int viewType) {
+        RecyclerAdapterListArticles.ViewHolderText viewHolder;
         View view;
         view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_new_articles, parent, false);
         viewHolder = new ViewHolderText(view);
@@ -61,7 +61,7 @@ public class RecyclerAdapterNewArticles extends RecyclerView.Adapter<RecyclerAda
     }
 
     @Override
-    public void onBindViewHolder(RecyclerAdapterNewArticles.ViewHolderText holder, int position) {
+    public void onBindViewHolder(RecyclerAdapterListArticles.ViewHolderText holder, int position) {
         holder.bind(mData.get(position));
     }
 

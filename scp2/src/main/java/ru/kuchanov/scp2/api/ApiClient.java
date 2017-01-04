@@ -56,7 +56,7 @@ public class ApiClient {
             int page = offset / Constants.Api.NUM_OF_ARTICLES_ON_RECENT_PAGE + 1/*as pages are not zero based*/;
 
             Request request = new Request.Builder()
-                    .url("http://scpfoundation.ru/most-recently-created/p/" + page)
+                    .url(BuildConfig.BASE_API_URL + Constants.Api.MOST_RECENT_URL + page)
                     .build();
 
             String responseBody = null;
@@ -110,6 +110,58 @@ public class ApiClient {
                     article.authorUrl = authorUrl;
                     article.createdDate = createdDate;
                     article.updatedDate = updatedDate;
+                    articles.add(article);
+                }
+                subscriber.onNext(articles);
+                subscriber.onCompleted();
+            } catch (Exception e) {
+                Timber.e(e, "error while get arts list");
+                subscriber.onError(e);
+            }
+        }));
+    }
+
+    public Observable<List<Article>> getRatedArticles(int offset) {
+        return bindWithUtils(Observable.<List<Article>>create(subscriber -> {
+            int page = offset / Constants.Api.NUM_OF_ARTICLES_ON_RATED_PAGE + 1/*as pages are not zero based*/;
+
+            Request request = new Request.Builder()
+                    .url(BuildConfig.BASE_API_URL + Constants.Api.MOST_RATED_URL + page)
+                    .build();
+
+            String responseBody = null;
+            try {
+                Response response = mOkHttpClient.newCall(request).execute();
+                responseBody = response.body().string();
+            } catch (IOException e) {
+                subscriber.onError(new IOException(MyApplication.getAppInstance().getString(R.string.error_connection)));
+                return;
+            }
+            try {
+                Document doc = Jsoup.parse(responseBody);
+                Element pageContent = doc.getElementsByClass("list-pages-box").first();
+                if (pageContent == null) {
+                    subscriber.onError(new ScpParseException(MyApplication.getAppInstance().getString(R.string.error_parse)));
+                    return;
+                }
+
+                List<Article> articles = new ArrayList<>();
+                ArrayList<Element> listOfElements = pageContent.getElementsByClass("list-pages-item");
+                for (int i = 0; i < listOfElements.size(); i++) {
+                    Element tagP = listOfElements.get(i).getElementsByTag("p").first();
+                    Element tagA = tagP.getElementsByTag("a").first();
+                    String title = tagP.text();
+                    String url = BuildConfig.BASE_API_URL + tagA.attr("href");
+                    //remove a tag to leave only text with rating
+                    tagA.remove();
+                    tagP.text(tagP.text().replace(", рейтинг ", ""));
+                    tagP.text(tagP.text().substring(0, tagP.text().length() - 1));
+//                    Timber.d("tagP.text(): %s", tagP.text());
+                    int rating = Integer.parseInt(tagP.text());
+                    Article article = new Article();
+                    article.title = title;
+                    article.url = url;
+                    article.rating = rating;
                     articles.add(article);
                 }
                 subscriber.onNext(articles);

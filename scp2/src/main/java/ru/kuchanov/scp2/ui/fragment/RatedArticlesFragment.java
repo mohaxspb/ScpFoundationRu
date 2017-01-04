@@ -10,7 +10,7 @@ import ru.kuchanov.scp2.Constants;
 import ru.kuchanov.scp2.MyApplication;
 import ru.kuchanov.scp2.R;
 import ru.kuchanov.scp2.db.model.Article;
-import ru.kuchanov.scp2.mvp.contract.RecentArticles;
+import ru.kuchanov.scp2.mvp.contract.RatedArticles;
 import ru.kuchanov.scp2.ui.adapter.RecyclerAdapterListArticles;
 import ru.kuchanov.scp2.ui.base.BaseListFragment;
 import ru.kuchanov.scp2.ui.util.EndlessRecyclerViewScrollListener;
@@ -21,14 +21,14 @@ import timber.log.Timber;
  * <p>
  * for scp_ru
  */
-public class RecentArticlesFragment extends BaseListFragment<RecentArticles.View, RecentArticles.Presenter> implements RecentArticles.View {
+public class RatedArticlesFragment extends BaseListFragment<RatedArticles.View, RatedArticles.Presenter> implements RatedArticles.View {
 
-    public static final String TAG = RecentArticlesFragment.class.getSimpleName();
+    public static final String TAG = RatedArticlesFragment.class.getSimpleName();
 
     private RecyclerAdapterListArticles mAdapter;
 
-    public static RecentArticlesFragment newInstance() {
-        return new RecentArticlesFragment();
+    public static RatedArticlesFragment newInstance() {
+        return new RatedArticlesFragment();
     }
 
     @Override
@@ -38,7 +38,7 @@ public class RecentArticlesFragment extends BaseListFragment<RecentArticles.View
 
     @NonNull
     @Override
-    public RecentArticles.Presenter createPresenter() {
+    public RatedArticles.Presenter createPresenter() {
         return mPresenter;
     }
 
@@ -49,6 +49,7 @@ public class RecentArticlesFragment extends BaseListFragment<RecentArticles.View
 
     @Override
     protected void initViews() {
+        Timber.d("initViews");
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         mAdapter = new RecyclerAdapterListArticles();

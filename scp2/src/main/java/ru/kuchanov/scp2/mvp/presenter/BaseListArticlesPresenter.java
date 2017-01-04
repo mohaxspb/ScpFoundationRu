@@ -8,6 +8,7 @@ import io.realm.RealmObject;
 import io.realm.RealmResults;
 import ru.kuchanov.scp2.api.ApiClient;
 import ru.kuchanov.scp2.db.DbProviderFactory;
+import ru.kuchanov.scp2.db.model.Article;
 import ru.kuchanov.scp2.manager.MyPreferenceManager;
 import ru.kuchanov.scp2.mvp.base.BaseListMvp;
 import ru.kuchanov.scp2.mvp.base.BasePresenter;
@@ -21,10 +22,10 @@ import timber.log.Timber;
  * <p>
  * for TappAwards
  */
-public abstract class BaseListArticlesPresenter<D extends RealmObject, V extends BaseListMvp.View<D>>
-        extends BasePresenter<V> implements BaseListMvp.Presenter<D, V> {
+public abstract class BaseListArticlesPresenter<V extends BaseListMvp.View>
+        extends BasePresenter<V> implements BaseListMvp.Presenter<V> {
 
-    protected RealmResults<D> mData;
+    protected RealmResults<Article> mData;
 
     public BaseListArticlesPresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
         super(myPreferencesManager, dbProviderFactory, apiClient);
@@ -41,15 +42,15 @@ public abstract class BaseListArticlesPresenter<D extends RealmObject, V extends
     }
 
     @Override
-    public List<D> getData() {
+    public List<Article> getData() {
         return mData;
     }
 
-    protected abstract Observable<RealmResults<D>> getDbObservable();
+    protected abstract Observable<RealmResults<Article>> getDbObservable();
 
-    protected abstract Observable<List<D>> getApiObservable(int offset);
+    protected abstract Observable<List<Article>> getApiObservable(int offset);
 
-    protected abstract Observable<Pair<Integer, Integer>> getSaveToDbObservable(List<D> data, int offset);
+    protected abstract Observable<Pair<Integer, Integer>> getSaveToDbObservable(List<Article> data, int offset);
 
     @Override
     public void getDataFromDb() {

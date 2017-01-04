@@ -67,10 +67,6 @@ public class DownloadRateArticles extends AsyncTask<Void, Void, ArrayList<Articl
                 article.setURL(url);
                 articles.add(article);
             }
-
-//            for (int i = 0; i < articles.size(); i++) {
-//                Log.d(LOG, articles.get(i).getTitle());
-//            }
             return articles;
         } catch (IOException e) {
             e.printStackTrace();

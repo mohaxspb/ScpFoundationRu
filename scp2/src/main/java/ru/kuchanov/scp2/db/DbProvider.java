@@ -84,6 +84,15 @@ public class DbProvider {
                 .filter(RealmResults::isValid);
     }
 
+    public Observable<RealmResults<Article>> getRatedArticlesSortedAsync(String field, Sort order) {
+        return mRealm.where(Article.class)
+                .notEqualTo(Article.FIELD_IS_IN_MOST_RATED, Article.ORDER_NONE)
+                .findAllSortedAsync(field, order)
+                .asObservable()
+                .filter(RealmResults::isLoaded)
+                .filter(RealmResults::isValid);
+    }
+
     public Observable<Pair<Integer, Integer>> saveRecentArticlesList(List<Article> apiData, int offset) {
         return Observable.create(subscriber -> {
             mRealm.executeTransactionAsync(
@@ -123,6 +132,49 @@ public class DbProvider {
                     },
                     () -> {
                         subscriber.onNext(new Pair<>(apiData.size(), offset));
+                        subscriber.onCompleted();
+                        mRealm.close();
+                    },
+                    error -> {
+                        subscriber.onError(error);
+                        mRealm.close();
+                    });
+        });
+    }
+
+    public Observable<Pair<Integer, Integer>> saveRatedArticlesList(List<Article> data, int offset) {
+        return Observable.create(subscriber -> {
+            mRealm.executeTransactionAsync(
+                    realm -> {
+                        //remove all aps from nominees if we update list
+                        if (offset == 0) {
+                            List<Article> articleList =
+                                    realm.where(Article.class)
+                                            .notEqualTo(Article.FIELD_IS_IN_MOST_RATED, Article.ORDER_NONE)
+                                            .findAll();
+                            for (Article application : articleList) {
+                                application.isInMostRated = Article.ORDER_NONE;
+                            }
+                        }
+                        //check if we have app in db and update
+                        for (int i = 0; i < data.size(); i++) {
+                            Article applicationToWrite = data.get(i);
+                            Article applicationInDb = realm.where(Article.class)
+                                    .equalTo(Article.FIELD_URL, applicationToWrite.url)
+                                    .findFirst();
+                            if (applicationInDb != null) {
+                                applicationInDb.isInMostRated = offset + i;
+                                applicationInDb.title = applicationToWrite.title;
+
+                                applicationInDb.rating = applicationToWrite.rating;
+                            } else {
+                                applicationToWrite.isInMostRated = offset + i;
+                                realm.insertOrUpdate(applicationToWrite);
+                            }
+                        }
+                    },
+                    () -> {
+                        subscriber.onNext(new Pair<>(data.size(), offset));
                         subscriber.onCompleted();
                         mRealm.close();
                     },

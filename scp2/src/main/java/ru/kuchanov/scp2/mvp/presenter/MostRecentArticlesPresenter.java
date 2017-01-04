@@ -18,9 +18,9 @@ import rx.Observable;
  * <p>
  * for TappAwards
  */
-public class RecentArticlesPresenter extends BaseListArticlesPresenter<Article, RecentArticles.View> implements RecentArticles.Presenter {
+public class MostRecentArticlesPresenter extends BaseListArticlesPresenter<RecentArticles.View> implements RecentArticles.Presenter {
 
-    public RecentArticlesPresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
+    public MostRecentArticlesPresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
         super(myPreferencesManager, dbProviderFactory, apiClient);
     }
 

@@ -12,9 +12,9 @@ import ru.kuchanov.scp2.mvp.base.Drawer;
  * for scp_ru
  */
 public interface RecentArticles {
-    interface View extends BaseListMvp.View<Article> {
+    interface View extends BaseListMvp.View {
     }
 
-    interface Presenter extends BaseListMvp.Presenter<Article, View> {
+    interface Presenter extends BaseListMvp.Presenter<View> {
     }
 }
