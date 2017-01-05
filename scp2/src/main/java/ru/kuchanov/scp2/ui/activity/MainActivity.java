@@ -80,7 +80,7 @@ public class MainActivity extends BaseDrawerActivity<Main.View, Main.Presenter> 
                 hideFragments();
                 fragment = getSupportFragmentManager().findFragmentByTag(tag);
                 if (fragment == null) {
-                    fragment = ArticleFragment.newInstance(Constants.Urls.ABOUT_SCP, getString(R.string.about_org));
+                    fragment = ArticleFragment.newInstance(Constants.Urls.ABOUT_SCP, getString(R.string.about_org), null);
                     getSupportFragmentManager().beginTransaction()
                             .add(content.getId(), fragment, tag)
                             .commit();

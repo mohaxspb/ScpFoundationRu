@@ -1,5 +1,7 @@
 package ru.kuchanov.scp2.db.model;
 
+import java.io.Serializable;
+
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -8,7 +10,7 @@ import io.realm.annotations.PrimaryKey;
  * <p>
  * for scp_ru
  */
-public class Article extends RealmObject {
+public class Article extends RealmObject implements Serializable {
 
     public static final String FIELD_IS_IN_READEN = "isInReaden";
     public static final String FIELD_IS_IN_RECENT = "isInRecent";

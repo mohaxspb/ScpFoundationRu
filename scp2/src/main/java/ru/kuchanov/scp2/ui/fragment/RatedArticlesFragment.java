@@ -93,7 +93,7 @@ public class RatedArticlesFragment extends BaseListFragment<RatedArticles.View, 
         resetOnScrollListener();
 
         assert mSwipeRefreshLayout != null;
-        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.zbs_color_red);
         mSwipeRefreshLayout.setOnRefreshListener(() -> {
             Timber.d("onRefresh");
             mPresenter.getDataFromApi(Constants.Api.ZERO_OFFSET);
