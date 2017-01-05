@@ -45,8 +45,6 @@ import ru.kuchanov.scp2.util.DimensionUtils;
  * for scp_ru
  */
 public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private static final String LOG = RecyclerAdapterArticle.class.getSimpleName();
-
     private static final int TYPE_TEXT = 0;
     private static final int TYPE_SPOILER = 1;
     private static final int TYPE_IMAGE = 2;
@@ -116,7 +114,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                 break;
             case TYPE_TITLE:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_title, parent, false);
-                viewHolder = new ViewHolderText(view);
+                viewHolder = new ViewHolderTitle(view);
                 break;
             case TYPE_TABLE:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_table, parent, false);
@@ -167,11 +165,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                 });
                 break;
             case TYPE_TITLE:
-                final ViewHolderText holderTitle = (ViewHolderText) holder;
-                textSizePrimary = ctx.getResources().getDimensionPixelSize(R.dimen.text_size_large);
-                holderTitle.textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, articleTextScale * textSizePrimary);
-                holderTitle.textView.setTextIsSelectable(true);
-                holderTitle.textView.setText(mArticle.title);
+                ((ViewHolderTitle) holder).bind(mArticle.title);
                 break;
             case TYPE_TABLE:
                 final ViewHolderTable holderTable = (ViewHolderTable) holder;
@@ -193,6 +187,26 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
     @Override
     public int getItemCount() {
         return mArticlesTextParts == null ? 0 : mArticlesTextParts.size() + 1;
+    }
+
+    class ViewHolderTitle extends RecyclerView.ViewHolder {
+        @BindView(R.id.text)
+        TextView textView;
+
+        ViewHolderTitle(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
+
+        void bind(String title) {
+            Context ctx = itemView.getContext();
+            float articleTextScale = mMyPreferenceManager.getArticleTextScale();
+
+            int textSizePrimary = ctx.getResources().getDimensionPixelSize(R.dimen.text_size_large);
+            textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, articleTextScale * textSizePrimary);
+            textView.setTextIsSelectable(true);
+            textView.setText(title);
+        }
     }
 
     class ViewHolderText extends RecyclerView.ViewHolder {
@@ -218,7 +232,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
         }
     }
 
-    private class ViewHolderSpoiler extends RecyclerView.ViewHolder {
+    class ViewHolderSpoiler extends RecyclerView.ViewHolder {
         TextView title, content;
 
         ViewHolderSpoiler(View itemView) {
@@ -228,7 +242,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
         }
     }
 
-    private class ViewHolderImage extends RecyclerView.ViewHolder {
+    class ViewHolderImage extends RecyclerView.ViewHolder {
         @BindView(R.id.image)
         ImageView imageView;
         @BindView(R.id.title)
@@ -278,7 +292,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
         }
     }
 
-    private class ViewHolderTable extends RecyclerView.ViewHolder {
+    class ViewHolderTable extends RecyclerView.ViewHolder {
         WebView webView;
 
         ViewHolderTable(View itemView) {

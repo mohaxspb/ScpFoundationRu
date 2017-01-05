@@ -62,7 +62,9 @@ public class ArticlePresenter extends BasePresenter<ArticleMvp.View> implements 
                         data -> {
                             Timber.d("getDataFromDb data: %s", data);
                             mData = data;
-                            if (mData.text == null) {
+                            if (mData == null) {
+                                getDataFromApi();
+                            } else if (mData.text == null) {
                                 getView().showData(mData);
                                 getDataFromApi();
                             } else {
@@ -75,7 +77,8 @@ public class ArticlePresenter extends BasePresenter<ArticleMvp.View> implements 
                             getView().showCenterProgress(false);
                             getView().enableSwipeRefresh(true);
                             getView().showError(error);
-                        });
+                        },
+                        () -> Timber.d("getDataFromDb onCompleted"));
     }
 
     @Override

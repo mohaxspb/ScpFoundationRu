@@ -77,6 +77,7 @@ public class MainActivity extends BaseDrawerActivity<Main.View, Main.Presenter> 
                 mCurrentSelectedDrawerItemId = id;
                 title = getString(R.string.drawer_item_1);
                 String tag = ArticleFragment.TAG + "#" + Constants.Urls.ABOUT_SCP;
+                hideFragments();
                 fragment = getSupportFragmentManager().findFragmentByTag(tag);
                 if (fragment == null) {
                     fragment = ArticleFragment.newInstance(Constants.Urls.ABOUT_SCP, getString(R.string.about_org));
@@ -97,7 +98,7 @@ public class MainActivity extends BaseDrawerActivity<Main.View, Main.Presenter> 
             case R.id.mostRatedArticles:
                 mCurrentSelectedDrawerItemId = id;
                 title = getString(R.string.drawer_item_3);
-                hideFragment();
+                hideFragments();
                 fragment = getSupportFragmentManager().findFragmentByTag(RatedArticlesFragment.TAG);
                 if (fragment == null) {
                     fragment = RatedArticlesFragment.newInstance();
@@ -113,7 +114,7 @@ public class MainActivity extends BaseDrawerActivity<Main.View, Main.Presenter> 
             case R.id.mostRecentArticles:
                 mCurrentSelectedDrawerItemId = id;
                 title = getString(R.string.drawer_item_4);
-                hideFragment();
+                hideFragments();
                 fragment = getSupportFragmentManager().findFragmentByTag(RecentArticlesFragment.TAG);
                 if (fragment == null) {
                     fragment = RecentArticlesFragment.newInstance();
@@ -185,7 +186,7 @@ public class MainActivity extends BaseDrawerActivity<Main.View, Main.Presenter> 
         mToolbar.setTitle(title);
     }
 
-    private void hideFragment() {
+    private void hideFragments() {
         List<Fragment> fragments = getSupportFragmentManager().getFragments();
         if (fragments == null || fragments.isEmpty()) {
             return;

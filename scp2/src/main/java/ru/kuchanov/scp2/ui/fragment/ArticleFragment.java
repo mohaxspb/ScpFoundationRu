@@ -36,6 +36,9 @@ public class ArticleFragment extends BaseFragment<ArticleMvp.View, ArticleMvp.Pr
     @BindView(R.id.recyclerView)
     protected RecyclerView mRecyclerView;
 
+    private String title;
+    private String url;
+
     private RecyclerAdapterArticle mAdapter;
 
     public static ArticleFragment newInstance(String url, String title) {
@@ -45,6 +48,13 @@ public class ArticleFragment extends BaseFragment<ArticleMvp.View, ArticleMvp.Pr
         args.putString(EXTRA_TITLE, title);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        title = getArguments().getString(EXTRA_TITLE);
+        url = getArguments().getString(EXTRA_URL);
     }
 
     @Override
@@ -75,6 +85,7 @@ public class ArticleFragment extends BaseFragment<ArticleMvp.View, ArticleMvp.Pr
         if (mPresenter.getData() != null) {
             mAdapter.setData(mPresenter.getData());
         } else {
+            mPresenter.setArticleId(url);
             mPresenter.getDataFromDb();
         }
 

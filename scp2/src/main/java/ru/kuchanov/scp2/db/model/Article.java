@@ -49,7 +49,7 @@ public class Article extends RealmObject {
                 ", isInReaden=" + isInReaden +
                 ", url='" + url + '\'' +
                 ", title='" + title + '\'' +
-                ", text='" + text + '\'' +
+//                ", text='" + text + '\'' +
                 ", rating=" + rating +
                 ", authorName='" + authorName + '\'' +
                 ", authorUrl='" + authorUrl + '\'' +

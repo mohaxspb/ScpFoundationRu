@@ -188,10 +188,11 @@ public class DbProvider {
     public Observable<Article> getArticleAsync(String articleUrl) {
         return mRealm.where(Article.class)
                 .equalTo(Article.FIELD_URL, articleUrl)
-                .findFirstAsync()
-                .<Article>asObservable()
-                .filter(realmObject -> realmObject.isLoaded())
-                .filter(realmObject -> realmObject.isValid());
+                .findAllAsync()
+                .<List<Article>>asObservable()
+                .filter(RealmResults::isLoaded)
+                .filter(RealmResults::isValid)
+                .flatMap(arts -> arts.isEmpty() ? Observable.just(null) : Observable.just(arts.first()));
     }
 
     public Observable<Void> saveArticle(Article article) {

@@ -54,11 +54,11 @@ public class MyPreferenceManager {
     }
 
     public float getUiTextScale() {
-        return mPreferences.getFloat(Keys.TEXT_SCALE_UI, 1f);
+        return mPreferences.getFloat(Keys.TEXT_SCALE_UI, .75f);
     }
 
     public float getArticleTextScale() {
-        return mPreferences.getFloat(Keys.TEXT_SCALE_ARTICLE, 1f);
+        return mPreferences.getFloat(Keys.TEXT_SCALE_ARTICLE, .75f);
     }
 
     public void setArticleTextScale(float textScale) {

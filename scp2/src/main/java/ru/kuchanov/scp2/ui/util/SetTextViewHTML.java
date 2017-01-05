@@ -70,7 +70,7 @@ public class SetTextViewHTML {
                 if (!link.startsWith("http")) {
                     link = BuildConfig.BASE_API_URL + link;
                 }
-                Timber.d("LINK CLICKED: %s", link);
+//                Timber.d("LINK CLICKED: %s", link);
                 //TODO implement open articles by link clicked
 //                for (String pressedLink : Constants.Urls.ALL_LINKS_ARRAY) {
 //                    if (link.equals(pressedLink)) {
