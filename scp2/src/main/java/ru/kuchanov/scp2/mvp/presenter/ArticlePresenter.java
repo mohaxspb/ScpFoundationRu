@@ -6,6 +6,8 @@ import ru.kuchanov.scp2.db.model.Article;
 import ru.kuchanov.scp2.manager.MyPreferenceManager;
 import ru.kuchanov.scp2.mvp.base.BasePresenter;
 import ru.kuchanov.scp2.mvp.contract.ArticleMvp;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 /**
@@ -44,19 +46,59 @@ public class ArticlePresenter extends BasePresenter<ArticleMvp.View> implements 
 
     @Override
     public Article getData() {
-        //TODO
         return mData;
     }
 
     @Override
     public void getDataFromDb() {
-        //TODO
+        Timber.d("getDataFromDb");
 
+        getView().showCenterProgress(true);
+        getView().enableSwipeRefresh(false);
+
+        //TODO think how to now that there is no article in DB at all
+        mDbProviderFactory.getDbProvider().getArticleAsync(mArticleUrl)
+                .subscribe(
+                        data -> {
+                            Timber.d("getDataFromDb data: %s", data);
+                            mData = data;
+                            if (mData.text == null) {
+                                getView().showData(mData);
+                                getDataFromApi();
+                            } else {
+                                getView().showData(mData);
+                                getView().showCenterProgress(false);
+                                getView().enableSwipeRefresh(true);
+                            }
+                        },
+                        error -> {
+                            getView().showCenterProgress(false);
+                            getView().enableSwipeRefresh(true);
+                            getView().showError(error);
+                        });
     }
 
     @Override
     public void getDataFromApi() {
-        //TODO
+        mApiClient.getArticle(mArticleUrl)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .flatMap(apiData -> mDbProviderFactory.getDbProvider().saveArticle(apiData))
+                .subscribe(
+                        data -> {
+                            Timber.d("getDataFromApi onNext");
 
+                            getView().showCenterProgress(false);
+                            getView().enableSwipeRefresh(true);
+                            getView().showSwipeProgress(false);
+                        }
+                        , error -> {
+                            Timber.e(error);
+                            getView().showError(error);
+
+                            getView().showCenterProgress(false);
+                            getView().enableSwipeRefresh(true);
+                            getView().showSwipeProgress(false);
+                        });
     }
 }

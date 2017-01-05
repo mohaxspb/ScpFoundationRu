@@ -184,4 +184,39 @@ public class DbProvider {
                     });
         });
     }
+
+    public Observable<Article> getArticleAsync(String articleUrl) {
+        return mRealm.where(Article.class)
+                .equalTo(Article.FIELD_URL, articleUrl)
+                .findFirstAsync()
+                .<Article>asObservable()
+                .filter(realmObject -> realmObject.isLoaded())
+                .filter(realmObject -> realmObject.isValid());
+    }
+
+    public Observable<Void> saveArticle(Article article) {
+        return Observable.create(subscriber -> {
+            mRealm.executeTransactionAsync(
+                    realm -> {
+                        //check if we have app in db and update
+                        Article applicationInDb = realm.where(Article.class)
+                                .equalTo(Article.FIELD_URL, article.url)
+                                .findFirst();
+                        if (applicationInDb != null) {
+                            applicationInDb.text = article.text;
+                        } else {
+                            realm.insertOrUpdate(article);
+                        }
+                    },
+                    () -> {
+                        subscriber.onNext(null);
+                        subscriber.onCompleted();
+                        mRealm.close();
+                    },
+                    error -> {
+                        subscriber.onError(error);
+                        mRealm.close();
+                    });
+        });
+    }
 }

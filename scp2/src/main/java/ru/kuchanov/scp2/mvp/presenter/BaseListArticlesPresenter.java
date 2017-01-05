@@ -99,13 +99,11 @@ public abstract class BaseListArticlesPresenter<V extends BaseListMvp.View>
         getApiObservable(offset)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-//                .flatMap(apiData -> mDbProviderFactory.getDbProvider().saveRecentArticlesList(apiData, offset))
                 .flatMap(apiDate->getSaveToDbObservable(apiDate, offset))
                 .subscribe(
                         data -> {
                             Timber.d("getDataFromApi load data size: %s and offset: %s", data.first, data.second);
 
-                            getView().showCenterProgress(false);
                             getView().enableSwipeRefresh(true);
                             getView().showSwipeProgress(false);
                             getView().showBottomProgress(false);
@@ -115,7 +113,6 @@ public abstract class BaseListArticlesPresenter<V extends BaseListMvp.View>
                             Timber.e(error);
                             getView().showError(error);
 
-                            getView().showCenterProgress(false);
                             getView().enableSwipeRefresh(true);
                             getView().showSwipeProgress(false);
                             getView().showBottomProgress(false);

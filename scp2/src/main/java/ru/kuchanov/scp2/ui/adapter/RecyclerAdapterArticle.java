@@ -1,13 +1,7 @@
 package ru.kuchanov.scp2.ui.adapter;
 
-import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Matrix;
-import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
@@ -19,6 +13,11 @@ import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -35,7 +34,10 @@ import ru.kuchanov.scp2.R;
 import ru.kuchanov.scp2.api.ParseHtmlUtils;
 import ru.kuchanov.scp2.db.model.Article;
 import ru.kuchanov.scp2.manager.MyPreferenceManager;
+import ru.kuchanov.scp2.ui.util.SetTextViewHTML;
 import ru.kuchanov.scp2.util.AttributeGetter;
+import ru.kuchanov.scp2.util.DialogUtils;
+import ru.kuchanov.scp2.util.DimensionUtils;
 
 /**
  * Created by Dante on 17.01.2016.
@@ -52,7 +54,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
     private static final int TYPE_TABLE = 4;
 
     @Inject
-    private MyPreferenceManager mMyPreferenceManager;
+    MyPreferenceManager mMyPreferenceManager;
 
     private Article mArticle;
     private ArrayList<String> mArticlesTextParts;
@@ -133,55 +135,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                 ((ViewHolderText) holder).bind(mArticlesTextParts.get(position - 1));
                 break;
             case TYPE_IMAGE:
-//                Log.d(LOG, "Type image");
-                final ViewHolderImage holderImage = (ViewHolderImage) holder;
-                String htmlWithImage = mArticlesTextParts.get(position - 1);
-//                Log.d(LOG, htmlWithImage);
-                Document document = Jsoup.parse(mArticlesTextParts.get(position - 1));
-                Element imageTag = document.getElementsByTag("img").first();
-                String imageUrl = imageTag.attr("src");
-                MyUIL.get(holderImage.imageView.getContext()).displayImage(imageUrl, holderImage.imageView, new SimpleImageLoadingListener() {
-                    @Override
-                    public void onLoadingComplete(final String imageUri, View view, Bitmap loadedImage) {
-                        super.onLoadingComplete(imageUri, view, loadedImage);
-                        int imageWidth = loadedImage.getWidth();
-                        int imageHeight = loadedImage.getHeight();
-                        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) view.getLayoutParams();
-                        params.width = imageWidth;
-                        params.height = imageHeight;
-                        view.setLayoutParams(params);
-                        view.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Dialog nagDialog = new Dialog(holderImage.imageView.getContext(), android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-                                nagDialog.setCancelable(true);
-                                nagDialog.setContentView(R.layout.preview_image);
-
-                                final ImageViewTouch imageViewTouch = (ImageViewTouch) nagDialog.findViewById(R.id.image_view_touch);
-                                MyUIL.get(holderImage.imageView.getContext()).loadImage(imageUri, MyUIL.getSimple(), new SimpleImageLoadingListener() {
-                                    @Override
-                                    public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-                                        super.onLoadingComplete(imageUri, view, loadedImage);
-                                        Matrix matrix = imageViewTouch.getDisplayMatrix();
-                                        imageViewTouch.setImageBitmap(loadedImage, matrix, 0.5f, 2.0f);
-                                    }
-                                });
-
-                                nagDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                                    @Override
-                                    public void onCancel(DialogInterface dialog) {
-                                        System.out.println("nagDialog.onCancel ArtActivity");
-                                    }
-                                });
-                                nagDialog.show();
-                            }
-                        });
-
-                    }
-                });
-                String title = document.getElementsByTag("span").text();
-                holderImage.title.setTextIsSelectable(true);
-                holderImage.title.setText(title);
+                ((ViewHolderImage) holder).bind(mArticlesTextParts.get(position - 1));
                 break;
             case TYPE_SPOILER:
                 final ViewHolderSpoiler viewHolderSpoiler = (ViewHolderSpoiler) holder;
@@ -192,7 +146,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                 viewHolderSpoiler.content.setTextIsSelectable(true);
                 viewHolderSpoiler.content.setLinksClickable(true);
                 viewHolderSpoiler.content.setMovementMethod(LinkMovementMethod.getInstance());
-                new SetTextViewHTML(ctx).setText(viewHolderSpoiler.content, spoilerParts.get(1));
+                SetTextViewHTML.setText(viewHolderSpoiler.content, spoilerParts.get(1));
 
                 LinearLayout.LayoutParams linerarParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0);
                 viewHolderSpoiler.content.setLayoutParams(linerarParams);
@@ -250,7 +204,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
             ButterKnife.bind(this, itemView);
         }
 
-        public void bind(String text) {
+        void bind(String text) {
             Context ctx = itemView.getContext();
             int textSizePrimary = ctx.getResources().getDimensionPixelSize(R.dimen.text_size_primary);
             float articleTextScale = mMyPreferenceManager.getArticleTextScale();
@@ -260,7 +214,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
             textView.setMovementMethod(LinkMovementMethod.getInstance());
             textView.setAutoLinkMask(Linkify.ALL);
             textView.setTextIsSelectable(true);
-            new SetTextViewHTML(ctx).setText(textView, text);//TODO
+            SetTextViewHTML.setText(textView, text);
         }
     }
 
@@ -275,13 +229,52 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
     }
 
     private class ViewHolderImage extends RecyclerView.ViewHolder {
+        @BindView(R.id.image)
         ImageView imageView;
-        TextView title;
+        @BindView(R.id.title)
+        TextView titleTextView;
 
         ViewHolderImage(View itemView) {
             super(itemView);
-            imageView = (ImageView) itemView.findViewById(R.id.image);
-            title = (TextView) itemView.findViewById(R.id.title);
+            ButterKnife.bind(this, itemView);
+        }
+
+        void bind(String articleTextPart) {
+            Context ctx = itemView.getContext();
+            Document document = Jsoup.parse(articleTextPart);
+            Element imageTag = document.getElementsByTag("img").first();
+            String imageUrl = imageTag.attr("src");
+
+            Glide.with(ctx)
+                    .load(imageUrl)
+                    .fitCenter()
+                    .crossFade()
+                    .listener(new RequestListener<String, GlideDrawable>() {
+                        @Override
+                        public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                            int width = resource.getIntrinsicWidth();
+                            int height = resource.getIntrinsicHeight();
+                            if (resource.getIntrinsicWidth() > DimensionUtils.getScreenWidth()) {
+                                width = DimensionUtils.getScreenWidth();
+                                float multiplier = (float) width / height;
+                                height = (int) (width / multiplier);
+                            }
+                            imageView.getLayoutParams().width = width;
+                            imageView.getLayoutParams().height = height;
+                            imageView.setImageDrawable(resource);
+                            imageView.setOnClickListener(v -> DialogUtils.showImageDialog(ctx, imageUrl));
+                            return true;
+                        }
+                    });
+
+            String title = document.getElementsByTag("span").text();
+            titleTextView.setTextIsSelectable(true);
+            titleTextView.setText(title);
         }
     }
 

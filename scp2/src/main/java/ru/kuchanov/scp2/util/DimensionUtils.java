@@ -7,7 +7,7 @@ import ru.kuchanov.scp2.R;
 
 /**
  * Created by mohax on 08.12.2016.
- *
+ * <p>
  * for scp_ru
  */
 public class DimensionUtils {
@@ -22,12 +22,6 @@ public class DimensionUtils {
 
     public static int getDefaultMargin() {
         return MyApplication.getAppInstance().getResources().getDimensionPixelSize(R.dimen.defaultMargin);
-    }
-
-    public static int calculateImageHeight(int imageWidth, int imageHeight) {
-        float multiplier = (float) imageWidth / imageHeight;
-        float width = isLandscapeMode() ? (getScreenWidth() - getDefaultMargin() * 3) / 2 : getScreenWidth();
-        return (int) (width / multiplier);
     }
 
     public static boolean isLandscapeMode() {

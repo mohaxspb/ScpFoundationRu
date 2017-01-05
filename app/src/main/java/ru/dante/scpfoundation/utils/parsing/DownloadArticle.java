@@ -100,7 +100,6 @@ public class DownloadArticle extends AsyncTask<Void, Void, Article> {
 
         try {
             Response response = client.newCall(request).execute();
-//            System.out.println(response.body().string());
             Document doc = Jsoup.parse(response.body().string());
             org.jsoup.nodes.Element pageContent = doc.getElementById("page-content");
             if (pageContent == null) {

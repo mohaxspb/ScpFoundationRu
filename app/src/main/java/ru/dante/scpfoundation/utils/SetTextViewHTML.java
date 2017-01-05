@@ -38,131 +38,78 @@ import ru.dante.scpfoundation.otto.EventBibliographyLinkPress;
 import ru.dante.scpfoundation.otto.EventSnoskaLinkPress;
 import ru.dante.scpfoundation.otto.EventTocLinkPress;
 
-public class SetTextViewHTML
-{
-    Context ctx;
-    TextView artTextView;
+public class SetTextViewHTML {
+    private static final String LOG = SetTextViewHTML.class.getSimpleName();
 
-    public SetTextViewHTML(Context context)
-    {
+    private Context ctx;
+
+    public SetTextViewHTML(Context context) {
         this.ctx = context;
     }
 
-    public void setText(TextView artTextView, String html)
-    {
-        this.artTextView = artTextView;
-
+    public void setText(TextView artTextView, String html) {
         UILImageGetter imgGetter = new UILImageGetter(artTextView, ctx);
         MyHtmlTagHandler myHtmlTagHandler = new MyHtmlTagHandler(artTextView.getContext());
         CharSequence sequence = Html.fromHtml(html, imgGetter, myHtmlTagHandler);
         SpannableStringBuilder strBuilder = new SpannableStringBuilder(sequence);
         URLSpan[] urls = strBuilder.getSpans(0, sequence.length(), URLSpan.class);
-        for (URLSpan span : urls)
-        {
+        for (URLSpan span : urls) {
             makeLinkClickable(strBuilder, span);
         }
         //////
         ImageSpan[] imgs = strBuilder.getSpans(0, sequence.length(), ImageSpan.class);
-        for (ImageSpan span : imgs)
-        {
+        for (ImageSpan span : imgs) {
             makeImgsClickable(strBuilder, span);
         }
         replaceQuoteSpans(artTextView.getContext(), strBuilder);
         artTextView.setText(strBuilder);
-//        artTextView.setText(Html.fromHtml(strBuilder.toString(), imgGetter, myHtmlTagHandler));
     }
 
-    static final String LOG = SetTextViewHTML.class.getSimpleName();
-
-    protected void makeLinkClickable(SpannableStringBuilder strBuilder, final URLSpan span)
-    {
+    protected void makeLinkClickable(SpannableStringBuilder strBuilder, final URLSpan span) {
         int start = strBuilder.getSpanStart(span);
         int end = strBuilder.getSpanEnd(span);
         int flags = strBuilder.getSpanFlags(span);
-        ClickableSpan clickable = new ClickableSpan()
-        {
+        ClickableSpan clickable = new ClickableSpan() {
             @SuppressLint("CommitPrefEdits")
             @Override
-            public void onClick(View view)
-            {
+            public void onClick(View view) {
                 Log.d(LOG, "LINK CLICKED: " + span.getURL());
-//                SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ctx);
-//                Calendar calendar = Calendar.getInstance();
-               /* int lastClickDay = pref.getInt(ctx.getString(R.string.pref_key_last_click_day), -1);
-                int clickInDay = pref.getInt(ctx.getString(R.string.pref_key_click_in_day), 0);*/
-//                Log.d(LOG, "lastClickDay: " + lastClickDay);
-//                Log.d(LOG, "clickInDay: " + clickInDay);
-               /* if (lastClickDay != -1)
-                {
-                    if (lastClickDay == calendar.get(Calendar.DAY_OF_MONTH))
-                    {
-                        if (clickInDay >= 5)
-                        {
-                            if (!VKSdk.isLoggedIn())
-                            {
-                                showLoginDialog(ctx);
-                                return;
-                            }
-                        } else
-                        {
-                            clickInDay++;
-                            pref.edit().putInt(ctx.getString(R.string.pref_key_click_in_day), clickInDay).commit();
-                        }
-                    } else
-                    {
-                        pref.edit().putInt(ctx.getString(R.string.pref_key_click_in_day), 1).commit();
-                        pref.edit().putInt(ctx.getString(R.string.pref_key_last_click_day), calendar.get(Calendar.DAY_OF_MONTH)).commit();
-                    }
-                } else
-                {
-                    pref.edit().putInt(ctx.getString(R.string.pref_key_click_in_day), 1).commit();
-                    pref.edit().putInt(ctx.getString(R.string.pref_key_last_click_day), calendar.get(Calendar.DAY_OF_MONTH)).commit();
-                }*/
 
                 String link = span.getURL();
-                if (link.contains("javascript"))
-                {
+                if (link.contains("javascript")) {
                     Toast.makeText(ctx, "Эта ссылка не поддерживается", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if (TextUtils.isDigitsOnly(link))
-                {
+                if (TextUtils.isDigitsOnly(link)) {
                     BusProvider.getInstance().post(new EventSnoskaLinkPress(link));
                     return;
                 }
-                if (link.startsWith("bibitem-"))
-                {
+                if (link.startsWith("bibitem-")) {
                     BusProvider.getInstance().post(new EventBibliographyLinkPress(link));
                     return;
                 }
-                if (link.startsWith("#"))
-                {
+                if (link.startsWith("#")) {
                     BusProvider.getInstance().post(new EventTocLinkPress(link));
                     return;
                 }
-                if (!link.startsWith("http"))
-                {
+                if (!link.startsWith("http")) {
                     link = Const.DOMAIN_NAME + link;
                 }
                 Log.d(LOG, "LINK CLICKED: " + link);
-                for (String pressedLink : Const.Urls.ALL_LINKS_ARRAY)
-                {
-                    if (link.equals(pressedLink))
-                    {
+                for (String pressedLink : Const.Urls.ALL_LINKS_ARRAY) {
+                    if (link.equals(pressedLink)) {
                         ActivityMain.startActivityMain(link, ctx);
                         return;
                     }
                 }
-                if (ctx instanceof ActivityMain)
-                {
+                if (ctx instanceof ActivityMain) {
                     Intent intent = new Intent(ctx, ActivityArticles.class);
                     Bundle bundle = new Bundle();
                     bundle.putString("title", "");
                     bundle.putString("url", link);
                     intent.putExtras(bundle);
                     ctx.startActivity(intent);
-                } else
-                {
+                } else {
                     ActivityArticles activityArticles = (ActivityArticles) ctx;
                     FragmentManager fragmentManager = activityArticles.getSupportFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -178,25 +125,20 @@ public class SetTextViewHTML
     }
 
     //	///////////////
-    protected void makeImgsClickable(SpannableStringBuilder strBuilder, ImageSpan span)
-    {
+    protected void makeImgsClickable(SpannableStringBuilder strBuilder, ImageSpan span) {
         final String image_src = span.getSource();
         final int start = strBuilder.getSpanStart(span);
         final int end = strBuilder.getSpanEnd(span);
 
-        ClickableSpan click_span = new ClickableSpan()
-        {
+        ClickableSpan click_span = new ClickableSpan() {
             @Override
-            public void onClick(View widget)
-            {
+            public void onClick(View widget) {
                 Log.d(LOG, "makeImgsClickable Click: " + image_src);
                 Context ctx = widget.getContext();
-                if (ctx instanceof ActivityMain)
-                {
+                if (ctx instanceof ActivityMain) {
                     ActivityMain activityMain = (ActivityMain) ctx;
                     activityMain.setNeedToShowDialog(image_src);
-                } else
-                {
+                } else {
                     ActivityArticles activityArticles = (ActivityArticles) ctx;
                     activityArticles.setNeedToShowDialog(image_src);
                 }
@@ -205,47 +147,38 @@ public class SetTextViewHTML
         };
         ClickableSpan[] click_spans = strBuilder.getSpans(start, end, ClickableSpan.class);
 
-        if (click_spans.length != 0)
-        {
-            for (ClickableSpan c_span : click_spans)
-            {
+        if (click_spans.length != 0) {
+            for (ClickableSpan c_span : click_spans) {
                 strBuilder.removeSpan(c_span);
             }
         }
         strBuilder.setSpan(click_span, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
 
-    public static void showImageDialog(final Context ctx, final String imgUrl)
-    {
+    public static void showImageDialog(final Context ctx, final String imgUrl) {
         Log.d("slkdjlksjdlskjd", "showImageDialog");
         Dialog nagDialog = new Dialog(ctx, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
         nagDialog.setCancelable(true);
         nagDialog.setContentView(R.layout.preview_image);
 
         final ImageViewTouch imageViewTouch = (ImageViewTouch) nagDialog.findViewById(R.id.image_view_touch);
-        MyUIL.get(ctx).loadImage(imgUrl, MyUIL.getSimple(), new SimpleImageLoadingListener()
-        {
+        MyUIL.get(ctx).loadImage(imgUrl, MyUIL.getSimple(), new SimpleImageLoadingListener() {
             @Override
-            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage)
-            {
+            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
                 super.onLoadingComplete(imageUri, view, loadedImage);
                 Matrix matrix = imageViewTouch.getDisplayMatrix();
                 imageViewTouch.setImageBitmap(loadedImage, matrix, 0.5f, 2.0f);
             }
         });
 
-        nagDialog.setOnCancelListener(new DialogInterface.OnCancelListener()
-        {
+        nagDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
-            public void onCancel(DialogInterface dialog)
-            {
+            public void onCancel(DialogInterface dialog) {
                 System.out.println("nagDialog.onCancel ArtActivity");
-                if (ctx instanceof ActivityMain)
-                {
+                if (ctx instanceof ActivityMain) {
                     ActivityMain activityMain = (ActivityMain) ctx;
                     activityMain.setNeedToShowDialog(null);
-                } else
-                {
+                } else {
                     ActivityArticles activityArticles = (ActivityArticles) ctx;
                     activityArticles.setNeedToShowDialog(null);
                 }
@@ -256,15 +189,13 @@ public class SetTextViewHTML
 
     //quotes
     //see http://stackoverflow.com/a/29114976/3212712
-    private static void replaceQuoteSpans(Context ctx, Spannable spannable)
-    {
+    private static void replaceQuoteSpans(Context ctx, Spannable spannable) {
         int colorBackground = AttributeGetter.getColor(ctx, R.attr.windowBackgroundDark);
         int colorStripe = AttributeGetter.getColor(ctx, R.attr.colorAccent);
 
         QuoteSpan[] quoteSpans = spannable.getSpans(0, spannable.length(), QuoteSpan.class);
 
-        for (QuoteSpan quoteSpan : quoteSpans)
-        {
+        for (QuoteSpan quoteSpan : quoteSpans) {
             int start = spannable.getSpanStart(quoteSpan);
             int end = spannable.getSpanEnd(quoteSpan);
             int flags = spannable.getSpanFlags(quoteSpan);
