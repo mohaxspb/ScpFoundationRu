@@ -33,7 +33,6 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
     MyPreferenceManager mMyPreferenceManager;
 
     private List<Article> mData;
-//    int textSizePrimary;
 
     private ArticleClickListener mArticleClickListener;
 

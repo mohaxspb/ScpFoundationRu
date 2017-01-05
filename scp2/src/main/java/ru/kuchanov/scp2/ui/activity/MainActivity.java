@@ -9,11 +9,12 @@ import android.view.MenuItem;
 
 import java.util.List;
 
+import ru.kuchanov.scp2.Constants;
 import ru.kuchanov.scp2.MyApplication;
 import ru.kuchanov.scp2.R;
 import ru.kuchanov.scp2.mvp.contract.Main;
 import ru.kuchanov.scp2.ui.base.BaseDrawerActivity;
-import ru.kuchanov.scp2.ui.fragment.AboutFragment;
+import ru.kuchanov.scp2.ui.fragment.ArticleFragment;
 import ru.kuchanov.scp2.ui.fragment.RatedArticlesFragment;
 import ru.kuchanov.scp2.ui.fragment.RecentArticlesFragment;
 import timber.log.Timber;
@@ -75,20 +76,17 @@ public class MainActivity extends BaseDrawerActivity<Main.View, Main.Presenter> 
             case R.id.about:
                 mCurrentSelectedDrawerItemId = id;
                 title = getString(R.string.drawer_item_1);
-                //TODO
-                fragment = getSupportFragmentManager().findFragmentByTag(AboutFragment.TAG);
+                String tag = ArticleFragment.TAG + "#" + Constants.Urls.ABOUT_SCP;
+                fragment = getSupportFragmentManager().findFragmentByTag(tag);
                 if (fragment == null) {
-                    fragment = AboutFragment.newInstance();
+                    fragment = ArticleFragment.newInstance(Constants.Urls.ABOUT_SCP, getString(R.string.about_org));
                     getSupportFragmentManager().beginTransaction()
-                            .add(content.getId(), fragment, AboutFragment.TAG)
-                            .addToBackStack(AboutFragment.TAG)
+                            .add(content.getId(), fragment, tag)
                             .commit();
                 } else {
-//                    getSupportFragmentManager().beginTransaction()
-//                            .replace(content.getId(), fragment, AboutFragment.TAG)
-//                            .addToBackStack(AboutFragment.TAG)
-//                            .commit();
-                    getSupportFragmentManager().popBackStackImmediate(AboutFragment.TAG, 0);
+                    getSupportFragmentManager().beginTransaction()
+                            .show(fragment)
+                            .commit();
                 }
                 break;
             case R.id.news:

@@ -49,6 +49,7 @@ public class RecentArticlesFragment extends BaseListFragment<RecentArticles.View
 
     @Override
     protected void initViews() {
+        Timber.d("initViews");
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         mAdapter = new RecyclerAdapterListArticles();

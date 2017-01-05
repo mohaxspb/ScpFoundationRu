@@ -7,9 +7,10 @@ import java.util.Date;
 
 /**
  * Created by Dante on 16.01.2016.
+ *
+ * for scp_ru
  */
-public class Article implements Parcelable
-{
+public class Article implements Parcelable {
     public static final String KEY_ARTICLE = "KEY_ARTICLE";
     private String title;
     private String URL;
@@ -22,31 +23,26 @@ public class Article implements Parcelable
     private String preview;
 
     @Override
-    public String toString()
-    {
-        return this.getTitle();
+    public String toString() {
+        return getTitle();
     }
 
     //    Parcel implementation/////////////////////////////
-    public static final Parcelable.Creator<Article> CREATOR = new Parcelable.Creator<Article>()
-    {
+    public static final Parcelable.Creator<Article> CREATOR = new Parcelable.Creator<Article>() {
 
         @Override
-        public Article createFromParcel(Parcel source)
-        {
+        public Article createFromParcel(Parcel source) {
             return new Article(source);
         }
 
         @Override
-        public Article[] newArray(int size)
-        {
+        public Article[] newArray(int size) {
             return new Article[size];
         }
     };
 
     //    Parcel implementation/////////////////////////////
-    private Article(Parcel in)
-    {
+    private Article(Parcel in) {
         this.URL = in.readString();
         this.title = in.readString();
 
@@ -58,28 +54,25 @@ public class Article implements Parcelable
         this.articlesText = in.readString();
         this.authorName = in.readString();
         this.isRead = (in.readInt() == 1);
-        this.preview=in.readString();
+        this.preview = in.readString();
     }
 
     /**
      * empty constructor
      */
-    public Article()
-    {
+    public Article() {
 
     }
 
     //    Parcel implementation/////////////////////////////
     @Override
-    public int describeContents()
-    {
+    public int describeContents() {
         return 0;
     }
 
     //    Parcel implementation/////////////////////////////
     @Override
-    public void writeToParcel(Parcel dest, int flags)
-    {
+    public void writeToParcel(Parcel dest, int flags) {
 
         dest.writeString(URL);
         dest.writeString(title);
@@ -95,103 +88,76 @@ public class Article implements Parcelable
         dest.writeString(preview);
     }
 
-
-    public String getArticlesText()
-    {
+    public String getArticlesText() {
         return articlesText;
     }
 
-    public void setArticlesText(String articlesText)
-    {
+    public void setArticlesText(String articlesText) {
         this.articlesText = articlesText;
     }
 
-    public String getTitle()
-    {
+    public String getTitle() {
         return title;
     }
 
-    public void setTitle(String title)
-    {
+    public void setTitle(String title) {
         this.title = title;
     }
 
-    public String getURL()
-    {
+    public String getURL() {
         return URL;
     }
 
-    public void setURL(String URL)
-    {
+    public void setURL(String URL) {
         this.URL = URL;
     }
 
-    public Date getCreationDate()
-    {
+    public Date getCreationDate() {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate)
-    {
+    public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
     }
 
-    public Date getUpdateDate()
-    {
+    public Date getUpdateDate() {
         return updateDate;
     }
 
-    public void setUpdateDate(Date updateDate)
-    {
+    public void setUpdateDate(Date updateDate) {
         this.updateDate = updateDate;
     }
 
-    public String getAuthorName()
-    {
+    public String getAuthorName() {
         return authorName;
     }
 
-    public void setAuthorName(String authorName)
-    {
+    public void setAuthorName(String authorName) {
         this.authorName = authorName;
     }
 
-    public void setImageUrl(String imageUrl)
-    {
+    public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
 
-    public String getImageUrl()
-    {
+    public String getImageUrl() {
         return imageUrl;
     }
 
-    public boolean isRead()
-    {
+    public boolean isRead() {
         return isRead;
     }
 
-    public void setIsRead(boolean isRead)
-    {
+    public void setIsRead(boolean isRead) {
         this.isRead = isRead;
     }
 
-    public String getPreview()
-    {
+    public String getPreview() {
         return preview;
     }
 
-    public void setPreview(String preview)
-    {
+    public void setPreview(String preview) {
         this.preview = preview;
     }
-   /* public static class PubDateComparator implements Comparator<Article>
-    {
-        @Override
-        public int compare(Article o1, Article o2)
-        {
-            return o2.getPubDate().compareTo(o1.getPubDate());
-        }
-    }*/
 }
 

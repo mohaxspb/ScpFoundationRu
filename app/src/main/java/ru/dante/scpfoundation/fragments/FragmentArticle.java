@@ -54,8 +54,7 @@ import ru.dante.scpfoundation.utils.parsing.DownloadArticle;
 /**
  * Created for MyApplication by Dante on 16.01.2016  19:43.
  */
-public class FragmentArticle extends Fragment implements DownloadArticle.SetArticlesText, SharedPreferences.OnSharedPreferenceChangeListener
-{
+public class FragmentArticle extends Fragment implements DownloadArticle.SetArticlesText, SharedPreferences.OnSharedPreferenceChangeListener {
     RecyclerView recyclerView;
     String url;
     String artTitle;
@@ -73,8 +72,7 @@ public class FragmentArticle extends Fragment implements DownloadArticle.SetArti
     TabLayout tabLayout;
     Context ctx;
 
-    public static Fragment newInstance(String url, String title)
-    {
+    public static Fragment newInstance(String url, String title) {
         Bundle bundle = new Bundle();
         bundle.putString("url", url);
         bundle.putString("title", title);
@@ -85,8 +83,7 @@ public class FragmentArticle extends Fragment implements DownloadArticle.SetArti
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState)
-    {
+    public void onSaveInstanceState(Bundle outState) {
         Log.i(LOG, "onSaveInstanceState called");
         super.onSaveInstanceState(outState);
         outState.putString("url", url);
@@ -99,13 +96,11 @@ public class FragmentArticle extends Fragment implements DownloadArticle.SetArti
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         Log.d(LOG, "onCreate called");
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        if (savedInstanceState == null)
-        {
+        if (savedInstanceState == null) {
             Log.i(LOG, "savedInstanceState == null");
             Bundle arguments = this.getArguments();
             url = arguments.getString("url");
@@ -113,8 +108,7 @@ public class FragmentArticle extends Fragment implements DownloadArticle.SetArti
             article = new Article();
             article.setURL(url);
             article.setTitle(artTitle);
-        } else
-        {
+        } else {
             Log.i(LOG, "savedInstanceState != null");
             article = savedInstanceState.getParcelable(Article.KEY_ARTICLE);
             Log.i(LOG, "article is null:" + String.valueOf(article == null));
@@ -130,38 +124,31 @@ public class FragmentArticle extends Fragment implements DownloadArticle.SetArti
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-    {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(LOG, "on create view called");
         View v = inflater.inflate(R.layout.fragment_article, container, false);
-        loadingIndicator=(ImageView) v.findViewById(R.id.loading_indicator);
+        loadingIndicator = (ImageView) v.findViewById(R.id.loading_indicator);
         recyclerView = (RecyclerView) v.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         tabLayout = (TabLayout) v.findViewById(R.id.tabLayout);
 
-        if (OfflineUtils.hasOfflineWithURL(ctx, url))
-        {
+        if (OfflineUtils.hasOfflineWithURL(ctx, url)) {
             article.setArticlesText(OfflineUtils.getTextByUrl(ctx, url));
             setArticle(article);
         }
-        if (article.getArticlesText() == null)
-        {
+        if (article.getArticlesText() == null) {
             DownloadArticle downloadArticle = new DownloadArticle(url, this);
             downloadArticle.execute();
             loadingIndicator.setVisibility(View.VISIBLE);
-            loadingIndicator.animate().setInterpolator(new AccelerateDecelerateInterpolator()).rotationBy(360).setDuration(500).setListener(new AnimatorListenerAdapter()
-            {
+            loadingIndicator.animate().setInterpolator(new AccelerateDecelerateInterpolator()).rotationBy(360).setDuration(500).setListener(new AnimatorListenerAdapter() {
                 @Override
-                public void onAnimationEnd(Animator animation)
-                {
+                public void onAnimationEnd(Animator animation) {
                     loadingIndicator.animate().setInterpolator(new AccelerateDecelerateInterpolator()).rotationBy(360).setDuration(500).setListener(this);
                 }
             });
-        } else
-        {
+        } else {
             Log.e(LOG, "hasTabs: " + hasTabs);
-            if (hasTabs)
-            {
+            if (hasTabs) {
                 LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) tabLayout.getLayoutParams();
                 params.height = LinearLayout.LayoutParams.WRAP_CONTENT;
                 tabLayout.setLayoutParams(params);
@@ -170,15 +157,12 @@ public class FragmentArticle extends Fragment implements DownloadArticle.SetArti
                 RecyclerAdapterArticle adapterArticle = new RecyclerAdapterArticle(currentTabArticle);
                 recyclerView.setAdapter(adapterArticle);
                 tabLayout.removeAllTabs();
-                for (String title : tabsTitles)
-                {
+                for (String title : tabsTitles) {
                     tabLayout.addTab(tabLayout.newTab().setText(title));
                 }
-                tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener()
-                {
+                tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
                     @Override
-                    public void onTabSelected(TabLayout.Tab tab)
-                    {
+                    public void onTabSelected(TabLayout.Tab tab) {
                         currentSelectedTab = tab.getPosition();
                         Article currentTabArticle = new Article();
                         currentTabArticle.setArticlesText(tabsText.get(currentSelectedTab));
@@ -187,19 +171,16 @@ public class FragmentArticle extends Fragment implements DownloadArticle.SetArti
                     }
 
                     @Override
-                    public void onTabUnselected(TabLayout.Tab tab)
-                    {
+                    public void onTabUnselected(TabLayout.Tab tab) {
 
                     }
 
                     @Override
-                    public void onTabReselected(TabLayout.Tab tab)
-                    {
+                    public void onTabReselected(TabLayout.Tab tab) {
 
                     }
                 });
-            } else
-            {
+            } else {
                 RecyclerAdapterArticle adapterArticle = new RecyclerAdapterArticle(article);
                 recyclerView.setAdapter(adapterArticle);
             }
@@ -210,26 +191,21 @@ public class FragmentArticle extends Fragment implements DownloadArticle.SetArti
     }
 
     @Override
-    public void onPrepareOptionsMenu(Menu menu)
-    {
-        if (FavoriteUtils.hasFavoriteWithURL(ctx, url))
-        {
+    public void onPrepareOptionsMenu(Menu menu) {
+        if (FavoriteUtils.hasFavoriteWithURL(ctx, url)) {
             MenuItem favorite = menu.findItem(3000);
             favorite.setIcon(AttributeGetter.getDrawableId(getActivity(), R.attr.favoriteIcon));
             favorite.setTitle("Удалить из избранного");
-        } else
-        {
+        } else {
             MenuItem favorite = menu.findItem(3000);
             favorite.setIcon(R.drawable.ic_star_border_white_48dp);
             favorite.setTitle("Добавить в избранное");
         }
-        if (OfflineUtils.hasOfflineWithURL(ctx, url))
-        {
+        if (OfflineUtils.hasOfflineWithURL(ctx, url)) {
             MenuItem offline = menu.findItem(4000);
             offline.setIcon(R.drawable.ic_beenhere_white_48dp);
             offline.setTitle("Удалить из Offline");
-        } else
-        {
+        } else {
             MenuItem offline = menu.findItem(4000);
             offline.setIcon(R.drawable.ic_bookmark_border_white_48dp);
             offline.setTitle("Добавить в Offline");
@@ -238,31 +214,25 @@ public class FragmentArticle extends Fragment implements DownloadArticle.SetArti
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        if (item.getItemId() == 1000)
-        {
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == 1000) {
             shareUrl(url, getActivity());
         }
-        if (item.getItemId() == 2000)
-        {
+        if (item.getItemId() == 2000) {
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setData(Uri.parse(url));
             Intent chooser = Intent.createChooser(intent, "Открыть с помощью");
             getActivity().startActivity(chooser);
         }
-        if (item.getItemId() == 3000)
-        {
+        if (item.getItemId() == 3000) {
             FavoriteUtils.updateFavoritesOnDevice(getActivity(), url, article.getTitle());
 
         }
-        if (item.getItemId() == 4000)
-        {
+        if (item.getItemId() == 4000) {
             OfflineUtils.updateOfflineOnDevice(ctx, url, article.getTitle(), article.getArticlesText(), true);
             ((AppCompatActivity) ctx).supportInvalidateOptionsMenu();
         }
-        if (item.getItemId() == 5000)
-        {
+        if (item.getItemId() == 5000) {
             String content = "";
             String author = LicenseUtils.getAuthorByUrlOrTitle(ctx, article.getURL(), article.getTitle());
             String license = "Распространяется по лицензии <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-nc-sa/3.0/\">Creative Commons Attribution-NonCommercial-ShareAlike 3.0 License</a>";
@@ -286,8 +256,7 @@ public class FragmentArticle extends Fragment implements DownloadArticle.SetArti
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
-    {
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.add(0, 1000, 0, "Поделиться");
         MenuItem share = menu.findItem(1000);
         share.setIcon(R.drawable.ic_share_blue_grey_50_48dp);
@@ -316,16 +285,13 @@ public class FragmentArticle extends Fragment implements DownloadArticle.SetArti
     }
 
     @Override
-    public void setArticle(Article article)
-    {
-        if (!isAdded())
-        {
+    public void setArticle(Article article) {
+        if (!isAdded()) {
             return;
         }
         loadingIndicator.animate().cancel();
         loadingIndicator.setVisibility(View.GONE);
-        if (article == null)
-        {
+        if (article == null) {
             Snackbar.make(recyclerView, "Connection lost", Snackbar.LENGTH_LONG).show();
             return;
         }
@@ -334,8 +300,7 @@ public class FragmentArticle extends Fragment implements DownloadArticle.SetArti
         Document document = Jsoup.parse(fullArticlesText);
 //        Element yuiNavset = document.getElementsByClass("yui-navset-top").first();
         Element yuiNavset = document.getElementsByAttributeValueStarting("class", "yui-navset").first();
-        if (yuiNavset != null)
-        {
+        if (yuiNavset != null) {
             hasTabs = true;
             LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) tabLayout.getLayoutParams();
             params.height = LinearLayout.LayoutParams.WRAP_CONTENT;
@@ -345,25 +310,21 @@ public class FragmentArticle extends Fragment implements DownloadArticle.SetArti
             tabsTitles.clear();
             tabsText.clear();
             tabLayout.removeAllTabs();
-            for (Element li : liElements)
-            {
+            for (Element li : liElements) {
                 tabsTitles.add(li.text());
                 tabLayout.addTab(tabLayout.newTab().setText(li.text()));
             }
             Element yuiContent = yuiNavset.getElementsByClass("yui-content").first();
-            for (Element tab : yuiContent.children())
-            {
+            for (Element tab : yuiContent.children()) {
                 tabsText.add(tab.html());
             }
             Article currentTabArticle = new Article();
             currentTabArticle.setArticlesText(tabsText.get(currentSelectedTab));
             RecyclerAdapterArticle adapterArticle = new RecyclerAdapterArticle(currentTabArticle);
             recyclerView.setAdapter(adapterArticle);
-            tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener()
-            {
+            tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
                 @Override
-                public void onTabSelected(TabLayout.Tab tab)
-                {
+                public void onTabSelected(TabLayout.Tab tab) {
                     currentSelectedTab = tab.getPosition();
                     Article currentTabArticle = new Article();
                     currentTabArticle.setArticlesText(tabsText.get(currentSelectedTab));
@@ -372,45 +333,36 @@ public class FragmentArticle extends Fragment implements DownloadArticle.SetArti
                 }
 
                 @Override
-                public void onTabUnselected(TabLayout.Tab tab)
-                {
+                public void onTabUnselected(TabLayout.Tab tab) {
 
                 }
 
                 @Override
-                public void onTabReselected(TabLayout.Tab tab)
-                {
+                public void onTabReselected(TabLayout.Tab tab) {
 
                 }
             });
-        } else
-        {
+        } else {
             RecyclerAdapterArticle adapterArticle = new RecyclerAdapterArticle(this.article);
             recyclerView.setAdapter(adapterArticle);
         }
     }
 
     @Subscribe
-    public void onTocPress(EventTocLinkPress tocLinkPress)
-    {
+    public void onTocPress(EventTocLinkPress tocLinkPress) {
         RecyclerAdapterArticle recyclerAdapterArticle = (RecyclerAdapterArticle) recyclerView.getAdapter();
-        if (recyclerAdapterArticle == null)
-        {
+        if (recyclerAdapterArticle == null) {
             return;
         }
         ArrayList<String> articlesTextParts = recyclerAdapterArticle.getArticlesTextParts();
         String digits = "";
-        for (char c : tocLinkPress.getLink().toCharArray())
-        {
-            if (TextUtils.isDigitsOnly(String.valueOf(c)))
-            {
+        for (char c : tocLinkPress.getLink().toCharArray()) {
+            if (TextUtils.isDigitsOnly(String.valueOf(c))) {
                 digits += String.valueOf(c);
             }
         }
-        for (int i = 0; i < articlesTextParts.size(); i++)
-        {
-            if (articlesTextParts.get(i).contains("id=\"" + "toc" + digits + "\""))
-            {
+        for (int i = 0; i < articlesTextParts.size(); i++) {
+            if (articlesTextParts.get(i).contains("id=\"" + "toc" + digits + "\"")) {
 //                (i+1 так как в адапторе есть еще элемент для заголовка)
                 recyclerView.scrollToPosition(i + 1);
                 return;
@@ -419,24 +371,19 @@ public class FragmentArticle extends Fragment implements DownloadArticle.SetArti
     }
 
     @Subscribe
-    public void onSnoskaPress(EventSnoskaLinkPress snoskaLinkPress)
-    {
+    public void onSnoskaPress(EventSnoskaLinkPress snoskaLinkPress) {
         RecyclerAdapterArticle recyclerAdapterArticle = (RecyclerAdapterArticle) recyclerView.getAdapter();
-        if (recyclerAdapterArticle == null)
-        {
+        if (recyclerAdapterArticle == null) {
             return;
         }
         ArrayList<String> articlesTextParts = recyclerAdapterArticle.getArticlesTextParts();
         String link = snoskaLinkPress.getLink();
-        if (TextUtils.isDigitsOnly(link))
-        {
+        if (TextUtils.isDigitsOnly(link)) {
             String linkToFind = "footnote-" + link;
-            for (int i = articlesTextParts.size() - 1; i >= 0; i--)
-            {
+            for (int i = articlesTextParts.size() - 1; i >= 0; i--) {
                 Document document = Jsoup.parse(articlesTextParts.get(i));
                 Elements divTag = document.getElementsByAttributeValue("id", linkToFind);
-                if (divTag.size() != 0)
-                {
+                if (divTag.size() != 0) {
                     divTag.first().getElementsByTag("pizda").first().remove();
                     String textThatWeTryToFindSoManyTime = divTag.text();
                     textThatWeTryToFindSoManyTime = textThatWeTryToFindSoManyTime.substring(3, textThatWeTryToFindSoManyTime.length());
@@ -452,21 +399,17 @@ public class FragmentArticle extends Fragment implements DownloadArticle.SetArti
     }
 
     @Subscribe
-    public void onBibliographyPress(EventBibliographyLinkPress bibliographyLinkPress)
-    {
+    public void onBibliographyPress(EventBibliographyLinkPress bibliographyLinkPress) {
         RecyclerAdapterArticle recyclerAdapterArticle = (RecyclerAdapterArticle) recyclerView.getAdapter();
-        if (recyclerAdapterArticle == null)
-        {
+        if (recyclerAdapterArticle == null) {
             return;
         }
         ArrayList<String> articlesTextParts = recyclerAdapterArticle.getArticlesTextParts();
         String link = bibliographyLinkPress.getLink();
-        for (int i = articlesTextParts.size() - 1; i >= 0; i--)
-        {
+        for (int i = articlesTextParts.size() - 1; i >= 0; i--) {
             Document document = Jsoup.parse(articlesTextParts.get(i));
             Elements divTag = document.getElementsByAttributeValue("id", link);
-            if (divTag.size() != 0)
-            {
+            if (divTag.size() != 0) {
                 String textThatWeTryToFindSoManyTime = divTag.text();
                 textThatWeTryToFindSoManyTime = textThatWeTryToFindSoManyTime.substring(3, textThatWeTryToFindSoManyTime.length());
                 new MaterialDialog.Builder(getActivity())
@@ -480,45 +423,37 @@ public class FragmentArticle extends Fragment implements DownloadArticle.SetArti
     }
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
-    {
-        if (!isAdded())
-        {
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (!isAdded()) {
             return;
         }
-        if (key.equals(getString(R.string.pref_design_key_text_size_article)))
-        {
-            if (recyclerView.getAdapter() != null)
-            {
+        if (key.equals(getString(R.string.pref_design_key_text_size_article))) {
+            if (recyclerView.getAdapter() != null) {
                 recyclerView.getAdapter().notifyDataSetChanged();
             }
         }
     }
 
     @Override
-    public void onStart()
-    {
+    public void onStart() {
         super.onStart();
         BusProvider.getInstance().register(this);
     }
 
     @Override
-    public void onStop()
-    {
+    public void onStop() {
         super.onStop();
         BusProvider.getInstance().unregister(this);
     }
 
 
     @Override
-    public void onAttach(Context context)
-    {
+    public void onAttach(Context context) {
         ctx = context;
         super.onAttach(context);
     }
 
-    public static void shareUrl(String url, Context ctx)
-    {
+    public static void shareUrl(String url, Context ctx) {
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
         //add link to app

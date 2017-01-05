@@ -9,9 +9,11 @@ import dagger.Provides;
 import ru.kuchanov.scp2.api.ApiClient;
 import ru.kuchanov.scp2.db.DbProviderFactory;
 import ru.kuchanov.scp2.manager.MyPreferenceManager;
+import ru.kuchanov.scp2.mvp.contract.ArticleMvp;
 import ru.kuchanov.scp2.mvp.contract.Main;
 import ru.kuchanov.scp2.mvp.contract.RatedArticles;
 import ru.kuchanov.scp2.mvp.contract.RecentArticles;
+import ru.kuchanov.scp2.mvp.presenter.ArticlePresenter;
 import ru.kuchanov.scp2.mvp.presenter.MainPresenter;
 import ru.kuchanov.scp2.mvp.presenter.MostRatedArticlesPresenter;
 import ru.kuchanov.scp2.mvp.presenter.MostRecentArticlesPresenter;
@@ -35,16 +37,16 @@ public class PresentersModule {
         return new MainPresenter(myPreferencesManager, dbProviderFactory, apiClient);
     }
 
-//    @Provides
+    @Provides
 //    @Singleton
-//    @NonNull
-//    About.Presenter providesAboutPresenter(
-//            @NonNull MyPreferenceManager myPreferencesManager,
-//            @NonNull DbProviderFactory dbProviderFactory,
-//            @NonNull ApiClient apiClient
-//    ) {
-//        return new AboutPresenter(myPreferencesManager, dbProviderFactory, apiClient);
-//    }
+    @NonNull
+    ArticleMvp.Presenter providesArticlePresenter(
+            @NonNull MyPreferenceManager myPreferencesManager,
+            @NonNull DbProviderFactory dbProviderFactory,
+            @NonNull ApiClient apiClient
+    ) {
+        return new ArticlePresenter(myPreferencesManager, dbProviderFactory, apiClient);
+    }
 
     @Provides
     @Singleton
