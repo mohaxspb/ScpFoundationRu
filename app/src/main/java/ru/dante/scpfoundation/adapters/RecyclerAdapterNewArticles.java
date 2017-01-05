@@ -35,43 +35,38 @@ import ru.dante.scpfoundation.utils.parsing.DownloadArticleForOffline;
 
 /**
  * Created by Dante on 17.01.2016.
+ * <p>
+ * for scp_ru
  */
-
-
-public class RecyclerAdapterNewArticles extends RecyclerView.Adapter<RecyclerView.ViewHolder>
-{
+public class RecyclerAdapterNewArticles extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     ArrayList<Article> articles;
     private static final String LOG = RecyclerAdapterNewArticles.class.getSimpleName();
     int textSizePrimary;
     boolean needToShowAppInstall = false;
-    private boolean needToShowGiveMeMoney=false;
+    private boolean needToShowGiveMeMoney = false;
 
-    public void showAppInstall()
-    {
+    public void showAppInstall() {
         needToShowAppInstall = true;
         notifyItemChanged(0);
     }
-    public void showGiveMeMoney()
-    {
-        Log.i(LOG,"Money called");
+
+    public void showGiveMeMoney() {
+        Log.i(LOG, "Money called");
         needToShowGiveMeMoney = true;
         notifyItemChanged(0);
     }
 
-    public RecyclerAdapterNewArticles(ArrayList<Article> articles)
-    {
+    public RecyclerAdapterNewArticles(ArrayList<Article> articles) {
         this.articles = articles;
     }
 
     @Override
-    public int getItemViewType(int position)
-    {
+    public int getItemViewType(int position) {
         return 0;
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
-    {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         RecyclerView.ViewHolder viewHolder = null;
         View view;
         view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_new_articles, parent, false);
@@ -80,8 +75,7 @@ public class RecyclerAdapterNewArticles extends RecyclerView.Adapter<RecyclerVie
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position)
-    {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         final ViewHolderText holderText = (ViewHolderText) holder;
         final Context ctx = holderText.title.getContext();
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ctx);
@@ -89,12 +83,10 @@ public class RecyclerAdapterNewArticles extends RecyclerView.Adapter<RecyclerVie
         textSizePrimary = ctx.getResources().getDimensionPixelSize(R.dimen.text_size_primary);
         holderText.title.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * textSizePrimary);
         holderText.title.setText(articles.get(position).getTitle());
-        holderText.title.setOnClickListener(new View.OnClickListener()
-        {
+        holderText.title.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("CommitPrefEdits")
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 articles.get(position).setIsRead(true);
                 SharedPreferences sharedPreferences = ctx.getSharedPreferences("read_articles", Context.MODE_PRIVATE);
                 sharedPreferences.edit().putBoolean(articles.get(position).getURL(), true).commit();
@@ -105,15 +97,12 @@ public class RecyclerAdapterNewArticles extends RecyclerView.Adapter<RecyclerVie
                 bundle.putString("url", articles.get(position).getURL());
                 intent.putExtras(bundle);
                 ctx.startActivity(intent);
-
-//                CheckTimeToAds.starActivityOrShowAds(ctx,intent);
             }
         });
 //        (отмечание прочитанного)
         final SharedPreferences sharedPreferences = ctx.getSharedPreferences("read_articles", Context.MODE_PRIVATE);
 
-        if (sharedPreferences.contains(articles.get(position).getURL()))
-        {
+        if (sharedPreferences.contains(articles.get(position).getURL())) {
             int colorId;
             int[] attrs = new int[]{R.attr.readTextColor};
             TypedArray ta = ctx.obtainStyledAttributes(attrs);
@@ -123,8 +112,7 @@ public class RecyclerAdapterNewArticles extends RecyclerView.Adapter<RecyclerVie
             int readSelectedIcon = AttributeGetter.getDrawableId(ctx, R.attr.readIcon);
             holderText.read.setImageResource(readSelectedIcon);
 
-        } else
-        {
+        } else {
             int colorId;
             int[] attrs = new int[]{R.attr.newArticlesTextColor};
             TypedArray ta = ctx.obtainStyledAttributes(attrs);
@@ -134,18 +122,13 @@ public class RecyclerAdapterNewArticles extends RecyclerView.Adapter<RecyclerVie
             int readUnSelectedIcon = AttributeGetter.getDrawableId(ctx, R.attr.readIconUnselected);
             holderText.read.setImageResource(readUnSelectedIcon);
         }
-        holderText.read.setOnClickListener(new View.OnClickListener()
-        {
+        holderText.read.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("CommitPrefEdits")
             @Override
-            public void onClick(View v)
-            {
-                if (sharedPreferences.contains(articles.get(position).getURL()))
-                {
-//                    sharedPreferences.edit().putBoolean(articles.get(position).getURL(), false).commit();
+            public void onClick(View v) {
+                if (sharedPreferences.contains(articles.get(position).getURL())) {
                     sharedPreferences.edit().remove(articles.get(position).getURL()).commit();
-                } else
-                {
+                } else {
                     sharedPreferences.edit().putBoolean(articles.get(position).getURL(), true).commit();
                 }
                 notifyItemChanged(position);
@@ -153,124 +136,100 @@ public class RecyclerAdapterNewArticles extends RecyclerView.Adapter<RecyclerVie
         });
 
 //        (отмтка избранных статей)
-        if (FavoriteUtils.hasFavoriteWithURL(ctx, articles.get(position).getURL()))
-        {
+        if (FavoriteUtils.hasFavoriteWithURL(ctx, articles.get(position).getURL())) {
             int readSelectedIcon = AttributeGetter.getDrawableId(ctx, R.attr.favoriteIcon);
             holderText.favorite.setImageResource(readSelectedIcon);
 
-        } else
-        {
+        } else {
 
             int readUnSelectedIcon = AttributeGetter.getDrawableId(ctx, R.attr.favoriteIconUnselected);
             holderText.favorite.setImageResource(readUnSelectedIcon);
         }
-        holderText.favorite.setOnClickListener(new View.OnClickListener()
-        {
+        holderText.favorite.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("CommitPrefEdits")
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 FavoriteUtils.updateFavoritesOnDevice(ctx, articles.get(position).getURL(), articles.get(position).getTitle());
                 notifyItemChanged(position);
             }
         });
-/*Кнопки Offline*/
-        if (OfflineUtils.hasOfflineWithURL(ctx, articles.get(position).getURL()))
-        {
+        /*Кнопки Offline*/
+        if (OfflineUtils.hasOfflineWithURL(ctx, articles.get(position).getURL())) {
             int readSelectedIcon = AttributeGetter.getDrawableId(ctx, R.attr.iconOfflineRemove);
             holderText.offline.setImageResource(readSelectedIcon);
 
-        } else
-        {
+        } else {
 
             int readUnSelectedIcon = AttributeGetter.getDrawableId(ctx, R.attr.iconOfflineAdd);
             holderText.offline.setImageResource(readUnSelectedIcon);
         }
-        holderText.offline.setOnClickListener(new View.OnClickListener()
-        {
+        holderText.offline.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("CommitPrefEdits")
             @Override
-            public void onClick(View v)
-            {
-                if (OfflineUtils.hasOfflineWithURL(ctx, articles.get(position).getURL()))
-                {
+            public void onClick(View v) {
+                if (OfflineUtils.hasOfflineWithURL(ctx, articles.get(position).getURL())) {
                     String articletext = OfflineUtils.getTextByUrl(ctx, articles.get(position).getURL());
                     OfflineUtils.updateOfflineOnDevice(ctx, articles.get(position).getURL(), articles.get(position).getTitle(), articletext, true);
                     notifyItemChanged(position);
-                } else
-                {
+                } else {
                     DownloadArticleForOffline articleForOffline = new DownloadArticleForOffline(ctx, articles.get(position).getURL(), 0);
                     articleForOffline.execute();
                 }
             }
         });
         // some money please
-        if (position == 0 && needToShowGiveMeMoney)
-        {
-            Log.i(LOG,"Money True");
-            if (holderText.root.getChildCount() != 1)
-            {
+        if (position == 0 && needToShowGiveMeMoney) {
+            Log.i(LOG, "Money True");
+            if (holderText.root.getChildCount() != 1) {
                 holderText.root.removeViewAt(1);
             }
             View view;
             view = LayoutInflater.from(ctx).inflate(R.layout.app_install, holderText.root, false);
-            Button close= (Button) view.findViewById(R.id.close);
-            close.setOnClickListener(new View.OnClickListener()
-            {
+            Button close = (Button) view.findViewById(R.id.close);
+            close.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v)
-                {
+                public void onClick(View v) {
                     needToShowGiveMeMoney = false;
                     notifyItemChanged(0);
                 }
             });
-            Button install= (Button) view.findViewById(R.id.install);
-            install.setOnClickListener(new View.OnClickListener()
-            {
+            Button install = (Button) view.findViewById(R.id.install);
+            install.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v)
-                {
+                public void onClick(View v) {
                     needToShowGiveMeMoney = false;
                     notifyItemChanged(0);
                     SubscriptionHelper.showSubscriptionDialog((AppCompatActivity) ctx);
                 }
             });
             install.setText(R.string.buy_subs);
-            TextView textView= (TextView) view.findViewById(R.id.text);
+            TextView textView = (TextView) view.findViewById(R.id.text);
             textView.setText(R.string.givemymoney);
 
             holderText.root.addView(view);
-        } else if (position == 0 && needToShowAppInstall)
-        {
-            if (holderText.root.getChildCount() != 1)
-            {
+        } else if (position == 0 && needToShowAppInstall) {
+            if (holderText.root.getChildCount() != 1) {
                 holderText.root.removeViewAt(1);
             }
             View view;
             view = LayoutInflater.from(ctx).inflate(R.layout.app_install, holderText.root, false);
-            Button close= (Button) view.findViewById(R.id.close);
-            close.setOnClickListener(new View.OnClickListener()
-            {
+            Button close = (Button) view.findViewById(R.id.close);
+            close.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v)
-                {
+                public void onClick(View v) {
                     needToShowAppInstall = false;
                     notifyItemChanged(0);
                 }
             });
-            Button install= (Button) view.findViewById(R.id.install);
-            install.setOnClickListener(new View.OnClickListener()
-            {
+            Button install = (Button) view.findViewById(R.id.install);
+            install.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v)
-                {
+                public void onClick(View v) {
                     needToShowAppInstall = false;
                     notifyItemChanged(0);
-                    try
-                    {
+                    try {
                         ctx.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + "ru.dante.scpfoundation.eng")));
-                    } catch (Exception e)
-                    {
+                    } catch (Exception e) {
                         String marketErrMsg = "Должен был запуститься Play Market, но что-то пошло не так...";
                         System.out.println(marketErrMsg);
                         Toast.makeText(ctx, marketErrMsg, Toast.LENGTH_SHORT).show();
@@ -279,31 +238,26 @@ public class RecyclerAdapterNewArticles extends RecyclerView.Adapter<RecyclerVie
             });
 
             holderText.root.addView(view);
-        } else
-        {
-            if (holderText.root.getChildCount() != 1)
-            {
+        } else {
+            if (holderText.root.getChildCount() != 1) {
                 holderText.root.removeViewAt(1);
             }
         }
     }
 
     @Override
-    public int getItemCount()
-    {
+    public int getItemCount() {
         return this.articles.size();
     }
 
-    public static class ViewHolderText extends RecyclerView.ViewHolder
-    {
+    static class ViewHolderText extends RecyclerView.ViewHolder {
         ImageView favorite;
         ImageView read;
         ImageView offline;
         TextView title;
         LinearLayout root;
 
-        public ViewHolderText(View itemView)
-        {
+        ViewHolderText(View itemView) {
             super(itemView);
             favorite = (ImageView) itemView.findViewById(R.id.favorite);
             read = (ImageView) itemView.findViewById(R.id.read);
@@ -312,5 +266,4 @@ public class RecyclerAdapterNewArticles extends RecyclerView.Adapter<RecyclerVie
             root = (LinearLayout) itemView;
         }
     }
-
 }

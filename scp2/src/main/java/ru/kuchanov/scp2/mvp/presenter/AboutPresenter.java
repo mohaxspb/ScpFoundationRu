@@ -1,9 +1,14 @@
 package ru.kuchanov.scp2.mvp.presenter;
 
+import java.util.List;
+
 import ru.kuchanov.scp2.api.ApiClient;
 import ru.kuchanov.scp2.db.DbProviderFactory;
+import ru.kuchanov.scp2.db.model.Article;
 import ru.kuchanov.scp2.manager.MyPreferenceManager;
+import ru.kuchanov.scp2.mvp.base.BaseListMvp;
 import ru.kuchanov.scp2.mvp.base.BasePresenter;
+import ru.kuchanov.scp2.mvp.contract.About;
 import ru.kuchanov.scp2.mvp.contract.Main;
 import timber.log.Timber;
 
@@ -12,9 +17,9 @@ import timber.log.Timber;
  * <p>
  * for TappAwards
  */
-public class MainPresenter extends BasePresenter<Main.View> implements Main.Presenter {
+public class AboutPresenter {/* extends BasePresenter<About.View> implements About.Presenter {
 
-    public MainPresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
+    public AboutPresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
         super(myPreferencesManager, dbProviderFactory, apiClient);
     }
 
@@ -25,12 +30,7 @@ public class MainPresenter extends BasePresenter<Main.View> implements Main.Pres
     }
 
     @Override
-    public void onDestroy() {
-        //TODO
-    }
-
-    @Override
-    public void onNavigationItemClicked(int id) {
-        //TODO
-    }
+    public List<Article> getData() {
+        return null;
+    }*/
 }

@@ -6,7 +6,7 @@ import android.preference.PreferenceManager;
 
 /**
  * Created by y.kuchanov on 22.12.16.
- *
+ * <p>
  * for scp_ru
  */
 public class MyPreferenceManager {
@@ -14,6 +14,8 @@ public class MyPreferenceManager {
     interface Keys {
         String SESSION_ID = "SESSION_ID";
         String USER_ID = "USER_ID";
+        String NIGHT_MODE = "NIGHT_MODE";
+        String TEXT_SCALE_UI = "TEXT_SCALE_UI";
     }
 
     private SharedPreferences mPreferences;
@@ -36,5 +38,21 @@ public class MyPreferenceManager {
 
     public String getUserId() {
         return mPreferences.getString(Keys.USER_ID, "");
+    }
+
+    public void setIsNightMode(boolean isInNightMode) {
+        mPreferences.edit().putBoolean(Keys.NIGHT_MODE, isInNightMode).apply();
+    }
+
+    public boolean isNightMode() {
+        return mPreferences.getBoolean(Keys.NIGHT_MODE, false);
+    }
+
+    public void setUiTextScale(float uiTextScale) {
+        mPreferences.edit().putFloat(Keys.TEXT_SCALE_UI, uiTextScale).apply();
+    }
+
+    public float getUiTextScale() {
+        return mPreferences.getFloat(Keys.TEXT_SCALE_UI, 1f);
     }
 }

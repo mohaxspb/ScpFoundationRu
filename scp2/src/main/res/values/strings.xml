@@ -2,8 +2,8 @@
     <string name="app_name">SCP2</string>
     <string name="drawer_item_1">Об организации</string>
     <string name="drawer_item_2">Новости</string>
-    <string name="drawer_item_3">Новые статьи</string>
-    <string name="drawer_item_4">Статьи по рейтингу</string>
+    <string name="drawer_item_3">Статьи по рейтингу</string>
+    <string name="drawer_item_4">Новые статьи</string>
     <string name="drawer_item_5">Случайная статья</string>
     <string name="drawer_item_6">Объекты I</string>
     <string name="drawer_item_7">Объекты II</string>
@@ -16,4 +16,8 @@
     <string name="drawer_item_14">Галерея</string>
     <string name="drawer_item_15">Поиск</string>
     <string name="enter">Войти</string>
+    <string name="settings">Настройки</string>
+    <string name="night_mode">Ночной режим</string>
+    <string name="text_size">Размер текста</string>
+    <string name="in_apps">Поддержка проекта</string>
 </resources>

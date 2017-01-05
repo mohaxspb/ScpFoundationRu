@@ -10,11 +10,15 @@ import ru.kuchanov.scp2.api.ApiClient;
 import ru.kuchanov.scp2.db.DbProviderFactory;
 import ru.kuchanov.scp2.manager.MyPreferenceManager;
 import ru.kuchanov.scp2.mvp.contract.Main;
+import ru.kuchanov.scp2.mvp.contract.RatedArticles;
+import ru.kuchanov.scp2.mvp.contract.RecentArticles;
 import ru.kuchanov.scp2.mvp.presenter.MainPresenter;
+import ru.kuchanov.scp2.mvp.presenter.MostRatedArticlesPresenter;
+import ru.kuchanov.scp2.mvp.presenter.MostRecentArticlesPresenter;
 
 /**
  * Created by y.kuchanov on 21.12.16.
- *
+ * <p>
  * for scp_ru
  */
 @Module
@@ -27,7 +31,40 @@ public class PresentersModule {
             @NonNull MyPreferenceManager myPreferencesManager,
             @NonNull DbProviderFactory dbProviderFactory,
             @NonNull ApiClient apiClient
-            ) {
+    ) {
         return new MainPresenter(myPreferencesManager, dbProviderFactory, apiClient);
+    }
+
+//    @Provides
+//    @Singleton
+//    @NonNull
+//    About.Presenter providesAboutPresenter(
+//            @NonNull MyPreferenceManager myPreferencesManager,
+//            @NonNull DbProviderFactory dbProviderFactory,
+//            @NonNull ApiClient apiClient
+//    ) {
+//        return new AboutPresenter(myPreferencesManager, dbProviderFactory, apiClient);
+//    }
+
+    @Provides
+    @Singleton
+    @NonNull
+    RecentArticles.Presenter providesRecentArticlesPresenter(
+            @NonNull MyPreferenceManager myPreferencesManager,
+            @NonNull DbProviderFactory dbProviderFactory,
+            @NonNull ApiClient apiClient
+    ) {
+        return new MostRecentArticlesPresenter(myPreferencesManager, dbProviderFactory, apiClient);
+    }
+
+    @Provides
+    @Singleton
+    @NonNull
+    RatedArticles.Presenter providesRatedArticlesPresenter(
+            @NonNull MyPreferenceManager myPreferencesManager,
+            @NonNull DbProviderFactory dbProviderFactory,
+            @NonNull ApiClient apiClient
+    ) {
+        return new MostRatedArticlesPresenter(myPreferencesManager, dbProviderFactory, apiClient);
     }
 }
