@@ -69,14 +69,14 @@ public class MainActivity extends BaseDrawerActivity<Main.View, Main.Presenter> 
     @Override
     public void onNavigationItemClicked(int id) {
         Timber.d("onNavigationItemClicked with id: %s", id);
-        //TODO
         String title;
         Fragment fragment;
+        String tag;
         switch (id) {
             case R.id.about:
                 mCurrentSelectedDrawerItemId = id;
                 title = getString(R.string.drawer_item_1);
-                String tag = ArticleFragment.TAG + "#" + Constants.Urls.ABOUT_SCP;
+                tag = ArticleFragment.TAG + "#" + Constants.Urls.ABOUT_SCP;
                 hideFragments();
                 fragment = getSupportFragmentManager().findFragmentByTag(tag);
                 if (fragment == null) {
@@ -93,7 +93,19 @@ public class MainActivity extends BaseDrawerActivity<Main.View, Main.Presenter> 
             case R.id.news:
                 mCurrentSelectedDrawerItemId = id;
                 title = getString(R.string.drawer_item_2);
-                //TODO
+                tag = ArticleFragment.TAG + "#" + Constants.Urls.NEWS;
+                hideFragments();
+                fragment = getSupportFragmentManager().findFragmentByTag(tag);
+                if (fragment == null) {
+                    fragment = ArticleFragment.newInstance(Constants.Urls.NEWS, getString(R.string.news), null);
+                    getSupportFragmentManager().beginTransaction()
+                            .add(content.getId(), fragment, tag)
+                            .commit();
+                } else {
+                    getSupportFragmentManager().beginTransaction()
+                            .show(fragment)
+                            .commit();
+                }
                 break;
             case R.id.mostRatedArticles:
                 mCurrentSelectedDrawerItemId = id;

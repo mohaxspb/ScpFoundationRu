@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -109,7 +108,6 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                 break;
             case TYPE_SPOILER:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_spoiler, parent, false);
-                view.setBackgroundColor(Color.WHITE);
                 viewHolder = new ViewHolderSpoiler(view);
                 break;
             case TYPE_TITLE:
@@ -125,9 +123,6 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
-        final Context ctx = holder.itemView.getContext();
-        int textSizePrimary = ctx.getResources().getDimensionPixelSize(R.dimen.text_size_primary);
-        float articleTextScale = mMyPreferenceManager.getArticleTextScale();
         switch (getItemViewType(position)) {
             case TYPE_TEXT:
                 ((ViewHolderText) holder).bind(mArticlesTextParts.get(position - 1));
@@ -136,33 +131,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                 ((ViewHolderImage) holder).bind(mArticlesTextParts.get(position - 1));
                 break;
             case TYPE_SPOILER:
-                final ViewHolderSpoiler viewHolderSpoiler = (ViewHolderSpoiler) holder;
-                viewHolderSpoiler.title.setTextSize(TypedValue.COMPLEX_UNIT_PX, articleTextScale * textSizePrimary);
-                ArrayList<String> spoilerParts = ParseHtmlUtils.getSpoilerParts(mArticlesTextParts.get(position - 1));
-                viewHolderSpoiler.title.setTextIsSelectable(true);
-                viewHolderSpoiler.title.setText(spoilerParts.get(0));
-                viewHolderSpoiler.content.setTextIsSelectable(true);
-                viewHolderSpoiler.content.setLinksClickable(true);
-                viewHolderSpoiler.content.setMovementMethod(LinkMovementMethod.getInstance());
-                SetTextViewHTML.setText(viewHolderSpoiler.content, spoilerParts.get(1));
-
-                LinearLayout.LayoutParams linerarParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0);
-                viewHolderSpoiler.content.setLayoutParams(linerarParams);
-                viewHolderSpoiler.title.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        int contentHeight = viewHolderSpoiler.content.getLayoutParams().height;
-                        if (contentHeight == 0) {
-                            LinearLayout.LayoutParams paramsFullHeight = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                            viewHolderSpoiler.content.setLayoutParams(paramsFullHeight);
-                            viewHolderSpoiler.title.setCompoundDrawablesWithIntrinsicBounds(AttributeGetter.getDrawableId(ctx, R.attr.iconArrowUp), 0, 0, 0);
-                        } else {
-                            LinearLayout.LayoutParams linerarParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0);
-                            viewHolderSpoiler.content.setLayoutParams(linerarParams);
-                            viewHolderSpoiler.title.setCompoundDrawablesWithIntrinsicBounds(AttributeGetter.getDrawableId(ctx, R.attr.iconArrowDown), 0, 0, 0);
-                        }
-                    }
-                });
+                ((ViewHolderSpoiler) holder).bind(mArticlesTextParts.get(position - 1));
                 break;
             case TYPE_TITLE:
                 ((ViewHolderTitle) holder).bind(mArticle.title);
@@ -219,8 +188,8 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
         }
 
         void bind(String text) {
-            Context ctx = itemView.getContext();
-            int textSizePrimary = ctx.getResources().getDimensionPixelSize(R.dimen.text_size_primary);
+            Context context = itemView.getContext();
+            int textSizePrimary = context.getResources().getDimensionPixelSize(R.dimen.text_size_primary);
             float articleTextScale = mMyPreferenceManager.getArticleTextScale();
 
             textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, articleTextScale * textSizePrimary);
@@ -233,12 +202,41 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
     }
 
     class ViewHolderSpoiler extends RecyclerView.ViewHolder {
-        TextView title, content;
+        @BindView(R.id.title)
+        TextView title;
+        @BindView(R.id.content)
+        TextView content;
 
         ViewHolderSpoiler(View itemView) {
             super(itemView);
-            title = (TextView) itemView.findViewById(R.id.title);
-            content = (TextView) itemView.findViewById(R.id.content);
+            ButterKnife.bind(this, itemView);
+        }
+        
+        void bind(String textPart){
+            Context context = itemView.getContext();
+            int textSizePrimary = context.getResources().getDimensionPixelSize(R.dimen.text_size_primary);
+            float articleTextScale = mMyPreferenceManager.getArticleTextScale();
+            title.setTextSize(TypedValue.COMPLEX_UNIT_PX, articleTextScale * textSizePrimary);
+
+            ArrayList<String> spoilerParts = ParseHtmlUtils.getSpoilerParts(textPart);
+
+            int colorId = AttributeGetter.getColor(context, R.attr.windowBackgroundDark);
+
+            title.setText(spoilerParts.get(0));
+            content.setTextIsSelectable(true);
+            content.setLinksClickable(true);
+            content.setMovementMethod(LinkMovementMethod.getInstance());
+            SetTextViewHTML.setText(content, spoilerParts.get(1));
+
+            title.setOnClickListener(v -> {
+                if (content.getVisibility() == View.GONE) {
+                    title.setCompoundDrawablesWithIntrinsicBounds(AttributeGetter.getDrawableId(context, R.attr.iconArrowUp), 0, 0, 0);
+                    content.setVisibility(View.VISIBLE);
+                } else {
+                    title.setCompoundDrawablesWithIntrinsicBounds(AttributeGetter.getDrawableId(context, R.attr.iconArrowDown), 0, 0, 0);
+                    content.setVisibility(View.GONE);
+                }
+            });
         }
     }
 
