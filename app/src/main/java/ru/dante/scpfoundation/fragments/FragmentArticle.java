@@ -55,6 +55,12 @@ import ru.dante.scpfoundation.utils.parsing.DownloadArticle;
  * Created for MyApplication by Dante on 16.01.2016  19:43.
  */
 public class FragmentArticle extends Fragment implements DownloadArticle.SetArticlesText, SharedPreferences.OnSharedPreferenceChangeListener {
+
+    private static final String KEY_HAS_TABS = "KEY_HAS_TABS";
+    private static final String KEY_TABS_TITLE = "KEY_TABS_TITLE";
+    private static final String KEY_TABS_TEXT = "KEY_TABS_TEXT";
+    private static final String KEY_CURRENT_SELECTED_TAB = "KEY_CURRENT_SELECTED_TAB";
+
     RecyclerView recyclerView;
     String url;
     String artTitle;
@@ -62,10 +68,6 @@ public class FragmentArticle extends Fragment implements DownloadArticle.SetArti
     public String LOG = FragmentArticle.class.getSimpleName();
     private ImageView loadingIndicator;
     private boolean hasTabs = false;
-    private static final String KEY_HAS_TABS = "KEY_HAS_TABS";
-    private static final String KEY_TABS_TITLE = "KEY_TABS_TITLE";
-    private static final String KEY_TABS_TEXT = "KEY_TABS_TEXT";
-    private static final String KEY_CURRENT_SELECTED_TAB = "KEY_CURRENT_SELECTED_TAB";
     ArrayList<String> tabsTitles = new ArrayList<>();
     ArrayList<String> tabsText = new ArrayList<>();
     int currentSelectedTab = 0;
@@ -114,6 +116,7 @@ public class FragmentArticle extends Fragment implements DownloadArticle.SetArti
             Log.i(LOG, "article is null:" + String.valueOf(article == null));
             this.url = savedInstanceState.getString("url");
             this.artTitle = savedInstanceState.getString("title");
+            //tabs
             hasTabs = savedInstanceState.getBoolean(KEY_HAS_TABS);
             tabsTitles = savedInstanceState.getStringArrayList(KEY_TABS_TITLE);
             tabsText = savedInstanceState.getStringArrayList(KEY_TABS_TEXT);
@@ -242,14 +245,7 @@ public class FragmentArticle extends Fragment implements DownloadArticle.SetArti
                     .positiveText("Закрыть")
                     .content(Html.fromHtml(content))
                     .show();
-           /* DownloadAllArticlesInfo downloadAllArticlesInfo=new DownloadAllArticlesInfo(1,ctx);
-            downloadAllArticlesInfo.execute();*/
-           /* DownloadAllArticlesAuthorOriginalInfo downloadAllArticlesAuthorOriginalInfo=new DownloadAllArticlesAuthorOriginalInfo(ctx);
-            downloadAllArticlesAuthorOriginalInfo.execute();*/
-            /*DownloadAllArticlesAuthorRUInfo downloadAllArticlesAuthorRUInfo=new DownloadAllArticlesAuthorRUInfo(ctx);
-            downloadAllArticlesAuthorRUInfo.execute();*/
             Log.i(LOG, "url: " + article.getURL() + " title: " + article.getTitle());
-
             Log.i(LOG, author);
         }
         return super.onOptionsItemSelected(item);
@@ -298,7 +294,6 @@ public class FragmentArticle extends Fragment implements DownloadArticle.SetArti
         this.article = article;
         String fullArticlesText = this.article.getArticlesText();
         Document document = Jsoup.parse(fullArticlesText);
-//        Element yuiNavset = document.getElementsByClass("yui-navset-top").first();
         Element yuiNavset = document.getElementsByAttributeValueStarting("class", "yui-navset").first();
         if (yuiNavset != null) {
             hasTabs = true;

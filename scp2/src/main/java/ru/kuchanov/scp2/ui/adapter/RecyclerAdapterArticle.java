@@ -37,6 +37,7 @@ import ru.kuchanov.scp2.ui.util.SetTextViewHTML;
 import ru.kuchanov.scp2.util.AttributeGetter;
 import ru.kuchanov.scp2.util.DialogUtils;
 import ru.kuchanov.scp2.util.DimensionUtils;
+import timber.log.Timber;
 
 /**
  * Created by Dante on 17.01.2016.
@@ -67,6 +68,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
     }
 
     public void setData(Article article) {
+//        Timber.d("setData: %s", article.text);
         mArticle = article;
         mArticlesTextParts = ParseHtmlUtils.getArticlesTextParts(article.text);
         articlesTextpartsType = ParseHtmlUtils.getListOfTextTypes(mArticlesTextParts);
@@ -211,8 +213,8 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
-        
-        void bind(String textPart){
+
+        void bind(String textPart) {
             Context context = itemView.getContext();
             int textSizePrimary = context.getResources().getDimensionPixelSize(R.dimen.text_size_primary);
             float articleTextScale = mMyPreferenceManager.getArticleTextScale();
