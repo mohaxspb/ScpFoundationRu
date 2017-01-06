@@ -203,13 +203,17 @@ public class ArticleFragment extends BaseFragment<ArticleMvp.View, ArticleMvp.Pr
             for (Element li : liElements) {
                 tabsTitles.add(li.text());
             }
+            tabLayout.clearOnTabSelectedListeners();
             tabLayout.removeAllTabs();
             for (String title : tabsTitles) {
                 tabLayout.addTab(tabLayout.newTab().setText(title));
             }
             tabLayout.setVisibility(View.VISIBLE);
 
-            tabLayout.clearOnTabSelectedListeners();
+            Article currentTabArticle = new Article();
+            currentTabArticle.text = tabsText.get(mCurrentSelectedTab);
+            mAdapter.setData(currentTabArticle);
+
             tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
                 @Override
                 public void onTabSelected(TabLayout.Tab tab) {
@@ -235,10 +239,6 @@ public class ArticleFragment extends BaseFragment<ArticleMvp.View, ArticleMvp.Pr
             if (selectedTab != null) {
                 selectedTab.select();
             }
-
-//            Article currentTabArticle = new Article();
-//            currentTabArticle.text = tabsText.get(mCurrentSelectedTab);
-//            mAdapter.setData(currentTabArticle);
         } else {
             tabLayout.setVisibility(View.GONE);
             mAdapter.setData(mArticle);
