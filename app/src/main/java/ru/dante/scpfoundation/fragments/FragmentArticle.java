@@ -236,7 +236,7 @@ public class FragmentArticle extends Fragment implements DownloadArticle.SetArti
             ((AppCompatActivity) ctx).supportInvalidateOptionsMenu();
         }
         if (item.getItemId() == 5000) {
-            String content = "";
+            String content;
             String author = LicenseUtils.getAuthorByUrlOrTitle(ctx, article.getURL(), article.getTitle());
             String license = "Распространяется по лицензии <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-nc-sa/3.0/\">Creative Commons Attribution-NonCommercial-ShareAlike 3.0 License</a>";
             content = author + "<br><br>" + license;
@@ -343,6 +343,7 @@ public class FragmentArticle extends Fragment implements DownloadArticle.SetArti
         }
     }
 
+    @SuppressWarnings("unused")
     @Subscribe
     public void onTocPress(EventTocLinkPress tocLinkPress) {
         RecyclerAdapterArticle recyclerAdapterArticle = (RecyclerAdapterArticle) recyclerView.getAdapter();
@@ -364,7 +365,7 @@ public class FragmentArticle extends Fragment implements DownloadArticle.SetArti
             }
         }
     }
-
+    @SuppressWarnings("unused")
     @Subscribe
     public void onSnoskaPress(EventSnoskaLinkPress snoskaLinkPress) {
         RecyclerAdapterArticle recyclerAdapterArticle = (RecyclerAdapterArticle) recyclerView.getAdapter();
@@ -393,6 +394,7 @@ public class FragmentArticle extends Fragment implements DownloadArticle.SetArti
         }
     }
 
+    @SuppressWarnings("unused")
     @Subscribe
     public void onBibliographyPress(EventBibliographyLinkPress bibliographyLinkPress) {
         RecyclerAdapterArticle recyclerAdapterArticle = (RecyclerAdapterArticle) recyclerView.getAdapter();

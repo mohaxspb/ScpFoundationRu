@@ -64,6 +64,12 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
         return mArticlesTextParts;
     }
 
+    private SetTextViewHTML.TextItemsClickListener mTextItemsClickListener;
+
+    public void setTextItemsClickListener(SetTextViewHTML.TextItemsClickListener textItemsClickListener) {
+        mTextItemsClickListener = textItemsClickListener;
+    }
+
     public RecyclerAdapterArticle() {
         MyApplication.getAppComponent().inject(this);
     }
@@ -71,8 +77,6 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
     public void setData(Article article) {
         Timber.d("setData: %s", article);
         mArticle = article;
-//        mArticlesTextParts = ParseHtmlUtils.getArticlesTextParts(article.text);
-//        mArticlesTextPartsTypes = ParseHtmlUtils.getListOfTextTypes(mArticlesTextParts);
         if (mArticle.hasTabs) {
             mArticlesTextParts = ParseHtmlUtils.getArticlesTextParts(mArticle.text);
             mArticlesTextPartsTypes = ParseHtmlUtils.getListOfTextTypes(mArticlesTextParts);
@@ -104,7 +108,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        RecyclerView.ViewHolder viewHolder = null;
+        RecyclerView.ViewHolder viewHolder;
         View view;
         switch (viewType) {
             default:
@@ -196,7 +200,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
             textView.setMovementMethod(LinkMovementMethod.getInstance());
             textView.setAutoLinkMask(Linkify.ALL);
             textView.setTextIsSelectable(true);
-            SetTextViewHTML.setText(textView, text);
+            SetTextViewHTML.setText(textView, text, mTextItemsClickListener);
         }
     }
 
@@ -223,7 +227,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
             content.setTextIsSelectable(true);
             content.setLinksClickable(true);
             content.setMovementMethod(LinkMovementMethod.getInstance());
-            SetTextViewHTML.setText(content, spoilerParts.get(1));
+            SetTextViewHTML.setText(content, spoilerParts.get(1), mTextItemsClickListener);
 
             title.setOnClickListener(v -> {
                 if (content.getVisibility() == View.GONE) {

@@ -24,4 +24,5 @@
     <string name="news">Новости</string>
     <string name="stories">Рассказы</string>
     <string name="day_mode">Дневной режим</string>
+    <string name="unsupported_link">Эта ссылка не поддерживается</string>
 </resources>

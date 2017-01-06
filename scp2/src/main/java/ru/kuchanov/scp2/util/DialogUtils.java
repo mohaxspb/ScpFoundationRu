@@ -16,6 +16,7 @@ import uk.co.senab.photoview.PhotoView;
  */
 public class DialogUtils {
 
+    //TODO think how to restore image dialog Maybe use fragment dialog?..
     public static void showImageDialog(final Context ctx, final String imgUrl) {
         Timber.d("showImageDialog");
         Dialog nagDialog = new Dialog(ctx, android.R.style.Theme_Black_NoTitleBar_Fullscreen);

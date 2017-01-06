@@ -3,12 +3,22 @@ package ru.kuchanov.scp2.ui.fragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ProgressBar;
+
+import com.afollestad.materialdialogs.MaterialDialog;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
+
+import java.util.List;
 
 import butterknife.BindView;
 import ru.kuchanov.scp2.MyApplication;
@@ -18,6 +28,8 @@ import ru.kuchanov.scp2.db.model.RealmString;
 import ru.kuchanov.scp2.mvp.contract.ArticleMvp;
 import ru.kuchanov.scp2.ui.adapter.RecyclerAdapterArticle;
 import ru.kuchanov.scp2.ui.base.BaseFragment;
+import ru.kuchanov.scp2.ui.util.SetTextViewHTML;
+import ru.kuchanov.scp2.util.DialogUtils;
 import timber.log.Timber;
 
 /**
@@ -25,7 +37,9 @@ import timber.log.Timber;
  * <p>
  * for scp_ru
  */
-public class ArticleFragment extends BaseFragment<ArticleMvp.View, ArticleMvp.Presenter> implements ArticleMvp.View {
+public class ArticleFragment
+        extends BaseFragment<ArticleMvp.View, ArticleMvp.Presenter>
+        implements ArticleMvp.View, SetTextViewHTML.TextItemsClickListener {
 
     public static final String TAG = ArticleFragment.class.getSimpleName();
 
@@ -114,6 +128,7 @@ public class ArticleFragment extends BaseFragment<ArticleMvp.View, ArticleMvp.Pr
         Timber.d("initViews");
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mAdapter = new RecyclerAdapterArticle();
+        mAdapter.setTextItemsClickListener(this);
         mRecyclerView.setAdapter(mAdapter);
 
         mPresenter.setArticleId(url);
@@ -210,5 +225,87 @@ public class ArticleFragment extends BaseFragment<ArticleMvp.View, ArticleMvp.Pr
             tabLayout.setVisibility(View.GONE);
             mAdapter.setData(mArticle);
         }
+    }
+
+    @Override
+    public void onLinkClicked(String link) {
+        //TODO implement open predefined main activities link clicked
+//                for (String pressedLink : Constants.Urls.ALL_LINKS_ARRAY) {
+//                    if (link.equals(pressedLink)) {
+//                        ActivityMain.startActivityMain(link, ctx);
+//                        return;
+//                    }
+//                }
+
+        //TODO start new activity
+        showError(new IllegalStateException("not implemented yet"));
+    }
+
+    @Override
+    public void onSnoskaClicked(String link) {
+        List<String> articlesTextParts = mAdapter.getArticlesTextParts();
+        if (TextUtils.isDigitsOnly(link)) {
+            String linkToFind = "footnote-" + link;
+            for (int i = articlesTextParts.size() - 1; i >= 0; i--) {
+                Document document = Jsoup.parse(articlesTextParts.get(i));
+                Elements divTag = document.getElementsByAttributeValue("id", linkToFind);
+                if (divTag.size() != 0) {
+                    divTag.first().getElementsByTag("pizda").first().remove();
+                    String textThatWeTryToFindSoManyTime = divTag.text();
+                    textThatWeTryToFindSoManyTime = textThatWeTryToFindSoManyTime.substring(3, textThatWeTryToFindSoManyTime.length());
+                    new MaterialDialog.Builder(getActivity())
+                            .title("Сноска " + link)
+                            .content(textThatWeTryToFindSoManyTime)
+                            .show();
+                    break;
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onBibliographyClicked(String link) {
+        List<String> articlesTextParts = mAdapter.getArticlesTextParts();
+        for (int i = articlesTextParts.size() - 1; i >= 0; i--) {
+            Document document = Jsoup.parse(articlesTextParts.get(i));
+            Elements divTag = document.getElementsByAttributeValue("id", link);
+            if (divTag.size() != 0) {
+                String textThatWeTryToFindSoManyTime = divTag.text();
+                textThatWeTryToFindSoManyTime = textThatWeTryToFindSoManyTime.substring(3, textThatWeTryToFindSoManyTime.length());
+                new MaterialDialog.Builder(getActivity())
+                        .title("Библиография")
+                        .content(textThatWeTryToFindSoManyTime)
+                        .show();
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void onTocClicked(String link) {
+        List<String> articlesTextParts = mAdapter.getArticlesTextParts();
+        String digits = "";
+        for (char c : link.toCharArray()) {
+            if (TextUtils.isDigitsOnly(String.valueOf(c))) {
+                digits += String.valueOf(c);
+            }
+        }
+        for (int i = 0; i < articlesTextParts.size(); i++) {
+            if (articlesTextParts.get(i).contains("id=\"" + "toc" + digits + "\"")) {
+//                (i+1 так как в адаптере есть еще элемент для заголовка)
+                mRecyclerView.scrollToPosition(i + 1);
+                return;
+            }
+        }
+    }
+
+    @Override
+    public void onImageClicked(String link) {
+        DialogUtils.showImageDialog(getActivity(), link);
+    }
+
+    @Override
+    public void onUnsupportedLinkPressed(String link) {
+        Snackbar.make(root, R.string.unsupported_link, Snackbar.LENGTH_SHORT).show();
     }
 }
