@@ -16,6 +16,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.kuchanov.scp2.R;
 import ru.kuchanov.scp2.manager.MyPreferenceManager;
+import ru.kuchanov.scp2.mvp.base.BaseDataPresenter;
 import ru.kuchanov.scp2.mvp.base.BaseMvpView;
 
 /**
@@ -23,7 +24,9 @@ import ru.kuchanov.scp2.mvp.base.BaseMvpView;
  * <p>
  * for scp_ru
  */
-public abstract class BaseActivity<V extends BaseMvpView, P extends MvpPresenter<V>> extends MvpActivity<V, P> implements BaseMvpView {
+public abstract class BaseActivity<V extends BaseMvpView, P extends BaseDataPresenter<V>>
+        extends MvpActivity<V, P>
+        implements BaseMvpView {
 
     @BindView(R.id.root)
     protected View root;
@@ -54,6 +57,8 @@ public abstract class BaseActivity<V extends BaseMvpView, P extends MvpPresenter
         if (mToolbar != null) {
             setSupportActionBar(mToolbar);
         }
+
+        mPresenter.onCreate();
     }
 
     protected abstract int getLayoutResId();

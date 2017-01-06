@@ -5,7 +5,7 @@ package ru.kuchanov.scp2.mvp.base;
  * <p>
  * for scp_ru
  */
-public interface Drawer {
+public interface DrawerMvp {
     interface View extends BaseMvpView {
         void onNavigationItemClicked(int id);
     }

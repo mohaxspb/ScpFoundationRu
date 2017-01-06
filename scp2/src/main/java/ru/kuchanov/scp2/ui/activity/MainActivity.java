@@ -21,28 +21,19 @@ import timber.log.Timber;
 
 public class MainActivity extends BaseDrawerActivity<Main.View, Main.Presenter> implements Main.View {
 
-    private static final String STATE_CUR_DRAWER_ITEM_ID = "STATE_CUR_DRAWER_ITEM_ID";
-
-    private int mCurrentSelectedDrawerItemId = R.id.mostRatedArticles;
-
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt(STATE_CUR_DRAWER_ITEM_ID, mCurrentSelectedDrawerItemId);
+    protected int getDefaultNavItemId() {
+        return R.id.mostRatedArticles;
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mPresenter.onCreate();
-
-        mNavigationView.setNavigationItemSelectedListener(item -> {
-            mPresenter.onNavigationItemClicked(item.getItemId());
-            onNavigationItemClicked(item.getItemId());
-            mDrawerLayout.closeDrawer(GravityCompat.START);
-            return true;
-        });
+        if (getSupportFragmentManager().findFragmentById(content.getId()) == null) {
+            onNavigationItemClicked(mCurrentSelectedDrawerItemId);
+        }
+        setToolbarTitleByDrawerItemId(mCurrentSelectedDrawerItemId);
     }
 
     @Override
@@ -69,13 +60,12 @@ public class MainActivity extends BaseDrawerActivity<Main.View, Main.Presenter> 
     @Override
     public void onNavigationItemClicked(int id) {
         Timber.d("onNavigationItemClicked with id: %s", id);
-        String title;
+        setToolbarTitleByDrawerItemId(id);
         Fragment fragment;
         String tag;
         switch (id) {
             case R.id.about:
                 mCurrentSelectedDrawerItemId = id;
-                title = getString(R.string.drawer_item_1);
                 tag = ArticleFragment.TAG + "#" + Constants.Urls.ABOUT_SCP;
                 hideFragments();
                 fragment = getSupportFragmentManager().findFragmentByTag(tag);
@@ -92,7 +82,6 @@ public class MainActivity extends BaseDrawerActivity<Main.View, Main.Presenter> 
                 break;
             case R.id.news:
                 mCurrentSelectedDrawerItemId = id;
-                title = getString(R.string.drawer_item_2);
                 tag = ArticleFragment.TAG + "#" + Constants.Urls.NEWS;
                 hideFragments();
                 fragment = getSupportFragmentManager().findFragmentByTag(tag);
@@ -109,7 +98,6 @@ public class MainActivity extends BaseDrawerActivity<Main.View, Main.Presenter> 
                 break;
             case R.id.mostRatedArticles:
                 mCurrentSelectedDrawerItemId = id;
-                title = getString(R.string.drawer_item_3);
                 hideFragments();
                 fragment = getSupportFragmentManager().findFragmentByTag(RatedArticlesFragment.TAG);
                 if (fragment == null) {
@@ -125,7 +113,6 @@ public class MainActivity extends BaseDrawerActivity<Main.View, Main.Presenter> 
                 break;
             case R.id.mostRecentArticles:
                 mCurrentSelectedDrawerItemId = id;
-                title = getString(R.string.drawer_item_4);
                 hideFragments();
                 fragment = getSupportFragmentManager().findFragmentByTag(RecentArticlesFragment.TAG);
                 if (fragment == null) {
@@ -140,62 +127,114 @@ public class MainActivity extends BaseDrawerActivity<Main.View, Main.Presenter> 
                 }
                 break;
             case R.id.random_page:
-                title = getString(R.string.drawer_item_5);
                 //TODO
                 break;
             case R.id.objects_I:
                 mCurrentSelectedDrawerItemId = id;
-                title = getString(R.string.drawer_item_6);
                 //TODO
                 break;
             case R.id.objects_II:
                 mCurrentSelectedDrawerItemId = id;
-                title = getString(R.string.drawer_item_7);
                 //TODO
                 break;
             case R.id.objects_III:
                 mCurrentSelectedDrawerItemId = id;
-                title = getString(R.string.drawer_item_8);
                 //TODO
                 break;
             case R.id.objects_RU:
                 mCurrentSelectedDrawerItemId = id;
-                title = getString(R.string.drawer_item_9);
                 //TODO
                 break;
             case R.id.files:
-                title = getString(R.string.drawer_item_10);
                 //TODO launch new activity
                 break;
             case R.id.stories:
-                title = getString(R.string.drawer_item_11);
-                //TODO
+                mCurrentSelectedDrawerItemId = id;
+                tag = ArticleFragment.TAG + "#" + Constants.Urls.STORIES;
+                hideFragments();
+                fragment = getSupportFragmentManager().findFragmentByTag(tag);
+                if (fragment == null) {
+                    fragment = ArticleFragment.newInstance(Constants.Urls.STORIES, getString(R.string.stories), null);
+                    getSupportFragmentManager().beginTransaction()
+                            .add(content.getId(), fragment, tag)
+                            .commit();
+                } else {
+                    getSupportFragmentManager().beginTransaction()
+                            .show(fragment)
+                            .commit();
+                }
                 break;
             case R.id.favorite:
                 mCurrentSelectedDrawerItemId = id;
-                title = getString(R.string.drawer_item_12);
                 //TODO
                 break;
             case R.id.offline:
                 mCurrentSelectedDrawerItemId = id;
-                title = getString(R.string.drawer_item_13);
                 //TODO
                 break;
             case R.id.gallery:
-                title = getString(R.string.drawer_item_14);
                 //TODO
                 break;
             case R.id.site_search:
                 mCurrentSelectedDrawerItemId = id;
-                title = getString(R.string.drawer_item_15);
                 //TODO
                 break;
             default:
-                title = "";
+                Timber.e("unexpected item ID");
+                break;
+        }
+    }
+
+    @Override
+    public void setToolbarTitleByDrawerItemId(int id) {
+        Timber.d("setToolbarTitleByDrawerItemId with id: %s", id);
+        String title;
+        switch (id) {
+            case R.id.about:
+                title = getString(R.string.drawer_item_1);
+                break;
+            case R.id.news:
+                title = getString(R.string.drawer_item_2);
+                break;
+            case R.id.mostRatedArticles:
+                title = getString(R.string.drawer_item_3);
+                break;
+            case R.id.mostRecentArticles:
+                title = getString(R.string.drawer_item_4);
+                break;
+            case R.id.objects_I:
+                title = getString(R.string.drawer_item_6);
+                break;
+            case R.id.objects_II:
+                title = getString(R.string.drawer_item_7);
+                break;
+            case R.id.objects_III:
+                title = getString(R.string.drawer_item_8);
+                break;
+            case R.id.objects_RU:
+                title = getString(R.string.drawer_item_9);
+                break;
+            case R.id.stories:
+                title = getString(R.string.drawer_item_11);
+                break;
+            case R.id.favorite:
+                title = getString(R.string.drawer_item_12);
+                break;
+            case R.id.offline:
+                title = getString(R.string.drawer_item_13);
+                break;
+            case R.id.site_search:
+                title = getString(R.string.drawer_item_15);
+                break;
+            default:
+                Timber.e("unexpected item ID");
+                title = null;
                 break;
         }
         assert mToolbar != null;
-        mToolbar.setTitle(title);
+        if (title != null) {
+            mToolbar.setTitle(title);
+        }
     }
 
     private void hideFragments() {

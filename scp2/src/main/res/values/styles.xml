@@ -2,25 +2,16 @@
     <style name="Base.Theme.Light" parent="Theme.AppCompat.Light.NoActionBar">
         <!--(Тулбар,текст(и хз что еще)-->
         <item name="colorPrimary">@color/material_blue_gray_700</item>
-
         <!--(статусбар)-->
         <item name="colorPrimaryDark">@android:color/black</item>
-
         <!--(индикаторы нажатий(если незадано иначе), цвет ссылок,дефолтный цвет прогрессбара)-->
         <item name="colorAccent">@color/material_indigo_500</item>
-
-        <!--<item name="actionMenuTextAppearance">@color/material_red_500</item>-->
-        <!--<item name="android:textColor">@color/material_blue_gray_800</item>-->
-
         <!--(цвет стандарного текста левого/правого меню,цает верхнего тулбара)-->
         <item name="android:textColorPrimary">@color/material_blue_gray_50</item>
-
         <!--(не ясно за что отвечает)-->
         <item name="android:textColorPrimaryInverse">@color/material_green_500</item>
-
         <!--(иконки в левом меню)-->
         <item name="android:textColorSecondary">@color/material_blue_gray_700</item>
-
         <!--(гамбургер,триточки(overflow),не нажатый чекбокс)-->
         <item name="colorControlNormal">@color/material_blue_gray_50</item>
         <item name="android:windowBackground">@color/material_blue_gray_50</item>
@@ -67,26 +58,18 @@
 
     <!-- Base application theme. Dark -->
     <style name="Base.Theme.Dark" parent="Theme.AppCompat.NoActionBar">
-
         <!--(Тулбар,текст(и хз что еще)-->
         <item name="colorPrimary">@color/material_blue_gray_900</item>
         <!--(статусбар)-->
         <item name="colorPrimaryDark">@android:color/black</item>
-
         <!--(индикаторы нажатий(если незадано иначе), цвет ссылок,дефолтный цвет прогрессбара)-->
         <item name="colorAccent">@color/material_amber_500</item>
-
-        <!--<item name="actionMenuTextAppearance">@color/material_red_500</item>-->
-        <!--<item name="android:textColor">@color/material_blue_gray_800</item>-->
-
         <!--(цвет стандарного текста левого/правого меню,цdет верхнего тулбара(заголовка)-->
         <item name="android:textColorPrimary">@color/material_blue_gray_300</item>
         <!--(не ясно за что отвечает)-->
         <item name="android:textColorPrimaryInverse">@color/material_green_500</item>
-
         <!--(иконки в левом меню)-->
         <item name="android:textColorSecondary">@color/material_blue_gray_100</item>
-
         <!--(гамбургер,триточки(overflow),не нажатый чекбокс)-->
         <item name="colorControlNormal">@color/material_blue_gray_50</item>
         <item name="android:windowBackground">@color/material_blue_gray_800</item>
@@ -112,7 +95,6 @@
         <item name="iconEmptyImage">@drawable/ic_image_white_48dp</item>
         <item name="loadingIndicator">@drawable/ic_autorenew_blue_grey_50_48dp</item>
         <item name="scrollbar">@drawable/scrollbar_dark</item>
-
         <!--стили для библиотеки диалогов-->
         <item name="md_dark_theme">true</item>
     </style>
@@ -151,7 +133,6 @@
         <item name="android:textColorSecondary">@color/material_blue_gray_50</item>
         <!--<item name="android:textAppearanceLarge">@style/MyTextAppearanceLarge</item>-->
         <item name="android:textColor">@color/material_blue_gray_50</item>
-
         <!---->
         <item name="android:dialogTheme">@style/MyDialogStyle</item>
         <item name="android:alertDialogTheme">@style/MyDialogStyle</item>

@@ -3,6 +3,7 @@ package ru.kuchanov.scp2.ui.base;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -10,15 +11,19 @@ import android.view.View;
 
 import butterknife.BindView;
 import ru.kuchanov.scp2.R;
-import ru.kuchanov.scp2.mvp.base.Drawer;
+import ru.kuchanov.scp2.mvp.base.DrawerMvp;
 
 /**
  * Created by mohax on 02.01.2017.
  * <p>
  * for scp_ru
  */
-public abstract class BaseDrawerActivity<V extends Drawer.View, P extends Drawer.Presenter<V>>
-        extends BaseActivity<V, P> {
+public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends DrawerMvp.Presenter<V>>
+        extends BaseActivity<V, P>
+        implements DrawerMvp.View {
+
+    private static final String STATE_CUR_DRAWER_ITEM_ID = "STATE_CUR_DRAWER_ITEM_ID";
+    private static final int SELECTED_DRAWER_ITEM_NONE = -1;
 
     @BindView(R.id.root)
     protected DrawerLayout mDrawerLayout;
@@ -26,6 +31,16 @@ public abstract class BaseDrawerActivity<V extends Drawer.View, P extends Drawer
     protected NavigationView mNavigationView;
 
     protected ActionBarDrawerToggle mDrawerToggle;
+
+    protected int mCurrentSelectedDrawerItemId = getDefaultNavItemId();
+
+    protected abstract int getDefaultNavItemId();
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(STATE_CUR_DRAWER_ITEM_ID, mCurrentSelectedDrawerItemId);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +63,20 @@ public abstract class BaseDrawerActivity<V extends Drawer.View, P extends Drawer
             mDrawerToggle.setDrawerIndicatorEnabled(true);
 
             mDrawerLayout.addDrawerListener(mDrawerToggle);
+        }
+
+        mNavigationView.setNavigationItemSelectedListener(item -> {
+            mPresenter.onNavigationItemClicked(item.getItemId());
+            onNavigationItemClicked(item.getItemId());
+            mDrawerLayout.closeDrawer(GravityCompat.START);
+            return true;
+        });
+
+        if (savedInstanceState != null) {
+            mCurrentSelectedDrawerItemId = savedInstanceState.getInt(STATE_CUR_DRAWER_ITEM_ID);
+        }
+        if (mCurrentSelectedDrawerItemId != SELECTED_DRAWER_ITEM_NONE) {
+            mNavigationView.setCheckedItem(mCurrentSelectedDrawerItemId);
         }
     }
 
