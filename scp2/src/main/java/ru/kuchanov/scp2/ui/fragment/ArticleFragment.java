@@ -10,18 +10,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ProgressBar;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import butterknife.BindView;
 import ru.kuchanov.scp2.MyApplication;
 import ru.kuchanov.scp2.R;
 import ru.kuchanov.scp2.db.model.Article;
+import ru.kuchanov.scp2.db.model.RealmString;
 import ru.kuchanov.scp2.mvp.contract.ArticleMvp;
 import ru.kuchanov.scp2.ui.adapter.RecyclerAdapterArticle;
 import ru.kuchanov.scp2.ui.base.BaseFragment;
@@ -41,9 +34,6 @@ public class ArticleFragment extends BaseFragment<ArticleMvp.View, ArticleMvp.Pr
     public static final String EXTRA_ARTICLE = "EXTRA_ARTICLE";
 
     //tabs
-    private static final String KEY_HAS_TABS = "KEY_HAS_TABS";
-    private static final String KEY_TABS_TITLE = "KEY_TABS_TITLE";
-    private static final String KEY_TABS_TEXT = "KEY_TABS_TEXT";
     private static final String KEY_CURRENT_SELECTED_TAB = "KEY_CURRENT_SELECTED_TAB";
 
     @BindView(R.id.progressCenter)
@@ -56,10 +46,8 @@ public class ArticleFragment extends BaseFragment<ArticleMvp.View, ArticleMvp.Pr
     @BindView(R.id.tabLayout)
     TabLayout tabLayout;
 
-    private boolean hasTabs = false;
-    List<String> tabsTitles = new ArrayList<>();
-    List<String> tabsText = new ArrayList<>();
-    int mCurrentSelectedTab = 0;
+    //tabs
+    private int mCurrentSelectedTab = 0;
 
     private String title;
     private String url;
@@ -85,9 +73,6 @@ public class ArticleFragment extends BaseFragment<ArticleMvp.View, ArticleMvp.Pr
         outState.putSerializable(EXTRA_ARTICLE, mArticle);
 
         //tabs
-        outState.putBoolean(KEY_HAS_TABS, hasTabs);
-        outState.putStringArrayList(KEY_TABS_TITLE, (ArrayList<String>) tabsTitles);
-        outState.putStringArrayList(KEY_TABS_TEXT, (ArrayList<String>) tabsText);
         outState.putInt(KEY_CURRENT_SELECTED_TAB, mCurrentSelectedTab);
     }
 
@@ -104,9 +89,6 @@ public class ArticleFragment extends BaseFragment<ArticleMvp.View, ArticleMvp.Pr
                 : null;
 
         if (savedInstanceState != null) {
-            hasTabs = savedInstanceState.getBoolean(KEY_HAS_TABS);
-            tabsTitles = savedInstanceState.getStringArrayList(KEY_TABS_TITLE);
-            tabsText = savedInstanceState.getStringArrayList(KEY_TABS_TEXT);
             mCurrentSelectedTab = savedInstanceState.getInt(KEY_CURRENT_SELECTED_TAB);
         }
     }
@@ -185,33 +167,17 @@ public class ArticleFragment extends BaseFragment<ArticleMvp.View, ArticleMvp.Pr
         if (mArticle == null || mArticle.text == null) {
             return;
         }
-        String fullArticlesText = mArticle.text;
-        Document document = Jsoup.parse(fullArticlesText);
-        Element yuiNavset = document.getElementsByAttributeValueStarting("class", "yui-navset").first();
-        if (yuiNavset != null) {
-            hasTabs = true;
-
-            Element titles = yuiNavset.getElementsByClass("yui-nav").first();
-            Elements liElements = titles.getElementsByTag("li");
-            Element yuiContent = yuiNavset.getElementsByClass("yui-content").first();
-
-            tabsText.clear();
-            for (Element tab : yuiContent.children()) {
-                tabsText.add(tab.html());
-            }
-            tabsTitles.clear();
-            for (Element li : liElements) {
-                tabsTitles.add(li.text());
-            }
+        if (mArticle.hasTabs) {
             tabLayout.clearOnTabSelectedListeners();
             tabLayout.removeAllTabs();
-            for (String title : tabsTitles) {
+            for (String title : RealmString.toStringList(article.tabsTitles)) {
                 tabLayout.addTab(tabLayout.newTab().setText(title));
             }
             tabLayout.setVisibility(View.VISIBLE);
 
             Article currentTabArticle = new Article();
-            currentTabArticle.text = tabsText.get(mCurrentSelectedTab);
+            currentTabArticle.hasTabs = true;
+            currentTabArticle.text = RealmString.toStringList(mArticle.tabsTexts).get(mCurrentSelectedTab);
             mAdapter.setData(currentTabArticle);
 
             tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -220,7 +186,8 @@ public class ArticleFragment extends BaseFragment<ArticleMvp.View, ArticleMvp.Pr
                     Timber.d("onTabSelected: %s", tab.getPosition());
                     mCurrentSelectedTab = tab.getPosition();
                     Article currentTabArticle = new Article();
-                    currentTabArticle.text = tabsText.get(mCurrentSelectedTab);
+                    currentTabArticle.hasTabs = true;
+                    currentTabArticle.text = RealmString.toStringList(mArticle.tabsTexts).get(mCurrentSelectedTab);
                     mAdapter.setData(currentTabArticle);
                 }
 

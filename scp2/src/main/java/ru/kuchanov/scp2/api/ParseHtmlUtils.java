@@ -1,10 +1,17 @@
 package ru.kuchanov.scp2.api;
 
+import android.support.annotation.StringDef;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.List;
+
+import timber.log.Timber;
 
 /**
  * Created by mohax on 05.01.2017.
@@ -12,14 +19,19 @@ import java.util.ArrayList;
  * for scp_ru
  */
 public class ParseHtmlUtils {
-
-    public enum TextType {
-        Text, Spoiler, Image, Table
+    @Retention(RetentionPolicy.SOURCE)
+    @StringDef({TextType.TEXT, TextType.SPOILER, TextType.IMAGE, TextType.TABLE})
+    public @interface TextType {
+        String TEXT = "TEXT";
+        String SPOILER = "SPOILER";
+        String IMAGE = "IMAGE";
+        String TABLE = "TABLE";
     }
 
     public static ArrayList<String> getArticlesTextParts(String html) {
         ArrayList<String> articlesTextParts = new ArrayList<>();
         Document document = Jsoup.parse(html);
+        Timber.d(document.outerHtml());
         Element contentPage = document.getElementById("page-content");
         if (contentPage == null) {
             contentPage = document.body();
@@ -30,34 +42,34 @@ public class ParseHtmlUtils {
         return articlesTextParts;
     }
 
-    public static ArrayList<TextType> getListOfTextTypes(ArrayList<String> articlesTextParts) {
-        ArrayList<TextType> listOfTextTypes = new ArrayList<>();
+    @TextType
+    public static List<String> getListOfTextTypes(List<String> articlesTextParts) {
+        @TextType
+        List<String> listOfTextTypes = new ArrayList<>();
         for (String textPart : articlesTextParts) {
-
             Element element = Jsoup.parse(textPart);
             Element ourElement = element.getElementsByTag("body").first().children().first();
             if (ourElement == null) {
-                listOfTextTypes.add(TextType.Text);
+                listOfTextTypes.add(TextType.TEXT);
                 continue;
             }
             if (ourElement.tagName().equals("p")) {
-                listOfTextTypes.add(TextType.Text);
+                listOfTextTypes.add(TextType.TEXT);
                 continue;
             }
             if (ourElement.className().equals("collapsible-block")) {
-                listOfTextTypes.add(TextType.Spoiler);
+                listOfTextTypes.add(TextType.SPOILER);
                 continue;
             }
             if (ourElement.tagName().equals("table")) {
-                listOfTextTypes.add(TextType.Table);
+                listOfTextTypes.add(TextType.TABLE);
                 continue;
             }
-
             if (ourElement.className().equals("rimg")) {
-                listOfTextTypes.add(TextType.Image);
+                listOfTextTypes.add(TextType.IMAGE);
                 continue;
             }
-            listOfTextTypes.add(TextType.Text);
+            listOfTextTypes.add(TextType.TEXT);
         }
 
         return listOfTextTypes;

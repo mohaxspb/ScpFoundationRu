@@ -4,7 +4,6 @@ import android.util.Pair;
 
 import java.util.List;
 
-import io.realm.RealmObject;
 import io.realm.RealmResults;
 import ru.kuchanov.scp2.api.ApiClient;
 import ru.kuchanov.scp2.db.DbProviderFactory;

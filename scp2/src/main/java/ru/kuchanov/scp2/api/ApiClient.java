@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import io.realm.RealmList;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -23,6 +24,7 @@ import ru.kuchanov.scp2.MyApplication;
 import ru.kuchanov.scp2.R;
 import ru.kuchanov.scp2.api.error.ScpParseException;
 import ru.kuchanov.scp2.db.model.Article;
+import ru.kuchanov.scp2.db.model.RealmString;
 import ru.kuchanov.scp2.manager.MyPreferenceManager;
 import rx.Observable;
 import timber.log.Timber;
@@ -261,11 +263,61 @@ public class ApiClient {
                 if (upperDivWithLink != null) {
                     pageContent.prependChild(upperDivWithLink);
                 }
-                String articlesText = pageContent.toString();
+                String rawText = pageContent.toString();
+
+                //tabs
+                boolean hasTabs = false;
+                RealmList<RealmString> tabsText = null;
+                RealmList<RealmString> tabsTitles = null;
+                //articles textParts
+                RealmList<RealmString> textParts = null;
+                RealmList<RealmString> textPartsTypes = null;
+
+                Document document = Jsoup.parse(rawText);
+                Element yuiNavset = document.getElementsByAttributeValueStarting("class", "yui-navset").first();
+                if (yuiNavset != null) {
+                    hasTabs = true;
+
+                    Element titles = yuiNavset.getElementsByClass("yui-nav").first();
+                    Elements liElements = titles.getElementsByTag("li");
+                    Element yuiContent = yuiNavset.getElementsByClass("yui-content").first();
+
+                    tabsTitles = new RealmList<>();
+                    for (Element li : liElements) {
+                        RealmString realmString = new RealmString(li.text());
+                        tabsTitles.add(realmString);
+                    }
+                    //TODO add supporting inner articles
+                    tabsText = new RealmList<>();
+                    for (Element tab : yuiContent.children()) {
+                        RealmString realmString = new RealmString(tab.html());
+                        tabsText.add(realmString);
+                    }
+                } else {
+                    List<String> rawTextParts = ParseHtmlUtils.getArticlesTextParts(rawText);
+                    textParts = new RealmList<>();
+                    for (String textPart : rawTextParts) {
+                        textParts.add(new RealmString(textPart));
+                    }
+                    textPartsTypes = new RealmList<>();
+                    for (@ParseHtmlUtils.TextType String textPartType : ParseHtmlUtils.getListOfTextTypes(rawTextParts)) {
+                        textPartsTypes.add(new RealmString(textPartType));
+                    }
+                }
+
+                //finally fill article info
                 Article article = new Article();
+
                 article.url = url;
-                article.text = articlesText;
+                article.text = rawText;
                 article.title = title;
+                //tabs
+                article.hasTabs = hasTabs;
+                article.tabsTitles = tabsTitles;
+                article.tabsTexts = tabsText;
+                //textParts
+                article.textParts = textParts;
+                article.textPartsTypes = textPartsTypes;
 
                 subscriber.onNext(article);
                 subscriber.onCompleted();

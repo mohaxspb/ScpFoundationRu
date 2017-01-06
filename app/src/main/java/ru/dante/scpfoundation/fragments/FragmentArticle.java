@@ -114,8 +114,8 @@ public class FragmentArticle extends Fragment implements DownloadArticle.SetArti
             Log.i(LOG, "savedInstanceState != null");
             article = savedInstanceState.getParcelable(Article.KEY_ARTICLE);
             Log.i(LOG, "article is null:" + String.valueOf(article == null));
-            this.url = savedInstanceState.getString("url");
-            this.artTitle = savedInstanceState.getString("title");
+            url = savedInstanceState.getString("url");
+            artTitle = savedInstanceState.getString("title");
             //tabs
             hasTabs = savedInstanceState.getBoolean(KEY_HAS_TABS);
             tabsTitles = savedInstanceState.getStringArrayList(KEY_TABS_TITLE);

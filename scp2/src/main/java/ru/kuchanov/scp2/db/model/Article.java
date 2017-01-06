@@ -2,8 +2,10 @@ package ru.kuchanov.scp2.db.model;
 
 import java.io.Serializable;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
+import ru.kuchanov.scp2.api.ParseHtmlUtils;
 
 /**
  * Created by mohax on 03.01.2017.
@@ -19,14 +21,27 @@ public class Article extends RealmObject implements Serializable {
     public static final int ORDER_NONE = -1;
     public static final String FIELD_URL = "url";
 
+    //util fields
     public int isInRecent = ORDER_NONE;
     public int isInFavorite = ORDER_NONE;
     public int isInMostRated = ORDER_NONE;
     public boolean isInReaden;
 
+    public boolean hasTabs;
+    public RealmList<RealmString> tabsTexts;
+    public RealmList<RealmString> tabsTitles;
+
+    public RealmList<RealmString> textParts;
+//    @ParseHtmlUtils.TextType
+    public RealmList<RealmString> textPartsTypes;
+
+    //site info
     @PrimaryKey
     public String url;
     public String title;
+    /**
+     * raw html
+     */
     public String text;
 
     public int rating;
@@ -49,6 +64,11 @@ public class Article extends RealmObject implements Serializable {
                 ", isInFavorite=" + isInFavorite +
                 ", isInMostRated=" + isInMostRated +
                 ", isInReaden=" + isInReaden +
+                ", hasTabs=" + hasTabs +
+//                ", tabsTexts=" + tabsTexts +
+                ", tabsTitles=" + tabsTitles +
+                ", textParts=" + textParts +
+                ", textPartsTypes=" + textPartsTypes +
                 ", url='" + url + '\'' +
                 ", title='" + title + '\'' +
 //                ", text='" + text + '\'' +

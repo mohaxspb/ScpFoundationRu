@@ -1,7 +1,6 @@
 package ru.kuchanov.scp2.ui.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
@@ -23,6 +22,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -32,6 +32,7 @@ import ru.kuchanov.scp2.MyApplication;
 import ru.kuchanov.scp2.R;
 import ru.kuchanov.scp2.api.ParseHtmlUtils;
 import ru.kuchanov.scp2.db.model.Article;
+import ru.kuchanov.scp2.db.model.RealmString;
 import ru.kuchanov.scp2.manager.MyPreferenceManager;
 import ru.kuchanov.scp2.ui.util.SetTextViewHTML;
 import ru.kuchanov.scp2.util.AttributeGetter;
@@ -55,23 +56,30 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
     MyPreferenceManager mMyPreferenceManager;
 
     private Article mArticle;
-    private ArrayList<String> mArticlesTextParts;
+    private List<String> mArticlesTextParts;
+    @ParseHtmlUtils.TextType
+    private List<String> mArticlesTextPartsTypes;
 
-    public ArrayList<String> getArticlesTextParts() {
+    public List<String> getArticlesTextParts() {
         return mArticlesTextParts;
     }
-
-    private ArrayList<ParseHtmlUtils.TextType> articlesTextpartsType;
 
     public RecyclerAdapterArticle() {
         MyApplication.getAppComponent().inject(this);
     }
 
     public void setData(Article article) {
-//        Timber.d("setData: %s", article.text);
+        Timber.d("setData: %s", article);
         mArticle = article;
-        mArticlesTextParts = ParseHtmlUtils.getArticlesTextParts(article.text);
-        articlesTextpartsType = ParseHtmlUtils.getListOfTextTypes(mArticlesTextParts);
+//        mArticlesTextParts = ParseHtmlUtils.getArticlesTextParts(article.text);
+//        mArticlesTextPartsTypes = ParseHtmlUtils.getListOfTextTypes(mArticlesTextParts);
+        if (mArticle.hasTabs) {
+            mArticlesTextParts = ParseHtmlUtils.getArticlesTextParts(mArticle.text);
+            mArticlesTextPartsTypes = ParseHtmlUtils.getListOfTextTypes(mArticlesTextParts);
+        } else {
+            mArticlesTextParts = RealmString.toStringList(mArticle.textParts);
+            mArticlesTextPartsTypes = RealmString.toStringList(mArticle.textPartsTypes);
+        }
         notifyDataSetChanged();
     }
 
@@ -80,16 +88,16 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
         if (position == 0) {
             return TYPE_TITLE;
         }
-        ParseHtmlUtils.TextType type = articlesTextpartsType.get(position - 1);
+        String type = mArticlesTextPartsTypes.get(position - 1);
         switch (type) {
             default:
-            case Text:
+            case ParseHtmlUtils.TextType.TEXT:
                 return TYPE_TEXT;
-            case Image:
+            case ParseHtmlUtils.TextType.IMAGE:
                 return TYPE_IMAGE;
-            case Spoiler:
+            case ParseHtmlUtils.TextType.SPOILER:
                 return TYPE_SPOILER;
-            case Table:
+            case ParseHtmlUtils.TextType.TABLE:
                 return TYPE_TABLE;
         }
     }
@@ -139,18 +147,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                 ((ViewHolderTitle) holder).bind(mArticle.title);
                 break;
             case TYPE_TABLE:
-                final ViewHolderTable holderTable = (ViewHolderTable) holder;
-                String fullHtml = "<!DOCTYPE html>\n" +
-                        "<html>\n" +
-                        "    <head>\n" +
-                        "        <meta charset=\"utf-8\">\n" +
-                        "        <style>table.wiki-content-table{border-collapse:collapse;border-spacing:0;margin:.5em auto}table.wiki-content-table td{border:1px solid #888;padding:.3em .7em}table.wiki-content-table th{border:1px solid #888;padding:.3em .7em;background-color:#eee}</style>\n" +
-                        "    </head>\n" +
-                        "    <body>";
-                fullHtml += mArticlesTextParts.get(position - 1);
-                fullHtml += "</body>\n" +
-                        "</html>";
-                holderTable.webView.loadData(fullHtml, "text/html; charset=UTF-8", null);
+                ((ViewHolderTable) holder).bind(mArticlesTextParts.get(position - 1));
                 break;
         }
     }
@@ -222,8 +219,6 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
 
             ArrayList<String> spoilerParts = ParseHtmlUtils.getSpoilerParts(textPart);
 
-            int colorId = AttributeGetter.getColor(context, R.attr.windowBackgroundDark);
-
             title.setText(spoilerParts.get(0));
             content.setTextIsSelectable(true);
             content.setLinksClickable(true);
@@ -293,11 +288,26 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
     }
 
     class ViewHolderTable extends RecyclerView.ViewHolder {
+        @BindView(R.id.webView)
         WebView webView;
 
         ViewHolderTable(View itemView) {
             super(itemView);
-            webView = (WebView) itemView;
+            ButterKnife.bind(this, itemView);
+        }
+
+        void bind(String tableContent) {
+            String fullHtml = "<!DOCTYPE html>\n" +
+                    "<html>\n" +
+                    "    <head>\n" +
+                    "        <meta charset=\"utf-8\">\n" +
+                    "        <style>table.wiki-content-table{border-collapse:collapse;border-spacing:0;margin:.5em auto}table.wiki-content-table td{border:1px solid #888;padding:.3em .7em}table.wiki-content-table th{border:1px solid #888;padding:.3em .7em;background-color:#eee}</style>\n" +
+                    "    </head>\n" +
+                    "    <body>";
+            fullHtml += tableContent;
+            fullHtml += "</body>\n" +
+                    "</html>";
+            webView.loadData(fullHtml, "text/html; charset=UTF-8", null);
         }
     }
 }

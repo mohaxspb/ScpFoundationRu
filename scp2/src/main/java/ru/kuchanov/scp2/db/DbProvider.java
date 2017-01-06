@@ -205,6 +205,14 @@ public class DbProvider {
                                 .findFirst();
                         if (applicationInDb != null) {
                             applicationInDb.text = article.text;
+                            applicationInDb.title = article.title;
+                            //tabs
+                            applicationInDb.hasTabs = article.hasTabs;
+                            applicationInDb.tabsTitles = article.tabsTitles;
+                            applicationInDb.tabsTexts = article.tabsTexts;
+                            //textParts
+                            applicationInDb.textParts = article.textParts;
+                            applicationInDb.textPartsTypes = article.textPartsTypes;
                         } else {
                             realm.insertOrUpdate(article);
                         }
