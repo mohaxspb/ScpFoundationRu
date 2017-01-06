@@ -2,7 +2,11 @@
 <resources>
     <attr name="my_toolbar_style" format="reference"/>
     <attr name="my_toolbar_PopUp_style" format="reference"/>
+    <!--navigationView-->
     <attr name="navigation_view_style" format="reference"/>
+    <attr name="navigationViewItemTextColor" format="color|reference"/>
+    <attr name="navigationViewItemIconColor" format="color|reference"/>
+    <!---->
     <attr name="newArticlesTextColor" format="color|reference"/>
     <attr name="readTextColor" format="color|reference"/>
     <attr name="toolbarBackgroundGradient" format="reference"/>

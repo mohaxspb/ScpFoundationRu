@@ -2,12 +2,10 @@ package ru.dante.scpfoundation.activities;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
@@ -33,50 +31,32 @@ import ru.dante.scpfoundation.utils.parsing.DownloadImg;
 /**
  * Created for My Application by Dante on 11.03.2016  23:47.
  */
-public class ActivityGallery extends AppCompatActivity implements DownloadImg.SetImagInfo, SharedPreferences.OnSharedPreferenceChangeListener
-{
+public class ActivityGallery extends AppCompatActivity implements DownloadImg.SetImagInfo, SharedPreferences.OnSharedPreferenceChangeListener {
+    private static final String KEY_IMG_URLS = "KEY_IMG_URLS";
+    private static final String KEY_IMG_DESCRIPTION = "KEY_IMG_DESCRIPTION";
+
     private Context ctx;
     private ViewPager viewPager;
-    private ActionBarDrawerToggle mDrawerToggle;
-    private Toolbar toolbar;
-    private boolean drawerOpened;
-    private SharedPreferences pref;
-    private static final String LOG = ActivityGallery.class.getSimpleName();
-    private ScrollGalleryView scrollGalleryView;
     private ArrayList<String> imgUrls = new ArrayList<>();
     private ArrayList<String> descriptionImg = new ArrayList<>();
 
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState)
-    {
-        super.onPostCreate(savedInstanceState);
-//        mDrawerToggle.syncState();
-    }
-
     //workaround from http://stackoverflow.com/a/30337653/3212712 to show menu icons
     @Override
-    protected boolean onPrepareOptionsPanel(View view, Menu menu)
-    {
-        if (menu != null)
-        {
-            if (menu.getClass().getSimpleName().equals("MenuBuilder"))
-            {
-                try
-                {
+    protected boolean onPrepareOptionsPanel(View view, Menu menu) {
+        if (menu != null) {
+            if (menu.getClass().getSimpleName().equals("MenuBuilder")) {
+                try {
                     Method m = menu.getClass().getDeclaredMethod("setOptionalIconsVisible", Boolean.TYPE);
                     m.setAccessible(true);
                     m.invoke(menu, true);
-                } catch (Exception e)
-                {
+                } catch (Exception e) {
                     Log.e(getClass().getSimpleName(), "onMenuOpened...unable to set icons for overflow menu", e);
                 }
             }
-            if (descriptionImg.size() == 0)
-            {
+            if (descriptionImg.size() == 0) {
                 menu.findItem(R.id.info).setEnabled(false);
 
-            } else
-            {
+            } else {
                 menu.findItem(R.id.info).setEnabled(true);
             }
         }
@@ -84,17 +64,8 @@ public class ActivityGallery extends AppCompatActivity implements DownloadImg.Se
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig)
-    {
-        super.onConfigurationChanged(newConfig);
-//        mDrawerToggle.onConfigurationChanged(newConfig);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        switch (item.getItemId())
-        {
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
             case R.id.info:
                 int currentPositionViewPager = viewPager.getCurrentItem();
                 Spanned dialogText = Html.fromHtml(descriptionImg.get(currentPositionViewPager) + "<br><br><a href=\"http://artscp.com/\">Заказать артбук и календарь</a>");
@@ -112,21 +83,17 @@ public class ActivityGallery extends AppCompatActivity implements DownloadImg.Se
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
+    public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_gallery, menu);
         return true;
     }
 
-    private void setUpGallery()
-    {
+    private void setUpGallery() {
         List<MediaInfo> infos = new ArrayList<>(imgUrls.size());
-        for (String url : imgUrls)
-        {
+        for (String url : imgUrls) {
             infos.add(MediaInfo.mediaLoader(new PicassoImageLoader(url)));
-//            infos.add(MediaInfo.mediaLoader(new UILImageLoader(url)));
         }
-        scrollGalleryView = (ScrollGalleryView) findViewById(R.id.scroll_gallery_view);
+        ScrollGalleryView scrollGalleryView = (ScrollGalleryView) findViewById(R.id.scroll_gallery_view);
         scrollGalleryView
                 .setThumbnailSize(100)
                 .setZoom(true)
@@ -135,12 +102,8 @@ public class ActivityGallery extends AppCompatActivity implements DownloadImg.Se
                 .setCurrentItem(0);
     }
 
-    private static final String KEY_IMG_URLS = "KEY_IMG_URLS";
-    private static final String KEY_IMG_DESCRIPTION = "KEY_IMG_DESCRIPTION";
-
     @Override
-    protected void onSaveInstanceState(Bundle outState)
-    {
+    protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putStringArrayList(KEY_IMG_URLS, imgUrls);
         outState.putStringArrayList(KEY_IMG_DESCRIPTION, descriptionImg);
@@ -148,18 +111,15 @@ public class ActivityGallery extends AppCompatActivity implements DownloadImg.Se
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         PreferenceManager.setDefaultValues(this, R.xml.pref_design, true);
-        pref = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         pref.registerOnSharedPreferenceChangeListener(this);
-        pref.edit().putInt(getResources().getString(R.string.key_new_articles_counter), 0).commit();
+        pref.edit().putInt(getResources().getString(R.string.key_new_articles_counter), 0).apply();
         boolean nightModeOn = pref.getBoolean("key_design_night_mode", false);
-        if (nightModeOn)
-        {
+        if (nightModeOn) {
             setTheme(R.style.SCP_Theme_Dark);
-        } else
-        {
+        } else {
             setTheme(R.style.SCP_Theme_Light);
         }
         super.onCreate(savedInstanceState);
@@ -167,43 +127,35 @@ public class ActivityGallery extends AppCompatActivity implements DownloadImg.Se
         setContentView(R.layout.activity_gallery);
         viewPager = (ViewPager) findViewById(R.id.viewPager);
 
-        toolbar = (Toolbar) findViewById(R.id.toolBar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolBar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null)
-        {
+        if (actionBar != null) {
             actionBar.setDisplayShowTitleEnabled(false);
 
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        if (savedInstanceState != null)
-        {
+        if (savedInstanceState != null) {
             imgUrls = savedInstanceState.getStringArrayList(KEY_IMG_URLS);
             descriptionImg = savedInstanceState.getStringArrayList(KEY_IMG_DESCRIPTION);
-            if (imgUrls.size() != 0)
-            {
+            if (imgUrls.size() != 0) {
                 setUpGallery();
 
-            } else
-            {
+            } else {
                 DownloadImg downloadImg = new DownloadImg(this, this);
                 downloadImg.execute();
             }
-        } else
-        {
+        } else {
             DownloadImg downloadImg = new DownloadImg(this, this);
             downloadImg.execute();
         }
     }
 
     @Override
-    public void setImgInfo(ArrayList<String> description)
-    {
+    public void setImgInfo(ArrayList<String> description) {
         imgUrls.clear();
         descriptionImg.clear();
-        for (String info : description)
-        {
-//            Log.i(LOG, info);
+        for (String info : description) {
             String[] allInfoimg = info.split(Const.DIVIDER);
             imgUrls.add(allInfoimg[0]);
             descriptionImg.add(allInfoimg[1]);
@@ -212,10 +164,8 @@ public class ActivityGallery extends AppCompatActivity implements DownloadImg.Se
     }
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
-    {
-        if (key.equals("key_design_night_mode"))
-        {
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals("key_design_night_mode")) {
             recreate();
         }
     }

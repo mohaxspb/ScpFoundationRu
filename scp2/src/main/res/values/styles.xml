@@ -1,4 +1,5 @@
 <resources>
+
     <style name="Base.Theme.Light" parent="Theme.AppCompat.Light.NoActionBar">
         <!--(Тулбар,текст(и хз что еще)-->
         <item name="colorPrimary">@color/material_blue_gray_700</item>
@@ -22,7 +23,11 @@
         <item name="dropDownListViewStyle">@style/OwerFlowMenuBackgroundLight</item>
         <item name="android:textAppearanceLargePopupMenu">@style/хуй_light</item>
         <item name="readTextColor">@color/material_grey_400</item>
+        <!--navigationView-->
         <item name="navigation_view_style">@style/navigationStyleLight</item>
+        <item name="navigationViewItemTextColor">@color/navigation_item_text_selector_light</item>
+        <item name="navigationViewItemIconColor">@color/navigation_item_text_selector_light</item>
+        <!---->
         <item name="newArticlesTextColor">@color/zbs_color_red</item>
         <item name="toolbarBackgroundGradient">@drawable/gradient_light</item>
         <item name="favoriteIcon">@drawable/ic_star_amber_800_48dp</item>
@@ -80,7 +85,11 @@
         <item name="dropDownListViewStyle">@style/OwerFlowMenuBackgroundDark</item>
         <item name="android:textAppearanceLargePopupMenu">@style/хуй_Dark</item>
         <item name="readTextColor">@color/material_grey_700</item>
+        <!--navigation view-->
         <item name="navigation_view_style">@style/navigationStyleDark</item>
+        <item name="navigationViewItemTextColor">@color/navigation_item_text_selector_dark</item>
+        <item name="navigationViewItemIconColor">@color/navigation_item_text_selector_dark</item>
+        <!---->
         <item name="newArticlesTextColor">@color/zbs_color_white</item>
         <item name="toolbarBackgroundGradient">@drawable/gradient_dark</item>
         <item name="favoriteIcon">@drawable/ic_star_white_48dp</item>

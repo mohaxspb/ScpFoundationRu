@@ -46,6 +46,8 @@
         android:fitsSystemWindows="true"
         android:theme="?navigation_view_style"
         app:headerLayout="@layout/drawer_header_unlogined"
+        app:itemIconTint="?navigationViewItemIconColor"
+        app:itemTextColor="?navigationViewItemTextColor"
         app:menu="@menu/my_navigation_items"
         />
 </android.support.v4.widget.DrawerLayout>
