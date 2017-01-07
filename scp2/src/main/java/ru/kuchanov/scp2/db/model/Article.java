@@ -10,7 +10,6 @@ import io.realm.ArticleRealmProxy;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
-import ru.kuchanov.scp2.db.util.RealmListParcelConverter;
 import ru.kuchanov.scp2.db.util.RealmStringListParcelConverter;
 
 /**
@@ -45,37 +44,37 @@ public class Article extends RealmObject {
     @ParcelPropertyConverter(RealmStringListParcelConverter.class)
     public RealmList<RealmString> textPartsTypes;
 
-    public RealmList<RealmString> getTabsTexts() {
-        return tabsTexts;
-    }
-    @ParcelPropertyConverter(RealmStringListParcelConverter.class)
-    public void setTabsTexts(RealmList<RealmString> tabsTexts) {
-        this.tabsTexts = tabsTexts;
-    }
-
-    public RealmList<RealmString> getTabsTitles() {
-        return tabsTitles;
-    }
-    @ParcelPropertyConverter(RealmStringListParcelConverter.class)
-    public void setTabsTitles(RealmList<RealmString> tabsTitles) {
-        this.tabsTitles = tabsTitles;
-    }
-
-    public RealmList<RealmString> getTextParts() {
-        return textParts;
-    }
-    @ParcelPropertyConverter(RealmStringListParcelConverter.class)
-    public void setTextParts(RealmList<RealmString> textParts) {
-        this.textParts = textParts;
-    }
-
-    public RealmList<RealmString> getTextPartsTypes() {
-        return textPartsTypes;
-    }
-    @ParcelPropertyConverter(RealmStringListParcelConverter.class)
-    public void setTextPartsTypes(RealmList<RealmString> textPartsTypes) {
-        this.textPartsTypes = textPartsTypes;
-    }
+//    public RealmList<RealmString> getTabsTexts() {
+//        return tabsTexts;
+//    }
+//    @ParcelPropertyConverter(RealmStringListParcelConverter.class)
+//    public void setTabsTexts(RealmList<RealmString> tabsTexts) {
+//        this.tabsTexts = tabsTexts;
+//    }
+//
+//    public RealmList<RealmString> getTabsTitles() {
+//        return tabsTitles;
+//    }
+//    @ParcelPropertyConverter(RealmStringListParcelConverter.class)
+//    public void setTabsTitles(RealmList<RealmString> tabsTitles) {
+//        this.tabsTitles = tabsTitles;
+//    }
+//
+//    public RealmList<RealmString> getTextParts() {
+//        return textParts;
+//    }
+//    @ParcelPropertyConverter(RealmStringListParcelConverter.class)
+//    public void setTextParts(RealmList<RealmString> textParts) {
+//        this.textParts = textParts;
+//    }
+//
+//    public RealmList<RealmString> getTextPartsTypes() {
+//        return textPartsTypes;
+//    }
+//    @ParcelPropertyConverter(RealmStringListParcelConverter.class)
+//    public void setTextPartsTypes(RealmList<RealmString> textPartsTypes) {
+//        this.textPartsTypes = textPartsTypes;
+//    }
 
     //site info
     @PrimaryKey

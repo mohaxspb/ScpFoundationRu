@@ -5,14 +5,18 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.MenuItem;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
 import ru.kuchanov.scp2.Constants;
 import ru.kuchanov.scp2.MyApplication;
 import ru.kuchanov.scp2.R;
 import ru.kuchanov.scp2.mvp.contract.ArticleScreenMvp;
+import ru.kuchanov.scp2.ui.adapter.ArticlesPagerAdapter;
 import ru.kuchanov.scp2.ui.base.BaseDrawerActivity;
 import timber.log.Timber;
 
@@ -23,7 +27,11 @@ public class ArticleActivity
     public static final String EXTRA_ARTICLES_URLS_LIST = "EXTRA_ARTICLES_URLS_LIST";
     public static final String EXTRA_POSITION = "EXTRA_POSITION";
 
+    @BindView(R.id.content)
+    ViewPager mViewPager;
+
     private int mCurPosition;
+    private ArticlesPagerAdapter mAdapter;
 
     public static void startActivity(Context context, ArrayList<String> urls, int position) {
         Intent intent = new Intent(context, ArticleActivity.class);
@@ -46,6 +54,10 @@ public class ArticleActivity
             mPresenter.setArticlesUrls(getIntent().getStringArrayListExtra(EXTRA_ARTICLES_URLS_LIST));
             mCurPosition = getIntent().getIntExtra(EXTRA_POSITION, 0);
         }
+        mAdapter = new ArticlesPagerAdapter(getSupportFragmentManager());
+        mAdapter.setData(getIntent().getStringArrayListExtra(EXTRA_ARTICLES_URLS_LIST));
+        mViewPager.setCurrentItem(mCurPosition);
+        mViewPager.setAdapter(mAdapter);
     }
 
     @Override
@@ -136,7 +148,6 @@ public class ArticleActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Timber.d("onOptionsItemSelected with id: %s", item);
-
         switch (item.getItemId()) {
             case android.R.id.home:
                 mDrawerLayout.openDrawer(GravityCompat.START);
