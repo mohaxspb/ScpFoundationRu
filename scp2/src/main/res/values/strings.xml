@@ -20,4 +20,9 @@
     <string name="night_mode">Ночной режим</string>
     <string name="text_size">Размер текста</string>
     <string name="in_apps">Поддержка проекта</string>
+    <string name="about_org">Об организации</string>
+    <string name="news">Новости</string>
+    <string name="stories">Рассказы</string>
+    <string name="day_mode">Дневной режим</string>
+    <string name="unsupported_link">Эта ссылка не поддерживается</string>
 </resources>

@@ -124,7 +124,6 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
     };
 
     int[] color = new int[]{
-
 //            Color.GREEN,
             Color.parseColor("#724646"),
             Color.parseColor("#724646"),
@@ -133,7 +132,6 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
 
     ColorStateList csl = new ColorStateList(state, color);
     int[] colorDark = new int[]{
-
 //            Color.GREEN,
             Color.parseColor("#ECEFF1"),
             Color.parseColor("#ECEFF1"),
@@ -142,23 +140,17 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
 
     ColorStateList cslDark = new ColorStateList(state, colorDark);
 
-
     //    // FOR NAVIGATION VIEW ITEM ICON COLOR
     int[][] stateIcon = new int[][]{
-
 //            (Цвет текста всех "включеных" элементов бокового меню )
 //            (если этот массив не закоментировать, то остальные массивы работать не будут)
 //            new int[] {android.R.attr.state_enabled}, // enabled
-
-
             new int[]{android.R.attr.state_checked}, // checked
             new int[]{android.R.attr.state_pressed},  // pressed
             new int[]{}
-
     };
 
     int[] colorIcon = new int[]{
-
 //            Color.GREEN,
             Color.parseColor("#724646"),
             Color.parseColor("#724646"),
@@ -167,7 +159,6 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
     ColorStateList csIcon = new ColorStateList(stateIcon, colorIcon);
 
     int[] colorIconDark = new int[]{
-
 //            Color.GREEN,
             Color.parseColor("#ECEFF1"),
             Color.parseColor("#ECEFF1"),

@@ -1,4 +1,4 @@
-package ru.dante.scpfoundation.utils;
+package ru.kuchanov.scp2.ui.util;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;

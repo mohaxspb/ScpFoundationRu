@@ -22,86 +22,63 @@ import ru.dante.scpfoundation.Article;
  * Created by Dante on 09.01.2016 3:58.
  * For MyApplication.
  */
-public class DownloadArticle extends AsyncTask<Void, Void, Article>
-{
+public class DownloadArticle extends AsyncTask<Void, Void, Article> {
     private static final String LOG = DownloadArticle.class.getSimpleName();
-    //    RecyclerView recyclerView;
-    String url;
-    SetArticlesText interfaceSetText;
+    private String url;
+    private SetArticlesText interfaceSetText;
 
-    public DownloadArticle(/*RecyclerView recyclerView, */String url, SetArticlesText interfaceSetText)
-    {
-//        this.recyclerView = recyclerView;
+    public DownloadArticle(String url, SetArticlesText interfaceSetText) {
         this.url = url;
         this.interfaceSetText = interfaceSetText;
     }
 
-    public static ArrayList<String> getArticlesTextParts(String html)
-    {
+    public static ArrayList<String> getArticlesTextParts(String html) {
         ArrayList<String> articlesTextParts = new ArrayList<>();
         Document document = Jsoup.parse(html);
         Element contentPage = document.getElementById("page-content");
-        if (contentPage == null)
-        {
+        if (contentPage == null) {
             contentPage = document.body();
         }
-        for (Element element : contentPage.children())
-        {
+        for (Element element : contentPage.children()) {
             articlesTextParts.add(element.outerHtml());
-//            Log.e(LOG, articlesTextParts.get(articlesTextParts.size()-1));
         }
         return articlesTextParts;
     }
 
-    public static ArrayList<TextType> getListOfTextTypes(ArrayList<String> articlesTextParts)
-    {
+    public static ArrayList<TextType> getListOfTextTypes(ArrayList<String> articlesTextParts) {
         ArrayList<TextType> listOfTextTypes = new ArrayList<>();
-        for (String textPart : articlesTextParts)
-        {
-//            Log.e(LOG, textPart);
+        for (String textPart : articlesTextParts) {
 
             Element element = Jsoup.parse(textPart);
             Element ourElement = element.getElementsByTag("body").first().children().first();
-            if (ourElement == null)
-            {
+            if (ourElement == null) {
                 listOfTextTypes.add(TextType.Text);
                 continue;
             }
-           /* Log.e(LOG, ourElement.tagName());
-            Log.e(LOG, ourElement.className());*/
-            if (ourElement.tagName().equals("p"))
-            {
+            if (ourElement.tagName().equals("p")) {
                 listOfTextTypes.add(TextType.Text);
                 continue;
             }
-            if (ourElement.className().equals("collapsible-block"))
-            {
+            if (ourElement.className().equals("collapsible-block")) {
                 listOfTextTypes.add(TextType.Spoiler);
                 continue;
             }
-            if (ourElement.tagName().equals("table"))
-            {
+            if (ourElement.tagName().equals("table")) {
                 listOfTextTypes.add(TextType.Table);
                 continue;
             }
 
-            if (ourElement.className().equals("rimg"))
-            {
+            if (ourElement.className().equals("rimg")) {
                 listOfTextTypes.add(TextType.Image);
                 continue;
             }
             listOfTextTypes.add(TextType.Text);
         }
-//        for (TextType type : listOfTextTypes)
-//        {
-//            Log.e(LOG, type.toString());
-//        }
 
         return listOfTextTypes;
     }
 
-    public static ArrayList<String> getSpoilerParts(String html)
-    {
+    public static ArrayList<String> getSpoilerParts(String html) {
         ArrayList<String> spoilerParts = new ArrayList<>();
         Document document = Jsoup.parse(html);
         Element element = document.getElementsByClass("collapsible-block-folded").first();
@@ -114,27 +91,22 @@ public class DownloadArticle extends AsyncTask<Void, Void, Article>
         return spoilerParts;
     }
 
-    public static Article getArticle(String url)
-    {
+    public static Article getArticle(String url) {
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
                 .url(url)
                 .build();
 
-        try
-        {
+        try {
             Response response = client.newCall(request).execute();
-//            System.out.println(response.body().string());
             Document doc = Jsoup.parse(response.body().string());
             org.jsoup.nodes.Element pageContent = doc.getElementById("page-content");
-            if (pageContent == null)
-            {
+            if (pageContent == null) {
                 return null;
             }
             Element p404 = pageContent.getElementById("404-message");
-            if (p404 != null)
-            {
+            if (p404 != null) {
                 Article article = new Article();
                 article.setURL(url);
                 article.setArticlesText(p404.outerHtml());
@@ -145,22 +117,18 @@ public class DownloadArticle extends AsyncTask<Void, Void, Article>
 //            Log.d(LOG, pageContent.toString());
 //            замена ссылок в сносках
             Elements footnoterefs = pageContent.getElementsByClass("footnoteref");
-            for (Element snoska : footnoterefs)
-            {
+            for (Element snoska : footnoterefs) {
                 Element aTag = snoska.getElementsByTag("a").first();
                 String digits = "";
-                for (char c : aTag.id().toCharArray())
-                {
-                    if (TextUtils.isDigitsOnly(String.valueOf(c)))
-                    {
+                for (char c : aTag.id().toCharArray()) {
+                    if (TextUtils.isDigitsOnly(String.valueOf(c))) {
                         digits += String.valueOf(c);
                     }
                 }
                 aTag.attr("href", digits);
             }
             Elements footnoterefsFooter = pageContent.getElementsByClass("footnote-footer");
-            for (Element snoska : footnoterefsFooter)
-            {
+            for (Element snoska : footnoterefsFooter) {
                 Element aTag = snoska.getElementsByTag("a").first();
                 snoska.prependText(aTag.text());
                 aTag.replaceWith(new Element(Tag.valueOf("pizda"), aTag.text()));
@@ -169,8 +137,7 @@ public class DownloadArticle extends AsyncTask<Void, Void, Article>
 
             //            замена ссылок в библиографии
             Elements bibliographi = pageContent.getElementsByClass("bibcite");
-            for (Element snoska : bibliographi)
-            {
+            for (Element snoska : bibliographi) {
                 Element aTag = snoska.getElementsByTag("a").first();
                 String onclickAttr = aTag.attr("onclick");
 
@@ -178,8 +145,7 @@ public class DownloadArticle extends AsyncTask<Void, Void, Article>
                 aTag.attr("href", id);
             }
             Element rateDiv = pageContent.getElementsByClass("page-rate-widget-box").first();
-            if (rateDiv != null)
-            {
+            if (rateDiv != null) {
                 Element span1 = rateDiv.getElementsByClass("rateup").first();
                 span1.remove();
                 Element span2 = rateDiv.getElementsByClass("ratedown").first();
@@ -188,19 +154,16 @@ public class DownloadArticle extends AsyncTask<Void, Void, Article>
                 span3.remove();
             }
             Element svernut = pageContent.getElementById("toc-action-bar");
-            if (svernut != null)
-            {
+            if (svernut != null) {
                 svernut.remove();
             }
             Element titleEl = doc.getElementById("page-title");
             String title = "";
-            if (titleEl != null)
-            {
+            if (titleEl != null) {
                 title = titleEl.text();
             }
             Element upperDivWithhLink = doc.getElementById("breadcrumbs");
-            if (upperDivWithhLink != null)
-            {
+            if (upperDivWithhLink != null) {
                 pageContent.prependChild(upperDivWithhLink);
             }
             String articlesText = pageContent.toString();
@@ -210,8 +173,7 @@ public class DownloadArticle extends AsyncTask<Void, Void, Article>
             article.setTitle(title);
 
             return article;
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -219,35 +181,23 @@ public class DownloadArticle extends AsyncTask<Void, Void, Article>
     }
 
     @Override
-    protected Article doInBackground(Void... params)
-    {
+    protected Article doInBackground(Void... params) {
         Log.d(LOG, "doInBackground started");
 
         return getArticle(url);
     }
 
     @Override
-    protected void onPostExecute(Article result)
-    {
+    protected void onPostExecute(Article result) {
         super.onPostExecute(result);
-
-//        if (result == null)
-//        {
-//            Snackbar.make(recyclerView, "Connection lost", Snackbar.LENGTH_LONG).show();
-//        }
-//        else
-//        {
         this.interfaceSetText.setArticle(result);
-//        }
     }
 
-    public enum TextType
-    {
+    public enum TextType {
         Text, Spoiler, Image, Table
     }
 
-    public interface SetArticlesText
-    {
+    public interface SetArticlesText {
         void setArticle(Article article);
     }
 }

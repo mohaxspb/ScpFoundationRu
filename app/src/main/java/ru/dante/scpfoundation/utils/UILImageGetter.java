@@ -18,16 +18,14 @@ import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListene
 
 import java.io.InputStream;
 
-public class UILImageGetter implements Html.ImageGetter
-{
+public class UILImageGetter implements Html.ImageGetter {
     private Context ctx;
     private TextView container;
     private ImageLoader imageLoader;
     private DisplayImageOptions options;
     private UrlImageDownloader urlDrawable;
 
-    public UILImageGetter(View t, Context c)
-    {
+    public UILImageGetter(View t, Context c) {
         this.ctx = c;
         this.container = (TextView) t;
 
@@ -37,55 +35,49 @@ public class UILImageGetter implements Html.ImageGetter
     }
 
     @Override
-    public Drawable getDrawable(String source)
-    {
+    public Drawable getDrawable(String source) {
         urlDrawable = new UrlImageDownloader(ctx.getResources(), source);
         imageLoader.loadImage(source, options, new SimpleListener(urlDrawable));
         return urlDrawable;
     }
 
-    private class SimpleListener extends SimpleImageLoadingListener
-    {
+    private class SimpleListener extends SimpleImageLoadingListener {
         UrlImageDownloader urlImageDownloader;
 
-        public SimpleListener(UrlImageDownloader downloader)
-        {
+        public SimpleListener(UrlImageDownloader downloader) {
             super();
             urlImageDownloader = downloader;
         }
 
         @Override
-        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage)
-        {
+        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
             int width = loadedImage.getWidth();
             int height = loadedImage.getHeight();
 
             int newWidth = width;
             int newHeight = height;
 
-            if (width > container.getWidth())
-            {
+            if (width > container.getWidth()) {
                 newWidth = container.getWidth();
                 newHeight = (newWidth * height) / width;
             }
 
             Drawable result = new BitmapDrawable(ctx.getResources(), loadedImage);
-            int screenWidth=ScreenProperties.getWidth((AppCompatActivity) ctx);
-            int leftpadding=-50;
-            if (newWidth<screenWidth){
-                leftpadding+=(screenWidth-newWidth)/2;
+            int screenWidth = ScreenProperties.getWidth((AppCompatActivity) ctx);
+            int leftpadding = -50;
+            if (newWidth < screenWidth) {
+                leftpadding += (screenWidth - newWidth) / 2;
             }
-            result.setBounds(leftpadding, 0, leftpadding+newWidth, newHeight);
+            result.setBounds(leftpadding, 0, leftpadding + newWidth, newHeight);
 
-            urlImageDownloader.setBounds(leftpadding, 0, leftpadding+newWidth, newHeight);
+            urlImageDownloader.setBounds(leftpadding, 0, leftpadding + newWidth, newHeight);
             urlImageDownloader.drawable = result;
 
             container.setText(container.getText());
         }
     }
 
-    public class UrlImageDownloader extends BitmapDrawable
-    {
+    public class UrlImageDownloader extends BitmapDrawable {
         public Drawable drawable;
 
         /**
@@ -94,8 +86,7 @@ public class UILImageGetter implements Html.ImageGetter
          * @param res
          * @param is
          */
-        public UrlImageDownloader(Resources res, InputStream is)
-        {
+        public UrlImageDownloader(Resources res, InputStream is) {
             super(res, is);
         }
 
@@ -105,8 +96,7 @@ public class UILImageGetter implements Html.ImageGetter
          * @param res
          * @param filepath
          */
-        public UrlImageDownloader(Resources res, String filepath)
-        {
+        public UrlImageDownloader(Resources res, String filepath) {
             super(res, filepath);
             drawable = new BitmapDrawable(res, filepath);
         }
@@ -118,17 +108,14 @@ public class UILImageGetter implements Html.ImageGetter
          * @param res
          * @param bitmap
          */
-        public UrlImageDownloader(Resources res, Bitmap bitmap)
-        {
+        public UrlImageDownloader(Resources res, Bitmap bitmap) {
             super(res, bitmap);
         }
 
         @Override
-        public void draw(Canvas canvas)
-        {
+        public void draw(Canvas canvas) {
             // override the draw to facilitate refresh function later
-            if (drawable != null)
-            {
+            if (drawable != null) {
                 drawable.draw(canvas);
             }
         }

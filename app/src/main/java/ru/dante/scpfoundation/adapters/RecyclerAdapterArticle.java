@@ -38,44 +38,38 @@ import ru.dante.scpfoundation.utils.parsing.DownloadArticle;
 
 /**
  * Created by Dante on 17.01.2016.
+ * <p>
+ * for scp_ru
  */
-public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.ViewHolder>
-{
-    public static final int TYPE_TEXT = 0;
-    public static final int TYPE_SPOILER = 1;
-    public static final int TYPE_IMAGE = 2;
-    public static final int TYPE_TITLE = 3;
+public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private static final int TYPE_TEXT = 0;
+    private static final int TYPE_SPOILER = 1;
+    private static final int TYPE_IMAGE = 2;
+    private static final int TYPE_TITLE = 3;
     private static final int TYPE_TABLE = 4;
-    private static final String LOG = RecyclerAdapterArticle.class.getSimpleName();
 
-    //    private String articlesText;
     private Article article;
     private ArrayList<String> articlesTextParts;
 
-    public ArrayList<String> getArticlesTextParts()
-    {
+    public ArrayList<String> getArticlesTextParts() {
         return articlesTextParts;
     }
 
     private ArrayList<DownloadArticle.TextType> articlesTextpartsType;
 
-    public RecyclerAdapterArticle(Article article)
-    {
+    public RecyclerAdapterArticle(Article article) {
         this.article = article;
         this.articlesTextParts = DownloadArticle.getArticlesTextParts(article.getArticlesText());
         this.articlesTextpartsType = DownloadArticle.getListOfTextTypes(articlesTextParts);
     }
 
     @Override
-    public int getItemViewType(int position)
-    {
-        if (position == 0)
-        {
+    public int getItemViewType(int position) {
+        if (position == 0) {
             return TYPE_TITLE;
         }
         DownloadArticle.TextType type = this.articlesTextpartsType.get(position - 1);
-        switch (type)
-        {
+        switch (type) {
             default:
             case Text:
                 return TYPE_TEXT;
@@ -89,12 +83,10 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
-    {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         RecyclerView.ViewHolder viewHolder = null;
         View view;
-        switch (viewType)
-        {
+        switch (viewType) {
             default:
             case TYPE_TEXT:
                 view = new TextView(parent.getContext());
@@ -122,14 +114,12 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
 
 
     @Override
-    public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position)
-    {
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
         final Context ctx;
         int textSizePrimary;
         float articleTextScale;
         SharedPreferences pref;
-        switch (this.getItemViewType(position))
-        {
+        switch (this.getItemViewType(position)) {
             case TYPE_TEXT:
                 final ViewHolderText viewHolderText = (ViewHolderText) holder;
                 ctx = viewHolderText.textView.getContext();
@@ -153,11 +143,9 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                 Document document = Jsoup.parse(articlesTextParts.get(position - 1));
                 Element imageTag = document.getElementsByTag("img").first();
                 String imageUrl = imageTag.attr("src");
-                MyUIL.get(holderImage.imageView.getContext()).displayImage(imageUrl, holderImage.imageView, new SimpleImageLoadingListener()
-                {
+                MyUIL.get(holderImage.imageView.getContext()).displayImage(imageUrl, holderImage.imageView, new SimpleImageLoadingListener() {
                     @Override
-                    public void onLoadingComplete(final String imageUri, View view, Bitmap loadedImage)
-                    {
+                    public void onLoadingComplete(final String imageUri, View view, Bitmap loadedImage) {
                         super.onLoadingComplete(imageUri, view, loadedImage);
                         int imageWidth = loadedImage.getWidth();
                         int imageHeight = loadedImage.getHeight();
@@ -167,32 +155,26 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                         params.width = imageWidth;
                         params.height = imageHeight;
                         view.setLayoutParams(params);
-                        view.setOnClickListener(new View.OnClickListener()
-                        {
+                        view.setOnClickListener(new View.OnClickListener() {
                             @Override
-                            public void onClick(View v)
-                            {
+                            public void onClick(View v) {
                                 Dialog nagDialog = new Dialog(holderImage.imageView.getContext(), android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
                                 nagDialog.setCancelable(true);
                                 nagDialog.setContentView(R.layout.preview_image);
 
                                 final ImageViewTouch imageViewTouch = (ImageViewTouch) nagDialog.findViewById(R.id.image_view_touch);
-                                MyUIL.get(holderImage.imageView.getContext()).loadImage(imageUri, MyUIL.getSimple(), new SimpleImageLoadingListener()
-                                {
+                                MyUIL.get(holderImage.imageView.getContext()).loadImage(imageUri, MyUIL.getSimple(), new SimpleImageLoadingListener() {
                                     @Override
-                                    public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage)
-                                    {
+                                    public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
                                         super.onLoadingComplete(imageUri, view, loadedImage);
                                         Matrix matrix = imageViewTouch.getDisplayMatrix();
                                         imageViewTouch.setImageBitmap(loadedImage, matrix, 0.5f, 2.0f);
                                     }
                                 });
 
-                                nagDialog.setOnCancelListener(new DialogInterface.OnCancelListener()
-                                {
+                                nagDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                                     @Override
-                                    public void onCancel(DialogInterface dialog)
-                                    {
+                                    public void onCancel(DialogInterface dialog) {
                                         System.out.println("nagDialog.onCancel ArtActivity");
                                     }
                                 });
@@ -223,19 +205,15 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
 
                 LinearLayout.LayoutParams linerarParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0);
                 viewHolderSpoiler.content.setLayoutParams(linerarParams);
-                viewHolderSpoiler.title.setOnClickListener(new View.OnClickListener()
-                {
+                viewHolderSpoiler.title.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View v)
-                    {
+                    public void onClick(View v) {
                         int contentHeight = viewHolderSpoiler.content.getLayoutParams().height;
-                        if (contentHeight == 0)
-                        {
+                        if (contentHeight == 0) {
                             LinearLayout.LayoutParams paramsFullHeight = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                             viewHolderSpoiler.content.setLayoutParams(paramsFullHeight);
                             viewHolderSpoiler.title.setCompoundDrawablesWithIntrinsicBounds(AttributeGetter.getDrawableId(ctx, R.attr.iconArrowUp), 0, 0, 0);
-                        } else
-                        {
+                        } else {
                             LinearLayout.LayoutParams linerarParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0);
                             viewHolderSpoiler.content.setLayoutParams(linerarParams);
                             viewHolderSpoiler.title.setCompoundDrawablesWithIntrinsicBounds(AttributeGetter.getDrawableId(ctx, R.attr.iconArrowDown), 0, 0, 0);
@@ -272,74 +250,50 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
     }
 
     @Override
-    public int getItemCount()
-    {
+    public int getItemCount() {
         return this.articlesTextParts.size() + 1;
     }
 
-    public static class ViewHolderText extends RecyclerView.ViewHolder
-    {
+    public static class ViewHolderText extends RecyclerView.ViewHolder {
         TextView textView;
 
-        public ViewHolderText(View itemView)
-        {
+        public ViewHolderText(View itemView) {
             super(itemView);
             textView = (TextView) itemView;
         }
     }
 
-    public static class ViewHolderSpoiler extends RecyclerView.ViewHolder
-    {
+    public static class ViewHolderSpoiler extends RecyclerView.ViewHolder {
         TextView title, content;
 
-        public ViewHolderSpoiler(View itemView)
-        {
+        public ViewHolderSpoiler(View itemView) {
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.title);
             content = (TextView) itemView.findViewById(R.id.content);
         }
     }
 
-    public static class ViewHolderImage extends RecyclerView.ViewHolder
-    {
+    public static class ViewHolderImage extends RecyclerView.ViewHolder {
         ImageView imageView;
         TextView title;
 
-        public ViewHolderImage(View itemView)
-        {
+        public ViewHolderImage(View itemView) {
             super(itemView);
             imageView = (ImageView) itemView.findViewById(R.id.image);
             title = (TextView) itemView.findViewById(R.id.title);
         }
     }
 
-    public static class ViewHolderTable extends RecyclerView.ViewHolder
-    {
+    public static class ViewHolderTable extends RecyclerView.ViewHolder {
         WebView webView;
 
-        public ViewHolderTable(View itemView)
-        {
+        public ViewHolderTable(View itemView) {
             super(itemView);
             webView = (WebView) itemView;
         }
     }
 
-    public static void setTextSelectebleAndFixBug(TextView textView)
-    {
+    public static void setTextSelectebleAndFixBug(TextView textView) {
         textView.setTextIsSelectable(true);
-//        title.setOnTouchListener(new View.OnTouchListener()
-//        {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event)
-//            {
-//                TextView title= (TextView) v;
-//                int selectionStart=title.getSelectionStart();
-//                if (selectionStart==-1){
-//                    title.setTextIsSelectable(false);
-//                    title.setTextIsSelectable(true);
-//                }
-//                return true;
-//            }
-//        });
     }
 }

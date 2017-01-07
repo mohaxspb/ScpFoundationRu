@@ -1,5 +1,6 @@
 package ru.kuchanov.scp2.db.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +12,7 @@ import io.realm.RealmObject;
  * for TappAwards
  * We need this wrapper, because Realm unable to store Strings in arrays/lists
  */
-public class RealmString extends RealmObject {
+public class RealmString extends RealmObject implements Serializable{
 
     public String val;
 

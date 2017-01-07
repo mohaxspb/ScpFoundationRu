@@ -16,6 +16,7 @@ public class MyPreferenceManager {
         String USER_ID = "USER_ID";
         String NIGHT_MODE = "NIGHT_MODE";
         String TEXT_SCALE_UI = "TEXT_SCALE_UI";
+        String TEXT_SCALE_ARTICLE = "TEXT_SCALE_ARTICLE";
     }
 
     private SharedPreferences mPreferences;
@@ -53,6 +54,14 @@ public class MyPreferenceManager {
     }
 
     public float getUiTextScale() {
-        return mPreferences.getFloat(Keys.TEXT_SCALE_UI, 1f);
+        return mPreferences.getFloat(Keys.TEXT_SCALE_UI, .75f);
+    }
+
+    public float getArticleTextScale() {
+        return mPreferences.getFloat(Keys.TEXT_SCALE_ARTICLE, .75f);
+    }
+
+    public void setArticleTextScale(float textScale) {
+        mPreferences.edit().putFloat(Keys.TEXT_SCALE_ARTICLE, textScale).apply();
     }
 }

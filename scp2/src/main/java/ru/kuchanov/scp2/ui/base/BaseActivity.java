@@ -5,10 +5,12 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.hannesdorfmann.mosby.mvp.MvpActivity;
-import com.hannesdorfmann.mosby.mvp.MvpPresenter;
+
+import java.lang.reflect.Method;
 
 import javax.inject.Inject;
 
@@ -16,14 +18,18 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.kuchanov.scp2.R;
 import ru.kuchanov.scp2.manager.MyPreferenceManager;
+import ru.kuchanov.scp2.mvp.base.BaseDataPresenter;
 import ru.kuchanov.scp2.mvp.base.BaseMvpView;
+import timber.log.Timber;
 
 /**
  * Created by mohax on 31.12.2016.
  * <p>
  * for scp_ru
  */
-public abstract class BaseActivity<V extends BaseMvpView, P extends MvpPresenter<V>> extends MvpActivity<V, P> implements BaseMvpView {
+public abstract class BaseActivity<V extends BaseMvpView, P extends BaseDataPresenter<V>>
+        extends MvpActivity<V, P>
+        implements BaseMvpView {
 
     @BindView(R.id.root)
     protected View root;
@@ -54,6 +60,8 @@ public abstract class BaseActivity<V extends BaseMvpView, P extends MvpPresenter
         if (mToolbar != null) {
             setSupportActionBar(mToolbar);
         }
+
+        mPresenter.onCreate();
     }
 
     protected abstract int getLayoutResId();
@@ -66,6 +74,34 @@ public abstract class BaseActivity<V extends BaseMvpView, P extends MvpPresenter
             getMenuInflater().inflate(getMenuResId(), menu);
         }
         return true;
+    }
+
+    //workaround from http://stackoverflow.com/a/30337653/3212712 to show menu icons
+    @Override
+    protected boolean onPrepareOptionsPanel(View view, Menu menu) {
+        if (menu != null) {
+            if (menu.getClass().getSimpleName().equals("MenuBuilder")) {
+                try {
+                    Method m = menu.getClass().getDeclaredMethod("setOptionalIconsVisible", Boolean.TYPE);
+                    m.setAccessible(true);
+                    m.invoke(menu, true);
+                } catch (Exception e) {
+                    Timber.e(e, "onMenuOpened...unable to set icons for overflow menu");
+                }
+            }
+
+            boolean nightModeIsOn = mMyPreferenceManager.isNightMode();
+            MenuItem themeMenuItem = menu.findItem(R.id.night_mode_item);
+            if (nightModeIsOn) {
+                themeMenuItem.setIcon(R.drawable.ic_brightness_5_white_48dp);
+                themeMenuItem.setTitle(R.string.day_mode);
+            } else {
+                themeMenuItem.setIcon(R.drawable.ic_brightness_3_white_48dp);
+                themeMenuItem.setTitle(R.string.night_mode);
+            }
+
+        }
+        return super.onPrepareOptionsPanel(view, menu);
     }
 
     /**

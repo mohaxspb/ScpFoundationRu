@@ -14,6 +14,7 @@ import ru.kuchanov.scp2.mvp.contract.RecentArticles;
 import ru.kuchanov.scp2.ui.adapter.RecyclerAdapterListArticles;
 import ru.kuchanov.scp2.ui.base.BaseListFragment;
 import ru.kuchanov.scp2.ui.util.EndlessRecyclerViewScrollListener;
+import ru.kuchanov.scp2.util.AttributeGetter;
 import timber.log.Timber;
 
 /**
@@ -21,7 +22,9 @@ import timber.log.Timber;
  * <p>
  * for scp_ru
  */
-public class RecentArticlesFragment extends BaseListFragment<RecentArticles.View, RecentArticles.Presenter> implements RecentArticles.View {
+public class RecentArticlesFragment
+        extends BaseListFragment<RecentArticles.View, RecentArticles.Presenter>
+        implements RecentArticles.View {
 
     public static final String TAG = RecentArticlesFragment.class.getSimpleName();
 
@@ -49,6 +52,7 @@ public class RecentArticlesFragment extends BaseListFragment<RecentArticles.View
 
     @Override
     protected void initViews() {
+        Timber.d("initViews");
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         mAdapter = new RecyclerAdapterListArticles();
@@ -92,7 +96,7 @@ public class RecentArticlesFragment extends BaseListFragment<RecentArticles.View
         resetOnScrollListener();
 
         assert mSwipeRefreshLayout != null;
-        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.zbs_color_red);
         mSwipeRefreshLayout.setOnRefreshListener(() -> {
             Timber.d("onRefresh");
             mPresenter.getDataFromApi(Constants.Api.ZERO_OFFSET);

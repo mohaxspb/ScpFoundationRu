@@ -23,7 +23,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?toolbarBackgroundGradient"
-            app:title="@string/app_name"
             />
 
         <FrameLayout
@@ -33,7 +32,6 @@
             android:layout_weight="1"
             android:background="?windowbackgroundOverrided"
             android:fitsSystemWindows="true"
-            android:orientation="vertical"
             />
     </LinearLayout>
 
@@ -46,6 +44,8 @@
         android:fitsSystemWindows="true"
         android:theme="?navigation_view_style"
         app:headerLayout="@layout/drawer_header_unlogined"
+        app:itemIconTint="?navigationViewItemIconColor"
+        app:itemTextColor="?navigationViewItemTextColor"
         app:menu="@menu/my_navigation_items"
         />
 </android.support.v4.widget.DrawerLayout>

@@ -184,4 +184,48 @@ public class DbProvider {
                     });
         });
     }
+
+    public Observable<Article> getArticleAsync(String articleUrl) {
+        return mRealm.where(Article.class)
+                .equalTo(Article.FIELD_URL, articleUrl)
+                .findAllAsync()
+                .<List<Article>>asObservable()
+                .filter(RealmResults::isLoaded)
+                .filter(RealmResults::isValid)
+                .flatMap(arts -> arts.isEmpty() ? Observable.just(null) : Observable.just(arts.first()));
+    }
+
+    public Observable<Void> saveArticle(Article article) {
+        return Observable.create(subscriber -> {
+            mRealm.executeTransactionAsync(
+                    realm -> {
+                        //check if we have app in db and update
+                        Article applicationInDb = realm.where(Article.class)
+                                .equalTo(Article.FIELD_URL, article.url)
+                                .findFirst();
+                        if (applicationInDb != null) {
+                            applicationInDb.text = article.text;
+                            applicationInDb.title = article.title;
+                            //tabs
+                            applicationInDb.hasTabs = article.hasTabs;
+                            applicationInDb.tabsTitles = article.tabsTitles;
+                            applicationInDb.tabsTexts = article.tabsTexts;
+                            //textParts
+                            applicationInDb.textParts = article.textParts;
+                            applicationInDb.textPartsTypes = article.textPartsTypes;
+                        } else {
+                            realm.insertOrUpdate(article);
+                        }
+                    },
+                    () -> {
+                        subscriber.onNext(null);
+                        subscriber.onCompleted();
+                        mRealm.close();
+                    },
+                    error -> {
+                        subscriber.onError(error);
+                        mRealm.close();
+                    });
+        });
+    }
 }
