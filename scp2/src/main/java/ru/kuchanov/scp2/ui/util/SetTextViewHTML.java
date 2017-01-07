@@ -80,6 +80,14 @@ public class SetTextViewHTML {
                 if (!link.startsWith("http")) {
                     link = BuildConfig.BASE_API_URL + link;
                 }
+
+                if (link.endsWith(".mp3")) {
+                    if (textItemsClickListener != null) {
+                        textItemsClickListener.onMusicClicked(link);
+                    }
+                    return;
+                }
+
                 if (textItemsClickListener != null) {
                     textItemsClickListener.onLinkClicked(link);
                 }
@@ -156,5 +164,7 @@ public class SetTextViewHTML {
         void onImageClicked(String link);
 
         void onUnsupportedLinkPressed(String link);
+
+        void onMusicClicked(String link);
     }
 }

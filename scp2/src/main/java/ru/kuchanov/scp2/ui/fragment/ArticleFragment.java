@@ -1,11 +1,13 @@
 package ru.kuchanov.scp2.ui.fragment;
 
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -19,6 +21,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.parceler.Parcels;
 
+import java.io.IOException;
 import java.util.List;
 
 import butterknife.BindView;
@@ -176,6 +179,20 @@ public class ArticleFragment
     }
 
     @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        Timber.d("setUserVisibleHint url: %s, value: %b", url, isVisibleToUser);
+        if (isVisibleToUser) {
+            if (mArticle != null && mArticle.title != null) {
+//                ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(mArticle.title);
+                if (getActivity() instanceof ToolbarTitleSetter) {
+                    ((ToolbarTitleSetter) getActivity()).setTitle(mArticle.title);
+                }
+            }
+        }
+    }
+
+    @Override
     public void showData(Article article) {
         Timber.d("showData: %s", article);
         mArticle = article;
@@ -184,6 +201,14 @@ public class ArticleFragment
         }
         if (mArticle == null || mArticle.text == null) {
             return;
+        }
+        Timber.d("setUserVisibleHint url: %s, value: %b", url, getUserVisibleHint());
+        if (getUserVisibleHint()) {
+            if (mArticle.title != null) {
+                if (getActivity() instanceof ToolbarTitleSetter) {
+                    ((ToolbarTitleSetter) getActivity()).setTitle(mArticle.title);
+                }
+            }
         }
         if (mArticle.hasTabs) {
             tabLayout.clearOnTabSelectedListeners();
@@ -309,5 +334,25 @@ public class ArticleFragment
     @Override
     public void onUnsupportedLinkPressed(String link) {
         Snackbar.make(root, R.string.unsupported_link, Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onMusicClicked(String link) {
+        try {
+            MediaPlayer mp = new MediaPlayer();
+            mp.setDataSource(link);
+            mp.prepareAsync();
+            mp.setOnPreparedListener(mediaPlayer -> {
+                mp.start();
+            });
+            mp.setOnCompletionListener(MediaPlayer::release);
+        } catch (IOException e) {
+            Timber.e(e, "error play music");
+            showError(e);
+        }
+    }
+
+    public interface ToolbarTitleSetter {
+        void setTitle(String title);
     }
 }

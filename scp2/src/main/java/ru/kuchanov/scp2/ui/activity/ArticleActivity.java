@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.MenuItem;
 
@@ -18,11 +17,12 @@ import ru.kuchanov.scp2.R;
 import ru.kuchanov.scp2.mvp.contract.ArticleScreenMvp;
 import ru.kuchanov.scp2.ui.adapter.ArticlesPagerAdapter;
 import ru.kuchanov.scp2.ui.base.BaseDrawerActivity;
+import ru.kuchanov.scp2.ui.fragment.ArticleFragment;
 import timber.log.Timber;
 
 public class ArticleActivity
         extends BaseDrawerActivity<ArticleScreenMvp.View, ArticleScreenMvp.Presenter>
-        implements ArticleScreenMvp.View {
+        implements ArticleScreenMvp.View, ArticleFragment.ToolbarTitleSetter {
 
     public static final String EXTRA_ARTICLES_URLS_LIST = "EXTRA_ARTICLES_URLS_LIST";
     public static final String EXTRA_POSITION = "EXTRA_POSITION";
@@ -59,8 +59,8 @@ public class ArticleActivity
         }
         mAdapter = new ArticlesPagerAdapter(getSupportFragmentManager());
         mAdapter.setData(getIntent().getStringArrayListExtra(EXTRA_ARTICLES_URLS_LIST));
-        mViewPager.setCurrentItem(mCurPosition);
         mViewPager.setAdapter(mAdapter);
+        mViewPager.setCurrentItem(mCurPosition);
     }
 
     @Override
@@ -182,5 +182,12 @@ public class ArticleActivity
                 return true;
         }
         return false;
+    }
+
+    @Override
+    public void setTitle(String title) {
+        if (mToolbar != null) {
+            mToolbar.setTitle(title);
+        }
     }
 }

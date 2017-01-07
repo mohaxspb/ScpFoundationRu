@@ -273,18 +273,20 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                         public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
                             int width = resource.getIntrinsicWidth();
                             int height = resource.getIntrinsicHeight();
-                            if (resource.getIntrinsicWidth() > DimensionUtils.getScreenWidth()) {
-                                width = DimensionUtils.getScreenWidth();
-                                float multiplier = (float) width / height;
-                                height = (int) (width / multiplier);
-                            }
+
+                            float multiplier = (float) width / height;
+                            width = DimensionUtils.getScreenWidth();
+                            height = (int) (width / multiplier);
                             imageView.getLayoutParams().width = width;
                             imageView.getLayoutParams().height = height;
-                            imageView.setImageDrawable(resource);
+
+                            imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+
                             imageView.setOnClickListener(v -> DialogUtils.showImageDialog(ctx, imageUrl));
-                            return true;
+                            return false;
                         }
-                    });
+                    })
+                    .into(imageView);
 
             String title = document.getElementsByTag("span").text();
             titleTextView.setTextIsSelectable(true);
