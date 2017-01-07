@@ -93,7 +93,7 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
         void bind(Article article) {
             itemView.setOnClickListener(v -> {
                 if (mArticleClickListener != null) {
-                    mArticleClickListener.onArticleClicked(article);
+                    mArticleClickListener.onArticleClicked(article, getAdapterPosition());
                 }
             });
             Context context = itemView.getContext();
@@ -148,7 +148,7 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
     }
 
     public interface ArticleClickListener {
-        void onArticleClicked(Article article);
+        void onArticleClicked(Article article, int position);
 
         void toggleReadenState(Article article);
 

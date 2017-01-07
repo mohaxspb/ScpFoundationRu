@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ru.kuchanov.scp2.Constants;
@@ -11,10 +12,10 @@ import ru.kuchanov.scp2.MyApplication;
 import ru.kuchanov.scp2.R;
 import ru.kuchanov.scp2.db.model.Article;
 import ru.kuchanov.scp2.mvp.contract.RecentArticles;
+import ru.kuchanov.scp2.ui.activity.ArticleActivity;
 import ru.kuchanov.scp2.ui.adapter.RecyclerAdapterListArticles;
 import ru.kuchanov.scp2.ui.base.BaseListFragment;
 import ru.kuchanov.scp2.ui.util.EndlessRecyclerViewScrollListener;
-import ru.kuchanov.scp2.util.AttributeGetter;
 import timber.log.Timber;
 
 /**
@@ -58,14 +59,8 @@ public class RecentArticlesFragment
         mAdapter = new RecyclerAdapterListArticles();
         mAdapter.setArticleClickListener(new RecyclerAdapterListArticles.ArticleClickListener() {
             @Override
-            public void onArticleClicked(Article article) {
-                //TODO
-//                Intent intent = new Intent(getActivity(), ActivityArticles.class);
-//                Bundle bundle = new Bundle();
-//                bundle.putString("title", articles.get(position).getTitle());
-//                bundle.putString("url", articles.get(position).getURL());
-//                intent.putExtras(bundle);
-//                ctx.startActivity(intent);
+            public void onArticleClicked(Article article, int position) {
+                ArticleActivity.startActivity(getActivity(), (ArrayList<String>) Article.getListOfUrls(mPresenter.getData()), position);
             }
 
             @Override

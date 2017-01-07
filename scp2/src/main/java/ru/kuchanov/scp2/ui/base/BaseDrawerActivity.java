@@ -23,7 +23,7 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
         implements DrawerMvp.View {
 
     private static final String STATE_CUR_DRAWER_ITEM_ID = "STATE_CUR_DRAWER_ITEM_ID";
-    private static final int SELECTED_DRAWER_ITEM_NONE = -1;
+    protected static final int SELECTED_DRAWER_ITEM_NONE = -1;
 
     @BindView(R.id.root)
     protected DrawerLayout mDrawerLayout;

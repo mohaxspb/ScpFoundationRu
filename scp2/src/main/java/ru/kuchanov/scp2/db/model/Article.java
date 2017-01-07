@@ -1,6 +1,8 @@
 package ru.kuchanov.scp2.db.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
@@ -32,7 +34,7 @@ public class Article extends RealmObject implements Serializable {
     public RealmList<RealmString> tabsTitles;
 
     public RealmList<RealmString> textParts;
-//    @ParseHtmlUtils.TextType
+    //    @ParseHtmlUtils.TextType
     public RealmList<RealmString> textPartsTypes;
 
     //site info
@@ -56,6 +58,22 @@ public class Article extends RealmObject implements Serializable {
      * in format 01:06 01.07.2010
      */
     public String updatedDate;
+
+    public static List<String> getListOfUrls(Article... articles) {
+        List<String> urls = new ArrayList<>();
+        for (Article article : articles) {
+            urls.add(article.url);
+        }
+        return urls;
+    }
+
+    public static List<String> getListOfUrls(List<Article> articles) {
+        List<String> urls = new ArrayList<>();
+        for (Article article : articles) {
+            urls.add(article.url);
+        }
+        return urls;
+    }
 
     @Override
     public String toString() {

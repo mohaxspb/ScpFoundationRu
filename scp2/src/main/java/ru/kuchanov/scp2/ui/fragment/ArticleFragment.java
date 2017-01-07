@@ -21,11 +21,14 @@ import org.jsoup.select.Elements;
 import java.util.List;
 
 import butterknife.BindView;
+import ru.kuchanov.scp2.Constants;
 import ru.kuchanov.scp2.MyApplication;
 import ru.kuchanov.scp2.R;
 import ru.kuchanov.scp2.db.model.Article;
 import ru.kuchanov.scp2.db.model.RealmString;
 import ru.kuchanov.scp2.mvp.contract.ArticleMvp;
+import ru.kuchanov.scp2.ui.activity.ArticleActivity;
+import ru.kuchanov.scp2.ui.activity.MainActivity;
 import ru.kuchanov.scp2.ui.adapter.RecyclerAdapterArticle;
 import ru.kuchanov.scp2.ui.base.BaseFragment;
 import ru.kuchanov.scp2.ui.util.SetTextViewHTML;
@@ -229,16 +232,15 @@ public class ArticleFragment
 
     @Override
     public void onLinkClicked(String link) {
-        //TODO implement open predefined main activities link clicked
-//                for (String pressedLink : Constants.Urls.ALL_LINKS_ARRAY) {
-//                    if (link.equals(pressedLink)) {
-//                        ActivityMain.startActivityMain(link, ctx);
-//                        return;
-//                    }
-//                }
+        //open predefined main activities link clicked
+        for (String pressedLink : Constants.Urls.ALL_LINKS_ARRAY) {
+            if (link.equals(pressedLink)) {
+                MainActivity.startActivity(getActivity(), link);
+                return;
+            }
+        }
 
-        //TODO start new activity
-        showError(new IllegalStateException("not implemented yet"));
+        ArticleActivity.startActivity(getActivity(), link);
     }
 
     @Override

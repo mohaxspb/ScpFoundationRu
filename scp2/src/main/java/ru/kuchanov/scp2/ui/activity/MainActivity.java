@@ -1,8 +1,10 @@
 package ru.kuchanov.scp2.ui.activity;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.view.MenuItem;
@@ -12,14 +14,18 @@ import java.util.List;
 import ru.kuchanov.scp2.Constants;
 import ru.kuchanov.scp2.MyApplication;
 import ru.kuchanov.scp2.R;
-import ru.kuchanov.scp2.mvp.contract.Main;
+import ru.kuchanov.scp2.mvp.contract.MainMvp;
 import ru.kuchanov.scp2.ui.base.BaseDrawerActivity;
 import ru.kuchanov.scp2.ui.fragment.ArticleFragment;
 import ru.kuchanov.scp2.ui.fragment.RatedArticlesFragment;
 import ru.kuchanov.scp2.ui.fragment.RecentArticlesFragment;
 import timber.log.Timber;
 
-public class MainActivity extends BaseDrawerActivity<Main.View, Main.Presenter> implements Main.View {
+public class MainActivity extends BaseDrawerActivity<MainMvp.View, MainMvp.Presenter> implements MainMvp.View {
+
+    public static void startActivity(Context context, String link) {
+        //TODO switch link and open proper drawer item
+    }
 
     @Override
     protected int getDefaultNavItemId() {
@@ -53,7 +59,7 @@ public class MainActivity extends BaseDrawerActivity<Main.View, Main.Presenter> 
 
     @NonNull
     @Override
-    public Main.Presenter createPresenter() {
+    public MainMvp.Presenter createPresenter() {
         return mPresenter;
     }
 
