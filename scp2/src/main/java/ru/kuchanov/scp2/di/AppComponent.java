@@ -7,6 +7,7 @@ import ru.kuchanov.scp2.di.module.AppModule;
 import ru.kuchanov.scp2.di.module.NetModule;
 import ru.kuchanov.scp2.di.module.PresentersModule;
 import ru.kuchanov.scp2.di.module.StorageModule;
+import ru.kuchanov.scp2.ui.activity.ArticleActivity;
 import ru.kuchanov.scp2.ui.adapter.RecyclerAdapterArticle;
 import ru.kuchanov.scp2.ui.adapter.RecyclerAdapterListArticles;
 import ru.kuchanov.scp2.ui.fragment.ArticleFragment;
@@ -28,6 +29,8 @@ import ru.kuchanov.scp2.ui.fragment.RecentArticlesFragment;
 })
 public interface AppComponent {
     void inject(MainActivity activity);
+
+    void inject(ArticleActivity activity);
 
     void inject(ArticleFragment fragment);
 

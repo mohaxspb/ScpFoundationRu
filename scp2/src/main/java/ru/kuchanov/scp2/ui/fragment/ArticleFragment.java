@@ -1,11 +1,13 @@
 package ru.kuchanov.scp2.ui.fragment;
 
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -17,15 +19,20 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.parceler.Parcels;
 
+import java.io.IOException;
 import java.util.List;
 
 import butterknife.BindView;
+import ru.kuchanov.scp2.Constants;
 import ru.kuchanov.scp2.MyApplication;
 import ru.kuchanov.scp2.R;
 import ru.kuchanov.scp2.db.model.Article;
 import ru.kuchanov.scp2.db.model.RealmString;
 import ru.kuchanov.scp2.mvp.contract.ArticleMvp;
+import ru.kuchanov.scp2.ui.activity.ArticleActivity;
+import ru.kuchanov.scp2.ui.activity.MainActivity;
 import ru.kuchanov.scp2.ui.adapter.RecyclerAdapterArticle;
 import ru.kuchanov.scp2.ui.base.BaseFragment;
 import ru.kuchanov.scp2.ui.util.SetTextViewHTML;
@@ -75,7 +82,7 @@ public class ArticleFragment
         args.putString(EXTRA_URL, url);
         args.putString(EXTRA_TITLE, title);
         if (article != null) {
-            args.putSerializable(EXTRA_ARTICLE, article);
+            args.putParcelable(EXTRA_ARTICLE, Parcels.wrap(article));
         }
         fragment.setArguments(args);
         return fragment;
@@ -84,8 +91,7 @@ public class ArticleFragment
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable(EXTRA_ARTICLE, mArticle);
-
+        outState.putParcelable(EXTRA_ARTICLE, Parcels.wrap(mArticle));
         //tabs
         outState.putInt(KEY_CURRENT_SELECTED_TAB, mCurrentSelectedTab);
     }
@@ -97,9 +103,9 @@ public class ArticleFragment
         title = getArguments().getString(EXTRA_TITLE);
         url = getArguments().getString(EXTRA_URL);
         mArticle = getArguments().containsKey(EXTRA_ARTICLE)
-                ? (Article) getArguments().getSerializable(EXTRA_ARTICLE)
+                ? Parcels.unwrap(getArguments().getParcelable(EXTRA_ARTICLE))
                 : savedInstanceState != null && savedInstanceState.containsKey(EXTRA_ARTICLE)
-                ? (Article) savedInstanceState.getSerializable(EXTRA_ARTICLE)
+                ? Parcels.unwrap(savedInstanceState.getParcelable(EXTRA_ARTICLE))
                 : null;
 
         if (savedInstanceState != null) {
@@ -173,6 +179,20 @@ public class ArticleFragment
     }
 
     @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        Timber.d("setUserVisibleHint url: %s, value: %b", url, isVisibleToUser);
+        if (isVisibleToUser) {
+            if (mArticle != null && mArticle.title != null) {
+//                ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(mArticle.title);
+                if (getActivity() instanceof ToolbarTitleSetter) {
+                    ((ToolbarTitleSetter) getActivity()).setTitle(mArticle.title);
+                }
+            }
+        }
+    }
+
+    @Override
     public void showData(Article article) {
         Timber.d("showData: %s", article);
         mArticle = article;
@@ -181,6 +201,14 @@ public class ArticleFragment
         }
         if (mArticle == null || mArticle.text == null) {
             return;
+        }
+        Timber.d("setUserVisibleHint url: %s, value: %b", url, getUserVisibleHint());
+        if (getUserVisibleHint()) {
+            if (mArticle.title != null) {
+                if (getActivity() instanceof ToolbarTitleSetter) {
+                    ((ToolbarTitleSetter) getActivity()).setTitle(mArticle.title);
+                }
+            }
         }
         if (mArticle.hasTabs) {
             tabLayout.clearOnTabSelectedListeners();
@@ -229,16 +257,15 @@ public class ArticleFragment
 
     @Override
     public void onLinkClicked(String link) {
-        //TODO implement open predefined main activities link clicked
-//                for (String pressedLink : Constants.Urls.ALL_LINKS_ARRAY) {
-//                    if (link.equals(pressedLink)) {
-//                        ActivityMain.startActivityMain(link, ctx);
-//                        return;
-//                    }
-//                }
+        //open predefined main activities link clicked
+        for (String pressedLink : Constants.Urls.ALL_LINKS_ARRAY) {
+            if (link.equals(pressedLink)) {
+                MainActivity.startActivity(getActivity(), link);
+                return;
+            }
+        }
 
-        //TODO start new activity
-        showError(new IllegalStateException("not implemented yet"));
+        ArticleActivity.startActivity(getActivity(), link);
     }
 
     @Override
@@ -307,5 +334,25 @@ public class ArticleFragment
     @Override
     public void onUnsupportedLinkPressed(String link) {
         Snackbar.make(root, R.string.unsupported_link, Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onMusicClicked(String link) {
+        try {
+            MediaPlayer mp = new MediaPlayer();
+            mp.setDataSource(link);
+            mp.prepareAsync();
+            mp.setOnPreparedListener(mediaPlayer -> {
+                mp.start();
+            });
+            mp.setOnCompletionListener(MediaPlayer::release);
+        } catch (IOException e) {
+            Timber.e(e, "error play music");
+            showError(e);
+        }
+    }
+
+    public interface ToolbarTitleSetter {
+        void setTitle(String title);
     }
 }

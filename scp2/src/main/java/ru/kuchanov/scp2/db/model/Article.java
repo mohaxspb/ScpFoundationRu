@@ -1,18 +1,24 @@
 package ru.kuchanov.scp2.db.model;
 
-import java.io.Serializable;
+import org.parceler.Parcel;
+import org.parceler.ParcelPropertyConverter;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import io.realm.ArticleRealmProxy;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
-import ru.kuchanov.scp2.api.ParseHtmlUtils;
+import ru.kuchanov.scp2.db.util.RealmStringListParcelConverter;
 
 /**
  * Created by mohax on 03.01.2017.
  * <p>
  * for scp_ru
  */
-public class Article extends RealmObject implements Serializable {
+@Parcel(implementations = {ArticleRealmProxy.class}, value = Parcel.Serialization.BEAN, analyze = {Article.class})
+public class Article extends RealmObject {
 
     public static final String FIELD_IS_IN_READEN = "isInReaden";
     public static final String FIELD_IS_IN_RECENT = "isInRecent";
@@ -28,12 +34,47 @@ public class Article extends RealmObject implements Serializable {
     public boolean isInReaden;
 
     public boolean hasTabs;
+    @ParcelPropertyConverter(RealmStringListParcelConverter.class)
     public RealmList<RealmString> tabsTexts;
+    @ParcelPropertyConverter(RealmStringListParcelConverter.class)
     public RealmList<RealmString> tabsTitles;
 
+    @ParcelPropertyConverter(RealmStringListParcelConverter.class)
     public RealmList<RealmString> textParts;
-//    @ParseHtmlUtils.TextType
+    @ParcelPropertyConverter(RealmStringListParcelConverter.class)
     public RealmList<RealmString> textPartsTypes;
+
+//    public RealmList<RealmString> getTabsTexts() {
+//        return tabsTexts;
+//    }
+//    @ParcelPropertyConverter(RealmStringListParcelConverter.class)
+//    public void setTabsTexts(RealmList<RealmString> tabsTexts) {
+//        this.tabsTexts = tabsTexts;
+//    }
+//
+//    public RealmList<RealmString> getTabsTitles() {
+//        return tabsTitles;
+//    }
+//    @ParcelPropertyConverter(RealmStringListParcelConverter.class)
+//    public void setTabsTitles(RealmList<RealmString> tabsTitles) {
+//        this.tabsTitles = tabsTitles;
+//    }
+//
+//    public RealmList<RealmString> getTextParts() {
+//        return textParts;
+//    }
+//    @ParcelPropertyConverter(RealmStringListParcelConverter.class)
+//    public void setTextParts(RealmList<RealmString> textParts) {
+//        this.textParts = textParts;
+//    }
+//
+//    public RealmList<RealmString> getTextPartsTypes() {
+//        return textPartsTypes;
+//    }
+//    @ParcelPropertyConverter(RealmStringListParcelConverter.class)
+//    public void setTextPartsTypes(RealmList<RealmString> textPartsTypes) {
+//        this.textPartsTypes = textPartsTypes;
+//    }
 
     //site info
     @PrimaryKey
@@ -56,6 +97,22 @@ public class Article extends RealmObject implements Serializable {
      * in format 01:06 01.07.2010
      */
     public String updatedDate;
+
+    public static List<String> getListOfUrls(Article... articles) {
+        List<String> urls = new ArrayList<>();
+        for (Article article : articles) {
+            urls.add(article.url);
+        }
+        return urls;
+    }
+
+    public static List<String> getListOfUrls(List<Article> articles) {
+        List<String> urls = new ArrayList<>();
+        for (Article article : articles) {
+            urls.add(article.url);
+        }
+        return urls;
+    }
 
     @Override
     public String toString() {

@@ -3,7 +3,6 @@ package ru.kuchanov.scp2.ui.adapter;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.method.LinkMovementMethod;
-import android.text.util.Linkify;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -75,7 +74,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
     }
 
     public void setData(Article article) {
-        Timber.d("setData: %s", article);
+//        Timber.d("setData: %s", article);
         mArticle = article;
         if (mArticle.hasTabs) {
             mArticlesTextParts = ParseHtmlUtils.getArticlesTextParts(mArticle.text);
@@ -198,7 +197,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
             textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, articleTextScale * textSizePrimary);
             textView.setLinksClickable(true);
             textView.setMovementMethod(LinkMovementMethod.getInstance());
-            textView.setAutoLinkMask(Linkify.ALL);
+            //TODO add settings for it
             textView.setTextIsSelectable(true);
             SetTextViewHTML.setText(textView, text, mTextItemsClickListener);
         }
@@ -258,6 +257,8 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
             Element imageTag = document.getElementsByTag("img").first();
             String imageUrl = imageTag.attr("src");
 
+            Timber.d("image: %s", imageUrl);
+
             Glide.with(ctx)
                     .load(imageUrl)
                     .fitCenter()
@@ -272,18 +273,21 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                         public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
                             int width = resource.getIntrinsicWidth();
                             int height = resource.getIntrinsicHeight();
-                            if (resource.getIntrinsicWidth() > DimensionUtils.getScreenWidth()) {
-                                width = DimensionUtils.getScreenWidth();
-                                float multiplier = (float) width / height;
-                                height = (int) (width / multiplier);
-                            }
+
+                            float multiplier = (float) width / height;
+                            width = DimensionUtils.getScreenWidth();
+                            height = (int) (width / multiplier);
+
                             imageView.getLayoutParams().width = width;
                             imageView.getLayoutParams().height = height;
-                            imageView.setImageDrawable(resource);
+
+                            imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+
                             imageView.setOnClickListener(v -> DialogUtils.showImageDialog(ctx, imageUrl));
-                            return true;
+                            return false;
                         }
-                    });
+                    })
+                    .into(imageView);
 
             String title = document.getElementsByTag("span").text();
             titleTextView.setTextIsSelectable(true);

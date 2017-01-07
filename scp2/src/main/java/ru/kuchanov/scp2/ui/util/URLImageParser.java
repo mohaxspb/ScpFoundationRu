@@ -18,6 +18,7 @@ import com.bumptech.glide.request.target.ViewTarget;
 
 import ru.kuchanov.scp2.R;
 import ru.kuchanov.scp2.util.AttributeGetter;
+import ru.kuchanov.scp2.util.DimensionUtils;
 
 /**
  * Created by mohax on 05.01.2017.
@@ -46,9 +47,8 @@ public class URLImageParser implements Html.ImageGetter {
 
                     @Override
                     public boolean onResourceReady(GlideDrawable d, String s, Target<GlideDrawable> glideDrawableTarget, boolean b, boolean b2) {
-                        d.setBounds(0, 0, d.getIntrinsicWidth() * 4, d.getIntrinsicHeight() * 4);
-                        urlDrawable.setBounds(0, 0, d.getIntrinsicWidth() * 4, d.getIntrinsicHeight() * 4);
-                        urlDrawable.drawable = d;
+                        setProperImageSize(urlDrawable, d);
+
                         mTextView.invalidate();
                         mTextView.setText(mTextView.getText());
                         return true;
@@ -57,14 +57,29 @@ public class URLImageParser implements Html.ImageGetter {
                 .into(new ViewTarget<TextView, GlideDrawable>(mTextView) {
                     @Override
                     public void onResourceReady(GlideDrawable d, GlideAnimation<? super GlideDrawable> glideAnimation) {
-                        d.setBounds(0, 0, d.getIntrinsicWidth() * 4, d.getIntrinsicHeight() * 4);
-                        urlDrawable.setBounds(0, 0, d.getIntrinsicWidth() * 4, d.getIntrinsicHeight() * 4);
-                        urlDrawable.drawable = d;
+                        setProperImageSize(urlDrawable, d);
+
                         mTextView.invalidate();
                         mTextView.setText(mTextView.getText());
                     }
                 });
         return urlDrawable;
+    }
+
+    private void setProperImageSize(UrlDrawable urlDrawable, GlideDrawable resource) {
+        int width = resource.getIntrinsicWidth();
+        int height = resource.getIntrinsicHeight();
+
+        float multiplier = (float) width / height;
+        if (width > DimensionUtils.getScreenWidth()) {
+            width = DimensionUtils.getScreenWidth();
+        }
+        height = (int) (width / multiplier);
+
+        resource.setBounds(0, 0, width, height);
+        urlDrawable.setBounds(0, 0, width, height);
+
+        urlDrawable.drawable = resource;
     }
 
     private class UrlDrawable extends GlideDrawable {

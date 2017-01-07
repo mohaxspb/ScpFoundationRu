@@ -6,12 +6,14 @@ import java.util.Collection;
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmModel;
 import io.realm.RealmObject;
 import io.realm.RealmResults;
 import io.realm.Sort;
 import ru.kuchanov.scp2.db.model.Article;
 import rx.Observable;
+import timber.log.Timber;
 
 /**
  * Created by y.kuchanov on 21.12.16.
@@ -204,6 +206,7 @@ public class DbProvider {
                                 .equalTo(Article.FIELD_URL, article.url)
                                 .findFirst();
                         if (applicationInDb != null) {
+                            applicationInDb = realm.copyFromRealm(applicationInDb);
                             applicationInDb.text = article.text;
                             applicationInDb.title = article.title;
                             //tabs
@@ -213,6 +216,7 @@ public class DbProvider {
                             //textParts
                             applicationInDb.textParts = article.textParts;
                             applicationInDb.textPartsTypes = article.textPartsTypes;
+                            realm.insertOrUpdate(applicationInDb);
                         } else {
                             realm.insertOrUpdate(article);
                         }

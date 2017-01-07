@@ -21,6 +21,7 @@ import timber.log.Timber;
 public class SetTextViewHTML {
 
     public static void setText(TextView textView, String html, TextItemsClickListener textItemsClickListener) {
+//        Timber.d("setText");
         URLImageParser imgGetter = new URLImageParser(textView);
         MyHtmlTagHandler myHtmlTagHandler = new MyHtmlTagHandler();
         CharSequence sequence = Html.fromHtml(html, imgGetter, myHtmlTagHandler);
@@ -42,6 +43,7 @@ public class SetTextViewHTML {
             final URLSpan span,
             TextItemsClickListener textItemsClickListener
     ) {
+//        Timber.d("makeLinkClickable: %s", span.getURL());
         int start = strBuilder.getSpanStart(span);
         int end = strBuilder.getSpanEnd(span);
         int flags = strBuilder.getSpanFlags(span);
@@ -78,6 +80,14 @@ public class SetTextViewHTML {
                 if (!link.startsWith("http")) {
                     link = BuildConfig.BASE_API_URL + link;
                 }
+
+                if (link.endsWith(".mp3")) {
+                    if (textItemsClickListener != null) {
+                        textItemsClickListener.onMusicClicked(link);
+                    }
+                    return;
+                }
+
                 if (textItemsClickListener != null) {
                     textItemsClickListener.onLinkClicked(link);
                 }
@@ -154,5 +164,7 @@ public class SetTextViewHTML {
         void onImageClicked(String link);
 
         void onUnsupportedLinkPressed(String link);
+
+        void onMusicClicked(String link);
     }
 }

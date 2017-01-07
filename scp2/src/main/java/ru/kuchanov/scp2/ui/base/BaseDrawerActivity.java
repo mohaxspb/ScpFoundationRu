@@ -7,6 +7,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.view.MenuItem;
 import android.view.View;
 
 import butterknife.BindView;
@@ -23,7 +24,7 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
         implements DrawerMvp.View {
 
     private static final String STATE_CUR_DRAWER_ITEM_ID = "STATE_CUR_DRAWER_ITEM_ID";
-    private static final int SELECTED_DRAWER_ITEM_NONE = -1;
+    protected static final int SELECTED_DRAWER_ITEM_NONE = -1;
 
     @BindView(R.id.root)
     protected DrawerLayout mDrawerLayout;
@@ -77,6 +78,8 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
         }
         if (mCurrentSelectedDrawerItemId != SELECTED_DRAWER_ITEM_NONE) {
             mNavigationView.setCheckedItem(mCurrentSelectedDrawerItemId);
+        } else {
+            mNavigationView.getMenu().setGroupCheckable(0, false, true);
         }
     }
 
@@ -90,5 +93,14 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+            mDrawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
     }
 }

@@ -50,13 +50,18 @@ import ru.dante.scpfoundation.utils.SetTextViewHTML;
 import ru.dante.scpfoundation.utils.VKUtils;
 import ru.dante.scpfoundation.utils.inapp.SubscriptionHelper;
 
-public class ActivityArticles extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener
-{
+public class ActivityArticles extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
+    private static final String LOG = ActivityArticles.class.getSimpleName();
     private String needToShowDialog;
     public static final String KEY_NEED_TO_SHOW_DIALOG = "KEY_NEED_TO_SHOW_DIALOG";
     private NavigationView navigationView;
     private Context ctx;
     private IInAppBillingService mService;
+
+    DrawerLayout drawerLayout;
+    SharedPreferences pref;
+    Toolbar toolbar;
+    ActionBarDrawerToggle mDrawerToggle;
 
     // FOR NAVIGATION VIEW ITEM TEXT COLOR
     int[][] state = new int[][]{
@@ -121,81 +126,62 @@ public class ActivityArticles extends AppCompatActivity implements SharedPrefere
     };
 
     ColorStateList csIconDark = new ColorStateList(stateIcon, colorIconDark);
-    DrawerLayout drawerLayout;
-    SharedPreferences pref;
-    Toolbar toolbar;
-    ActionBarDrawerToggle mDrawerToggle;
 
-    public IInAppBillingService getIInAppBillingService()
-    {
+    public IInAppBillingService getIInAppBillingService() {
         return mService;
     }
 
-    ServiceConnection mServiceConn = new ServiceConnection()
-    {
+    ServiceConnection mServiceConn = new ServiceConnection() {
         @Override
-        public void onServiceDisconnected(ComponentName name)
-        {
+        public void onServiceDisconnected(ComponentName name) {
             mService = null;
         }
 
         @Override
-        public void onServiceConnected(ComponentName name, IBinder service)
-        {
+        public void onServiceConnected(ComponentName name, IBinder service) {
             mService = IInAppBillingService.Stub.asInterface(service);
             BusProvider.getInstance().post(new EventServiceConnected());
         }
     };
 
     @Override
-    protected void onSaveInstanceState(Bundle outState)
-    {
+    protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(KEY_NEED_TO_SHOW_DIALOG, needToShowDialog);
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        if (!VKSdk.onActivityResult(requestCode, resultCode, data, new VKCallback<VKAccessToken>()
-        {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (!VKSdk.onActivityResult(requestCode, resultCode, data, new VKCallback<VKAccessToken>() {
             @Override
-            public void onResult(VKAccessToken res)
-            {
+            public void onResult(VKAccessToken res) {
                 // Пользователь успешно авторизовался
                 VKUtils.checkVKAuth((AppCompatActivity) ctx, navigationView);
             }
 
             @Override
-            public void onError(VKError error)
-            {
+            public void onError(VKError error) {
                 // Произошла ошибка авторизации (например, пользователь запретил авторизацию)
                 VKUtils.checkVKAuth((AppCompatActivity) ctx, navigationView);
             }
-        }))
-        {
-            if (requestCode == 1001)
-            {
+        })) {
+            if (requestCode == 1001) {
                 int responseCode = data.getIntExtra("RESPONSE_CODE", 0);
                 String purchaseData = data.getStringExtra("INAPP_PURCHASE_DATA");
                 String dataSignature = data.getStringExtra("INAPP_DATA_SIGNATURE");
 
-                if (resultCode == RESULT_OK)
-                {
-                    try
-                    {
+                if (resultCode == RESULT_OK) {
+                    try {
                         JSONObject jo = new JSONObject(purchaseData);
                         String sku = jo.getString("productId");
                         Log.i(LOG, "You have bought the " + sku + ". Excellent choice, adventurer!");
                         Toast.makeText(ctx, R.string.thanks_for_subscription, Toast.LENGTH_LONG).show();
-                    } catch (JSONException e)
-                    {
+                    } catch (JSONException e) {
                         Log.i(LOG, "Failed to parse purchase data.");
                         e.printStackTrace();
                     }
                 }
-            } else
-            {
+            } else {
                 super.onActivityResult(requestCode, resultCode, data);
             }
         }
@@ -203,48 +189,38 @@ public class ActivityArticles extends AppCompatActivity implements SharedPrefere
 
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
+    public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
-    {
-        if (key.equals("key_design_night_mode"))
-        {
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals("key_design_night_mode")) {
             recreate();
         }
     }
 
     //workaround from http://stackoverflow.com/a/30337653/3212712 to show menu icons
     @Override
-    protected boolean onPrepareOptionsPanel(View view, Menu menu)
-    {
-        if (menu != null)
-        {
-            if (menu.getClass().getSimpleName().equals("MenuBuilder"))
-            {
-                try
-                {
+    protected boolean onPrepareOptionsPanel(View view, Menu menu) {
+        if (menu != null) {
+            if (menu.getClass().getSimpleName().equals("MenuBuilder")) {
+                try {
                     Method m = menu.getClass().getDeclaredMethod("setOptionalIconsVisible", Boolean.TYPE);
                     m.setAccessible(true);
                     m.invoke(menu, true);
-                } catch (Exception e)
-                {
+                } catch (Exception e) {
                     Log.e(getClass().getSimpleName(), "onMenuOpened...unable to set icons for overflow menu", e);
                 }
             }
 
             boolean nightModeIsOn = this.pref.getBoolean("key_design_night_mode", false);
             MenuItem themeMenuItem = menu.findItem(R.id.night_mode_item);
-            if (nightModeIsOn)
-            {
+            if (nightModeIsOn) {
                 themeMenuItem.setIcon(R.drawable.ic_brightness_5_white_48dp);
                 themeMenuItem.setTitle("Дневной режим");
-            } else
-            {
+            } else {
                 themeMenuItem.setIcon(R.drawable.ic_brightness_3_white_48dp);
                 themeMenuItem.setTitle("Ночной режим");
             }
@@ -254,27 +230,23 @@ public class ActivityArticles extends AppCompatActivity implements SharedPrefere
     }
 
     @Override
-    public void onStart()
-    {
+    public void onStart() {
         super.onStart();
         BusProvider.getInstance().register(this);
     }
 
     @Override
-    public void onStop()
-    {
+    public void onStop() {
         super.onStop();
         BusProvider.getInstance().unregister(this);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
+    public boolean onOptionsItemSelected(MenuItem item) {
         Log.d(LOG, "onOptionsItemSelected");
         int id = item.getItemId();
 
-        switch (id)
-        {
+        switch (id) {
             case android.R.id.home:
                 onBackPressed();
                 return true;
@@ -301,77 +273,60 @@ public class ActivityArticles extends AppCompatActivity implements SharedPrefere
     }
 
     @Override
-    protected void onPostCreate(Bundle savedInstanceState)
-    {
+    protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         mDrawerToggle.syncState();
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig)
-    {
+    public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
-//    public static final String LOG=ActivityArticles.class.getSimpleName();
-
-    private static final String LOG = ActivityArticles.class.getSimpleName();
-
     @Override
-    protected void onDestroy()
-    {
+    protected void onDestroy() {
         super.onDestroy();
 //        unregisterReceiver(broadcastReceiver);
-        if (mService != null)
-        {
+        if (mService != null) {
             unbindService(mServiceConn);
         }
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         ctx = this;
         RandomPage.getRandomPage(ctx);
         PreferenceManager.setDefaultValues(this, R.xml.pref_design, true);
         pref = PreferenceManager.getDefaultSharedPreferences(this);
         pref.registerOnSharedPreferenceChangeListener(this);
         boolean nightModeOn = pref.getBoolean("key_design_night_mode", false);
-        if (nightModeOn)
-        {
+        if (nightModeOn) {
             setTheme(R.style.SCP_Theme_Dark);
-        } else
-        {
+        } else {
             setTheme(R.style.SCP_Theme_Light);
         }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_articles);
 
-        if (savedInstanceState != null)
-        {
+        if (savedInstanceState != null) {
             needToShowDialog = savedInstanceState.getString(KEY_NEED_TO_SHOW_DIALOG, null);
         }
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-//        linearLayout = (LinearLayout) findViewById(R.id.content_frame);
         toolbar = (Toolbar) findViewById(R.id.toolBar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null)
-        {
+        if (actionBar != null) {
             actionBar.setDisplayShowTitleEnabled(false);
 
             actionBar.setDisplayHomeAsUpEnabled(true);
 
-            mDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.app_name, R.string.app_name)
-            {
-                public void onDrawerClosed(View view)
-                {
+            mDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.app_name, R.string.app_name) {
+                public void onDrawerClosed(View view) {
                     supportInvalidateOptionsMenu();
                 }
 
-                public void onDrawerOpened(View drawerView)
-                {
+                public void onDrawerOpened(View drawerView) {
                 }
             };
             mDrawerToggle.setDrawerIndicatorEnabled(false);
@@ -386,24 +341,19 @@ public class ActivityArticles extends AppCompatActivity implements SharedPrefere
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         Fragment fragment = fragmentManager.findFragmentById(R.id.content_frame);
-        if (fragment == null)
-        {
+        if (fragment == null) {
             fragment = FragmentArticle.newInstance(url, title);
             fragmentTransaction.add(R.id.content_frame, fragment);
             fragmentTransaction.commit();
-        } else
-        {
+        } else {
             Log.d(LOG, "Fragment Already Exists");
         }
 
         navigationView = (NavigationView) findViewById(R.id.navigation);
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener()
-        {
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
-            public boolean onNavigationItemSelected(MenuItem menuItem)
-            {
-                switch (menuItem.getItemId())
-                {
+            public boolean onNavigationItemSelected(MenuItem menuItem) {
+                switch (menuItem.getItemId()) {
                     case R.id.news:
                         ActivityMain.startActivityMain(Const.Urls.NEWS, ActivityArticles.this);
                         break;
@@ -442,8 +392,7 @@ public class ActivityArticles extends AppCompatActivity implements SharedPrefere
                         ctx.startActivity(galleryIntent);
                         break;
                     case R.id.random_page:
-                        if (pref.contains(ctx.getString(R.string.pref_key_random_url)))
-                        {
+                        if (pref.contains(ctx.getString(R.string.pref_key_random_url))) {
                             FragmentManager fragmentManager = getSupportFragmentManager();
                             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                             Fragment fragment = FragmentArticle.newInstance(pref.getString(ctx.getString(R.string.pref_key_random_url), ""), "");
@@ -453,67 +402,26 @@ public class ActivityArticles extends AppCompatActivity implements SharedPrefere
 
                             pref.edit().remove(ctx.getString(R.string.pref_key_random_url)).apply();
                             RandomPage.getRandomPage(ctx);
-                        } else
-                        {
+                        } else {
                             RandomPage.getRandomPage(ctx);
                             Toast.makeText(ctx, "Создаю случайную статью,нажмите еще раз", Toast.LENGTH_SHORT).show();
                         }
                         break;
                 }
-//                menuItem.setChecked(true);
                 drawerLayout.closeDrawers();
                 return true;
             }
         });
 
-        if (nightModeOn)
-        {
+        if (nightModeOn) {
             navigationView.setItemTextColor(cslDark);
             navigationView.setItemIconTintList(csIconDark);
-        } else
-        {
+        } else {
             navigationView.setItemTextColor(csl);
             navigationView.setItemIconTintList(csIcon);
         }
         disableNavigationViewScrollbars(navigationView);
         navigationView.getMenu().setGroupCheckable(0, false, true);
-
-        /*посылка intant раз в час для закрытия активити*/
-       /* final AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        final Intent intentToCloseActivity = new Intent(Const.INTENT_ACTION_CLOSE_ACTIVITY);
-        boolean alarmfinishActivityUp = (PendingIntent.getBroadcast(this.getApplicationContext(), 0, intentToCloseActivity,
-                PendingIntent.FLAG_NO_CREATE) != null);
-        final PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intentToCloseActivity,
-                PendingIntent.FLAG_UPDATE_CURRENT);
-        if (!alarmfinishActivityUp)
-        {
-            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-            {
-                am.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + AlarmManager.INTERVAL_HOUR, AlarmManager.INTERVAL_HOUR, pendingIntent);
-            } else
-            {
-                am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + AlarmManager.INTERVAL_HOUR, AlarmManager.INTERVAL_HOUR, pendingIntent);
-            }
-        }
-        broadcastReceiver = new BroadcastReceiver()
-        {
-
-            @Override
-            public void onReceive(Context context, Intent intent)
-            {
-                Log.d(LOG, "finish");
-                if (!isActive)
-                {
-                    PendingIntent pendingIntentFinishActivityCancel = PendingIntent.getBroadcast(getApplicationContext(), 0,
-                            intentToCloseActivity,
-                            PendingIntent.FLAG_CANCEL_CURRENT);
-                    am.cancel(pendingIntentFinishActivityCancel);
-                    finish();
-                }
-            }
-        };
-        IntentFilter intentFilter = new IntentFilter(LOG);
-        this.registerReceiver(broadcastReceiver, intentFilter);*/
 
         VKUtils.checkVKAuth((AppCompatActivity) ctx, navigationView);
 
@@ -524,45 +432,34 @@ public class ActivityArticles extends AppCompatActivity implements SharedPrefere
         bindService(serviceIntent, mServiceConn, Context.BIND_AUTO_CREATE);
     }
 
-  /*  boolean isActive = true;
-    BroadcastReceiver broadcastReceiver;*/
-
-
     @Override
-    protected void onPause()
-    {
+    protected void onPause() {
         YandexMetrica.onPauseActivity(this);
         super.onPause();
     }
 
     @Override
-    protected void onResume()
-    {
+    protected void onResume() {
         super.onResume();
         YandexMetrica.onResumeActivity(this);
 
         //restoreDiLOG QITH IMAGE
-        if (needToShowDialog != null)
-        {
+        if (needToShowDialog != null) {
             Log.d(LOG, "needToShowDialog != null");
             SetTextViewHTML.showImageDialog(ctx, needToShowDialog);
         }
     }
 
-    private void disableNavigationViewScrollbars(NavigationView navigationView)
-    {
-        if (navigationView != null)
-        {
+    private void disableNavigationViewScrollbars(NavigationView navigationView) {
+        if (navigationView != null) {
             NavigationMenuView navigationMenuView = (NavigationMenuView) navigationView.getChildAt(0);
-            if (navigationMenuView != null)
-            {
+            if (navigationMenuView != null) {
                 navigationMenuView.setVerticalScrollBarEnabled(false);
             }
         }
     }
 
-    public void setNeedToShowDialog(String needToShowDialog)
-    {
+    public void setNeedToShowDialog(String needToShowDialog) {
         Log.d(LOG, "setNeedToShowDialog: " + needToShowDialog);
         this.needToShowDialog = needToShowDialog;
     }

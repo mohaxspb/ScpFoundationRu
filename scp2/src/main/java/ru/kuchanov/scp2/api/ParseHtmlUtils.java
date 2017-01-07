@@ -11,8 +11,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
-import timber.log.Timber;
-
 /**
  * Created by mohax on 05.01.2017.
  * <p>
@@ -31,7 +29,7 @@ public class ParseHtmlUtils {
     public static ArrayList<String> getArticlesTextParts(String html) {
         ArrayList<String> articlesTextParts = new ArrayList<>();
         Document document = Jsoup.parse(html);
-        Timber.d(document.outerHtml());
+//        Timber.d(document.outerHtml());
         Element contentPage = document.getElementById("page-content");
         if (contentPage == null) {
             contentPage = document.body();

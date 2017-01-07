@@ -33,10 +33,12 @@ public interface Constants {
         String OBJECTS_3 = "http://scpfoundation.ru/scp-list-3";
         String OBJECTS_RU = "http://scpfoundation.ru/scp-list-ru";
         String ABOUT_SCP = "http://scpfoundation.ru/about-the-scp-foundation";
+        String SEARCH = "SEARCH";
         String NEWS = "http://scpfoundation.ru/news";
-        String[] ALL_LINKS_ARRAY = {MAIN, RATE, NEW_ARTICLES, PROTOCOLS, INCEDENTS, INTERVIEWS, OTHERS, STORIES, CANONS, GOI_HAB, ART_HUB, LEAKS, OBJECTS_1, OBJECTS_2, OBJECTS_3, OBJECTS_RU, NEWS};
+        String[] ALL_LINKS_ARRAY = {MAIN, RATE, NEW_ARTICLES, PROTOCOLS, INCEDENTS, INTERVIEWS, OTHERS, STORIES, CANONS, GOI_HAB, ART_HUB, LEAKS, OBJECTS_1, OBJECTS_2, OBJECTS_3, OBJECTS_RU, NEWS, SEARCH};
         String FAVORITES = "FAVORITES";
         String OFFLINE = "OFFLINE";
         String MATERIALS_ALL = "MATERIALS_ALL";
+
     }
 }
