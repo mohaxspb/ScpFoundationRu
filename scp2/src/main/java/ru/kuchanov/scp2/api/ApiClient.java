@@ -162,8 +162,8 @@ public class ApiClient {
                     tagA.remove();
                     tagP.text(tagP.text().replace(", рейтинг ", ""));
                     tagP.text(tagP.text().substring(0, tagP.text().length() - 1));
-//                    Timber.d("tagP.text(): %s", tagP.text());
                     int rating = Integer.parseInt(tagP.text());
+
                     Article article = new Article();
                     article.title = title;
                     article.url = url;
@@ -241,6 +241,7 @@ public class ApiClient {
                     String id = onclickAttr.substring(onclickAttr.indexOf("bibitem-"), onclickAttr.lastIndexOf("'"));
                     aTag.attr("href", id);
                 }
+                //remove rating bar
                 Element rateDiv = pageContent.getElementsByClass("page-rate-widget-box").first();
                 if (rateDiv != null) {
                     Element span1 = rateDiv.getElementsByClass("rateup").first();
@@ -250,10 +251,12 @@ public class ApiClient {
                     Element span3 = rateDiv.getElementsByClass("cancel").first();
                     span3.remove();
                 }
+                //remove something more
                 Element svernut = pageContent.getElementById("toc-action-bar");
                 if (svernut != null) {
                     svernut.remove();
                 }
+                //get title
                 Element titleEl = doc.getElementById("page-title");
                 String title = "";
                 if (titleEl != null) {
@@ -303,6 +306,16 @@ public class ApiClient {
                     }
                 }
 
+                //search for images and add it to separate field to be able to show it in arts lists
+                RealmList<RealmString> imgsUrls = null;
+                Elements imgs = pageContent.getElementsByTag("img");
+                if (!imgs.isEmpty()) {
+                    imgsUrls = new RealmList<>();
+                    for (Element img : imgs) {
+                        imgsUrls.add(new RealmString(img.attr("src")));
+                    }
+                }
+
                 //finally fill article info
                 Article article = new Article();
 
@@ -316,6 +329,8 @@ public class ApiClient {
                 //textParts
                 article.textParts = textParts;
                 article.textPartsTypes = textPartsTypes;
+                //images
+                article.imagesUrls = imgsUrls;
 
                 subscriber.onNext(article);
                 subscriber.onCompleted();
