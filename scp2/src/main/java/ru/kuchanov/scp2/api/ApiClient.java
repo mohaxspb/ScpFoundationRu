@@ -156,7 +156,7 @@ public class ApiClient {
                 for (int i = 0; i < listOfElements.size(); i++) {
                     Element tagP = listOfElements.get(i).getElementsByTag("p").first();
                     Element tagA = tagP.getElementsByTag("a").first();
-                    String title = tagP.text();
+                    String title = tagP.text().substring(0, tagP.text().indexOf(", рейтинг"));
                     String url = BuildConfig.BASE_API_URL + tagA.attr("href");
                     //remove a tag to leave only text with rating
                     tagA.remove();
