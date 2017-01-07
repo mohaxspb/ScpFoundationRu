@@ -38,7 +38,6 @@ import ru.kuchanov.scp2.ui.util.SetTextViewHTML;
 import ru.kuchanov.scp2.util.AttributeGetter;
 import ru.kuchanov.scp2.util.DialogUtils;
 import ru.kuchanov.scp2.util.DimensionUtils;
-import timber.log.Timber;
 
 /**
  * Created by Dante on 17.01.2016.
@@ -75,7 +74,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
     }
 
     public void setData(Article article) {
-        Timber.d("setData: %s", article);
+//        Timber.d("setData: %s", article);
         mArticle = article;
         if (mArticle.hasTabs) {
             mArticlesTextParts = ParseHtmlUtils.getArticlesTextParts(mArticle.text);

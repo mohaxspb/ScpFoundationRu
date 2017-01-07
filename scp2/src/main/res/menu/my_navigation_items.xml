@@ -60,7 +60,7 @@
             android:checked="false"
             android:title="@string/drawer_item_14"/>
         <item
-            android:id="@+id/site_search"
+            android:id="@+id/siteSearch"
             android:checked="false"
             android:title="@string/drawer_item_15"/>
     </group>

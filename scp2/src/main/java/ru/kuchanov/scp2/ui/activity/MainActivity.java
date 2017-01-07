@@ -1,10 +1,10 @@
 package ru.kuchanov.scp2.ui.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.view.MenuItem;
@@ -21,10 +21,79 @@ import ru.kuchanov.scp2.ui.fragment.RatedArticlesFragment;
 import ru.kuchanov.scp2.ui.fragment.RecentArticlesFragment;
 import timber.log.Timber;
 
-public class MainActivity extends BaseDrawerActivity<MainMvp.View, MainMvp.Presenter> implements MainMvp.View {
+public class MainActivity
+        extends BaseDrawerActivity<MainMvp.View, MainMvp.Presenter>
+        implements MainMvp.View {
+    private static final String EXTRA_LINK = "EXTRA_LINK";
 
     public static void startActivity(Context context, String link) {
-        //TODO switch link and open proper drawer item
+        Timber.d("startActivity: %s", link);
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra(EXTRA_LINK, link);
+        context.startActivity(intent);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        Timber.d("onNewIntent");
+        super.onNewIntent(intent);
+
+        setIntent(intent);
+
+        setDrawerItemFromIntent();
+
+        mNavigationView.setCheckedItem(mCurrentSelectedDrawerItemId);
+        onNavigationItemClicked(mCurrentSelectedDrawerItemId);
+        setToolbarTitleByDrawerItemId(mCurrentSelectedDrawerItemId);
+    }
+
+    private void setDrawerItemFromIntent() {
+        String link = getIntent().getStringExtra(EXTRA_LINK);
+        Timber.d("setDrawerItemFromIntent: %s", link);
+        switch (link) {
+            case Constants.Urls.ABOUT_SCP:
+                mCurrentSelectedDrawerItemId = (R.id.about);
+                break;
+            case Constants.Urls.NEWS:
+                mCurrentSelectedDrawerItemId = (R.id.news);
+                break;
+            case Constants.Urls.MAIN:
+            case Constants.Urls.RATE:
+                mCurrentSelectedDrawerItemId = R.id.mostRatedArticles;
+                break;
+            case Constants.Urls.NEW_ARTICLES:
+                mCurrentSelectedDrawerItemId = R.id.mostRecentArticles;
+                break;
+            case Constants.Urls.OBJECTS_1:
+                mCurrentSelectedDrawerItemId = (R.id.objects_I);
+                break;
+            case Constants.Urls.OBJECTS_2:
+                mCurrentSelectedDrawerItemId = (R.id.objects_II);
+                break;
+            case Constants.Urls.OBJECTS_3:
+                mCurrentSelectedDrawerItemId = (R.id.objects_III);
+                break;
+            case Constants.Urls.OBJECTS_RU:
+                mCurrentSelectedDrawerItemId = (R.id.objects_RU);
+                break;
+            case Constants.Urls.STORIES:
+                mCurrentSelectedDrawerItemId = (R.id.stories);
+                break;
+            case Constants.Urls.FAVORITES:
+                mCurrentSelectedDrawerItemId = (R.id.favorite);
+                break;
+            case Constants.Urls.OFFLINE:
+                mCurrentSelectedDrawerItemId = (R.id.offline);
+                break;
+            case Constants.Urls.SEARCH:
+                mCurrentSelectedDrawerItemId = (R.id.siteSearch);
+                break;
+            default:
+                mCurrentSelectedDrawerItemId = SELECTED_DRAWER_ITEM_NONE;
+                break;
+        }
+        getIntent().removeExtra(EXTRA_LINK);
     }
 
     @Override
@@ -36,9 +105,14 @@ public class MainActivity extends BaseDrawerActivity<MainMvp.View, MainMvp.Prese
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (getIntent().hasExtra(EXTRA_LINK)) {
+            setDrawerItemFromIntent();
+        }
+
         if (getSupportFragmentManager().findFragmentById(content.getId()) == null) {
             onNavigationItemClicked(mCurrentSelectedDrawerItemId);
         }
+        mNavigationView.setCheckedItem(mCurrentSelectedDrawerItemId);
         setToolbarTitleByDrawerItemId(mCurrentSelectedDrawerItemId);
     }
 
@@ -181,7 +255,7 @@ public class MainActivity extends BaseDrawerActivity<MainMvp.View, MainMvp.Prese
             case R.id.gallery:
                 //TODO
                 break;
-            case R.id.site_search:
+            case R.id.siteSearch:
                 mCurrentSelectedDrawerItemId = id;
                 //TODO
                 break;
@@ -229,7 +303,7 @@ public class MainActivity extends BaseDrawerActivity<MainMvp.View, MainMvp.Prese
             case R.id.offline:
                 title = getString(R.string.drawer_item_13);
                 break;
-            case R.id.site_search:
+            case R.id.siteSearch:
                 title = getString(R.string.drawer_item_15);
                 break;
             default:

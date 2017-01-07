@@ -195,7 +195,6 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
         return super.onPrepareOptionsPanel(view, menu);
     }
 
-    @SuppressLint("CommitPrefEdits")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Log.d(LOG, "onOptionsItemSelected");
@@ -211,7 +210,7 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
                 return true;*/
             case R.id.night_mode_item:
                 boolean nightModeOn = pref.getBoolean(ctx.getString(R.string.key_design_night_mode), false);
-                pref.edit().putBoolean(ctx.getString(R.string.key_design_night_mode), !nightModeOn).commit();
+                pref.edit().putBoolean(ctx.getString(R.string.key_design_night_mode), !nightModeOn).apply();
                 recreate();
                 return true;
 //            case R.id.set_first_articles:
@@ -256,7 +255,6 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
                 }
                 super.onBackPressed();
             } else {
-//                finish();
                 Intent i = new Intent(Intent.ACTION_MAIN);
                 i.addCategory(Intent.CATEGORY_HOME);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -304,10 +302,6 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
         }
     }
 
-//    boolean isActive = true;
-//    BroadcastReceiver broadcastReceiver;
-
-    @SuppressLint("CommitPrefEdits")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         PreferenceManager.setDefaultValues(this, R.xml.pref_design, true);
@@ -315,7 +309,7 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
         PreferenceManager.setDefaultValues(this, R.xml.pref_system, true);
         pref = PreferenceManager.getDefaultSharedPreferences(this);
         pref.registerOnSharedPreferenceChangeListener(this);
-        pref.edit().putInt(getResources().getString(R.string.key_new_articles_counter), 0).commit();
+        pref.edit().putInt(getResources().getString(R.string.key_new_articles_counter), 0).apply();
         boolean nightModeOn = pref.getBoolean("key_design_night_mode", false);
         if (nightModeOn) {
             setTheme(R.style.SCP_Theme_Dark);

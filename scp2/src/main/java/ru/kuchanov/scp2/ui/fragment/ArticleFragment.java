@@ -17,6 +17,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.parceler.Parcels;
 
 import java.util.List;
 
@@ -78,7 +79,7 @@ public class ArticleFragment
         args.putString(EXTRA_URL, url);
         args.putString(EXTRA_TITLE, title);
         if (article != null) {
-            args.putSerializable(EXTRA_ARTICLE, article);
+            args.putParcelable(EXTRA_ARTICLE, Parcels.wrap(article));
         }
         fragment.setArguments(args);
         return fragment;
@@ -87,8 +88,7 @@ public class ArticleFragment
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable(EXTRA_ARTICLE, mArticle);
-
+        outState.putParcelable(EXTRA_ARTICLE, Parcels.wrap(mArticle));
         //tabs
         outState.putInt(KEY_CURRENT_SELECTED_TAB, mCurrentSelectedTab);
     }
@@ -100,9 +100,9 @@ public class ArticleFragment
         title = getArguments().getString(EXTRA_TITLE);
         url = getArguments().getString(EXTRA_URL);
         mArticle = getArguments().containsKey(EXTRA_ARTICLE)
-                ? (Article) getArguments().getSerializable(EXTRA_ARTICLE)
+                ? Parcels.unwrap(getArguments().getParcelable(EXTRA_ARTICLE))
                 : savedInstanceState != null && savedInstanceState.containsKey(EXTRA_ARTICLE)
-                ? (Article) savedInstanceState.getSerializable(EXTRA_ARTICLE)
+                ? Parcels.unwrap(savedInstanceState.getParcelable(EXTRA_ARTICLE))
                 : null;
 
         if (savedInstanceState != null) {

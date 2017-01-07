@@ -7,6 +7,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.view.MenuItem;
 import android.view.View;
 
 import butterknife.BindView;
@@ -77,6 +78,8 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
         }
         if (mCurrentSelectedDrawerItemId != SELECTED_DRAWER_ITEM_NONE) {
             mNavigationView.setCheckedItem(mCurrentSelectedDrawerItemId);
+        } else {
+            mNavigationView.getMenu().setGroupCheckable(0, false, true);
         }
     }
 

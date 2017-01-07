@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.GravityCompat;
 import android.view.MenuItem;
 
@@ -28,8 +27,6 @@ public class ArticleActivity
 
     public static void startActivity(Context context, ArrayList<String> urls, int position) {
         Intent intent = new Intent(context, ArticleActivity.class);
-//        Bundle bundle = new Bundle();
-//        bundle.putSerializable(EXTRA_ARTICLES_URLS_LIST, data);
         intent.putExtra(EXTRA_ARTICLES_URLS_LIST, urls);
         intent.putExtra(EXTRA_POSITION, position);
         context.startActivity(intent);
@@ -80,56 +77,59 @@ public class ArticleActivity
     @Override
     public void onNavigationItemClicked(int id) {
         Timber.d("onNavigationItemClicked with id: %s", id);
-        String link;
+        String link = null;
         switch (id) {
             case R.id.about:
                 link = Constants.Urls.ABOUT_SCP;
                 break;
             case R.id.news:
-                link = Constants.Urls.ABOUT_SCP;
+                link = Constants.Urls.NEWS;
                 break;
             case R.id.mostRatedArticles:
-                link = Constants.Urls.ABOUT_SCP;
+                link = Constants.Urls.RATE;
                 break;
             case R.id.mostRecentArticles:
-                link = Constants.Urls.ABOUT_SCP;
+                link = Constants.Urls.NEW_ARTICLES;
                 break;
             case R.id.random_page:
                 //TODO
                 break;
             case R.id.objects_I:
-                link = Constants.Urls.ABOUT_SCP;
+                link = Constants.Urls.OBJECTS_1;
                 break;
             case R.id.objects_II:
-                link = Constants.Urls.ABOUT_SCP;
+                link = Constants.Urls.OBJECTS_2;
                 break;
             case R.id.objects_III:
-                link = Constants.Urls.ABOUT_SCP;
+                link = Constants.Urls.OBJECTS_3;
                 break;
             case R.id.objects_RU:
-                link = Constants.Urls.ABOUT_SCP;
+                link = Constants.Urls.OBJECTS_RU;
                 break;
             case R.id.files:
                 //TODO launch new activity
                 break;
             case R.id.stories:
-                link = Constants.Urls.ABOUT_SCP;
+                link = Constants.Urls.STORIES;
                 break;
             case R.id.favorite:
-                link = Constants.Urls.ABOUT_SCP;
+                link = Constants.Urls.FAVORITES;
                 break;
             case R.id.offline:
-                link = Constants.Urls.ABOUT_SCP;
+                link = Constants.Urls.OFFLINE;
                 break;
             case R.id.gallery:
                 //TODO
                 break;
-            case R.id.site_search:
-                link = Constants.Urls.ABOUT_SCP;
+            case R.id.siteSearch:
+                link = Constants.Urls.SEARCH;
                 break;
             default:
                 Timber.e("unexpected item ID");
                 break;
+        }
+        if (link != null) {
+            MainActivity.startActivity(this, link);
         }
     }
 
