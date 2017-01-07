@@ -61,7 +61,7 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
                 public void onDrawerOpened(View drawerView) {
                 }
             };
-            mDrawerToggle.setDrawerIndicatorEnabled(true);
+            mDrawerToggle.setDrawerIndicatorEnabled(isDrawerIndicatorEnabled());
 
             mDrawerLayout.addDrawerListener(mDrawerToggle);
         }
@@ -82,6 +82,12 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
             mNavigationView.getMenu().setGroupCheckable(0, false, true);
         }
     }
+
+    /**
+     *
+     * @return true if need to show hamburger. False if want show arrow
+     */
+    protected abstract boolean isDrawerIndicatorEnabled();
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {

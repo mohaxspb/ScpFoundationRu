@@ -117,6 +117,11 @@ public class MainActivity
     }
 
     @Override
+    protected boolean isDrawerIndicatorEnabled() {
+        return true;
+    }
+
+    @Override
     protected int getLayoutResId() {
         return R.layout.activity_main;
     }
@@ -335,6 +340,7 @@ public class MainActivity
 
         switch (item.getItemId()) {
             case android.R.id.home:
+                //TODO move to abstract
                 mDrawerLayout.openDrawer(GravityCompat.START);
                 return true;
             case R.id.night_mode_item:

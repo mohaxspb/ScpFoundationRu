@@ -64,6 +64,11 @@ public class ArticleActivity
     }
 
     @Override
+    protected boolean isDrawerIndicatorEnabled() {
+        return false;
+    }
+
+    @Override
     protected int getDefaultNavItemId() {
         return SELECTED_DRAWER_ITEM_NONE;
     }
@@ -153,7 +158,8 @@ public class ArticleActivity
         Timber.d("onOptionsItemSelected with id: %s", item);
         switch (item.getItemId()) {
             case android.R.id.home:
-                mDrawerLayout.openDrawer(GravityCompat.START);
+                //TODO move to abstract
+                onBackPressed();
                 return true;
             case R.id.night_mode_item:
                 mMyPreferenceManager.setIsNightMode(!mMyPreferenceManager.isNightMode());
@@ -181,7 +187,7 @@ public class ArticleActivity
 //                SubscriptionHelper.showSubscriptionDialog(this);
                 return true;
         }
-        return false;
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

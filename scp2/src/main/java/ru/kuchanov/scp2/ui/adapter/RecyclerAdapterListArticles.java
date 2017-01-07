@@ -109,7 +109,7 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
             //set image
             if (article.imagesUrls != null && !article.imagesUrls.isEmpty()) {
                 Glide.with(context)
-                        .load(article.imagesUrls.first())
+                        .load(article.imagesUrls.first().val)
                         .centerCrop()
                         .crossFade()
                         .into(image);

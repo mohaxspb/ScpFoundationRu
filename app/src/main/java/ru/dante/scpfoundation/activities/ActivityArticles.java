@@ -187,7 +187,6 @@ public class ActivityArticles extends AppCompatActivity implements SharedPrefere
         }
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -224,7 +223,6 @@ public class ActivityArticles extends AppCompatActivity implements SharedPrefere
                 themeMenuItem.setIcon(R.drawable.ic_brightness_3_white_48dp);
                 themeMenuItem.setTitle("Ночной режим");
             }
-
         }
         return super.onPrepareOptionsPanel(view, menu);
     }
@@ -268,7 +266,6 @@ public class ActivityArticles extends AppCompatActivity implements SharedPrefere
                 SubscriptionHelper.showSubscriptionDialog(this);
                 return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -331,7 +328,7 @@ public class ActivityArticles extends AppCompatActivity implements SharedPrefere
             };
             mDrawerToggle.setDrawerIndicatorEnabled(false);
 
-            drawerLayout.setDrawerListener(mDrawerToggle);
+            drawerLayout.addDrawerListener(mDrawerToggle);
         }
 
         String title = getIntent().getExtras().getString("title");
