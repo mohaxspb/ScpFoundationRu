@@ -277,6 +277,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                             float multiplier = (float) width / height;
                             width = DimensionUtils.getScreenWidth();
                             height = (int) (width / multiplier);
+
                             imageView.getLayoutParams().width = width;
                             imageView.getLayoutParams().height = height;
 
