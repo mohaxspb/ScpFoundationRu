@@ -34,6 +34,7 @@ public class ArticleActivity
     private ArticlesPagerAdapter mAdapter;
 
     public static void startActivity(Context context, ArrayList<String> urls, int position) {
+        Timber.d("startActivity: urls.size() %s, position: %s", urls.size(), position);
         Intent intent = new Intent(context, ArticleActivity.class);
         intent.putExtra(EXTRA_ARTICLES_URLS_LIST, urls);
         intent.putExtra(EXTRA_POSITION, position);
@@ -41,6 +42,7 @@ public class ArticleActivity
     }
 
     public static void startActivity(Context context, String url) {
+        Timber.d("startActivity: %s", url);
         startActivity(context, new ArrayList<String>() {{
             add(url);
         }}, 0);
@@ -48,6 +50,7 @@ public class ArticleActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Timber.d("onCreate");
         super.onCreate(savedInstanceState);
 
         if (getIntent().hasExtra(EXTRA_ARTICLES_URLS_LIST)) {

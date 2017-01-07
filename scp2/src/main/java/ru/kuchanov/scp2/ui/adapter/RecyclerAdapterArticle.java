@@ -3,7 +3,6 @@ package ru.kuchanov.scp2.ui.adapter;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.method.LinkMovementMethod;
-import android.text.util.Linkify;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,6 +37,7 @@ import ru.kuchanov.scp2.ui.util.SetTextViewHTML;
 import ru.kuchanov.scp2.util.AttributeGetter;
 import ru.kuchanov.scp2.util.DialogUtils;
 import ru.kuchanov.scp2.util.DimensionUtils;
+import timber.log.Timber;
 
 /**
  * Created by Dante on 17.01.2016.
@@ -197,7 +197,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
             textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, articleTextScale * textSizePrimary);
             textView.setLinksClickable(true);
             textView.setMovementMethod(LinkMovementMethod.getInstance());
-            textView.setAutoLinkMask(Linkify.ALL);
+            //TODO add settings for it
             textView.setTextIsSelectable(true);
             SetTextViewHTML.setText(textView, text, mTextItemsClickListener);
         }
@@ -256,6 +256,8 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
             Document document = Jsoup.parse(articleTextPart);
             Element imageTag = document.getElementsByTag("img").first();
             String imageUrl = imageTag.attr("src");
+
+            Timber.d("image: %s", imageUrl);
 
             Glide.with(ctx)
                     .load(imageUrl)
