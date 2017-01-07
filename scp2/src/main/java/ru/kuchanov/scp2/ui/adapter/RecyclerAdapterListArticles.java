@@ -10,6 +10,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.List;
 
 import javax.inject.Inject;
@@ -74,6 +76,8 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
     }
 
     class ViewHolderText extends RecyclerView.ViewHolder {
+        @BindView(R.id.image)
+        ImageView image;
         @BindView(R.id.favorite)
         ImageView favorite;
         @BindView(R.id.read)
@@ -91,14 +95,28 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
         }
 
         void bind(Article article) {
+            Context context = itemView.getContext();
+            float uiTextScale = mMyPreferenceManager.getUiTextScale();
+            int textSizePrimary = context.getResources().getDimensionPixelSize(R.dimen.text_size_primary);
+
             itemView.setOnClickListener(v -> {
                 if (mArticleClickListener != null) {
                     mArticleClickListener.onArticleClicked(article, getAdapterPosition());
                 }
             });
-            Context context = itemView.getContext();
-            float uiTextScale = mMyPreferenceManager.getUiTextScale();
-            int textSizePrimary = context.getResources().getDimensionPixelSize(R.dimen.text_size_primary);
+
+            //TODO show them in ViewPager
+            //set image
+            if (article.imagesUrls != null && !article.imagesUrls.isEmpty()) {
+                Glide.with(context)
+                        .load(article.imagesUrls.first().val)
+                        .centerCrop()
+                        .crossFade()
+                        .into(image);
+            } else {
+                image.setImageResource(R.drawable.scp_2);
+            }
+
             title.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * textSizePrimary);
             title.setText(article.title);
 //          (отмечание прочитанного)

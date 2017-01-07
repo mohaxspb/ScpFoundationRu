@@ -6,14 +6,12 @@ import java.util.Collection;
 import java.util.List;
 
 import io.realm.Realm;
-import io.realm.RealmList;
 import io.realm.RealmModel;
 import io.realm.RealmObject;
 import io.realm.RealmResults;
 import io.realm.Sort;
 import ru.kuchanov.scp2.db.model.Article;
 import rx.Observable;
-import timber.log.Timber;
 
 /**
  * Created by y.kuchanov on 21.12.16.
@@ -187,6 +185,12 @@ public class DbProvider {
         });
     }
 
+    /**
+     * @param articleUrl used as ID
+     * @return Observable that emits managed, valid and loaded Article
+     * and emits changes to it
+     * or null if there is no one in DB with this url
+     */
     public Observable<Article> getArticleAsync(String articleUrl) {
         return mRealm.where(Article.class)
                 .equalTo(Article.FIELD_URL, articleUrl)
@@ -197,6 +201,10 @@ public class DbProvider {
                 .flatMap(arts -> arts.isEmpty() ? Observable.just(null) : Observable.just(arts.first()));
     }
 
+    /**
+     * @param article obj to save
+     * @return Observable that emits null on successful insert or throws error
+     */
     public Observable<Void> saveArticle(Article article) {
         return Observable.create(subscriber -> {
             mRealm.executeTransactionAsync(
@@ -216,6 +224,10 @@ public class DbProvider {
                             //textParts
                             applicationInDb.textParts = article.textParts;
                             applicationInDb.textPartsTypes = article.textPartsTypes;
+                            //images
+                            applicationInDb.imagesUrls = article.imagesUrls;
+
+                            //update it in DB such way, as we add unmanaged items
                             realm.insertOrUpdate(applicationInDb);
                         } else {
                             realm.insertOrUpdate(article);

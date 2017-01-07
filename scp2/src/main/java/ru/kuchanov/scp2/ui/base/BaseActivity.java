@@ -64,9 +64,21 @@ public abstract class BaseActivity<V extends BaseMvpView, P extends BaseDataPres
         mPresenter.onCreate();
     }
 
+    /**
+     *
+     * @return id of activity layout
+     */
     protected abstract int getLayoutResId();
 
+    /**
+     * inject DI here
+     */
     protected abstract void callInjections();
+
+    /**
+     * Override it to add menu or return 0 if you don't want it
+     */
+    protected abstract int getMenuResId();
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -103,11 +115,6 @@ public abstract class BaseActivity<V extends BaseMvpView, P extends BaseDataPres
         }
         return super.onPrepareOptionsPanel(view, menu);
     }
-
-    /**
-     * Override it to add menu or return 0 if you don't want it
-     */
-    protected abstract int getMenuResId();
 
     @Override
     public void showError(Throwable throwable) {
