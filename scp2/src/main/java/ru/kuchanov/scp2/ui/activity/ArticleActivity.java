@@ -23,7 +23,7 @@ import timber.log.Timber;
 
 public class ArticleActivity
         extends BaseDrawerActivity<ArticleScreenMvp.View, ArticleScreenMvp.Presenter>
-        implements ArticleScreenMvp.View, ArticleFragment.ToolbarTitleSetter {
+        implements ArticleScreenMvp.View, ArticleFragment.ToolbarStateSetter {
 
     public static final String EXTRA_ARTICLES_URLS_LIST = "EXTRA_ARTICLES_URLS_LIST";
     public static final String EXTRA_POSITION = "EXTRA_POSITION";
@@ -215,6 +215,18 @@ public class ArticleActivity
     public void setTitle(String title) {
         if (mToolbar != null) {
             mToolbar.setTitle(title);
+        }
+    }
+
+    @Override
+    public void setFavoriteState(boolean isInFavorite) {
+        Timber.d("setFavoriteState: %s", isInFavorite);
+        if (mToolbar != null && mToolbar.getMenu() != null) {
+            MenuItem item = mToolbar.getMenu().findItem(R.id.menuItemFavorite);
+            if (item != null) {
+                item.setIcon(isInFavorite ? R.drawable.ic_star_white_24dp : R.drawable.ic_star_border_white_24dp);
+                item.setTitle(isInFavorite ? R.string.favorites_remove : R.string.favorites_add);
+            }
         }
     }
 }

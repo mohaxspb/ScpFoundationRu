@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -185,8 +184,8 @@ public class ArticleFragment
         if (isVisibleToUser) {
             if (mArticle != null && mArticle.title != null) {
 //                ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(mArticle.title);
-                if (getActivity() instanceof ToolbarTitleSetter) {
-                    ((ToolbarTitleSetter) getActivity()).setTitle(mArticle.title);
+                if (getActivity() instanceof ToolbarStateSetter) {
+                    ((ToolbarStateSetter) getActivity()).setTitle(mArticle.title);
                 }
             }
         }
@@ -204,11 +203,13 @@ public class ArticleFragment
         }
         Timber.d("setUserVisibleHint url: %s, value: %b", url, getUserVisibleHint());
         if (getUserVisibleHint()) {
-            if (mArticle.title != null) {
-                if (getActivity() instanceof ToolbarTitleSetter) {
-                    ((ToolbarTitleSetter) getActivity()).setTitle(mArticle.title);
+            if (getActivity() instanceof ToolbarStateSetter) {
+                if (mArticle.title != null) {
+                    ((ToolbarStateSetter) getActivity()).setTitle(mArticle.title);
                 }
+                ((ToolbarStateSetter) getActivity()).setFavoriteState(mArticle.isInFavorite!=Article.ORDER_NONE);
             }
+
         }
         if (mArticle.hasTabs) {
             tabLayout.clearOnTabSelectedListeners();
@@ -352,7 +353,9 @@ public class ArticleFragment
         }
     }
 
-    public interface ToolbarTitleSetter {
+    public interface ToolbarStateSetter {
         void setTitle(String title);
+
+        void setFavoriteState(boolean isInFavorite);
     }
 }

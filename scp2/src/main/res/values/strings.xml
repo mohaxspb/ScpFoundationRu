@@ -31,4 +31,6 @@
     <string name="share_link_text">%1$s\n\nОтправлено с помощью приложения \"SCP Foundation\"\nhttps://play.google.com/store/apps/details?id=%2$s</string>
     <string name="share_choser_text">Поделиться через...</string>
     <string name="browser_choser_text">Открыть с помощью...</string>
+    <string name="favorites_add">Добавить в избранное</string>
+    <string name="favorites_remove">Удалить из избранного</string>
 </resources>

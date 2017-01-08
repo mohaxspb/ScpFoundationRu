@@ -28,10 +28,11 @@
         />
     <item
         android:id="@+id/menuItemShare"
-        android:icon="?iconShare"
+        android:icon="@drawable/ic_share_white_24dp"
         android:title="@string/share"
         app:showAsAction="always"
-        tools:ignore="AlwaysShowAction"/>
+        tools:ignore="AlwaysShowAction"
+        />
     <item
         android:id="@+id/menuItemBrowser"
         android:icon="@drawable/ic_open_in_browser_blue_grey_50_48dp"
