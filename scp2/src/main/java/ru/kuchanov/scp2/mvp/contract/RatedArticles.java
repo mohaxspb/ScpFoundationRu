@@ -1,7 +1,6 @@
 package ru.kuchanov.scp2.mvp.contract;
 
-import ru.kuchanov.scp2.db.model.Article;
-import ru.kuchanov.scp2.mvp.base.BaseListMvp;
+import ru.kuchanov.scp2.mvp.base.BaseArticlesListMvp;
 
 /**
  * Created by y.kuchanov on 21.12.16.
@@ -9,9 +8,9 @@ import ru.kuchanov.scp2.mvp.base.BaseListMvp;
  * for scp_ru
  */
 public interface RatedArticles {
-    interface View extends BaseListMvp.View {
+    interface View extends BaseArticlesListMvp.View {
     }
 
-    interface Presenter extends BaseListMvp.Presenter<View> {
+    interface Presenter extends BaseArticlesListMvp.Presenter<View> {
     }
 }

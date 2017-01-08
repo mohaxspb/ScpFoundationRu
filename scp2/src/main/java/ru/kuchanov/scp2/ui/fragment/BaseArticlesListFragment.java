@@ -10,6 +10,7 @@ import java.util.List;
 import ru.kuchanov.scp2.Constants;
 import ru.kuchanov.scp2.R;
 import ru.kuchanov.scp2.db.model.Article;
+import ru.kuchanov.scp2.mvp.base.BaseArticlesListMvp;
 import ru.kuchanov.scp2.mvp.base.BaseListMvp;
 import ru.kuchanov.scp2.ui.activity.ArticleActivity;
 import ru.kuchanov.scp2.ui.adapter.RecyclerAdapterListArticles;
@@ -22,7 +23,7 @@ import timber.log.Timber;
  * <p>
  * for scp_ru
  */
-public abstract class BaseArticlesListFragment<V extends BaseListMvp.View, P extends BaseListMvp.Presenter<V>>
+public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.View, P extends BaseArticlesListMvp.Presenter<V>>
         extends BaseListFragment<V, P>
         implements BaseListMvp.View {
 
@@ -62,7 +63,7 @@ public abstract class BaseArticlesListFragment<V extends BaseListMvp.View, P ext
 
     private void initSwipeRefresh() {
         if (mSwipeRefreshLayout != null) {
-            if(isSwipeRefreshEnabled()) {
+            if (isSwipeRefreshEnabled()) {
                 mSwipeRefreshLayout.setColorSchemeResources(R.color.zbs_color_red);
                 mSwipeRefreshLayout.setOnRefreshListener(() -> {
                     Timber.d("onRefresh");
@@ -77,7 +78,7 @@ public abstract class BaseArticlesListFragment<V extends BaseListMvp.View, P ext
     /**
      * override it to add something
      */
-    protected void initAdapter(){
+    protected void initAdapter() {
         mAdapter = new RecyclerAdapterListArticles();
         mAdapter.setArticleClickListener(new RecyclerAdapterListArticles.ArticleClickListener() {
             @Override
@@ -87,17 +88,17 @@ public abstract class BaseArticlesListFragment<V extends BaseListMvp.View, P ext
 
             @Override
             public void toggleReadenState(Article article) {
-                //TODO
+                mPresenter.toggleReadenState(article.url);
             }
 
             @Override
             public void toggleFavoriteState(Article article) {
-                //TODO
+                mPresenter.toggleFavoriteState(article.url);
             }
 
             @Override
             public void onDownloadClicked(Article article) {
-                //TODO start download
+                mPresenter.toggleOfflineState(article.url);
             }
         });
     }

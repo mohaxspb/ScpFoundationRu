@@ -9,6 +9,7 @@ import ru.kuchanov.scp2.api.ApiClient;
 import ru.kuchanov.scp2.db.DbProviderFactory;
 import ru.kuchanov.scp2.db.model.Article;
 import ru.kuchanov.scp2.manager.MyPreferenceManager;
+import ru.kuchanov.scp2.mvp.base.BaseArticlesListMvp;
 import ru.kuchanov.scp2.mvp.base.BaseListMvp;
 import ru.kuchanov.scp2.mvp.base.BasePresenter;
 import rx.Observable;
@@ -21,10 +22,11 @@ import timber.log.Timber;
  * <p>
  * for TappAwards
  */
-public abstract class BaseListArticlesPresenter<V extends BaseListMvp.View>
-        extends BasePresenter<V> implements BaseListMvp.Presenter<V> {
+public abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
+        extends BasePresenter<V>
+        implements BaseArticlesListMvp.Presenter<V> {
 
-    protected RealmResults<Article> mData;
+    private RealmResults<Article> mData;
 
     public BaseListArticlesPresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
         super(myPreferencesManager, dbProviderFactory, apiClient);
@@ -117,5 +119,20 @@ public abstract class BaseListArticlesPresenter<V extends BaseListMvp.View>
                             getView().showBottomProgress(false);
                             getView().showCenterProgress(false);
                         });
+    }
+
+    @Override
+    public void toggleFavoriteState(String url) {
+        Timber.d("toggleFavoriteState: %s", url);
+    }
+
+    @Override
+    public void toggleReadenState(String url) {
+        Timber.d("toggleReadenState: %s", url);
+    }
+
+    @Override
+    public void toggleOfflineState(String url) {
+        Timber.d("toggleOfflineState: %s", url);
     }
 }

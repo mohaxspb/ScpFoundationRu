@@ -13,7 +13,6 @@ import ru.kuchanov.scp2.db.DbProviderFactory;
 import ru.kuchanov.scp2.db.model.Article;
 import ru.kuchanov.scp2.manager.MyPreferenceManager;
 import ru.kuchanov.scp2.mvp.contract.FavoriteArticles;
-import ru.kuchanov.scp2.mvp.contract.RatedArticles;
 import rx.Observable;
 
 /**
