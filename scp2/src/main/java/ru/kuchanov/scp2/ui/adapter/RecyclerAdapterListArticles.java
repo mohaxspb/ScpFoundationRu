@@ -1,6 +1,7 @@
 package ru.kuchanov.scp2.ui.adapter;
 
 import android.content.Context;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -124,10 +125,10 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
             int readColorId;
             if (article.isInReaden) {
                 readColorId = AttributeGetter.getColor(context, R.attr.readTextColor);
-                readIconId = AttributeGetter.getDrawableId(context, R.attr.readIcon);
+                readIconId = AttributeGetter.getDrawableId(context, R.attr.readIconUnselected);
             } else {
                 readColorId = AttributeGetter.getColor(context, R.attr.newArticlesTextColor);
-                readIconId = AttributeGetter.getDrawableId(context, R.attr.readIconUnselected);
+                readIconId = AttributeGetter.getDrawableId(context, R.attr.readIcon);
             }
             title.setTextColor(readColorId);
             read.setImageResource(readIconId);
@@ -159,7 +160,19 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
             offline.setImageResource(offlineIconId);
             offline.setOnClickListener(v -> {
                 if (mArticleClickListener != null) {
-                    mArticleClickListener.onDownloadClicked(article);
+                    if (article.text != null) {
+                        PopupMenu popup = new PopupMenu(context, offline);
+                        popup.getMenu().add(0, 0, 0, R.string.delete);
+
+                        popup.setOnMenuItemClickListener(item -> {
+                            mArticleClickListener.onDownloadClicked(article);
+                            return true;
+                        });
+
+                        popup.show();
+                    } else {
+                        mArticleClickListener.onDownloadClicked(article);
+                    }
                 }
             });
         }

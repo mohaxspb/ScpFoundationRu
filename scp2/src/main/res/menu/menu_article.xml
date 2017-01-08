@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools">
     <item
         android:id="@+id/settings"
-        android:icon="@drawable/ic_settings_applications_white_48dp"
+        android:icon="@drawable/ic_settings_white_24dp"
         android:title="@string/settings"
         app:showAsAction="never"
         />
@@ -16,13 +16,13 @@
         />
     <item
         android:id="@+id/text_size"
-        android:icon="@drawable/ic_text_fields_white_36dp"
+        android:icon="@drawable/ic_text_size_white_24dp"
         android:title="@string/text_size"
         app:showAsAction="never"
         />
     <item
         android:id="@+id/subscribe"
-        android:icon="@drawable/ic_monetization_on_white_48dp"
+        android:icon="@drawable/ic_monetization_on_white_24dp"
         android:title="@string/in_apps"
         app:showAsAction="never"
         />
@@ -35,13 +35,13 @@
         />
     <item
         android:id="@+id/menuItemBrowser"
-        android:icon="@drawable/ic_open_in_browser_blue_grey_50_48dp"
+        android:icon="@drawable/ic_open_in_browser_white_24dp"
         android:title="@string/open_with"
         app:showAsAction="never"
         />
     <item
         android:id="@+id/menuItemFavorite"
-        android:icon="@drawable/ic_star_border_white_48dp"
+        android:icon="@drawable/ic_favorite_border_white_24dp"
         android:title="@string/add_to_favorites"
         app:showAsAction="never"
         />

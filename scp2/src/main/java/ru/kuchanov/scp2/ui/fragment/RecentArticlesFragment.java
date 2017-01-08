@@ -119,4 +119,12 @@ public class RecentArticlesFragment
             }
         });
     }
+
+    @Override
+    protected void onTextSizeUiChanged() {
+        if (!isAdded()) {
+            return;
+        }
+        mAdapter.notifyDataSetChanged();
+    }
 }

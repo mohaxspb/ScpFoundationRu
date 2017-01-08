@@ -11,7 +11,7 @@ import android.preference.PreferenceManager;
  */
 public class MyPreferenceManager {
 
-    interface Keys {
+    public interface Keys {
         String SESSION_ID = "SESSION_ID";
         String USER_ID = "USER_ID";
         String NIGHT_MODE = "NIGHT_MODE";

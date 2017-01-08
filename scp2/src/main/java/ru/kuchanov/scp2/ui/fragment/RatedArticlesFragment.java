@@ -117,4 +117,12 @@ public class RatedArticlesFragment extends BaseListFragment<RatedArticles.View, 
             }
         });
     }
+
+    @Override
+    protected void onTextSizeUiChanged() {
+        if(!isAdded()){
+            return;
+        }
+        mAdapter.notifyDataSetChanged();
+    }
 }

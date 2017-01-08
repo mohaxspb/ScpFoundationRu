@@ -33,4 +33,9 @@
     <string name="browser_choser_text">Открыть с помощью...</string>
     <string name="favorites_add">Добавить в избранное</string>
     <string name="favorites_remove">Удалить из избранного</string>
+    <string name="text_size_article">Размер текста в статьях</string>
+    <string name="text_size_lists">Размер текста в списках</string>
+    <string name="text_size_dialog_title">Настройки размера текста</string>
+    <string name="close">Закрыть</string>
+    <string name="delete">Удалить</string>
 </resources>
