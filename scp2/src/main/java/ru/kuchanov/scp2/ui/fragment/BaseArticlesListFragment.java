@@ -72,18 +72,27 @@ public abstract class BaseArticlesListFragment<V extends BaseListMvp.View, P ext
         if (mPresenter.getData() != null) {
             mAdapter.setData(mPresenter.getData());
         } else {
-            mPresenter.getDataFromDb();
-            mPresenter.getDataFromApi(Constants.Api.ZERO_OFFSET);
+            getDataFromDb();
+            getDataFromApi();
         }
 
         resetOnScrollListener();
 
-        assert mSwipeRefreshLayout != null;
-        mSwipeRefreshLayout.setColorSchemeResources(R.color.zbs_color_red);
-        mSwipeRefreshLayout.setOnRefreshListener(() -> {
-            Timber.d("onRefresh");
-            mPresenter.getDataFromApi(Constants.Api.ZERO_OFFSET);
-        });
+        initSwipeRefresh();
+    }
+
+    private void initSwipeRefresh() {
+        if (mSwipeRefreshLayout != null) {
+            if(isSwipeRefreshEnabled()) {
+                mSwipeRefreshLayout.setColorSchemeResources(R.color.zbs_color_red);
+                mSwipeRefreshLayout.setOnRefreshListener(() -> {
+                    Timber.d("onRefresh");
+                    mPresenter.getDataFromApi(Constants.Api.ZERO_OFFSET);
+                });
+            } else {
+                mSwipeRefreshLayout.setEnabled(false);
+            }
+        }
     }
 
     @Override
@@ -96,7 +105,18 @@ public abstract class BaseArticlesListFragment<V extends BaseListMvp.View, P ext
         resetOnScrollListener();
     }
 
-    private void resetOnScrollListener() {
+    protected void getDataFromDb() {
+        mPresenter.getDataFromDb();
+    }
+
+    protected void getDataFromApi() {
+        mPresenter.getDataFromApi(Constants.Api.ZERO_OFFSET);
+    }
+
+    /**
+     * override it to change or disable endless scroolling behavior
+     */
+    protected void resetOnScrollListener() {
         mRecyclerView.clearOnScrollListeners();
         mRecyclerView.addOnScrollListener(new EndlessRecyclerViewScrollListener() {
             @Override

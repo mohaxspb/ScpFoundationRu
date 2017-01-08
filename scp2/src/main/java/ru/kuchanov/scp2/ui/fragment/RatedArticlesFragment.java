@@ -22,4 +22,9 @@ public class RatedArticlesFragment
     protected void callInjections() {
         MyApplication.getAppComponent().inject(this);
     }
+
+    @Override
+    protected boolean isSwipeRefreshEnabled() {
+        return true;
+    }
 }

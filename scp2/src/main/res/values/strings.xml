@@ -38,4 +38,5 @@
     <string name="text_size_dialog_title">Настройки размера текста</string>
     <string name="close">Закрыть</string>
     <string name="delete">Удалить</string>
+    <string name="not_implemented">Не реализовано</string>
 </resources>

@@ -77,6 +77,7 @@ public class DbProvider {
                 .filter(RealmResults::isValid);
     }
 
+    //TODO we can do it in one method
     public Observable<RealmResults<Article>> getRecentArticlesSortedAsync(String field, Sort order) {
         return mRealm.where(Article.class)
                 .notEqualTo(Article.FIELD_IS_IN_RECENT, Article.ORDER_NONE)
@@ -86,9 +87,20 @@ public class DbProvider {
                 .filter(RealmResults::isValid);
     }
 
+    //TODO we can do it in one method
     public Observable<RealmResults<Article>> getRatedArticlesSortedAsync(String field, Sort order) {
         return mRealm.where(Article.class)
                 .notEqualTo(Article.FIELD_IS_IN_MOST_RATED, Article.ORDER_NONE)
+                .findAllSortedAsync(field, order)
+                .asObservable()
+                .filter(RealmResults::isLoaded)
+                .filter(RealmResults::isValid);
+    }
+
+    //TODO we can do it in one method
+    public Observable<RealmResults<Article>> getFavoriteArticlesSortedAsync(String field, Sort order) {
+        return mRealm.where(Article.class)
+                .notEqualTo(Article.FIELD_IS_IN_FAVORITE, Article.ORDER_NONE)
                 .findAllSortedAsync(field, order)
                 .asObservable()
                 .filter(RealmResults::isLoaded)
@@ -285,7 +297,6 @@ public class DbProvider {
     }
 
     /**
-     *
      * @param url used as Article ID
      * @return observable, that emits resulted readen state
      * or error if no artcile found
@@ -299,7 +310,7 @@ public class DbProvider {
                                 .equalTo(Article.FIELD_URL, url)
                                 .findFirst();
                         if (applicationInDb != null) {
-                                applicationInDb.isInReaden = !applicationInDb.isInReaden;
+                            applicationInDb.isInReaden = !applicationInDb.isInReaden;
                             subscriber.onNext(applicationInDb.isInReaden);
                             subscriber.onCompleted();
                         } else {

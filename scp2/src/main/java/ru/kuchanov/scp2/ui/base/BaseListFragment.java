@@ -33,6 +33,8 @@ public abstract class BaseListFragment<V extends BaseListMvp.View, P extends Bas
     @BindView(R.id.recyclerView)
     protected RecyclerView mRecyclerView;
 
+    protected abstract boolean isSwipeRefreshEnabled();
+
     @Override
     public void showSwipeProgress(boolean show) {
         if (!isAdded() || mSwipeRefreshLayout == null) {
@@ -70,7 +72,7 @@ public abstract class BaseListFragment<V extends BaseListMvp.View, P extends Bas
 
     @Override
     public void enableSwipeRefresh(boolean enable) {
-        if (!isAdded() || mSwipeRefreshLayout == null) {
+        if (!isAdded() || mSwipeRefreshLayout == null || !isSwipeRefreshEnabled()) {
             return;
         }
         mSwipeRefreshLayout.setEnabled(enable);
