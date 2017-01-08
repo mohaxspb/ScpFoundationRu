@@ -268,16 +268,13 @@ public class DbProvider {
                                 .equalTo(Article.FIELD_URL, url)
                                 .findFirst();
                         if (applicationInDb != null) {
-                            boolean curState = applicationInDb.isInFavorite != Article.ORDER_NONE;
                             if (applicationInDb.isInFavorite == Article.ORDER_NONE) {
-                                applicationInDb.isInFavorite = realm.where(Article.class)
-                                        .notEqualTo(Article.FIELD_IS_IN_FAVORITE, Article.ORDER_NONE)
-                                        .count();
+                                applicationInDb.isInFavorite = (long) realm.where(Article.class)
+//                                        .notEqualTo(Article.FIELD_IS_IN_FAVORITE, Article.ORDER_NONE)
+                                        .max(Article.FIELD_IS_IN_FAVORITE) + 1;
                             } else {
                                 applicationInDb.isInFavorite = Article.ORDER_NONE;
                             }
-//                            boolean resultedState = applicationInDb.isInFavorite != Article.ORDER_NONE;
-//                            result.first = curState;
                             subscriber.onNext(applicationInDb.isInFavorite != Article.ORDER_NONE);
                             subscriber.onCompleted();
                         } else {
