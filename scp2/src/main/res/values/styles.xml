@@ -96,7 +96,7 @@
         <!---->
         <item name="newArticlesTextColor">@color/zbs_color_white</item>
         <item name="toolbarBackgroundGradient">@drawable/gradient_dark</item>
-        <item name="favoriteIcon">@drawable/ic_favorite_border_white_24dp</item>
+        <item name="favoriteIcon">@drawable/ic_favorite_white_24dp</item>
         <item name="favoriteIconUnselected">@drawable/ic_favorite_border_white_24dp</item>
         <item name="readIcon">@drawable/ic_email_white_24dp</item>
         <item name="readIconUnselected">@drawable/ic_drafts_white_24dp</item>
