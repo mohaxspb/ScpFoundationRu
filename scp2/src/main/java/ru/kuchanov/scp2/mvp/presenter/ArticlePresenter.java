@@ -103,4 +103,15 @@ public class ArticlePresenter extends BasePresenter<ArticleMvp.View> implements 
                             getView().showSwipeProgress(false);
                         });
     }
+
+    @Override
+    public void setArticleIsReaden(String url) {
+        Timber.d("setArticleIsReaden url: %s", url);
+        mDbProviderFactory.getDbProvider()
+                .toggleReaden(url)
+                .subscribe(
+                        resultState -> Timber.d("read state now is: %b", resultState),
+                        Timber::e
+                );
+    }
 }
