@@ -31,7 +31,7 @@ public class FavoriteArticlesPresenter
 
     @Override
     protected Observable<RealmResults<Article>> getDbObservable() {
-        return mDbProviderFactory.getDbProvider().getFavoriteArticlesSortedAsync(Article.FIELD_IS_IN_FAVORITE, Sort.ASCENDING);
+        return mDbProviderFactory.getDbProvider().getFavoriteArticlesSortedAsync(Article.FIELD_IS_IN_FAVORITE, Sort.DESCENDING);
     }
 
     @Override
