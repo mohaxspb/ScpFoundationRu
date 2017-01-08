@@ -4,11 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.view.MenuItem;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import ru.kuchanov.scp2.Constants;
@@ -18,6 +18,7 @@ import ru.kuchanov.scp2.mvp.contract.ArticleScreenMvp;
 import ru.kuchanov.scp2.ui.adapter.ArticlesPagerAdapter;
 import ru.kuchanov.scp2.ui.base.BaseDrawerActivity;
 import ru.kuchanov.scp2.ui.fragment.ArticleFragment;
+import ru.kuchanov.scp2.util.IntentUtils;
 import timber.log.Timber;
 
 public class ArticleActivity
@@ -31,6 +32,8 @@ public class ArticleActivity
     ViewPager mViewPager;
 
     private int mCurPosition;
+    private List<String> mUrls;
+
     private ArticlesPagerAdapter mAdapter;
 
     public static void startActivity(Context context, ArrayList<String> urls, int position) {
@@ -54,12 +57,21 @@ public class ArticleActivity
         super.onCreate(savedInstanceState);
 
         if (getIntent().hasExtra(EXTRA_ARTICLES_URLS_LIST)) {
-            mPresenter.setArticlesUrls(getIntent().getStringArrayListExtra(EXTRA_ARTICLES_URLS_LIST));
+            mUrls = getIntent().getStringArrayListExtra(EXTRA_ARTICLES_URLS_LIST);
+            mPresenter.setArticlesUrls(mUrls);
             mCurPosition = getIntent().getIntExtra(EXTRA_POSITION, 0);
         }
         mAdapter = new ArticlesPagerAdapter(getSupportFragmentManager());
         mAdapter.setData(getIntent().getStringArrayListExtra(EXTRA_ARTICLES_URLS_LIST));
         mViewPager.setAdapter(mAdapter);
+
+        mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                mCurPosition = position;
+            }
+        });
+
         mViewPager.setCurrentItem(mCurPosition);
     }
 
@@ -85,7 +97,7 @@ public class ArticleActivity
 
     @Override
     protected int getMenuResId() {
-        return R.menu.menu_main;
+        return R.menu.menu_article;
     }
 
     @NonNull
@@ -185,6 +197,15 @@ public class ArticleActivity
             case R.id.subscribe:
                 //TODO
 //                SubscriptionHelper.showSubscriptionDialog(this);
+                return true;
+            case R.id.menuItemShare:
+                IntentUtils.shareUrl(mUrls.get(mCurPosition));
+                return true;
+            case R.id.menuItemBrowser:
+                IntentUtils.openUrl(mUrls.get(mCurPosition));
+                return true;
+            case R.id.menuItemFavorite:
+                mPresenter.toggleFavorite(mUrls.get(mCurPosition));
                 return true;
         }
         return super.onOptionsItemSelected(item);

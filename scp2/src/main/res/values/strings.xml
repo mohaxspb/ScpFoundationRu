@@ -25,4 +25,10 @@
     <string name="stories">Рассказы</string>
     <string name="day_mode">Дневной режим</string>
     <string name="unsupported_link">Эта ссылка не поддерживается</string>
+    <string name="share">Поделиться</string>
+    <string name="open_with">В браузер</string>
+    <string name="add_to_favorites">Добавить в избранное</string>
+    <string name="share_link_text">%1$s\n\nОтправлено с помощью приложения \"SCP Foundation\"\nhttps://play.google.com/store/apps/details?id=%2$s</string>
+    <string name="share_choser_text">Поделиться через...</string>
+    <string name="browser_choser_text">Открыть с помощью...</string>
 </resources>

@@ -30,12 +30,12 @@ public class ArticlePresenter extends BasePresenter<ArticleMvp.View> implements 
     @Override
     public void onCreate() {
         Timber.d("onCreate");
-        //TODO
+        //nothing to do...
     }
 
     @Override
     public void onDestroy() {
-        //TODO
+        //nothing to do...
     }
 
     @Override
@@ -56,7 +56,6 @@ public class ArticlePresenter extends BasePresenter<ArticleMvp.View> implements 
         getView().showCenterProgress(true);
         getView().enableSwipeRefresh(false);
 
-        //TODO think how to now that there is no article in DB at all
         mDbProviderFactory.getDbProvider().getArticleAsync(mArticleUrl)
                 .subscribe(
                         data -> {

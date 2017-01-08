@@ -10,8 +10,10 @@ import io.realm.RealmModel;
 import io.realm.RealmObject;
 import io.realm.RealmResults;
 import io.realm.Sort;
+import ru.kuchanov.scp2.db.error.NoArticleForIdError;
 import ru.kuchanov.scp2.db.model.Article;
 import rx.Observable;
+import timber.log.Timber;
 
 /**
  * Created by y.kuchanov on 21.12.16.
@@ -231,6 +233,45 @@ public class DbProvider {
                             realm.insertOrUpdate(applicationInDb);
                         } else {
                             realm.insertOrUpdate(article);
+                        }
+                    },
+                    () -> {
+                        subscriber.onNext(null);
+                        subscriber.onCompleted();
+                        mRealm.close();
+                    },
+                    error -> {
+                        subscriber.onError(error);
+                        mRealm.close();
+                    });
+        });
+    }
+
+    public Observable<Boolean> toggleFavorite(String url) {
+        return Observable.create(subscriber -> {
+//            Pair<Boolean, Boolean> result = new Pair<>(null, null);
+            mRealm.executeTransactionAsync(
+                    realm -> {
+                        //check if we have app in db and update
+                        Article applicationInDb = realm.where(Article.class)
+                                .equalTo(Article.FIELD_URL, url)
+                                .findFirst();
+                        if (applicationInDb != null) {
+                            boolean curState = applicationInDb.isInFavorite != Article.ORDER_NONE;
+                            if (applicationInDb.isInFavorite == Article.ORDER_NONE) {
+                                applicationInDb.isInFavorite = realm.where(Article.class)
+                                        .notEqualTo(Article.FIELD_IS_IN_FAVORITE, Article.ORDER_NONE)
+                                        .count();
+                            } else {
+                                applicationInDb.isInFavorite = Article.ORDER_NONE;
+                            }
+//                            boolean resultedState = applicationInDb.isInFavorite != Article.ORDER_NONE;
+//                            result.first = curState;
+                            subscriber.onNext(applicationInDb.isInFavorite != Article.ORDER_NONE);
+                            subscriber.onCompleted();
+                        } else {
+                            Timber.e("No article to add to favorites for ID: %s", url);
+                            subscriber.onError(new NoArticleForIdError(url));
                         }
                     },
                     () -> {

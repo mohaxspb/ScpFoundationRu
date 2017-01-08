@@ -35,6 +35,9 @@
         <item name="favoriteIconUnselected">@drawable/ic_star_border_black_24dp</item>
         <item name="readIconUnselected">@drawable/ic_check_box_outline_blank_black_24dp</item>
         <item name="spoilerColorTitle">@color/material_red_800</item>
+
+        <!--icons-->
+        <item name="iconShare">@drawable/ic_share_black</item>
         <item name="iconArrowUp">@drawable/ic_keyboard_arrow_up_black_24dp</item>
         <item name="iconArrowDown">@drawable/ic_keyboard_arrow_down_black_24dp</item>
         <item name="iconOfflineAdd">@drawable/ic_bookmark_border_black_48dp</item>
@@ -97,6 +100,9 @@
         <item name="favoriteIconUnselected">@drawable/ic_star_border_white_24dp</item>
         <item name="readIconUnselected">@drawable/ic_check_box_outline_blank_white_24dp</item>
         <item name="spoilerColorTitle">@color/material_amber_500</item>
+
+        <!--icons-->
+        <item name="iconShare">@drawable/ic_share_blue_grey_50_48dp</item>
         <item name="iconArrowUp">@drawable/ic_keyboard_arrow_up_black_24dp</item>
         <item name="iconArrowDown">@drawable/ic_keyboard_arrow_down_black_24dp</item>
         <item name="iconOfflineAdd">@drawable/ic_bookmark_border_white_48dp</item>

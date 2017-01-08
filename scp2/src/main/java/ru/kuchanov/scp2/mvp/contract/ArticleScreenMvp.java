@@ -15,5 +15,7 @@ public interface ArticleScreenMvp extends DrawerMvp {
 
     interface Presenter extends DrawerMvp.Presenter<View> {
         void setArticlesUrls(List<String> urls);
+
+        void toggleFavorite(String url);
     }
 }

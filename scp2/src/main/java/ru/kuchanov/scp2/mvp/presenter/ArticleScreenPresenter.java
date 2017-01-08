@@ -45,4 +45,14 @@ public class ArticleScreenPresenter extends BasePresenter<ArticleScreenMvp.View>
     public void setArticlesUrls(List<String> urls) {
         mUrls = urls;
     }
+
+    @Override
+    public void toggleFavorite(String url) {
+        Timber.d("toggleFavorite url: %s", url);
+        mDbProviderFactory.getDbProvider().toggleFavorite(url)
+                .subscribe(
+                        resultState -> Timber.d("fav state now is: %b", resultState),
+                        Timber::e
+                );
+    }
 }
