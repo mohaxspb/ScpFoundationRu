@@ -44,28 +44,7 @@ public abstract class BaseArticlesListFragment<V extends BaseListMvp.View, P ext
         Timber.d("initViews");
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        mAdapter = new RecyclerAdapterListArticles();
-        mAdapter.setArticleClickListener(new RecyclerAdapterListArticles.ArticleClickListener() {
-            @Override
-            public void onArticleClicked(Article article, int position) {
-                ArticleActivity.startActivity(getActivity(), (ArrayList<String>) Article.getListOfUrls(mPresenter.getData()), position);
-            }
-
-            @Override
-            public void toggleReadenState(Article article) {
-                //TODO
-            }
-
-            @Override
-            public void toggleFavoriteState(Article article) {
-                //TODO
-            }
-
-            @Override
-            public void onDownloadClicked(Article article) {
-                //TODO start download
-            }
-        });
+        initAdapter();
 
         mRecyclerView.setAdapter(mAdapter);
 
@@ -93,6 +72,34 @@ public abstract class BaseArticlesListFragment<V extends BaseListMvp.View, P ext
                 mSwipeRefreshLayout.setEnabled(false);
             }
         }
+    }
+
+    /**
+     * override it to add something
+     */
+    protected void initAdapter(){
+        mAdapter = new RecyclerAdapterListArticles();
+        mAdapter.setArticleClickListener(new RecyclerAdapterListArticles.ArticleClickListener() {
+            @Override
+            public void onArticleClicked(Article article, int position) {
+                ArticleActivity.startActivity(getActivity(), (ArrayList<String>) Article.getListOfUrls(mPresenter.getData()), position);
+            }
+
+            @Override
+            public void toggleReadenState(Article article) {
+                //TODO
+            }
+
+            @Override
+            public void toggleFavoriteState(Article article) {
+                //TODO
+            }
+
+            @Override
+            public void onDownloadClicked(Article article) {
+                //TODO start download
+            }
+        });
     }
 
     @Override

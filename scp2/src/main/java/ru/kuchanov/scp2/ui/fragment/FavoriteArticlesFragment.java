@@ -24,6 +24,12 @@ public class FavoriteArticlesFragment
     }
 
     @Override
+    protected void initAdapter() {
+        super.initAdapter();
+        mAdapter.setShouldShowPopupOnFavoriteClick(true);
+    }
+
+    @Override
     protected void getDataFromApi() {
         //FIXME now we do not use any server to store favs
     }

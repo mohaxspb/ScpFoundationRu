@@ -38,6 +38,7 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
     private List<Article> mData;
 
     private ArticleClickListener mArticleClickListener;
+    private boolean shouldShowPopupOnFavoriteClick;
 
     public RecyclerAdapterListArticles() {
         MyApplication.getAppComponent().inject(this);
@@ -74,6 +75,10 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
 
     public void setArticleClickListener(ArticleClickListener articleClickListener) {
         mArticleClickListener = articleClickListener;
+    }
+
+    public void setShouldShowPopupOnFavoriteClick(boolean show) {
+        shouldShowPopupOnFavoriteClick = show;
     }
 
     class ViewHolderText extends RecyclerView.ViewHolder {
@@ -147,7 +152,17 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
             favorite.setImageResource(favsIconId);
             favorite.setOnClickListener(v -> {
                 if (mArticleClickListener != null) {
-                    mArticleClickListener.toggleFavoriteState(article);
+                    if (shouldShowPopupOnFavoriteClick && article.isInFavorite != Article.ORDER_NONE) {
+                        PopupMenu popup = new PopupMenu(context, favorite);
+                        popup.getMenu().add(0, 0, 0, R.string.delete);
+                        popup.setOnMenuItemClickListener(item -> {
+                            mArticleClickListener.toggleFavoriteState(article);
+                            return true;
+                        });
+                        popup.show();
+                    } else {
+                        mArticleClickListener.toggleFavoriteState(article);
+                    }
                 }
             });
 //          Кнопки Offline
@@ -163,12 +178,10 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
                     if (article.text != null) {
                         PopupMenu popup = new PopupMenu(context, offline);
                         popup.getMenu().add(0, 0, 0, R.string.delete);
-
                         popup.setOnMenuItemClickListener(item -> {
                             mArticleClickListener.onDownloadClicked(article);
                             return true;
                         });
-
                         popup.show();
                     } else {
                         mArticleClickListener.onDownloadClicked(article);

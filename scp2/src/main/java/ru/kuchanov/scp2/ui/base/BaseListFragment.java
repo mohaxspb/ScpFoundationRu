@@ -20,7 +20,8 @@ import ru.kuchanov.scp2.util.DimensionUtils;
  * for scp_ru
  */
 public abstract class BaseListFragment<V extends BaseListMvp.View, P extends BaseListMvp.Presenter<V>>
-        extends BaseFragment<V, P> implements BaseListMvp.View, SharedPreferences.OnSharedPreferenceChangeListener {
+        extends BaseFragment<V, P>
+        implements BaseListMvp.View, SharedPreferences.OnSharedPreferenceChangeListener {
 
     @BindView(R.id.root)
     protected View root;

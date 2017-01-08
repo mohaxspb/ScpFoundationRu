@@ -46,6 +46,16 @@ public abstract class BaseFragment<V extends BaseMvpView, P extends BaseDataPres
     public void onCreate(Bundle savedInstanceState) {
         callInjections();
         super.onCreate(savedInstanceState);
+
+        setHasOptionsMenu(isHasOptionsMenu());
+    }
+
+    /**
+     *  override it to enable menu for fragemnt
+     * @return if fragemnt has options menu
+     */
+    protected boolean isHasOptionsMenu() {
+        return false;
     }
 
     @Nullable
