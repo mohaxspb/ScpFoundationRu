@@ -112,7 +112,7 @@ public class ArticleFragment
     }
 
     @Override
-    protected int getResId() {
+    protected int getLayoutResId() {
         return R.layout.fragment_article;
     }
 

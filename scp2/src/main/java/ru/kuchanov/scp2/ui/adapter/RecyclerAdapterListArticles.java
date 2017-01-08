@@ -122,7 +122,12 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
                         .crossFade()
                         .into(image);
             } else {
-                image.setImageResource(R.drawable.scp_2);
+                Glide.with(context)
+                        .load(R.drawable.scp_2)
+                        .centerCrop()
+                        .crossFade()
+                        .into(image);
+//                image.setImageResource(R.drawable.scp_2);
             }
 
             title.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * textSizePrimary);

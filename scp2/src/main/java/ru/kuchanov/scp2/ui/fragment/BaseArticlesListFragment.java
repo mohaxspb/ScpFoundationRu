@@ -30,7 +30,7 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
     protected RecyclerAdapterListArticles mAdapter;
 
     @Override
-    protected int getResId() {
+    protected int getLayoutResId() {
         return R.layout.fragment_feed;
     }
 
