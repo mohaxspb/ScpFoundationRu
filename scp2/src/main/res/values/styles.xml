@@ -31,9 +31,9 @@
         <item name="newArticlesTextColor">@color/zbs_color_red</item>
         <item name="toolbarBackgroundGradient">@drawable/gradient_light</item>
         <item name="favoriteIcon">@drawable/ic_favorite_black_24dp</item>
-        <item name="readIcon">@drawable/ic_email_black_24dp</item>
         <item name="favoriteIconUnselected">@drawable/ic_favorite_border_black_24dp</item>
-        <item name="readIconUnselected">@drawable/ic_favorite_black_24dp</item>
+        <item name="readIcon">@drawable/ic_email_black_24dp</item>
+        <item name="readIconUnselected">@drawable/ic_drafts_black_24dp</item>
         <item name="spoilerColorTitle">@color/material_red_800</item>
 
         <!--icons-->
@@ -97,9 +97,9 @@
         <item name="newArticlesTextColor">@color/zbs_color_white</item>
         <item name="toolbarBackgroundGradient">@drawable/gradient_dark</item>
         <item name="favoriteIcon">@drawable/ic_favorite_border_white_24dp</item>
-        <item name="readIcon">@drawable/ic_email_white_24dp</item>
         <item name="favoriteIconUnselected">@drawable/ic_favorite_border_white_24dp</item>
-        <item name="readIconUnselected">@drawable/ic_favorite_white_24dp</item>
+        <item name="readIcon">@drawable/ic_email_white_24dp</item>
+        <item name="readIconUnselected">@drawable/ic_drafts_white_24dp</item>
         <item name="spoilerColorTitle">@color/material_amber_500</item>
 
         <!--icons-->

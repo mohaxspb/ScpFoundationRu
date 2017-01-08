@@ -21,7 +21,7 @@
         />
     <item
         android:id="@+id/subscribe"
-        android:icon="@drawable/ic_monetization_on_white_48dp"
+        android:icon="@drawable/ic_monetization_on_white_24dp"
         android:title="@string/in_apps"
         app:showAsAction="never"
         />

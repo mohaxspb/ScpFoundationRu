@@ -16,7 +16,7 @@
         android:layout_marginTop="30dp"
         android:background="?selectableItemBackgroundBorderless"
         android:contentDescription="@string/app_name"
-        android:src="@drawable/ic_monetization_on_white_48dp"
+        android:src="@drawable/ic_monetization_on_white_24dp"
         />
 
     <LinearLayout

@@ -105,10 +105,10 @@ public abstract class BaseActivity<V extends BaseMvpView, P extends BaseDataPres
             boolean nightModeIsOn = mMyPreferenceManager.isNightMode();
             MenuItem themeMenuItem = menu.findItem(R.id.night_mode_item);
             if (nightModeIsOn) {
-                themeMenuItem.setIcon(R.drawable.ic_brightness_5_white_48dp);
+                themeMenuItem.setIcon(R.drawable.ic_brightness_low_white_24dp);
                 themeMenuItem.setTitle(R.string.day_mode);
             } else {
-                themeMenuItem.setIcon(R.drawable.ic_brightness_3_white_48dp);
+                themeMenuItem.setIcon(R.drawable.ic_brightness_3_white_24dp);
                 themeMenuItem.setTitle(R.string.night_mode);
             }
 

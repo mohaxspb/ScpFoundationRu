@@ -58,5 +58,5 @@
         android:layout_marginRight="16dp"
         android:layout_toRightOf="@+id/vk_avatar"
         android:contentDescription="@string/app_name"
-        android:src="@drawable/ic_monetization_on_white_48dp"/>
+        android:src="@drawable/ic_monetization_on_white_24dp"/>
 </RelativeLayout>
