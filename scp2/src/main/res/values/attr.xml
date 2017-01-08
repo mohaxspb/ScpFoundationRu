@@ -16,6 +16,7 @@
     <attr name="readIconUnselected" format="reference"/>
     <attr name="windowBackgroundDark" format="color|reference"/>
     <attr name="spoilerColorTitle" format="color|reference"/>
+    <attr name="iconShare" format="reference"/>
     <attr name="iconArrowUp" format="reference"/>
     <attr name="iconArrowDown" format="reference"/>
     <attr name="iconOfflineAdd" format="reference"/>

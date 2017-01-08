@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -51,7 +50,7 @@ public class ArticleFragment
     public static final String TAG = ArticleFragment.class.getSimpleName();
 
     public static final String EXTRA_URL = "EXTRA_URL";
-    public static final String EXTRA_TITLE = "EXTRA_TITLE";
+//    public static final String EXTRA_TITLE = "EXTRA_TITLE";
     public static final String EXTRA_ARTICLE = "EXTRA_ARTICLE";
 
     //tabs
@@ -70,17 +69,17 @@ public class ArticleFragment
     //tabs
     private int mCurrentSelectedTab = 0;
 
-    private String title;
+//    private String title;
     private String url;
 
     private RecyclerAdapterArticle mAdapter;
     private Article mArticle;
 
-    public static ArticleFragment newInstance(String url, String title, @Nullable Article article) {
+    public static ArticleFragment newInstance(String url/*, String title*/, @Nullable Article article) {
         ArticleFragment fragment = new ArticleFragment();
         Bundle args = new Bundle();
         args.putString(EXTRA_URL, url);
-        args.putString(EXTRA_TITLE, title);
+//        args.putString(EXTRA_TITLE, title);
         if (article != null) {
             args.putParcelable(EXTRA_ARTICLE, Parcels.wrap(article));
         }
@@ -100,7 +99,7 @@ public class ArticleFragment
     public void onCreate(Bundle savedInstanceState) {
         Timber.d("onCreate");
         super.onCreate(savedInstanceState);
-        title = getArguments().getString(EXTRA_TITLE);
+//        title = getArguments().getString(EXTRA_TITLE);
         url = getArguments().getString(EXTRA_URL);
         mArticle = getArguments().containsKey(EXTRA_ARTICLE)
                 ? Parcels.unwrap(getArguments().getParcelable(EXTRA_ARTICLE))
@@ -181,12 +180,15 @@ public class ArticleFragment
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        Timber.d("setUserVisibleHint url: %s, value: %b", url, isVisibleToUser);
+//        Timber.d("setUserVisibleHint url: %s, isVisibleToUser: %b", url, isVisibleToUser);
         if (isVisibleToUser) {
-            if (mArticle != null && mArticle.title != null) {
-//                ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(mArticle.title);
-                if (getActivity() instanceof ToolbarTitleSetter) {
-                    ((ToolbarTitleSetter) getActivity()).setTitle(mArticle.title);
+            if (getActivity() instanceof ToolbarStateSetter) {
+                if (mArticle.title != null) {
+                    ((ToolbarStateSetter) getActivity()).setTitle(mArticle.title);
+                }
+                ((ToolbarStateSetter) getActivity()).setFavoriteState(mArticle.isInFavorite != Article.ORDER_NONE);
+                if (mArticle.text != null && !mArticle.isInReaden) {
+                    mPresenter.setArticleIsReaden(mArticle.url);
                 }
             }
         }
@@ -202,11 +204,15 @@ public class ArticleFragment
         if (mArticle == null || mArticle.text == null) {
             return;
         }
-        Timber.d("setUserVisibleHint url: %s, value: %b", url, getUserVisibleHint());
+//        Timber.d("setUserVisibleHint url: %s, value: %b", url, getUserVisibleHint());
         if (getUserVisibleHint()) {
-            if (mArticle.title != null) {
-                if (getActivity() instanceof ToolbarTitleSetter) {
-                    ((ToolbarTitleSetter) getActivity()).setTitle(mArticle.title);
+            if (getActivity() instanceof ToolbarStateSetter) {
+                if (mArticle.title != null) {
+                    ((ToolbarStateSetter) getActivity()).setTitle(mArticle.title);
+                }
+                ((ToolbarStateSetter) getActivity()).setFavoriteState(mArticle.isInFavorite != Article.ORDER_NONE);
+                if (mArticle.text != null && !mArticle.isInReaden) {
+                    mPresenter.setArticleIsReaden(mArticle.url);
                 }
             }
         }
@@ -352,7 +358,9 @@ public class ArticleFragment
         }
     }
 
-    public interface ToolbarTitleSetter {
+    public interface ToolbarStateSetter {
         void setTitle(String title);
+
+        void setFavoriteState(boolean isInFavorite);
     }
 }

@@ -155,7 +155,7 @@ public class MainActivity
                 hideFragments();
                 fragment = getSupportFragmentManager().findFragmentByTag(tag);
                 if (fragment == null) {
-                    fragment = ArticleFragment.newInstance(Constants.Urls.ABOUT_SCP, getString(R.string.about_org), null);
+                    fragment = ArticleFragment.newInstance(Constants.Urls.ABOUT_SCP, null);
                     getSupportFragmentManager().beginTransaction()
                             .add(content.getId(), fragment, tag)
                             .commit();
@@ -171,7 +171,7 @@ public class MainActivity
                 hideFragments();
                 fragment = getSupportFragmentManager().findFragmentByTag(tag);
                 if (fragment == null) {
-                    fragment = ArticleFragment.newInstance(Constants.Urls.NEWS, getString(R.string.news), null);
+                    fragment = ArticleFragment.newInstance(Constants.Urls.NEWS, null);
                     getSupportFragmentManager().beginTransaction()
                             .add(content.getId(), fragment, tag)
                             .commit();
@@ -239,7 +239,7 @@ public class MainActivity
                 hideFragments();
                 fragment = getSupportFragmentManager().findFragmentByTag(tag);
                 if (fragment == null) {
-                    fragment = ArticleFragment.newInstance(Constants.Urls.STORIES, getString(R.string.stories), null);
+                    fragment = ArticleFragment.newInstance(Constants.Urls.STORIES, null);
                     getSupportFragmentManager().beginTransaction()
                             .add(content.getId(), fragment, tag)
                             .commit();

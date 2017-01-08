@@ -28,9 +28,9 @@ public class Article extends RealmObject {
     public static final String FIELD_URL = "url";
 
     //util fields
-    public int isInRecent = ORDER_NONE;
-    public int isInFavorite = ORDER_NONE;
-    public int isInMostRated = ORDER_NONE;
+    public long isInRecent = ORDER_NONE;
+    public long isInFavorite = ORDER_NONE;
+    public long isInMostRated = ORDER_NONE;
     public boolean isInReaden;
 
     public boolean hasTabs;

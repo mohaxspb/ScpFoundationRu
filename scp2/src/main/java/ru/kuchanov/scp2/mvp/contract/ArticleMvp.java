@@ -1,12 +1,8 @@
 package ru.kuchanov.scp2.mvp.contract;
 
-import java.util.List;
-
 import ru.kuchanov.scp2.db.model.Article;
 import ru.kuchanov.scp2.mvp.base.BaseDataPresenter;
-import ru.kuchanov.scp2.mvp.base.BaseListMvp;
 import ru.kuchanov.scp2.mvp.base.BaseMvpView;
-import ru.kuchanov.scp2.mvp.base.BasePresenter;
 
 /**
  * Created by y.kuchanov on 21.12.16.
@@ -25,7 +21,6 @@ public interface ArticleMvp {
     }
 
     interface Presenter extends BaseDataPresenter<View> {
-
         /**
          * @param url url is id for Article obj
          */
@@ -36,5 +31,7 @@ public interface ArticleMvp {
         void getDataFromDb();
 
         void getDataFromApi();
+
+        void setArticleIsReaden(String url);
     }
 }
