@@ -20,18 +20,23 @@ import ru.kuchanov.scp2.db.util.RealmStringListParcelConverter;
 @Parcel(implementations = {ArticleRealmProxy.class}, value = Parcel.Serialization.BEAN, analyze = {Article.class})
 public class Article extends RealmObject {
 
-    public static final String FIELD_IS_IN_READEN = "isInReaden";
+//    public static final String FIELD_IS_IN_READEN = "isInReaden";
     public static final String FIELD_IS_IN_RECENT = "isInRecent";
     public static final String FIELD_IS_IN_FAVORITE = "isInFavorite";
     public static final String FIELD_IS_IN_MOST_RATED = "isInMostRated";
-    public static final int ORDER_NONE = -1;
     public static final String FIELD_URL = "url";
+    public static final String FIELD_LOCAL_UPDATE_TIME_STAMP = "localUpdateTimeStamp";
+    public static final String FIELD_TEXT = "text";
+
+    public static final int ORDER_NONE = -1;
 
     //util fields
     public long isInRecent = ORDER_NONE;
     public long isInFavorite = ORDER_NONE;
     public long isInMostRated = ORDER_NONE;
     public boolean isInReaden;
+
+    public long localUpdateTimeStamp;
 
     public boolean hasTabs;
     @ParcelPropertyConverter(RealmStringListParcelConverter.class)
@@ -70,13 +75,13 @@ public class Article extends RealmObject {
      */
     public String updatedDate;
 
-    public static List<String> getListOfUrls(Article... articles) {
-        List<String> urls = new ArrayList<>();
-        for (Article article : articles) {
-            urls.add(article.url);
-        }
-        return urls;
-    }
+//    public static List<String> getListOfUrls(Article... articles) {
+//        List<String> urls = new ArrayList<>();
+//        for (Article article : articles) {
+//            urls.add(article.url);
+//        }
+//        return urls;
+//    }
 
     public static List<String> getListOfUrls(List<Article> articles) {
         List<String> urls = new ArrayList<>();
@@ -93,11 +98,13 @@ public class Article extends RealmObject {
                 ", isInFavorite=" + isInFavorite +
                 ", isInMostRated=" + isInMostRated +
                 ", isInReaden=" + isInReaden +
+                ", localUpdateTimeStamp=" + localUpdateTimeStamp +
                 ", hasTabs=" + hasTabs +
 //                ", tabsTexts=" + tabsTexts +
-                ", tabsTitles=" + tabsTitles +
-                ", textParts=" + textParts +
-                ", textPartsTypes=" + textPartsTypes +
+//                ", tabsTitles=" + tabsTitles +
+//                ", textParts=" + textParts +
+//                ", textPartsTypes=" + textPartsTypes +
+                ", imagesUrls=" + imagesUrls +
                 ", url='" + url + '\'' +
                 ", title='" + title + '\'' +
 //                ", text='" + text + '\'' +

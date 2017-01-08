@@ -1,7 +1,7 @@
 package ru.kuchanov.scp2.ui.fragment;
 
 import ru.kuchanov.scp2.MyApplication;
-import ru.kuchanov.scp2.mvp.contract.RatedArticles;
+import ru.kuchanov.scp2.mvp.contract.RatedArticlesMvp;
 
 /**
  * Created by mohax on 03.01.2017.
@@ -9,8 +9,8 @@ import ru.kuchanov.scp2.mvp.contract.RatedArticles;
  * for scp_ru
  */
 public class RatedArticlesFragment
-        extends BaseArticlesListFragment<RatedArticles.View, RatedArticles.Presenter>
-        implements RatedArticles.View {
+        extends BaseArticlesListFragment<RatedArticlesMvp.View, RatedArticlesMvp.Presenter>
+        implements RatedArticlesMvp.View {
 
     public static final String TAG = RatedArticlesFragment.class.getSimpleName();
 

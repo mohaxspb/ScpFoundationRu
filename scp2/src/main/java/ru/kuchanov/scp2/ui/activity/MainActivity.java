@@ -22,6 +22,7 @@ import ru.kuchanov.scp2.ui.base.BaseDrawerActivity;
 import ru.kuchanov.scp2.ui.dialog.TextSizeDialogFragment;
 import ru.kuchanov.scp2.ui.fragment.ArticleFragment;
 import ru.kuchanov.scp2.ui.fragment.FavoriteArticlesFragment;
+import ru.kuchanov.scp2.ui.fragment.OfflineArticlesFragment;
 import ru.kuchanov.scp2.ui.fragment.RatedArticlesFragment;
 import ru.kuchanov.scp2.ui.fragment.RecentArticlesFragment;
 import timber.log.Timber;
@@ -272,6 +273,18 @@ public class MainActivity
             case R.id.offline:
                 mCurrentSelectedDrawerItemId = id;
                 //TODO
+                hideFragments();
+                fragment = getSupportFragmentManager().findFragmentByTag(OfflineArticlesFragment.TAG);
+                if (fragment == null) {
+                    fragment = OfflineArticlesFragment.newInstance();
+                    getSupportFragmentManager().beginTransaction()
+                            .add(content.getId(), fragment, OfflineArticlesFragment.TAG)
+                            .commit();
+                } else {
+                    getSupportFragmentManager().beginTransaction()
+                            .show(fragment)
+                            .commit();
+                }
                 break;
             case R.id.gallery:
                 //TODO

@@ -1,32 +1,26 @@
 package ru.kuchanov.scp2.ui.fragment;
 
 import ru.kuchanov.scp2.MyApplication;
-import ru.kuchanov.scp2.mvp.contract.FavoriteArticlesMvp;
+import ru.kuchanov.scp2.mvp.contract.OfflineArticles;
 
 /**
  * Created by mohax on 03.01.2017.
  * <p>
  * for scp_ru
  */
-public class FavoriteArticlesFragment
-        extends BaseArticlesListFragment<FavoriteArticlesMvp.View, FavoriteArticlesMvp.Presenter>
-        implements FavoriteArticlesMvp.View {
+public class OfflineArticlesFragment
+        extends BaseArticlesListFragment<OfflineArticles.View, OfflineArticles.Presenter>
+        implements OfflineArticles.View {
 
-    public static final String TAG = FavoriteArticlesFragment.class.getSimpleName();
+    public static final String TAG = OfflineArticlesFragment.class.getSimpleName();
 
-    public static FavoriteArticlesFragment newInstance() {
-        return new FavoriteArticlesFragment();
+    public static OfflineArticlesFragment newInstance() {
+        return new OfflineArticlesFragment();
     }
 
     @Override
     protected void callInjections() {
         MyApplication.getAppComponent().inject(this);
-    }
-
-    @Override
-    protected void initAdapter() {
-        super.initAdapter();
-        mAdapter.setShouldShowPopupOnFavoriteClick(true);
     }
 
     @Override

@@ -7,7 +7,7 @@ import ru.kuchanov.scp2.mvp.base.BaseArticlesListMvp;
  * <p>
  * for scp_ru
  */
-public interface RatedArticles {
+public interface FavoriteArticlesMvp {
     interface View extends BaseArticlesListMvp.View {
     }
 

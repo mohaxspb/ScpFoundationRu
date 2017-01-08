@@ -10,6 +10,7 @@ import io.realm.RealmModel;
 import io.realm.RealmObject;
 import io.realm.RealmResults;
 import io.realm.Sort;
+import ru.kuchanov.scp2.Constants;
 import ru.kuchanov.scp2.db.error.NoArticleForIdError;
 import ru.kuchanov.scp2.db.model.Article;
 import rx.Observable;
@@ -101,6 +102,19 @@ public class DbProvider {
     public Observable<RealmResults<Article>> getFavoriteArticlesSortedAsync(String field, Sort order) {
         return mRealm.where(Article.class)
                 .notEqualTo(Article.FIELD_IS_IN_FAVORITE, Article.ORDER_NONE)
+                .findAllSortedAsync(field, order)
+                .asObservable()
+                .filter(RealmResults::isLoaded)
+                .filter(RealmResults::isValid);
+    }
+
+    public Observable<RealmResults<Article>> getOfflineArticlesSortedAsync(String field, Sort order) {
+        return mRealm.where(Article.class)
+                .notEqualTo(Article.FIELD_TEXT, (String) null)
+                //remove articles from main activity
+                .notEqualTo(Article.FIELD_URL, Constants.Urls.ABOUT_SCP)
+                .notEqualTo(Article.FIELD_URL, Constants.Urls.NEWS)
+                .notEqualTo(Article.FIELD_URL, Constants.Urls.STORIES)
                 .findAllSortedAsync(field, order)
                 .asObservable()
                 .filter(RealmResults::isLoaded)
@@ -240,6 +254,8 @@ public class DbProvider {
                             applicationInDb.textPartsTypes = article.textPartsTypes;
                             //images
                             applicationInDb.imagesUrls = article.imagesUrls;
+                            //update localUpdateTimeStamp to be able to sort arts by this value
+                            applicationInDb.localUpdateTimeStamp = System.currentTimeMillis();
 
                             //update it in DB such way, as we add unmanaged items
                             realm.insertOrUpdate(applicationInDb);
@@ -275,6 +291,7 @@ public class DbProvider {
                             } else {
                                 applicationInDb.isInFavorite = Article.ORDER_NONE;
                             }
+
                             subscriber.onNext(applicationInDb.isInFavorite != Article.ORDER_NONE);
                             subscriber.onCompleted();
                         } else {

@@ -12,7 +12,7 @@ import ru.kuchanov.scp2.api.ApiClient;
 import ru.kuchanov.scp2.db.DbProviderFactory;
 import ru.kuchanov.scp2.db.model.Article;
 import ru.kuchanov.scp2.manager.MyPreferenceManager;
-import ru.kuchanov.scp2.mvp.contract.FavoriteArticlesMvp;
+import ru.kuchanov.scp2.mvp.contract.OfflineArticles;
 import rx.Observable;
 
 /**
@@ -20,17 +20,17 @@ import rx.Observable;
  * <p>
  * for TappAwards
  */
-public class FavoriteArticlesPresenter
-        extends BaseListArticlesPresenter<FavoriteArticlesMvp.View>
-        implements FavoriteArticlesMvp.Presenter {
+public class OfflineArticlesPresenter
+        extends BaseListArticlesPresenter<OfflineArticles.View>
+        implements OfflineArticles.Presenter {
 
-    public FavoriteArticlesPresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
+    public OfflineArticlesPresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
         super(myPreferencesManager, dbProviderFactory, apiClient);
     }
 
     @Override
     protected Observable<RealmResults<Article>> getDbObservable() {
-        return mDbProviderFactory.getDbProvider().getFavoriteArticlesSortedAsync(Article.FIELD_IS_IN_FAVORITE, Sort.DESCENDING);
+        return mDbProviderFactory.getDbProvider().getOfflineArticlesSortedAsync(Article.FIELD_LOCAL_UPDATE_TIME_STAMP, Sort.DESCENDING);
     }
 
     @Override

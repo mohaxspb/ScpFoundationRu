@@ -11,16 +11,18 @@ import ru.kuchanov.scp2.db.DbProviderFactory;
 import ru.kuchanov.scp2.manager.MyPreferenceManager;
 import ru.kuchanov.scp2.mvp.contract.ArticleMvp;
 import ru.kuchanov.scp2.mvp.contract.ArticleScreenMvp;
-import ru.kuchanov.scp2.mvp.contract.FavoriteArticles;
+import ru.kuchanov.scp2.mvp.contract.FavoriteArticlesMvp;
 import ru.kuchanov.scp2.mvp.contract.MainMvp;
-import ru.kuchanov.scp2.mvp.contract.RatedArticles;
-import ru.kuchanov.scp2.mvp.contract.RecentArticles;
+import ru.kuchanov.scp2.mvp.contract.OfflineArticles;
+import ru.kuchanov.scp2.mvp.contract.RatedArticlesMvp;
+import ru.kuchanov.scp2.mvp.contract.RecentArticlesMvp;
 import ru.kuchanov.scp2.mvp.presenter.ArticlePresenter;
 import ru.kuchanov.scp2.mvp.presenter.ArticleScreenPresenter;
 import ru.kuchanov.scp2.mvp.presenter.FavoriteArticlesPresenter;
 import ru.kuchanov.scp2.mvp.presenter.MainPresenter;
 import ru.kuchanov.scp2.mvp.presenter.MostRatedArticlesPresenter;
 import ru.kuchanov.scp2.mvp.presenter.MostRecentArticlesPresenter;
+import ru.kuchanov.scp2.mvp.presenter.OfflineArticlesPresenter;
 
 /**
  * Created by y.kuchanov on 21.12.16.
@@ -65,7 +67,7 @@ public class PresentersModule {
     @Provides
     @Singleton
     @NonNull
-    RecentArticles.Presenter providesRecentArticlesPresenter(
+    RecentArticlesMvp.Presenter providesRecentArticlesPresenter(
             @NonNull MyPreferenceManager myPreferencesManager,
             @NonNull DbProviderFactory dbProviderFactory,
             @NonNull ApiClient apiClient
@@ -76,7 +78,7 @@ public class PresentersModule {
     @Provides
     @Singleton
     @NonNull
-    RatedArticles.Presenter providesRatedArticlesPresenter(
+    RatedArticlesMvp.Presenter providesRatedArticlesPresenter(
             @NonNull MyPreferenceManager myPreferencesManager,
             @NonNull DbProviderFactory dbProviderFactory,
             @NonNull ApiClient apiClient
@@ -87,11 +89,22 @@ public class PresentersModule {
     @Provides
     @Singleton
     @NonNull
-    FavoriteArticles.Presenter providesFavoriteArticlesPresenter(
+    FavoriteArticlesMvp.Presenter providesFavoriteArticlesPresenter(
             @NonNull MyPreferenceManager myPreferencesManager,
             @NonNull DbProviderFactory dbProviderFactory,
             @NonNull ApiClient apiClient
     ) {
         return new FavoriteArticlesPresenter(myPreferencesManager, dbProviderFactory, apiClient);
+    }
+
+    @Provides
+    @Singleton
+    @NonNull
+    OfflineArticles.Presenter providesOfflineArticlesPresenter(
+            @NonNull MyPreferenceManager myPreferencesManager,
+            @NonNull DbProviderFactory dbProviderFactory,
+            @NonNull ApiClient apiClient
+    ) {
+        return new OfflineArticlesPresenter(myPreferencesManager, dbProviderFactory, apiClient);
     }
 }
