@@ -10,7 +10,7 @@ import ru.kuchanov.scp2.api.ApiClient;
 import ru.kuchanov.scp2.db.DbProviderFactory;
 import ru.kuchanov.scp2.db.model.Article;
 import ru.kuchanov.scp2.manager.MyPreferenceManager;
-import ru.kuchanov.scp2.mvp.contract.RatedArticles;
+import ru.kuchanov.scp2.mvp.contract.RatedArticlesMvp;
 import rx.Observable;
 
 /**
@@ -18,7 +18,7 @@ import rx.Observable;
  * <p>
  * for TappAwards
  */
-public class MostRatedArticlesPresenter extends BaseListArticlesPresenter<RatedArticles.View> implements RatedArticles.Presenter {
+public class MostRatedArticlesPresenter extends BaseListArticlesPresenter<RatedArticlesMvp.View> implements RatedArticlesMvp.Presenter {
 
     public MostRatedArticlesPresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
         super(myPreferencesManager, dbProviderFactory, apiClient);

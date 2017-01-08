@@ -5,6 +5,8 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -38,7 +40,7 @@ public abstract class BaseFragment<V extends BaseMvpView, P extends BaseDataPres
     @BindView(R.id.root)
     protected View root;
 
-    protected abstract int getResId();
+    protected abstract int getLayoutResId();
 
     protected abstract void callInjections();
 
@@ -46,13 +48,37 @@ public abstract class BaseFragment<V extends BaseMvpView, P extends BaseDataPres
     public void onCreate(Bundle savedInstanceState) {
         callInjections();
         super.onCreate(savedInstanceState);
+
+        setHasOptionsMenu(isHasOptionsMenu());
+    }
+
+    /**
+     *  override it to enable menu for fragemnt
+     * @return if fragemnt has options menu
+     */
+    protected boolean isHasOptionsMenu() {
+        return false;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(getMenuResId(), menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    /**
+     * override it to add menu when add fragment
+     * @return menu res id to add to activities menu
+     */
+    protected int getMenuResId() {
+        return 0;
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Timber.d("onCreateView");
-        return inflater.inflate(getResId(), container, false);
+        return inflater.inflate(getLayoutResId(), container, false);
     }
 
     @Override

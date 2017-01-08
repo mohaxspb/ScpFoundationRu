@@ -10,6 +10,7 @@ import io.realm.RealmModel;
 import io.realm.RealmObject;
 import io.realm.RealmResults;
 import io.realm.Sort;
+import ru.kuchanov.scp2.Constants;
 import ru.kuchanov.scp2.db.error.NoArticleForIdError;
 import ru.kuchanov.scp2.db.model.Article;
 import rx.Observable;
@@ -77,6 +78,7 @@ public class DbProvider {
                 .filter(RealmResults::isValid);
     }
 
+    //TODO we can do it in one method
     public Observable<RealmResults<Article>> getRecentArticlesSortedAsync(String field, Sort order) {
         return mRealm.where(Article.class)
                 .notEqualTo(Article.FIELD_IS_IN_RECENT, Article.ORDER_NONE)
@@ -86,9 +88,33 @@ public class DbProvider {
                 .filter(RealmResults::isValid);
     }
 
+    //TODO we can do it in one method
     public Observable<RealmResults<Article>> getRatedArticlesSortedAsync(String field, Sort order) {
         return mRealm.where(Article.class)
                 .notEqualTo(Article.FIELD_IS_IN_MOST_RATED, Article.ORDER_NONE)
+                .findAllSortedAsync(field, order)
+                .asObservable()
+                .filter(RealmResults::isLoaded)
+                .filter(RealmResults::isValid);
+    }
+
+    //TODO we can do it in one method
+    public Observable<RealmResults<Article>> getFavoriteArticlesSortedAsync(String field, Sort order) {
+        return mRealm.where(Article.class)
+                .notEqualTo(Article.FIELD_IS_IN_FAVORITE, Article.ORDER_NONE)
+                .findAllSortedAsync(field, order)
+                .asObservable()
+                .filter(RealmResults::isLoaded)
+                .filter(RealmResults::isValid);
+    }
+
+    public Observable<RealmResults<Article>> getOfflineArticlesSortedAsync(String field, Sort order) {
+        return mRealm.where(Article.class)
+                .notEqualTo(Article.FIELD_TEXT, (String) null)
+                //remove articles from main activity
+                .notEqualTo(Article.FIELD_URL, Constants.Urls.ABOUT_SCP)
+                .notEqualTo(Article.FIELD_URL, Constants.Urls.NEWS)
+                .notEqualTo(Article.FIELD_URL, Constants.Urls.STORIES)
                 .findAllSortedAsync(field, order)
                 .asObservable()
                 .filter(RealmResults::isLoaded)
@@ -228,6 +254,8 @@ public class DbProvider {
                             applicationInDb.textPartsTypes = article.textPartsTypes;
                             //images
                             applicationInDb.imagesUrls = article.imagesUrls;
+                            //update localUpdateTimeStamp to be able to sort arts by this value
+                            applicationInDb.localUpdateTimeStamp = System.currentTimeMillis();
 
                             //update it in DB such way, as we add unmanaged items
                             realm.insertOrUpdate(applicationInDb);
@@ -256,16 +284,14 @@ public class DbProvider {
                                 .equalTo(Article.FIELD_URL, url)
                                 .findFirst();
                         if (applicationInDb != null) {
-                            boolean curState = applicationInDb.isInFavorite != Article.ORDER_NONE;
                             if (applicationInDb.isInFavorite == Article.ORDER_NONE) {
-                                applicationInDb.isInFavorite = realm.where(Article.class)
-                                        .notEqualTo(Article.FIELD_IS_IN_FAVORITE, Article.ORDER_NONE)
-                                        .count();
+                                applicationInDb.isInFavorite = (long) realm.where(Article.class)
+//                                        .notEqualTo(Article.FIELD_IS_IN_FAVORITE, Article.ORDER_NONE)
+                                        .max(Article.FIELD_IS_IN_FAVORITE) + 1;
                             } else {
                                 applicationInDb.isInFavorite = Article.ORDER_NONE;
                             }
-//                            boolean resultedState = applicationInDb.isInFavorite != Article.ORDER_NONE;
-//                            result.first = curState;
+
                             subscriber.onNext(applicationInDb.isInFavorite != Article.ORDER_NONE);
                             subscriber.onCompleted();
                         } else {
@@ -285,7 +311,6 @@ public class DbProvider {
     }
 
     /**
-     *
      * @param url used as Article ID
      * @return observable, that emits resulted readen state
      * or error if no artcile found
@@ -299,8 +324,41 @@ public class DbProvider {
                                 .equalTo(Article.FIELD_URL, url)
                                 .findFirst();
                         if (applicationInDb != null) {
-                                applicationInDb.isInReaden = !applicationInDb.isInReaden;
+                            applicationInDb.isInReaden = !applicationInDb.isInReaden;
                             subscriber.onNext(applicationInDb.isInReaden);
+                            subscriber.onCompleted();
+                        } else {
+                            Timber.e("No article to add to favorites for ID: %s", url);
+                            subscriber.onError(new NoArticleForIdError(url));
+                        }
+                    },
+                    () -> {
+                        subscriber.onCompleted();
+                        mRealm.close();
+                    },
+                    error -> {
+                        subscriber.onError(error);
+                        mRealm.close();
+                    });
+        });
+    }
+
+    public Observable<Void> deleteArticlesText(String url){
+        return Observable.create(subscriber -> {
+            mRealm.executeTransactionAsync(
+                    realm -> {
+                        //check if we have app in db and update
+                        Article applicationInDb = realm.where(Article.class)
+                                .equalTo(Article.FIELD_URL, url)
+                                .findFirst();
+                        if (applicationInDb != null) {
+                            applicationInDb.text = null;
+                            applicationInDb.textParts = null;
+                            applicationInDb.textPartsTypes = null;
+                            applicationInDb.hasTabs = false;
+                            applicationInDb.tabsTexts = null;
+                            applicationInDb.tabsTitles = null;
+                            subscriber.onNext(null);
                             subscriber.onCompleted();
                         } else {
                             Timber.e("No article to add to favorites for ID: %s", url);

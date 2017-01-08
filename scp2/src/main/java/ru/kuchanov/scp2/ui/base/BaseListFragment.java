@@ -20,7 +20,8 @@ import ru.kuchanov.scp2.util.DimensionUtils;
  * for scp_ru
  */
 public abstract class BaseListFragment<V extends BaseListMvp.View, P extends BaseListMvp.Presenter<V>>
-        extends BaseFragment<V, P> implements BaseListMvp.View, SharedPreferences.OnSharedPreferenceChangeListener {
+        extends BaseFragment<V, P>
+        implements BaseListMvp.View, SharedPreferences.OnSharedPreferenceChangeListener {
 
     @BindView(R.id.root)
     protected View root;
@@ -32,6 +33,8 @@ public abstract class BaseListFragment<V extends BaseListMvp.View, P extends Bas
     protected SwipeRefreshLayout mSwipeRefreshLayout;
     @BindView(R.id.recyclerView)
     protected RecyclerView mRecyclerView;
+
+    protected abstract boolean isSwipeRefreshEnabled();
 
     @Override
     public void showSwipeProgress(boolean show) {
@@ -70,7 +73,7 @@ public abstract class BaseListFragment<V extends BaseListMvp.View, P extends Bas
 
     @Override
     public void enableSwipeRefresh(boolean enable) {
-        if (!isAdded() || mSwipeRefreshLayout == null) {
+        if (!isAdded() || mSwipeRefreshLayout == null || !isSwipeRefreshEnabled()) {
             return;
         }
         mSwipeRefreshLayout.setEnabled(enable);

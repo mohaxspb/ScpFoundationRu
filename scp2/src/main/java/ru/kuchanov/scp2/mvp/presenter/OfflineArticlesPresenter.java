@@ -6,11 +6,13 @@ import java.util.List;
 
 import io.realm.RealmResults;
 import io.realm.Sort;
+import ru.kuchanov.scp2.MyApplication;
+import ru.kuchanov.scp2.R;
 import ru.kuchanov.scp2.api.ApiClient;
 import ru.kuchanov.scp2.db.DbProviderFactory;
 import ru.kuchanov.scp2.db.model.Article;
 import ru.kuchanov.scp2.manager.MyPreferenceManager;
-import ru.kuchanov.scp2.mvp.contract.RecentArticlesMvp;
+import ru.kuchanov.scp2.mvp.contract.OfflineArticles;
 import rx.Observable;
 
 /**
@@ -18,24 +20,26 @@ import rx.Observable;
  * <p>
  * for TappAwards
  */
-public class MostRecentArticlesPresenter extends BaseListArticlesPresenter<RecentArticlesMvp.View> implements RecentArticlesMvp.Presenter {
+public class OfflineArticlesPresenter
+        extends BaseListArticlesPresenter<OfflineArticles.View>
+        implements OfflineArticles.Presenter {
 
-    public MostRecentArticlesPresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
+    public OfflineArticlesPresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
         super(myPreferencesManager, dbProviderFactory, apiClient);
     }
 
     @Override
     protected Observable<RealmResults<Article>> getDbObservable() {
-        return mDbProviderFactory.getDbProvider().getRecentArticlesSortedAsync(Article.FIELD_IS_IN_RECENT, Sort.ASCENDING);
+        return mDbProviderFactory.getDbProvider().getOfflineArticlesSortedAsync(Article.FIELD_LOCAL_UPDATE_TIME_STAMP, Sort.DESCENDING);
     }
 
     @Override
     protected Observable<List<Article>> getApiObservable(int offset) {
-        return mApiClient.getRecentArticles(offset);
+        throw new IllegalStateException(MyApplication.getAppInstance().getString(R.string.not_implemented));
     }
 
     @Override
     protected Observable<Pair<Integer, Integer>> getSaveToDbObservable(List<Article> data, int offset) {
-        return mDbProviderFactory.getDbProvider().saveRecentArticlesList(data, offset);
+        throw new IllegalStateException(MyApplication.getAppInstance().getString(R.string.not_implemented));
     }
 }
