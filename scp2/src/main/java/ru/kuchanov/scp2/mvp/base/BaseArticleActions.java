@@ -1,5 +1,7 @@
 package ru.kuchanov.scp2.mvp.base;
 
+import ru.kuchanov.scp2.db.model.Article;
+
 /**
  * Created by mohax on 09.01.2017.
  * <p>
@@ -10,5 +12,9 @@ public interface BaseArticleActions {
 
     void toggleReadenState(String url);
 
-    void toggleOfflineState(String url);
+    /**
+     *  we need article as arg, as we should determine if we
+     *  should start download or should delete text
+     */
+    void toggleOfflineState(Article article);
 }

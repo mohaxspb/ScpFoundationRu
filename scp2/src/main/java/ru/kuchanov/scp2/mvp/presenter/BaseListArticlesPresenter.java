@@ -10,7 +10,6 @@ import ru.kuchanov.scp2.db.DbProviderFactory;
 import ru.kuchanov.scp2.db.model.Article;
 import ru.kuchanov.scp2.manager.MyPreferenceManager;
 import ru.kuchanov.scp2.mvp.base.BaseArticlesListMvp;
-import ru.kuchanov.scp2.mvp.base.BaseListMvp;
 import ru.kuchanov.scp2.mvp.base.BasePresenter;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -100,7 +99,7 @@ public abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.Vi
         getApiObservable(offset)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .flatMap(apiDate->getSaveToDbObservable(apiDate, offset))
+                .flatMap(apiDate -> getSaveToDbObservable(apiDate, offset))
                 .subscribe(
                         data -> {
                             Timber.d("getDataFromApi load data size: %s and offset: %s", data.first, data.second);
@@ -124,15 +123,48 @@ public abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.Vi
     @Override
     public void toggleFavoriteState(String url) {
         Timber.d("toggleFavoriteState: %s", url);
+        mDbProviderFactory.getDbProvider().toggleFavorite(url)
+                .subscribe(
+                        resultState -> Timber.d("fav state now is: %b", resultState),
+                        Timber::e
+                );
     }
 
     @Override
     public void toggleReadenState(String url) {
         Timber.d("toggleReadenState: %s", url);
+        mDbProviderFactory.getDbProvider()
+                .toggleReaden(url)
+                .subscribe(
+                        resultState -> Timber.d("read state now is: %b", resultState),
+                        Timber::e
+                );
     }
 
+    //TODO think if we need to manage state of loading during confChanges
     @Override
-    public void toggleOfflineState(String url) {
-        Timber.d("toggleOfflineState: %s", url);
+    public void toggleOfflineState(Article article) {
+        Timber.d("toggleOfflineState: %s", article.url);
+        if (article.text == null) {
+            mApiClient.getArticle(article.url)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .flatMap(apiData -> mDbProviderFactory.getDbProvider().saveArticle(apiData))
+                    .subscribe(
+                            data -> {
+                                Timber.d("getDataFromApi onNext");
+                            }
+                            , error -> {
+                                Timber.e(error);
+                                getView().showError(error);
+                            });
+        } else {
+            mDbProviderFactory.getDbProvider()
+                    .deleteArticlesText(article.url)
+                    .subscribe(
+                            Void -> Timber.d("deleted"),
+                            Timber::e
+                    );
+        }
     }
 }

@@ -325,4 +325,37 @@ public class DbProvider {
                     });
         });
     }
+
+    public Observable<Void> deleteArticlesText(String url){
+        return Observable.create(subscriber -> {
+            mRealm.executeTransactionAsync(
+                    realm -> {
+                        //check if we have app in db and update
+                        Article applicationInDb = realm.where(Article.class)
+                                .equalTo(Article.FIELD_URL, url)
+                                .findFirst();
+                        if (applicationInDb != null) {
+                            applicationInDb.text = null;
+                            applicationInDb.textParts = null;
+                            applicationInDb.textPartsTypes = null;
+                            applicationInDb.hasTabs = false;
+                            applicationInDb.tabsTexts = null;
+                            applicationInDb.tabsTitles = null;
+                            subscriber.onNext(null);
+                            subscriber.onCompleted();
+                        } else {
+                            Timber.e("No article to add to favorites for ID: %s", url);
+                            subscriber.onError(new NoArticleForIdError(url));
+                        }
+                    },
+                    () -> {
+                        subscriber.onCompleted();
+                        mRealm.close();
+                    },
+                    error -> {
+                        subscriber.onError(error);
+                        mRealm.close();
+                    });
+        });
+    }
 }

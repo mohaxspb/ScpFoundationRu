@@ -18,6 +18,7 @@ public class ArticleScreenPresenter extends BasePresenter<ArticleScreenMvp.View>
 
     /**
      * urls (aka IDs) of arts
+     * TODO may be we do not need it...
      */
     private List<String> mUrls;
 
@@ -27,18 +28,18 @@ public class ArticleScreenPresenter extends BasePresenter<ArticleScreenMvp.View>
 
     @Override
     public void onCreate() {
-        Timber.d("onCreate");
-        //TODO
+//        Timber.d("onCreate");
+        //nothing to do
     }
 
     @Override
     public void onDestroy() {
-        //TODO
+        //nothing to do
     }
 
     @Override
     public void onNavigationItemClicked(int id) {
-        //TODO
+        //nothing to do
     }
 
     @Override

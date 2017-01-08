@@ -1,5 +1,7 @@
 package ru.kuchanov.scp2.ui.adapter;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -172,6 +174,8 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
             } else {
                 offlineIconId = AttributeGetter.getDrawableId(context, R.attr.iconOfflineAdd);
             }
+            offline.animate().cancel();
+            offline.setRotation(0f);
             offline.setImageResource(offlineIconId);
             offline.setOnClickListener(v -> {
                 if (mArticleClickListener != null) {
@@ -179,12 +183,18 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
                         PopupMenu popup = new PopupMenu(context, offline);
                         popup.getMenu().add(0, 0, 0, R.string.delete);
                         popup.setOnMenuItemClickListener(item -> {
-                            mArticleClickListener.onDownloadClicked(article);
+                            mArticleClickListener.onOfflineClicked(article);
                             return true;
                         });
                         popup.show();
                     } else {
-                        mArticleClickListener.onDownloadClicked(article);
+                        offline.animate().rotationBy(360).setDuration(250).setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                offline.animate().rotationBy(360).setDuration(250).setListener(this);
+                            }
+                        });
+                        mArticleClickListener.onOfflineClicked(article);
                     }
                 }
             });
@@ -198,6 +208,6 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
 
         void toggleFavoriteState(Article article);
 
-        void onDownloadClicked(Article article);
+        void onOfflineClicked(Article article);
     }
 }

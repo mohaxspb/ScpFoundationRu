@@ -97,8 +97,8 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
             }
 
             @Override
-            public void onDownloadClicked(Article article) {
-                mPresenter.toggleOfflineState(article.url);
+            public void onOfflineClicked(Article article) {
+                mPresenter.toggleOfflineState(article);
             }
         });
     }
