@@ -17,6 +17,7 @@ import ru.kuchanov.scp2.R;
 import ru.kuchanov.scp2.mvp.contract.ArticleScreenMvp;
 import ru.kuchanov.scp2.ui.adapter.ArticlesPagerAdapter;
 import ru.kuchanov.scp2.ui.base.BaseDrawerActivity;
+import ru.kuchanov.scp2.ui.dialog.TextSizeDialogFragment;
 import ru.kuchanov.scp2.ui.fragment.ArticleFragment;
 import ru.kuchanov.scp2.util.IntentUtils;
 import timber.log.Timber;
@@ -178,9 +179,8 @@ public class ArticleActivity
                 recreate();
                 return true;
             case R.id.text_size:
-                //TODO
-//                FragmentDialogTextAppearance fragmentDialogTextAppearance = FragmentDialogTextAppearance.newInstance();
-//                fragmentDialogTextAppearance.show(getFragmentManager(), "ХЗ");
+                TextSizeDialogFragment fragmentDialogTextAppearance = TextSizeDialogFragment.newInstance();
+                fragmentDialogTextAppearance.show(getFragmentManager(), TextSizeDialogFragment.TAG);
                 return true;
             case R.id.info:
                 //TODO
@@ -224,7 +224,7 @@ public class ArticleActivity
         if (mToolbar != null && mToolbar.getMenu() != null) {
             MenuItem item = mToolbar.getMenu().findItem(R.id.menuItemFavorite);
             if (item != null) {
-                item.setIcon(isInFavorite ? R.drawable.ic_star_white_24dp : R.drawable.ic_star_border_white_24dp);
+                item.setIcon(isInFavorite ? R.drawable.ic_favorite_white_24dp : R.drawable.ic_favorite_border_white_24dp);
                 item.setTitle(isInFavorite ? R.string.favorites_remove : R.string.favorites_add);
             }
         }

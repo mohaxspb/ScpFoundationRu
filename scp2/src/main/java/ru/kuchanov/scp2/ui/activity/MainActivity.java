@@ -2,7 +2,9 @@ package ru.kuchanov.scp2.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -14,8 +16,10 @@ import java.util.List;
 import ru.kuchanov.scp2.Constants;
 import ru.kuchanov.scp2.MyApplication;
 import ru.kuchanov.scp2.R;
+import ru.kuchanov.scp2.manager.MyPreferenceManager;
 import ru.kuchanov.scp2.mvp.contract.MainMvp;
 import ru.kuchanov.scp2.ui.base.BaseDrawerActivity;
+import ru.kuchanov.scp2.ui.dialog.TextSizeDialogFragment;
 import ru.kuchanov.scp2.ui.fragment.ArticleFragment;
 import ru.kuchanov.scp2.ui.fragment.RatedArticlesFragment;
 import ru.kuchanov.scp2.ui.fragment.RecentArticlesFragment;
@@ -348,9 +352,8 @@ public class MainActivity
                 recreate();
                 return true;
             case R.id.text_size:
-                //TODO
-//                FragmentDialogTextAppearance fragmentDialogTextAppearance = FragmentDialogTextAppearance.newInstance();
-//                fragmentDialogTextAppearance.show(getFragmentManager(), "ХЗ");
+                TextSizeDialogFragment fragmentDialogTextAppearance = TextSizeDialogFragment.newInstance();
+                fragmentDialogTextAppearance.show(getFragmentManager(), TextSizeDialogFragment.TAG);
                 return true;
             case R.id.info:
                 //TODO

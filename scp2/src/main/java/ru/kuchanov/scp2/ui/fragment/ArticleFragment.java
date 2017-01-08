@@ -1,7 +1,9 @@
 package ru.kuchanov.scp2.ui.fragment;
 
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -29,6 +31,7 @@ import ru.kuchanov.scp2.MyApplication;
 import ru.kuchanov.scp2.R;
 import ru.kuchanov.scp2.db.model.Article;
 import ru.kuchanov.scp2.db.model.RealmString;
+import ru.kuchanov.scp2.manager.MyPreferenceManager;
 import ru.kuchanov.scp2.mvp.contract.ArticleMvp;
 import ru.kuchanov.scp2.ui.activity.ArticleActivity;
 import ru.kuchanov.scp2.ui.activity.MainActivity;
@@ -45,12 +48,11 @@ import timber.log.Timber;
  */
 public class ArticleFragment
         extends BaseFragment<ArticleMvp.View, ArticleMvp.Presenter>
-        implements ArticleMvp.View, SetTextViewHTML.TextItemsClickListener {
+        implements ArticleMvp.View, SetTextViewHTML.TextItemsClickListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
     public static final String TAG = ArticleFragment.class.getSimpleName();
 
     public static final String EXTRA_URL = "EXTRA_URL";
-//    public static final String EXTRA_TITLE = "EXTRA_TITLE";
     public static final String EXTRA_ARTICLE = "EXTRA_ARTICLE";
 
     //tabs
@@ -69,17 +71,15 @@ public class ArticleFragment
     //tabs
     private int mCurrentSelectedTab = 0;
 
-//    private String title;
     private String url;
 
     private RecyclerAdapterArticle mAdapter;
     private Article mArticle;
 
-    public static ArticleFragment newInstance(String url/*, String title*/, @Nullable Article article) {
+    public static ArticleFragment newInstance(String url, @Nullable Article article) {
         ArticleFragment fragment = new ArticleFragment();
         Bundle args = new Bundle();
         args.putString(EXTRA_URL, url);
-//        args.putString(EXTRA_TITLE, title);
         if (article != null) {
             args.putParcelable(EXTRA_ARTICLE, Parcels.wrap(article));
         }
@@ -99,7 +99,6 @@ public class ArticleFragment
     public void onCreate(Bundle savedInstanceState) {
         Timber.d("onCreate");
         super.onCreate(savedInstanceState);
-//        title = getArguments().getString(EXTRA_TITLE);
         url = getArguments().getString(EXTRA_URL);
         mArticle = getArguments().containsKey(EXTRA_ARTICLE)
                 ? Parcels.unwrap(getArguments().getParcelable(EXTRA_ARTICLE))
@@ -348,13 +347,37 @@ public class ArticleFragment
             MediaPlayer mp = new MediaPlayer();
             mp.setDataSource(link);
             mp.prepareAsync();
-            mp.setOnPreparedListener(mediaPlayer -> {
-                mp.start();
-            });
+            mp.setOnPreparedListener(mediaPlayer -> mp.start());
             mp.setOnCompletionListener(MediaPlayer::release);
         } catch (IOException e) {
             Timber.e(e, "error play music");
             showError(e);
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        PreferenceManager.getDefaultSharedPreferences(getActivity())
+                .registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        PreferenceManager.getDefaultSharedPreferences(getActivity())
+                .unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        switch (key) {
+            case MyPreferenceManager.Keys.TEXT_SCALE_ARTICLE:
+                mAdapter.notifyDataSetChanged();
+                break;
+            default:
+                //do nothing
+                break;
         }
     }
 

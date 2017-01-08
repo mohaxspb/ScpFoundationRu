@@ -6,4 +6,5 @@
     <dimen name="text_size_large">25sp</dimen>
     <dimen name="defaultMarginSmall">8dp</dimen>
     <dimen name="listImageHeight">200dp</dimen>
+    <dimen name="textSizeExampleTextViewHeight">48dp</dimen>
 </resources>

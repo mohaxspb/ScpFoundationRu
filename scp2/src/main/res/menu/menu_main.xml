@@ -1,23 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/settings"
+        android:icon="@drawable/ic_settings_white_24dp"
+        android:title="@string/settings"
         app:showAsAction="never"
-        android:icon="@drawable/ic_settings_applications_white_48dp"
-        android:title="@string/settings"/>
+        />
     <item
         android:id="@+id/night_mode_item"
         android:title="@string/night_mode"
-        app:showAsAction="never"/>
+        app:showAsAction="never"
+        />
     <item
         android:id="@+id/text_size"
-        android:icon="@drawable/ic_text_fields_white_36dp"
+        android:icon="@drawable/ic_text_size_white_24dp"
+        android:title="@string/text_size"
         app:showAsAction="never"
-        android:title="@string/text_size"/>
+        />
     <item
         android:id="@+id/subscribe"
-        app:showAsAction="never"
         android:icon="@drawable/ic_monetization_on_white_48dp"
-        android:title="@string/in_apps"/>
+        android:title="@string/in_apps"
+        app:showAsAction="never"
+        />
 </menu>

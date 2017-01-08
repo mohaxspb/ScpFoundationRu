@@ -10,6 +10,7 @@ import ru.kuchanov.scp2.di.module.StorageModule;
 import ru.kuchanov.scp2.ui.activity.ArticleActivity;
 import ru.kuchanov.scp2.ui.adapter.RecyclerAdapterArticle;
 import ru.kuchanov.scp2.ui.adapter.RecyclerAdapterListArticles;
+import ru.kuchanov.scp2.ui.dialog.TextSizeDialogFragment;
 import ru.kuchanov.scp2.ui.fragment.ArticleFragment;
 import ru.kuchanov.scp2.ui.activity.MainActivity;
 import ru.kuchanov.scp2.ui.fragment.RatedArticlesFragment;
@@ -37,6 +38,8 @@ public interface AppComponent {
     void inject(RecentArticlesFragment fragment);
 
     void inject(RatedArticlesFragment fragment);
+
+    void inject(TextSizeDialogFragment dialogFragment);
 
     void inject(RecyclerAdapterListArticles adapterNewArticles);
 
