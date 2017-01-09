@@ -121,6 +121,15 @@ public class DbProvider {
                 .filter(RealmResults::isValid);
     }
 
+    public Observable<RealmResults<Article>> getObjectsArticlesSortedAsync(String field, Sort order) {
+        return mRealm.where(Article.class)
+                .notEqualTo(field, Article.ORDER_NONE)
+                .findAllSortedAsync(field, order)
+                .asObservable()
+                .filter(RealmResults::isLoaded)
+                .filter(RealmResults::isValid);
+    }
+
     public Observable<Pair<Integer, Integer>> saveRecentArticlesList(List<Article> apiData, int offset) {
         return Observable.create(subscriber -> {
             mRealm.executeTransactionAsync(
@@ -143,7 +152,7 @@ public class DbProvider {
                                     .findFirst();
                             if (applicationInDb != null) {
                                 applicationInDb.isInRecent = offset + i;
-                                applicationInDb.title = applicationToWrite.title;
+//                                applicationInDb.title = applicationToWrite.title;
 
                                 applicationInDb.rating = applicationToWrite.rating;
 
@@ -192,7 +201,7 @@ public class DbProvider {
                                     .findFirst();
                             if (applicationInDb != null) {
                                 applicationInDb.isInMostRated = offset + i;
-                                applicationInDb.title = applicationToWrite.title;
+//                                applicationInDb.title = applicationToWrite.title;
 
                                 applicationInDb.rating = applicationToWrite.rating;
                             } else {
@@ -203,6 +212,96 @@ public class DbProvider {
                     },
                     () -> {
                         subscriber.onNext(new Pair<>(data.size(), offset));
+                        subscriber.onCompleted();
+                        mRealm.close();
+                    },
+                    error -> {
+                        subscriber.onError(error);
+                        mRealm.close();
+                    });
+        });
+    }
+
+    public Observable<Pair<Integer, Integer>> saveObjectsArticlesList(List<Article> data, String inDbField) {
+        return Observable.create(subscriber -> {
+            mRealm.executeTransactionAsync(
+                    realm -> {
+                        //remove all aps from this list while update it
+                        List<Article> articleList =
+                                realm.where(Article.class)
+                                        .notEqualTo(inDbField, Article.ORDER_NONE)
+                                        .findAll();
+                        for (Article application : articleList) {
+                            switch (inDbField) {
+                                case Article.FIELD_IS_IN_OBJECTS_1:
+                                    application.isInObjects1 = Article.ORDER_NONE;
+                                    break;
+                                case Article.FIELD_IS_IN_OBJECTS_2:
+                                    application.isInObjects2 = Article.ORDER_NONE;
+                                    break;
+                                case Article.FIELD_IS_IN_OBJECTS_3:
+                                    application.isInObjects3 = Article.ORDER_NONE;
+                                    break;
+                                case Article.FIELD_IS_IN_OBJECTS_RU:
+                                    application.isInObjectsRu = Article.ORDER_NONE;
+                                    break;
+                                default:
+                                    Timber.e("unexpected inDbField id");
+                                    break;
+                            }
+                        }
+                        //check if we have app in db and update
+                        for (int i = 0; i < data.size(); i++) {
+                            Article applicationToWrite = data.get(i);
+                            Article applicationInDb = realm.where(Article.class)
+                                    .equalTo(Article.FIELD_URL, applicationToWrite.url)
+                                    .findFirst();
+                            if (applicationInDb != null) {
+                                switch (inDbField) {
+                                    case Article.FIELD_IS_IN_OBJECTS_1:
+                                        applicationInDb.isInObjects1 = i;
+                                        break;
+                                    case Article.FIELD_IS_IN_OBJECTS_2:
+                                        applicationInDb.isInObjects2 = i;
+                                        break;
+                                    case Article.FIELD_IS_IN_OBJECTS_3:
+                                        applicationInDb.isInObjects3 = i;
+                                        break;
+                                    case Article.FIELD_IS_IN_OBJECTS_RU:
+                                        applicationInDb.isInObjectsRu = i;
+                                        break;
+                                    default:
+                                        Timber.e("unexpected inDbField id");
+                                        break;
+                                }
+                                applicationInDb.title = applicationToWrite.title;
+
+                                applicationInDb.type = applicationToWrite.type;
+                            } else {
+                                applicationToWrite.isInMostRated = i;
+                                switch (inDbField) {
+                                    case Article.FIELD_IS_IN_OBJECTS_1:
+                                        applicationToWrite.isInObjects1 = i;
+                                        break;
+                                    case Article.FIELD_IS_IN_OBJECTS_2:
+                                        applicationToWrite.isInObjects2 = i;
+                                        break;
+                                    case Article.FIELD_IS_IN_OBJECTS_3:
+                                        applicationToWrite.isInObjects3 = i;
+                                        break;
+                                    case Article.FIELD_IS_IN_OBJECTS_RU:
+                                        applicationToWrite.isInObjectsRu = i;
+                                        break;
+                                    default:
+                                        Timber.e("unexpected inDbField id");
+                                        break;
+                                }
+                                realm.insertOrUpdate(applicationToWrite);
+                            }
+                        }
+                    },
+                    () -> {
+                        subscriber.onNext(new Pair<>(data.size(), data.size()));
                         subscriber.onCompleted();
                         mRealm.close();
                     },
@@ -343,7 +442,7 @@ public class DbProvider {
         });
     }
 
-    public Observable<Void> deleteArticlesText(String url){
+    public Observable<Void> deleteArticlesText(String url) {
         return Observable.create(subscriber -> {
             mRealm.executeTransactionAsync(
                     realm -> {

@@ -2,9 +2,7 @@ package ru.kuchanov.scp2.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -16,12 +14,15 @@ import java.util.List;
 import ru.kuchanov.scp2.Constants;
 import ru.kuchanov.scp2.MyApplication;
 import ru.kuchanov.scp2.R;
-import ru.kuchanov.scp2.manager.MyPreferenceManager;
 import ru.kuchanov.scp2.mvp.contract.MainMvp;
 import ru.kuchanov.scp2.ui.base.BaseDrawerActivity;
 import ru.kuchanov.scp2.ui.dialog.TextSizeDialogFragment;
 import ru.kuchanov.scp2.ui.fragment.ArticleFragment;
 import ru.kuchanov.scp2.ui.fragment.FavoriteArticlesFragment;
+import ru.kuchanov.scp2.ui.fragment.Objects1ArticlesFragment;
+import ru.kuchanov.scp2.ui.fragment.Objects2ArticlesFragment;
+import ru.kuchanov.scp2.ui.fragment.Objects3ArticlesFragment;
+import ru.kuchanov.scp2.ui.fragment.ObjectsRuArticlesFragment;
 import ru.kuchanov.scp2.ui.fragment.OfflineArticlesFragment;
 import ru.kuchanov.scp2.ui.fragment.RatedArticlesFragment;
 import ru.kuchanov.scp2.ui.fragment.RecentArticlesFragment;
@@ -152,139 +153,62 @@ public class MainActivity
     public void onNavigationItemClicked(int id) {
         Timber.d("onNavigationItemClicked with id: %s", id);
         setToolbarTitleByDrawerItemId(id);
-        Fragment fragment;
-        String tag;
         switch (id) {
             case R.id.about:
                 mCurrentSelectedDrawerItemId = id;
-                tag = ArticleFragment.TAG + "#" + Constants.Urls.ABOUT_SCP;
-                hideFragments();
-                fragment = getSupportFragmentManager().findFragmentByTag(tag);
-                if (fragment == null) {
-                    fragment = ArticleFragment.newInstance(Constants.Urls.ABOUT_SCP, null);
-                    getSupportFragmentManager().beginTransaction()
-                            .add(content.getId(), fragment, tag)
-                            .commit();
-                } else {
-                    getSupportFragmentManager().beginTransaction()
-                            .show(fragment)
-                            .commit();
-                }
+                showFragment(ArticleFragment.newInstance(
+                        Constants.Urls.ABOUT_SCP),
+                        ArticleFragment.TAG + "#" + Constants.Urls.ABOUT_SCP
+                );
                 break;
             case R.id.news:
                 mCurrentSelectedDrawerItemId = id;
-                tag = ArticleFragment.TAG + "#" + Constants.Urls.NEWS;
-                hideFragments();
-                fragment = getSupportFragmentManager().findFragmentByTag(tag);
-                if (fragment == null) {
-                    fragment = ArticleFragment.newInstance(Constants.Urls.NEWS, null);
-                    getSupportFragmentManager().beginTransaction()
-                            .add(content.getId(), fragment, tag)
-                            .commit();
-                } else {
-                    getSupportFragmentManager().beginTransaction()
-                            .show(fragment)
-                            .commit();
-                }
+                showFragment(ArticleFragment.newInstance(Constants.Urls.NEWS), ArticleFragment.TAG + "#" + Constants.Urls.NEWS);
                 break;
             case R.id.mostRatedArticles:
                 mCurrentSelectedDrawerItemId = id;
-                hideFragments();
-                fragment = getSupportFragmentManager().findFragmentByTag(RatedArticlesFragment.TAG);
-                if (fragment == null) {
-                    fragment = RatedArticlesFragment.newInstance();
-                    getSupportFragmentManager().beginTransaction()
-                            .add(content.getId(), fragment, RatedArticlesFragment.TAG)
-                            .commit();
-                } else {
-                    getSupportFragmentManager().beginTransaction()
-                            .show(fragment)
-                            .commit();
-                }
+                showFragment(RatedArticlesFragment.newInstance(), RatedArticlesFragment.TAG);
                 break;
             case R.id.mostRecentArticles:
                 mCurrentSelectedDrawerItemId = id;
-                hideFragments();
-                fragment = getSupportFragmentManager().findFragmentByTag(RecentArticlesFragment.TAG);
-                if (fragment == null) {
-                    fragment = RecentArticlesFragment.newInstance();
-                    getSupportFragmentManager().beginTransaction()
-                            .add(content.getId(), fragment, RecentArticlesFragment.TAG)
-                            .commit();
-                } else {
-                    getSupportFragmentManager().beginTransaction()
-                            .show(fragment)
-                            .commit();
-                }
+                showFragment(RecentArticlesFragment.newInstance(), RecentArticlesFragment.TAG);
                 break;
             case R.id.random_page:
                 //TODO
                 break;
             case R.id.objects_I:
                 mCurrentSelectedDrawerItemId = id;
-                //TODO
+                showFragment(Objects1ArticlesFragment.newInstance(), Objects1ArticlesFragment.TAG);
                 break;
             case R.id.objects_II:
                 mCurrentSelectedDrawerItemId = id;
-                //TODO
+                showFragment(Objects2ArticlesFragment.newInstance(), Objects2ArticlesFragment.TAG);
                 break;
             case R.id.objects_III:
                 mCurrentSelectedDrawerItemId = id;
-                //TODO
+                showFragment(Objects3ArticlesFragment.newInstance(), Objects3ArticlesFragment.TAG);
                 break;
             case R.id.objects_RU:
                 mCurrentSelectedDrawerItemId = id;
-                //TODO
+                showFragment(ObjectsRuArticlesFragment.newInstance(), ObjectsRuArticlesFragment.TAG);
                 break;
             case R.id.files:
                 //TODO launch new activity
                 break;
             case R.id.stories:
                 mCurrentSelectedDrawerItemId = id;
-                tag = ArticleFragment.TAG + "#" + Constants.Urls.STORIES;
-                hideFragments();
-                fragment = getSupportFragmentManager().findFragmentByTag(tag);
-                if (fragment == null) {
-                    fragment = ArticleFragment.newInstance(Constants.Urls.STORIES, null);
-                    getSupportFragmentManager().beginTransaction()
-                            .add(content.getId(), fragment, tag)
-                            .commit();
-                } else {
-                    getSupportFragmentManager().beginTransaction()
-                            .show(fragment)
-                            .commit();
-                }
+                showFragment(ArticleFragment.newInstance(
+                        Constants.Urls.STORIES),
+                        ArticleFragment.TAG + "#" + Constants.Urls.STORIES
+                );
                 break;
             case R.id.favorite:
                 mCurrentSelectedDrawerItemId = id;
-                hideFragments();
-                fragment = getSupportFragmentManager().findFragmentByTag(FavoriteArticlesFragment.TAG);
-                if (fragment == null) {
-                    fragment = FavoriteArticlesFragment.newInstance();
-                    getSupportFragmentManager().beginTransaction()
-                            .add(content.getId(), fragment, FavoriteArticlesFragment.TAG)
-                            .commit();
-                } else {
-                    getSupportFragmentManager().beginTransaction()
-                            .show(fragment)
-                            .commit();
-                }
+                showFragment(FavoriteArticlesFragment.newInstance(), FavoriteArticlesFragment.TAG);
                 break;
             case R.id.offline:
                 mCurrentSelectedDrawerItemId = id;
-                //TODO
-                hideFragments();
-                fragment = getSupportFragmentManager().findFragmentByTag(OfflineArticlesFragment.TAG);
-                if (fragment == null) {
-                    fragment = OfflineArticlesFragment.newInstance();
-                    getSupportFragmentManager().beginTransaction()
-                            .add(content.getId(), fragment, OfflineArticlesFragment.TAG)
-                            .commit();
-                } else {
-                    getSupportFragmentManager().beginTransaction()
-                            .show(fragment)
-                            .commit();
-                }
+                showFragment(OfflineArticlesFragment.newInstance(), OfflineArticlesFragment.TAG);
                 break;
             case R.id.gallery:
                 //TODO
@@ -296,6 +220,20 @@ public class MainActivity
             default:
                 Timber.e("unexpected item ID");
                 break;
+        }
+    }
+
+    private void showFragment(Fragment fragmentToShow, String tag) {
+        hideFragments();
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
+        if (fragment == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(content.getId(), fragmentToShow, tag)
+                    .commit();
+        } else {
+            getSupportFragmentManager().beginTransaction()
+                    .show(fragment)
+                    .commit();
         }
     }
 

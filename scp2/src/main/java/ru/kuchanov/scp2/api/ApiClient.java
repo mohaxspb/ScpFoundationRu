@@ -179,6 +179,105 @@ public class ApiClient {
         }));
     }
 
+    public Observable<List<Article>> getObjectsArticles(String sObjectsLink) {
+        return bindWithUtils(Observable.<List<Article>>create(subscriber -> {
+            Request request = new Request.Builder()
+                    .url(sObjectsLink)
+                    .build();
+
+            String responseBody = null;
+            try {
+                Response response = mOkHttpClient.newCall(request).execute();
+                responseBody = response.body().string();
+            } catch (IOException e) {
+                subscriber.onError(new IOException(MyApplication.getAppInstance().getString(R.string.error_connection)));
+                return;
+            }
+            try {
+                Document doc = Jsoup.parse(responseBody);
+                Element pageContent = doc.getElementById("page-content");
+                if (pageContent == null) {
+                    subscriber.onError(new ScpParseException(MyApplication.getAppInstance().getString(R.string.error_parse)));
+                    return;
+                }
+
+                List<Article> articles = new ArrayList<>();
+                //parse
+                Element listPagesBox = pageContent.getElementsByClass("list-pages-box").first();
+                listPagesBox.remove();
+                Element collapsibleBlock = pageContent.getElementsByClass("collapsible-block").first();
+                collapsibleBlock.remove();
+                Element table = pageContent.getElementsByTag("table").first();
+                table.remove();
+                Element h2 = doc.getElementById("toc0");
+                h2.remove();
+
+                //now we will remove all html code before tag h2,with id toc1
+                String allHtml = pageContent.html();
+                int indexOfh2WithIdToc1 = allHtml.indexOf("<h2 id=\"toc1\">");
+                int indexOfhr = allHtml.indexOf("<hr>");
+                allHtml = allHtml.substring(indexOfh2WithIdToc1, indexOfhr);
+
+                doc = Jsoup.parse(allHtml);
+
+                Element h2withIdToc1 = doc.getElementById("toc1");
+                h2withIdToc1.remove();
+
+                Elements allh2Tags = doc.getElementsByTag("h2");
+                for (Element h2Tag : allh2Tags) {
+                    Element brTag = new Element(Tag.valueOf("br"), "");
+                    h2Tag.replaceWith(brTag);
+                }
+
+                String allArticles = doc.getElementsByTag("body").first().html();
+                String[] arrayOfArticles = allArticles.split("<br>");
+                for (String arrayItem : arrayOfArticles) {
+                    doc = Jsoup.parse(arrayItem);
+                    //type of object
+                    String imageURL = doc.getElementsByTag("img").first().attr("src");
+                    @Article.ObjectType
+                    String type;
+                    switch (imageURL) {
+                        case "http://scp-ru.wdfiles.com/local--files/scp-list/na.png":
+                            type = Article.ObjectType.NEUTRAL_OR_NOT_ADDED;
+                            break;
+                        case "http://scp-ru.wdfiles.com/local--files/scp-list/safe.png":
+                            type = Article.ObjectType.SAFE;
+                            break;
+                        case "http://scp-ru.wdfiles.com/local--files/scp-list/euclid.png":
+                            type = Article.ObjectType.EUCLID;
+                            break;
+                        case "http://scp-ru.wdfiles.com/local--files/scp-list/keter.png":
+                            type = Article.ObjectType.KETER;
+                            break;
+                        case "http://scp-ru.wdfiles.com/local--files/scp-list/thaumiel.png":
+                            type = Article.ObjectType.THAUMIEL;
+                            break;
+                        default:
+                            type = Article.ObjectType.NONE;
+                            break;
+                    }
+
+                    String url = BuildConfig.BASE_API_URL + doc.getElementsByTag("a").first().attr("href");
+                    String title = doc.text();
+
+                    Article article = new Article();
+
+                    article.url = url;
+                    article.title = title;
+                    article.type = type;
+                    articles.add(article);
+                }
+                //parse end
+                subscriber.onNext(articles);
+                subscriber.onCompleted();
+            } catch (Exception e) {
+                Timber.e(e, "error while get arts list");
+                subscriber.onError(e);
+            }
+        }));
+    }
+
     public Observable<Article> getArticle(String url) {
         return bindWithUtils(Observable.<Article>create(subscriber -> {
             Request request = new Request.Builder()

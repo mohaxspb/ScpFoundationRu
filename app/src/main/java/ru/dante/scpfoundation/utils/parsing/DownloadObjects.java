@@ -24,30 +24,26 @@ import ru.dante.scpfoundation.utils.CacheUtils;
  * Created by Dante on 09.01.2016 2:08.
  * For MyApplication.
  */
-public class DownloadObjects extends AsyncTask<Void, Void, ArrayList<Article>>
-{
+public class DownloadObjects extends AsyncTask<Void, Void, ArrayList<Article>> {
     private static final String LOG = DownloadObjects.class.getSimpleName();
 
     private String url;
     private UpdateArticlesList updateArticlesList;
     private Context ctx;
 
-    public DownloadObjects(String url, UpdateArticlesList updateArticlesList, Context ctx)
-    {
+    public DownloadObjects(String url, UpdateArticlesList updateArticlesList, Context ctx) {
         this.url = url;
         this.updateArticlesList = updateArticlesList;
         this.ctx = ctx;
     }
 
     @Override
-    protected ArrayList<Article> doInBackground(Void... params)
-    {
+    protected ArrayList<Article> doInBackground(Void... params) {
         Log.d(LOG, "doInBackground started");
         return getAllArticles(url, ctx);
     }
 
-    public static ArrayList<Article> getAllArticles(String urlToObjects, Context ctx)
-    {
+    public static ArrayList<Article> getAllArticles(String urlToObjects, Context ctx) {
         ArrayList<Article> articles = new ArrayList<>();
         final OkHttpClient client = new OkHttpClient();
 
@@ -56,14 +52,12 @@ public class DownloadObjects extends AsyncTask<Void, Void, ArrayList<Article>>
                 .build();
 
         Response response;
-        try
-        {
+        try {
             response = client.newCall(request).execute();
 
             Document doc = Jsoup.parse(response.body().string());
             Element pageContent = doc.getElementById("page-content");
-            if (pageContent == null)
-            {
+            if (pageContent == null) {
                 return null;
             }
 
@@ -84,22 +78,18 @@ public class DownloadObjects extends AsyncTask<Void, Void, ArrayList<Article>>
 
             doc = Jsoup.parse(allHtml);
 
-//            Log.d(LOG, doc.toString());
             Element h2withIdToc1 = doc.getElementById("toc1");
             h2withIdToc1.remove();
 
             Elements allh2Tags = doc.getElementsByTag("h2");
-            for (Element h2Tag : allh2Tags)
-            {
+            for (Element h2Tag : allh2Tags) {
                 Element brTag = new Element(Tag.valueOf("br"), "");
                 h2Tag.replaceWith(brTag);
             }
 
             String allArticles = doc.getElementsByTag("body").first().html();
             String[] arrayOfArticles = allArticles.split("<br>");
-            for (String arrayItem : arrayOfArticles)
-            {
-//                Log.d(LOG,arrayOfArticles[i]);
+            for (String arrayItem : arrayOfArticles) {
                 doc = Jsoup.parse(arrayItem);
                 String imageURL = doc.getElementsByTag("img").first().attr("src");
                 String url = Const.DOMAIN_NAME + doc.getElementsByTag("a").first().attr("href");
@@ -111,28 +101,20 @@ public class DownloadObjects extends AsyncTask<Void, Void, ArrayList<Article>>
                 articles.add(article);
             }
             CacheUtils.writeObjectsToCache(ctx, articles, CacheUtils.getTypeByUrl(urlToObjects));
-//            for (Article a : CacheUtils.getObjectsFromCache(ctx, CacheUtils.getTypeByUrl(urlToObjects)))
-//            {
-//                Log.i(LOG,a.getTitle());
-//            }
             return articles;
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
-
         return null;
     }
 
     @Override
-    protected void onPostExecute(final ArrayList<Article> result)
-    {
+    protected void onPostExecute(final ArrayList<Article> result) {
         super.onPostExecute(result);
         this.updateArticlesList.update(result);
     }
 
-    public interface UpdateArticlesList
-    {
+    public interface UpdateArticlesList {
         void update(ArrayList<Article> articles);
     }
 }

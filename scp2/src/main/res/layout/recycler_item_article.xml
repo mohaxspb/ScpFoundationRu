@@ -43,7 +43,10 @@
             android:layout_height="wrap_content"
             android:background="?selectableItemBackgroundBorderless"
             android:contentDescription="@string/app_name"
-            android:padding="@dimen/defaultMargin"
+            android:paddingTop="@dimen/defaultMargin"
+            android:paddingRight="@dimen/defaultMargin"
+            android:paddingLeft="@dimen/defaultMargin"
+            android:paddingBottom="@dimen/defaultMarginSmall"
             android:src="?favoriteIcon"
             />
 
@@ -58,7 +61,10 @@
             android:layout_height="wrap_content"
             android:background="?selectableItemBackgroundBorderless"
             android:contentDescription="@string/app_name"
-            android:padding="@dimen/defaultMargin"
+            android:paddingTop="@dimen/defaultMargin"
+            android:paddingRight="@dimen/defaultMargin"
+            android:paddingLeft="@dimen/defaultMargin"
+            android:paddingBottom="@dimen/defaultMarginSmall"
             android:src="?readIcon"
             />
 
@@ -73,7 +79,10 @@
             android:layout_height="wrap_content"
             android:background="?selectableItemBackgroundBorderless"
             android:contentDescription="@string/app_name"
-            android:padding="@dimen/defaultMargin"
+            android:paddingTop="@dimen/defaultMargin"
+            android:paddingRight="@dimen/defaultMargin"
+            android:paddingLeft="@dimen/defaultMargin"
+            android:paddingBottom="@dimen/defaultMarginSmall"
             android:src="?iconOfflineAdd"
             />
     </LinearLayout>

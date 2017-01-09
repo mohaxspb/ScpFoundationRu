@@ -53,12 +53,28 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
             mAdapter.setData(mPresenter.getData());
         } else {
             getDataFromDb();
-            getDataFromApi();
+            //TODO add settings to update list on launch
+            if (shouldUpdateThisListOnLaunch()) {
+                getDataFromApi();
+            }
         }
 
         resetOnScrollListener();
 
         initSwipeRefresh();
+    }
+
+    /**
+     * override it if you do not want to update this list on first launch
+     * @return true by default
+     */
+    protected boolean shouldUpdateThisListOnLaunch() {
+        return true;
+    }
+
+    @Override
+    protected boolean isSwipeRefreshEnabled() {
+        return true;
     }
 
     private void initSwipeRefresh() {
