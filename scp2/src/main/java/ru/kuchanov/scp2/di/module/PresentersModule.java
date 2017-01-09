@@ -14,6 +14,9 @@ import ru.kuchanov.scp2.mvp.contract.ArticleScreenMvp;
 import ru.kuchanov.scp2.mvp.contract.FavoriteArticlesMvp;
 import ru.kuchanov.scp2.mvp.contract.MainMvp;
 import ru.kuchanov.scp2.mvp.contract.Objects1Articles;
+import ru.kuchanov.scp2.mvp.contract.Objects2Articles;
+import ru.kuchanov.scp2.mvp.contract.Objects3Articles;
+import ru.kuchanov.scp2.mvp.contract.ObjectsRuArticles;
 import ru.kuchanov.scp2.mvp.contract.OfflineArticles;
 import ru.kuchanov.scp2.mvp.contract.RatedArticlesMvp;
 import ru.kuchanov.scp2.mvp.contract.RecentArticlesMvp;
@@ -24,6 +27,9 @@ import ru.kuchanov.scp2.mvp.presenter.MainPresenter;
 import ru.kuchanov.scp2.mvp.presenter.MostRatedArticlesPresenter;
 import ru.kuchanov.scp2.mvp.presenter.MostRecentArticlesPresenter;
 import ru.kuchanov.scp2.mvp.presenter.Objects1ArticlesPresenter;
+import ru.kuchanov.scp2.mvp.presenter.Objects2ArticlesPresenter;
+import ru.kuchanov.scp2.mvp.presenter.Objects3ArticlesPresenter;
+import ru.kuchanov.scp2.mvp.presenter.ObjectsRuArticlesPresenter;
 import ru.kuchanov.scp2.mvp.presenter.OfflineArticlesPresenter;
 
 /**
@@ -119,5 +125,38 @@ public class PresentersModule {
             @NonNull ApiClient apiClient
     ) {
         return new Objects1ArticlesPresenter(myPreferencesManager, dbProviderFactory, apiClient);
+    }
+
+    @Provides
+    @Singleton
+    @NonNull
+    Objects2Articles.Presenter providesObjects2ArticlesPresenter(
+            @NonNull MyPreferenceManager myPreferencesManager,
+            @NonNull DbProviderFactory dbProviderFactory,
+            @NonNull ApiClient apiClient
+    ) {
+        return new Objects2ArticlesPresenter(myPreferencesManager, dbProviderFactory, apiClient);
+    }
+
+    @Provides
+    @Singleton
+    @NonNull
+    Objects3Articles.Presenter providesObjects3ArticlesPresenter(
+            @NonNull MyPreferenceManager myPreferencesManager,
+            @NonNull DbProviderFactory dbProviderFactory,
+            @NonNull ApiClient apiClient
+    ) {
+        return new Objects3ArticlesPresenter(myPreferencesManager, dbProviderFactory, apiClient);
+    }
+
+    @Provides
+    @Singleton
+    @NonNull
+    ObjectsRuArticles.Presenter providesObjectsRuArticlesPresenter(
+            @NonNull MyPreferenceManager myPreferencesManager,
+            @NonNull DbProviderFactory dbProviderFactory,
+            @NonNull ApiClient apiClient
+    ) {
+        return new ObjectsRuArticlesPresenter(myPreferencesManager, dbProviderFactory, apiClient);
     }
 }

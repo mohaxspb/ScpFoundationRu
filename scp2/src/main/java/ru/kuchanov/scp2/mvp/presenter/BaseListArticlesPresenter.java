@@ -62,10 +62,10 @@ public abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.Vi
         getDbObservable()
                 .subscribe(
                         data -> {
-                            Timber.d("getDataFromDb data: %s", data);
+                            Timber.d("getDataFromDb data.size(): %s", data.size());
                             mData = data;
                             getView().updateData(mData);
-                            getView().showCenterProgress(false);
+//                            getView().showCenterProgress(false);
                             if (mData.isEmpty()) {
                                 getView().enableSwipeRefresh(true);
                             }

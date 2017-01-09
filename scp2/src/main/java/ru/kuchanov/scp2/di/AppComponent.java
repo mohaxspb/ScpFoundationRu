@@ -15,6 +15,9 @@ import ru.kuchanov.scp2.ui.fragment.ArticleFragment;
 import ru.kuchanov.scp2.ui.activity.MainActivity;
 import ru.kuchanov.scp2.ui.fragment.FavoriteArticlesFragment;
 import ru.kuchanov.scp2.ui.fragment.Objects1ArticlesFragment;
+import ru.kuchanov.scp2.ui.fragment.Objects2ArticlesFragment;
+import ru.kuchanov.scp2.ui.fragment.Objects3ArticlesFragment;
+import ru.kuchanov.scp2.ui.fragment.ObjectsRuArticlesFragment;
 import ru.kuchanov.scp2.ui.fragment.OfflineArticlesFragment;
 import ru.kuchanov.scp2.ui.fragment.RatedArticlesFragment;
 import ru.kuchanov.scp2.ui.fragment.RecentArticlesFragment;
@@ -47,6 +50,12 @@ public interface AppComponent {
     void inject(OfflineArticlesFragment fragment);
 
     void inject(Objects1ArticlesFragment fragment);
+
+    void inject(Objects2ArticlesFragment fragment);
+
+    void inject(Objects3ArticlesFragment fragment);
+
+    void inject(ObjectsRuArticlesFragment fragment);
 
     void inject(TextSizeDialogFragment dialogFragment);
 

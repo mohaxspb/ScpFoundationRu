@@ -5,7 +5,6 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -76,13 +75,13 @@ public class ArticleFragment
     private RecyclerAdapterArticle mAdapter;
     private Article mArticle;
 
-    public static ArticleFragment newInstance(String url, @Nullable Article article) {
+    public static ArticleFragment newInstance(String url/*, @Nullable Article article*/) {
         ArticleFragment fragment = new ArticleFragment();
         Bundle args = new Bundle();
         args.putString(EXTRA_URL, url);
-        if (article != null) {
-            args.putParcelable(EXTRA_ARTICLE, Parcels.wrap(article));
-        }
+//        if (article != null) {
+//            args.putParcelable(EXTRA_ARTICLE, Parcels.wrap(article));
+//        }
         fragment.setArguments(args);
         return fragment;
     }
@@ -100,13 +99,14 @@ public class ArticleFragment
         Timber.d("onCreate");
         super.onCreate(savedInstanceState);
         url = getArguments().getString(EXTRA_URL);
-        mArticle = getArguments().containsKey(EXTRA_ARTICLE)
-                ? Parcels.unwrap(getArguments().getParcelable(EXTRA_ARTICLE))
-                : savedInstanceState != null && savedInstanceState.containsKey(EXTRA_ARTICLE)
-                ? Parcels.unwrap(savedInstanceState.getParcelable(EXTRA_ARTICLE))
-                : null;
+//        mArticle = getArguments().containsKey(EXTRA_ARTICLE)
+//                ? Parcels.unwrap(getArguments().getParcelable(EXTRA_ARTICLE))
+//                : savedInstanceState != null && savedInstanceState.containsKey(EXTRA_ARTICLE)
+//                ? Parcels.unwrap(savedInstanceState.getParcelable(EXTRA_ARTICLE))
+//                : null;
 
         if (savedInstanceState != null) {
+            mArticle = Parcels.unwrap(savedInstanceState.getParcelable(EXTRA_ARTICLE));
             mCurrentSelectedTab = savedInstanceState.getInt(KEY_CURRENT_SELECTED_TAB);
         }
     }

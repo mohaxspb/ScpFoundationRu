@@ -6,6 +6,7 @@ import android.view.MenuItem;
 import ru.kuchanov.scp2.MyApplication;
 import ru.kuchanov.scp2.R;
 import ru.kuchanov.scp2.mvp.contract.Objects1Articles;
+import ru.kuchanov.scp2.mvp.contract.Objects2Articles;
 import ru.kuchanov.scp2.mvp.contract.OfflineArticles;
 
 /**
@@ -13,14 +14,14 @@ import ru.kuchanov.scp2.mvp.contract.OfflineArticles;
  * <p>
  * for scp_ru
  */
-public class Objects1ArticlesFragment
-        extends BaseArticlesListFragment<Objects1Articles.View, Objects1Articles.Presenter>
-        implements Objects1Articles.View {
+public class Objects2ArticlesFragment
+        extends BaseArticlesListFragment<Objects2Articles.View, Objects2Articles.Presenter>
+        implements Objects2Articles.View {
 
-    public static final String TAG = Objects1ArticlesFragment.class.getSimpleName();
+    public static final String TAG = Objects2ArticlesFragment.class.getSimpleName();
 
-    public static Objects1ArticlesFragment newInstance() {
-        return new Objects1ArticlesFragment();
+    public static Objects2ArticlesFragment newInstance() {
+        return new Objects2ArticlesFragment();
     }
 
     @Override
