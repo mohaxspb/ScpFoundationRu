@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">SCP Foundation RU On/Off-line</string>
-    <string name="splash_screen_description">Подключаюсь к Фонду...</string>
+    <string name="splash_screen_description">Подключаюсь к Фонду…</string>
     <string name="key_new_articles_counter">key_new_articles_counter</string>
     <string name="share_link">Поделится ссылкой</string>
     <string name="pref_design_key_text_size_ui">pref_design_key_text_size_ui</string>

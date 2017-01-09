@@ -1,5 +1,6 @@
 <resources>
-    <string name="app_name">SCP2</string>
+    <string name="app_name">SCP Foundation RU On/Off-line</string>
+    <!--drawer items-->
     <string name="drawer_item_1">Об организации</string>
     <string name="drawer_item_2">Новости</string>
     <string name="drawer_item_3">Статьи по рейтингу</string>
@@ -15,22 +16,20 @@
     <string name="drawer_item_13">Статьи Offline</string>
     <string name="drawer_item_14">Галерея</string>
     <string name="drawer_item_15">Поиск</string>
+    <!--настройки-->
     <string name="enter">Войти</string>
     <string name="settings">Настройки</string>
     <string name="night_mode">Ночной режим</string>
     <string name="text_size">Размер текста</string>
     <string name="in_apps">Поддержка проекта</string>
-    <string name="about_org">Об организации</string>
-    <string name="news">Новости</string>
-    <string name="stories">Рассказы</string>
     <string name="day_mode">Дневной режим</string>
     <string name="unsupported_link">Эта ссылка не поддерживается</string>
     <string name="share">Поделиться</string>
     <string name="open_with">В браузер</string>
     <string name="add_to_favorites">Добавить в избранное</string>
     <string name="share_link_text">%1$s\n\nОтправлено с помощью приложения \"SCP Foundation\"\nhttps://play.google.com/store/apps/details?id=%2$s</string>
-    <string name="share_choser_text">Поделиться через...</string>
-    <string name="browser_choser_text">Открыть с помощью...</string>
+    <string name="share_choser_text">Поделиться через…</string>
+    <string name="browser_choser_text">Открыть с помощью…</string>
     <string name="favorites_add">Добавить в избранное</string>
     <string name="favorites_remove">Удалить из избранного</string>
     <string name="text_size_article">Размер текста в статьях</string>
@@ -38,8 +37,15 @@
     <string name="text_size_dialog_title">Настройки размера текста</string>
     <string name="close">Закрыть</string>
     <string name="delete">Удалить</string>
-    <string name="not_implemented">Не реализовано</string>
     <string name="download_all">Скачать всё</string>
-    <string name="not_implemented_yet">Пока не реализовано</string>
-    <string name="search">Посик</string>
+    <string name="search">Поиск</string>
+
+    <!--drawer items -->
+    <!--TODO maybe use ut unstead of upper ones?..-->
+    <string name="about_org">Об организации</string>
+    <string name="news">Новости</string>
+    <string name="stories">Рассказы</string>
+
+    <!--utils-->
+    <string name="scrollAwareFABBehavior">ru.kuchanov.scp2.ui.util.ScrollAwareFABBehavior</string>
 </resources>

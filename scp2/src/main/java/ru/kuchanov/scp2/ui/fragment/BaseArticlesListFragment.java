@@ -1,6 +1,5 @@
 package ru.kuchanov.scp2.ui.fragment;
 
-import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
@@ -31,13 +30,7 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
 
     @Override
     protected int getLayoutResId() {
-        return R.layout.fragment_feed;
-    }
-
-    @NonNull
-    @Override
-    public P createPresenter() {
-        return mPresenter;
+        return R.layout.fragment_list;
     }
 
     @Override
