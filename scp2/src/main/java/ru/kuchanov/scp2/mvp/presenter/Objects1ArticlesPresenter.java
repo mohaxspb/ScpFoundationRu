@@ -7,14 +7,11 @@ import java.util.List;
 import io.realm.RealmResults;
 import io.realm.Sort;
 import ru.kuchanov.scp2.Constants;
-import ru.kuchanov.scp2.MyApplication;
-import ru.kuchanov.scp2.R;
 import ru.kuchanov.scp2.api.ApiClient;
 import ru.kuchanov.scp2.db.DbProviderFactory;
 import ru.kuchanov.scp2.db.model.Article;
 import ru.kuchanov.scp2.manager.MyPreferenceManager;
 import ru.kuchanov.scp2.mvp.contract.Objects1Articles;
-import ru.kuchanov.scp2.mvp.contract.OfflineArticles;
 import rx.Observable;
 
 /**

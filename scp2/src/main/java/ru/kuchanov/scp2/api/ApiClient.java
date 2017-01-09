@@ -195,7 +195,7 @@ public class ApiClient {
             }
             try {
                 Document doc = Jsoup.parse(responseBody);
-                Element pageContent = doc.getElementsByClass("page-content").first();
+                Element pageContent = doc.getElementById("page-content");
                 if (pageContent == null) {
                     subscriber.onError(new ScpParseException(MyApplication.getAppInstance().getString(R.string.error_parse)));
                     return;

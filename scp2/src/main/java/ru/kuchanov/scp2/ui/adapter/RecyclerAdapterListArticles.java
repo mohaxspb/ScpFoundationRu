@@ -60,7 +60,7 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
     public RecyclerAdapterListArticles.ViewHolderText onCreateViewHolder(ViewGroup parent, int viewType) {
         RecyclerAdapterListArticles.ViewHolderText viewHolder;
         View view;
-        view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_new_articles, parent, false);
+        view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_article, parent, false);
         viewHolder = new ViewHolderText(view);
         return viewHolder;
     }

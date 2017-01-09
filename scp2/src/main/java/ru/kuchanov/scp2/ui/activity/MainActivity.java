@@ -22,6 +22,7 @@ import ru.kuchanov.scp2.ui.base.BaseDrawerActivity;
 import ru.kuchanov.scp2.ui.dialog.TextSizeDialogFragment;
 import ru.kuchanov.scp2.ui.fragment.ArticleFragment;
 import ru.kuchanov.scp2.ui.fragment.FavoriteArticlesFragment;
+import ru.kuchanov.scp2.ui.fragment.Objects1ArticlesFragment;
 import ru.kuchanov.scp2.ui.fragment.OfflineArticlesFragment;
 import ru.kuchanov.scp2.ui.fragment.RatedArticlesFragment;
 import ru.kuchanov.scp2.ui.fragment.RecentArticlesFragment;
@@ -222,7 +223,18 @@ public class MainActivity
                 break;
             case R.id.objects_I:
                 mCurrentSelectedDrawerItemId = id;
-                //TODO
+                hideFragments();
+                fragment = getSupportFragmentManager().findFragmentByTag(Objects1ArticlesFragment.TAG);
+                if (fragment == null) {
+                    fragment = Objects1ArticlesFragment.newInstance();
+                    getSupportFragmentManager().beginTransaction()
+                            .add(content.getId(), fragment, Objects1ArticlesFragment.TAG)
+                            .commit();
+                } else {
+                    getSupportFragmentManager().beginTransaction()
+                            .show(fragment)
+                            .commit();
+                }
                 break;
             case R.id.objects_II:
                 mCurrentSelectedDrawerItemId = id;
