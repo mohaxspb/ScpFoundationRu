@@ -13,6 +13,7 @@ import ru.kuchanov.scp2.mvp.contract.ArticleMvp;
 import ru.kuchanov.scp2.mvp.contract.ArticleScreenMvp;
 import ru.kuchanov.scp2.mvp.contract.FavoriteArticlesMvp;
 import ru.kuchanov.scp2.mvp.contract.MainMvp;
+import ru.kuchanov.scp2.mvp.contract.Objects1Articles;
 import ru.kuchanov.scp2.mvp.contract.OfflineArticles;
 import ru.kuchanov.scp2.mvp.contract.RatedArticlesMvp;
 import ru.kuchanov.scp2.mvp.contract.RecentArticlesMvp;
@@ -22,6 +23,7 @@ import ru.kuchanov.scp2.mvp.presenter.FavoriteArticlesPresenter;
 import ru.kuchanov.scp2.mvp.presenter.MainPresenter;
 import ru.kuchanov.scp2.mvp.presenter.MostRatedArticlesPresenter;
 import ru.kuchanov.scp2.mvp.presenter.MostRecentArticlesPresenter;
+import ru.kuchanov.scp2.mvp.presenter.Objects1ArticlesPresenter;
 import ru.kuchanov.scp2.mvp.presenter.OfflineArticlesPresenter;
 
 /**
@@ -106,5 +108,16 @@ public class PresentersModule {
             @NonNull ApiClient apiClient
     ) {
         return new OfflineArticlesPresenter(myPreferencesManager, dbProviderFactory, apiClient);
+    }
+
+    @Provides
+    @Singleton
+    @NonNull
+    Objects1Articles.Presenter providesObjects1ArticlesPresenter(
+            @NonNull MyPreferenceManager myPreferencesManager,
+            @NonNull DbProviderFactory dbProviderFactory,
+            @NonNull ApiClient apiClient
+    ) {
+        return new Objects1ArticlesPresenter(myPreferencesManager, dbProviderFactory, apiClient);
     }
 }
