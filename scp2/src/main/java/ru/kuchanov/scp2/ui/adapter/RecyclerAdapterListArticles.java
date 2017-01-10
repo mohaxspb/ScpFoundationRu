@@ -1,10 +1,9 @@
 package ru.kuchanov.scp2.ui.adapter;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,6 +40,7 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
 
     private ArticleClickListener mArticleClickListener;
     private boolean shouldShowPopupOnFavoriteClick;
+    private boolean shouldShowPreview;
 
     public RecyclerAdapterListArticles() {
         MyApplication.getAppComponent().inject(this);
@@ -83,6 +83,10 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
         shouldShowPopupOnFavoriteClick = show;
     }
 
+    public void setShouldShowpreview(boolean show) {
+        shouldShowPreview = show;
+    }
+
     class ViewHolderText extends RecyclerView.ViewHolder {
         @BindView(R.id.image)
         ImageView image;
@@ -94,6 +98,8 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
         ImageView offline;
         @BindView(R.id.title)
         TextView title;
+        @BindView(R.id.preview)
+        TextView preview;
         @BindView(R.id.root)
         LinearLayout root;
 
@@ -106,6 +112,7 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
             Context context = itemView.getContext();
             float uiTextScale = mMyPreferenceManager.getUiTextScale();
             int textSizePrimary = context.getResources().getDimensionPixelSize(R.dimen.text_size_primary);
+            int textSizeTertiary = context.getResources().getDimensionPixelSize(R.dimen.text_size_tertiary);
 
             itemView.setOnClickListener(v -> {
                 if (mArticleClickListener != null) {
@@ -127,12 +134,19 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
                         .centerCrop()
                         .crossFade()
                         .into(image);
-//                image.setImageResource(R.drawable.scp_2);
             }
 
             title.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * textSizePrimary);
-            title.setText(article.title);
-//          (отмечание прочитанного)
+            title.setText(Html.fromHtml(article.title));
+            //show preview only on siteSearch fragment
+            if (shouldShowPreview) {
+                preview.setVisibility(View.VISIBLE);
+                preview.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * textSizeTertiary);
+                preview.setText(Html.fromHtml(article.preview));
+            } else {
+                preview.setVisibility(View.GONE);
+            }
+            //(отмечание прочитанного)
             int readIconId;
             int readColorId;
             if (article.isInReaden) {
@@ -149,7 +163,7 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
                     mArticleClickListener.toggleReadenState(article);
                 }
             });
-//          (отмтка избранных статей)
+            //(отмтка избранных статей)
             int favsIconId;
             if (article.isInFavorite != Article.ORDER_NONE) {
                 favsIconId = AttributeGetter.getDrawableId(context, R.attr.favoriteIcon);
@@ -172,7 +186,7 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
                     }
                 }
             });
-//          Кнопки Offline
+            //Кнопки Offline
             int offlineIconId;
             if (article.text != null) {
                 offlineIconId = AttributeGetter.getDrawableId(context, R.attr.iconOfflineRemove);
@@ -193,12 +207,12 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
                         });
                         popup.show();
                     } else {
-                        offline.animate().rotationBy(360).setDuration(250).setListener(new AnimatorListenerAdapter() {
-                            @Override
-                            public void onAnimationEnd(Animator animation) {
-                                offline.animate().rotationBy(360).setDuration(250).setListener(this);
-                            }
-                        });
+//                        offline.animate().rotationBy(360).setDuration(250).setListener(new AnimatorListenerAdapter() {
+//                            @Override
+//                            public void onAnimationEnd(Animator animation) {
+//                                offline.animate().rotationBy(360).setDuration(250).setListener(this);
+//                            }
+//                        });
                         mArticleClickListener.onOfflineClicked(article);
                     }
                 }

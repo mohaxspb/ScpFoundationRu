@@ -143,6 +143,12 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
      */
     protected void resetOnScrollListener() {
         mRecyclerView.clearOnScrollListeners();
+        if (mAdapter.getItemCount() < Constants.Api.NUM_OF_ARTICLES_ON_SEARCH_PAGE) {
+            //so there is to less arts to be able to load from bottom
+            //this can be if we receive few search results
+            //si we just no need to set scrollListener
+            return;
+        }
         mRecyclerView.addOnScrollListener(new EndlessRecyclerViewScrollListener() {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {

@@ -5,9 +5,9 @@ package ru.kuchanov.scp2.db.error;
  * <p>
  * for scp_ru
  */
-public class NoArticleForIdError extends Throwable {
+public class ScpNoArticleForIdError extends Throwable {
 
-    public NoArticleForIdError(String message) {
+    public ScpNoArticleForIdError(String message) {
         super(message);
     }
 }

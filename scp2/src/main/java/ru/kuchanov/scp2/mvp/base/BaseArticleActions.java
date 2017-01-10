@@ -17,4 +17,6 @@ public interface BaseArticleActions {
      *  should start download or should delete text
      */
     void toggleOfflineState(Article article);
+
+    void toggleOfflineState(String url);
 }

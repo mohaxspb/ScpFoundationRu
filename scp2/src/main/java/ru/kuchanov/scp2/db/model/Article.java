@@ -102,13 +102,10 @@ public class Article extends RealmObject {
      */
     public String updatedDate;
 
-//    public static List<String> getListOfUrls(Article... articles) {
-//        List<String> urls = new ArrayList<>();
-//        for (Article article : articles) {
-//            urls.add(article.url);
-//        }
-//        return urls;
-//    }
+    /**
+     * we use and show it only in site search
+     */
+    public String preview;
 
     public static List<String> getListOfUrls(List<Article> articles) {
         List<String> urls = new ArrayList<>();
@@ -116,6 +113,26 @@ public class Article extends RealmObject {
             urls.add(article.url);
         }
         return urls;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) {
+            return false;
+        }
+
+        if (!(o instanceof Article)) {
+            return false;
+        }
+
+        Article post = (Article) o;
+        return url.equals(post.url);
+    }
+
+    @Override
+    public int hashCode() {
+        return 42;
     }
 
     @Override

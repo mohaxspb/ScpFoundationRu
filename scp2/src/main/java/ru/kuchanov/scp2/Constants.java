@@ -10,9 +10,15 @@ public interface Constants {
     interface Api {
         String MOST_RECENT_URL = "/most-recently-created/p/";
         String MOST_RATED_URL = "/top-rated-pages/p/";
+        /**
+         * first arg is searchQuery with SPACEs replaced by "%20"
+         * second - num of page
+         */
+        String SEARCH_URL = "/search:site/a/p/q/%1$s/p/%2$s";
         int NUM_OF_ARTICLES_ON_RECENT_PAGE = 30;
         int NUM_OF_ARTICLES_ON_RATED_PAGE = 20;
         int ZERO_OFFSET = 0;
+        int NUM_OF_ARTICLES_ON_SEARCH_PAGE = 10;
     }
 
     interface Urls {
