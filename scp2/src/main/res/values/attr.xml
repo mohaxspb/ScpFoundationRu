@@ -7,6 +7,7 @@
     <attr name="navigationViewItemTextColor" format="color|reference"/>
     <attr name="navigationViewItemIconColor" format="color|reference"/>
     <!---->
+    <attr name="colorFAB" format="color|reference"/>
     <attr name="newArticlesTextColor" format="color|reference"/>
     <attr name="readTextColor" format="color|reference"/>
     <attr name="toolbarBackgroundGradient" format="reference"/>

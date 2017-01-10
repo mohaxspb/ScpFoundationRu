@@ -34,7 +34,6 @@ public class RecyclerAdapterListArticlesWithSearch extends RecyclerAdapterListAr
     public void setData(List<Article> data) {
         mData = data;
         sortArticles(mSearchQuery);
-        notifyDataSetChanged();
     }
 
     @Override

@@ -3,7 +3,9 @@ package ru.kuchanov.scp2.ui.fragment;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,7 +23,8 @@ import ru.kuchanov.scp2.ui.adapter.RecyclerAdapterListArticlesWithSearch;
  * <p>
  * for scp_ru
  */
-public abstract class BaseListArticlesWithSearchFragment<V extends BaseArticlesListMvp.View, P extends BaseArticlesListMvp.Presenter<V>>
+public abstract class BaseListArticlesWithSearchFragment
+        <V extends BaseArticlesListMvp.View, P extends BaseArticlesListMvp.Presenter<V>>
         extends BaseArticlesListFragment<V, P> {
 
     private static final String EXTRA_SEARCH_QUERY = "EXTRA_SEARCH_QUERY";
@@ -29,10 +32,25 @@ public abstract class BaseListArticlesWithSearchFragment<V extends BaseArticlesL
     @BindView(R.id.searchFAB)
     protected FloatingActionButton mSearchFAB;
 
+    private String mSearchQuery = "";
+    private String mSavedQuery = "";
+    private MenuItem menuItem;
+
     protected RecyclerAdapterListArticlesWithSearch mAdapter;
 
-    private String mSearchQuery = "";
-    private MenuItem menuItem;
+    @Override
+    protected RecyclerAdapterListArticlesWithSearch getAdapter() {
+        if (mAdapter == null) {
+            mAdapter = new RecyclerAdapterListArticlesWithSearch();
+        }
+        return mAdapter;
+    }
+
+    @Override
+    protected void initAdapter() {
+        super.initAdapter();
+        getAdapter().sortArticles(mSearchQuery);
+    }
 
     @Override
     protected int getLayoutResId() {
@@ -49,25 +67,12 @@ public abstract class BaseListArticlesWithSearchFragment<V extends BaseArticlesL
         return R.menu.menu_search;
     }
 
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        //TODO implement search
-//        switch (item.getItemId()) {
-//            case R.id.menuItemSearch:
-//                //TODO
-//                Snackbar.make(root, R.string.not_implemented_yet, Snackbar.LENGTH_SHORT).show();
-//                return true;
-//            default:
-//                break;
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
             mSearchQuery = savedInstanceState.getString(EXTRA_SEARCH_QUERY);
+            mSavedQuery =  mSearchQuery;
         }
     }
 
@@ -81,6 +86,7 @@ public abstract class BaseListArticlesWithSearchFragment<V extends BaseArticlesL
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         SearchView searchView = new SearchView(getActivity());
+        searchView.setQueryHint(getString(R.string.search_hint));
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -91,20 +97,45 @@ public abstract class BaseListArticlesWithSearchFragment<V extends BaseArticlesL
             public boolean onQueryTextChange(String newText) {
                 mSearchQuery = newText;
                 mAdapter.sortArticles(newText);
-                return false;
+                return true;
             }
         });
+
         changeSearchViewTextColor(searchView);
         MenuItem search = menu.findItem(R.id.menuItemSearch);
         search.setActionView(searchView);
 
         menuItem = search;
+
+        if (!TextUtils.isEmpty(mSearchQuery)) {
+            searchView.post(() -> {
+                searchView.onActionViewExpanded();
+                searchView.setQuery(mSavedQuery, false);
+            });
+        }
+
     }
 
     @Override
     protected void initViews() {
         super.initViews();
         mSearchFAB.setOnClickListener(v -> ((SearchView) menuItem.getActionView()).onActionViewExpanded());
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                if (dy > 0 || dy < 0 && mSearchFAB.isShown()) {
+                    mSearchFAB.hide();
+                }
+            }
+
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    mSearchFAB.show();
+                }
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+        });
     }
 
     /**

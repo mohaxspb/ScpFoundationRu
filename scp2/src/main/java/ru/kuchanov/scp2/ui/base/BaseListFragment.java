@@ -34,6 +34,8 @@ public abstract class BaseListFragment<V extends BaseListMvp.View, P extends Bas
     @BindView(R.id.recyclerView)
     protected RecyclerView mRecyclerView;
 
+    protected abstract <A extends RecyclerView.Adapter> A getAdapter();
+
     protected abstract boolean isSwipeRefreshEnabled();
 
     @Override
@@ -53,7 +55,20 @@ public abstract class BaseListFragment<V extends BaseListMvp.View, P extends Bas
         if (!isAdded() || mProgressBarCenter == null) {
             return;
         }
-        mProgressBarCenter.setVisibility(show ? View.VISIBLE : View.GONE);
+        if (show) {
+            if (getAdapter() != null && getAdapter().getItemCount() != 0) {
+                mProgressBarCenter.setVisibility(View.GONE);
+                showSwipeProgress(true);
+            } else {
+                mProgressBarCenter.setVisibility(View.VISIBLE);
+            }
+        } else {
+            mProgressBarCenter.setVisibility(View.GONE);
+        }
+//        mProgressBarCenter.setVisibility(
+//                show && getAdapter() != null && getAdapter().getItemCount() != 0
+//                        ? View.VISIBLE : View.GONE
+//        );
     }
 
     @Override
@@ -95,7 +110,7 @@ public abstract class BaseListFragment<V extends BaseListMvp.View, P extends Bas
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
-        switch (s){
+        switch (s) {
             case MyPreferenceManager.Keys.TEXT_SCALE_UI:
                 onTextSizeUiChanged();
                 break;

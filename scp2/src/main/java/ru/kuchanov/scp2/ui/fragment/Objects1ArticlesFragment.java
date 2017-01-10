@@ -37,20 +37,6 @@ public class Objects1ArticlesFragment
         return R.menu.menu_search;
     }
 
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        //TODO implement search
-//        switch (item.getItemId()) {
-//            case R.id.menuItemSearch:
-//                //TODO
-//                Snackbar.make(root, R.string.not_implemented_yet, Snackbar.LENGTH_SHORT).show();
-//                return true;
-//            default:
-//                break;
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
-
     @Override
     protected void resetOnScrollListener() {
         //FIXME now we do not have paging for favs

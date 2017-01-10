@@ -48,4 +48,5 @@
 
     <!--utils-->
     <string name="scrollAwareFABBehavior">ru.kuchanov.scp2.ui.util.ScrollAwareFABBehavior</string>
+    <string name="search_hint">Введите запрос</string>
 </resources>

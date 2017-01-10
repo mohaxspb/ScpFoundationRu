@@ -68,6 +68,8 @@ public abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.Vi
 //                            getView().showCenterProgress(false);
                             if (mData.isEmpty()) {
                                 getView().enableSwipeRefresh(true);
+                            } else {
+                                getView().showCenterProgress(false);
                             }
                         },
                         error -> {
