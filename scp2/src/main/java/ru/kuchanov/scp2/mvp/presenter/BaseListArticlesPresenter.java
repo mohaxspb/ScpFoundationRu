@@ -82,7 +82,7 @@ public abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.Vi
 
     @Override
     public void getDataFromApi(int offset) {
-        Timber.d("getDataFromApi");
+        Timber.d("getDataFromApi with offset: %s", offset);
         if (mData != null && mData.isLoaded() && mData.isValid() && !mData.isEmpty()) {
             getView().showCenterProgress(false);
             if (offset != 0) {

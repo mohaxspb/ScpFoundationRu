@@ -59,6 +59,8 @@ public class SiteSearchArticlesPresenter
         return mApiClient.getSearchArticles(offset, mQuery)
                 .doOnSubscribe(() -> {
                     if (offset != Constants.Api.ZERO_OFFSET) {
+                        getView().showSwipeProgress(false);
+                        getView().enableSwipeRefresh(true);
                         getView().showBottomProgress(true);
                     }
                 });
