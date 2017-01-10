@@ -26,6 +26,7 @@ import ru.kuchanov.scp2.ui.fragment.ObjectsRuArticlesFragment;
 import ru.kuchanov.scp2.ui.fragment.OfflineArticlesFragment;
 import ru.kuchanov.scp2.ui.fragment.RatedArticlesFragment;
 import ru.kuchanov.scp2.ui.fragment.RecentArticlesFragment;
+import ru.kuchanov.scp2.ui.fragment.SiteSearchArticlesFragment;
 import timber.log.Timber;
 
 public class MainActivity
@@ -215,7 +216,7 @@ public class MainActivity
                 break;
             case R.id.siteSearch:
                 mCurrentSelectedDrawerItemId = id;
-                //TODO
+                showFragment(SiteSearchArticlesFragment.newInstance(), SiteSearchArticlesFragment.TAG);
                 break;
             default:
                 Timber.e("unexpected item ID");

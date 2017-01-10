@@ -76,9 +76,9 @@ public abstract class BaseListFragment<V extends BaseListMvp.View, P extends Bas
         if (!isAdded() || mSwipeRefreshLayout == null) {
             return;
         }
-        if (!mSwipeRefreshLayout.isRefreshing() && !show) {
-            return;
-        }
+//        if (!mSwipeRefreshLayout.isRefreshing() && !show) {
+//            return;
+//        }
 
         int screenHeight = DimensionUtils.getScreenHeight();
         mSwipeRefreshLayout.setProgressViewEndTarget(false, screenHeight - getActionBarHeight() * 2);

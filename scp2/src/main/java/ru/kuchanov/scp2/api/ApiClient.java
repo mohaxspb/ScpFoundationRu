@@ -11,6 +11,7 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import io.realm.RealmList;
@@ -22,6 +23,8 @@ import ru.kuchanov.scp2.BuildConfig;
 import ru.kuchanov.scp2.Constants;
 import ru.kuchanov.scp2.MyApplication;
 import ru.kuchanov.scp2.R;
+import ru.kuchanov.scp2.api.error.ScpException;
+import ru.kuchanov.scp2.api.error.ScpNoSearchResultsException;
 import ru.kuchanov.scp2.api.error.ScpParseException;
 import ru.kuchanov.scp2.db.model.Article;
 import ru.kuchanov.scp2.db.model.RealmString;
@@ -179,6 +182,63 @@ public class ApiClient {
         }));
     }
 
+    public Observable<List<Article>> getSearchArticles(int offset, String searchQuery) {
+        return bindWithUtils(Observable.<List<Article>>create(subscriber -> {
+            int page = offset / Constants.Api.NUM_OF_ARTICLES_ON_SEARCH_PAGE + 1/*as pages are not zero based*/;
+
+            Request request = new Request.Builder()
+                    .url(BuildConfig.BASE_API_URL + String.format(Locale.ENGLISH, Constants.Api.SEARCH_URL, searchQuery, page))
+                    .build();
+
+            String responseBody = null;
+            try {
+                Response response = mOkHttpClient.newCall(request).execute();
+                responseBody = response.body().string();
+            } catch (IOException e) {
+                subscriber.onError(new IOException(MyApplication.getAppInstance().getString(R.string.error_connection)));
+                return;
+            }
+            try {
+                Document doc = Jsoup.parse(responseBody);
+                Element pageContent = doc.getElementById("page-content");
+                if (pageContent == null) {
+                    subscriber.onError(new ScpParseException(MyApplication.getAppInstance().getString(R.string.error_parse)));
+                    return;
+                }
+
+                List<Article> articles = new ArrayList<>();
+
+                Element searchResults = pageContent.getElementsByClass("search-results").first();
+                Elements items = searchResults.children();
+                if (items.size() == 0) {
+                    subscriber.onError(new ScpNoSearchResultsException(
+                            MyApplication.getAppInstance().getString(R.string.error_no_search_results)));
+                } else {
+                    for (Element item : items) {
+                        Element titleA = item.getElementsByClass("title").first().getElementsByTag("a").first();
+                        String title = titleA.html();
+                        String url = titleA.attr("href");
+                        Element previewDiv = item.getElementsByClass("preview").first();
+                        String preview = previewDiv.html();
+
+                        Article article = new Article();
+
+                        article.title = title;
+                        article.url = url;
+                        article.preview = preview;
+
+                        articles.add(article);
+                    }
+                    subscriber.onNext(articles);
+                    subscriber.onCompleted();
+                }
+            } catch (Exception e) {
+                Timber.e(e, "error while get arts list");
+                subscriber.onError(e);
+            }
+        }));
+    }
+
     public Observable<List<Article>> getObjectsArticles(String sObjectsLink) {
         return bindWithUtils(Observable.<List<Article>>create(subscriber -> {
             Request request = new Request.Builder()
@@ -311,7 +371,6 @@ public class ApiClient {
                     subscriber.onCompleted();
                     return;
                 }
-//            Log.d(LOG, pageContent.toString());
 //            замена ссылок в сносках
                 Elements footnoterefs = pageContent.getElementsByClass("footnoteref");
                 for (Element snoska : footnoterefs) {
@@ -437,6 +496,9 @@ public class ApiClient {
                 Timber.e(e, "error while get arts list");
                 subscriber.onError(e);
             }
-        }));
+        }))
+                .onErrorResumeNext(throwable -> {
+                    return Observable.error(new ScpException(throwable, url));
+                });
     }
 }

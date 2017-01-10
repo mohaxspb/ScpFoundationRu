@@ -11,6 +11,7 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -20,30 +21,29 @@ import ru.dante.scpfoundation.R;
 
 /**
  * Created by Dante on 09.01.2016.
+ *
+ * for scp_ru
  */
-public class DownloadSearch extends AsyncTask<Void, Void, ArrayList<Article>>
-{
+public class DownloadSearch extends AsyncTask<Void, Void, List<Article>> {
     private static final String LOG = DownloadSearch.class.getSimpleName();
     private Context ctx;
 
-    String url = "http://scpfoundation.ru/search:site/a/p/q/";
-    UpdateArticlesList updateArticlesList;
-    private int page=1;
+    private String url = "http://scpfoundation.ru/search:site/a/p/q/";
+    private UpdateArticlesList updateArticlesList;
+    private int page = 1;
 
 
-    public DownloadSearch(String searchQuery, Context ctx, UpdateArticlesList updateArticlesList,int page)
-    {
+    public DownloadSearch(String searchQuery, Context ctx, UpdateArticlesList updateArticlesList, int page) {
         this.ctx = ctx;
-        this.page=page;
-        this.url += searchQuery.replaceAll(" ", "%20")+"/p/"+page;
+        this.page = page;
+        this.url += searchQuery.replaceAll(" ", "%20") + "/p/" + page;
         this.updateArticlesList = updateArticlesList;
     }
 
     @Override
-    protected ArrayList<Article> doInBackground(Void... params)
-    {
+    protected List<Article> doInBackground(Void... params) {
         Log.d(LOG, "doInBackground started");
-        ArrayList<Article> articles = new ArrayList<>();
+        List<Article> articles = new ArrayList<>();
 
         final OkHttpClient client = new OkHttpClient();
 
@@ -51,35 +51,30 @@ public class DownloadSearch extends AsyncTask<Void, Void, ArrayList<Article>>
                 .url(url)
                 .build();
 
-        Response response = null;
-        try
-        {
+        Response response;
+        try {
             response = client.newCall(request).execute();
 
             Document doc = Jsoup.parse(response.body().string());
             Element pageContent = doc.getElementById("page-content");
-            if (pageContent == null)
-            {
+            if (pageContent == null) {
                 return null;
             }
             Element searchResults = pageContent.getElementsByClass("search-results").first();
             Elements items = searchResults.children();
-            if (items.size() == 0)
-            {
+            if (items.size() == 0) {
                 Article article = new Article();
                 article.setTitle(ctx.getString(R.string.no_search_results));
-//                article.setPreview("");
                 articles.add(article);
-            } else
-            {
-                for (Element item : items)
-                {
-                    Element titleA=item.getElementsByClass("title").first().getElementsByTag("a").first();
-                    String title=titleA.html();
-                    String url=titleA.attr("href");
-                    Element previewDiv=item.getElementsByClass("preview").first();
-                    String preview=previewDiv.html();
-                    Article article=new Article();
+            } else {
+                for (Element item : items) {
+                    Element titleA = item.getElementsByClass("title").first().getElementsByTag("a").first();
+                    String title = titleA.html();
+                    String url = titleA.attr("href");
+                    Element previewDiv = item.getElementsByClass("preview").first();
+                    String preview = previewDiv.html();
+
+                    Article article = new Article();
                     article.setTitle(title);
                     article.setURL(url);
                     article.setPreview(preview);
@@ -87,32 +82,24 @@ public class DownloadSearch extends AsyncTask<Void, Void, ArrayList<Article>>
                 }
             }
             return articles;
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
-
         return null;
     }
 
     @Override
-    protected void onPostExecute(final ArrayList<Article> result)
-    {
+    protected void onPostExecute(final List<Article> result) {
         super.onPostExecute(result);
-
-        if (result == null)
-        {
+        if (result == null) {
             Log.e(LOG, "Connection lost");
-            this.updateArticlesList.update(result,page);
-        } else
-        {
-            this.updateArticlesList.update(result,page);
+            this.updateArticlesList.update(null, page);
+        } else {
+            this.updateArticlesList.update(result, page);
         }
-
     }
 
-    public interface UpdateArticlesList
-    {
-        public void update(ArrayList<Article> articles,int page);
+    public interface UpdateArticlesList {
+        void update(List<Article> articles, int page);
     }
 }

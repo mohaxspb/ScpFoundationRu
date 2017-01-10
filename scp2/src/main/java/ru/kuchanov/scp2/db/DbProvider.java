@@ -11,7 +11,7 @@ import io.realm.RealmObject;
 import io.realm.RealmResults;
 import io.realm.Sort;
 import ru.kuchanov.scp2.Constants;
-import ru.kuchanov.scp2.db.error.NoArticleForIdError;
+import ru.kuchanov.scp2.db.error.ScpNoArticleForIdError;
 import ru.kuchanov.scp2.db.model.Article;
 import rx.Observable;
 import timber.log.Timber;
@@ -330,9 +330,9 @@ public class DbProvider {
 
     /**
      * @param article obj to save
-     * @return Observable that emits null on successful insert or throws error
+     * @return Observable that emits unmanaged saved article on successful insert or throws error
      */
-    public Observable<Void> saveArticle(Article article) {
+    public Observable<Article> saveArticle(Article article) {
         return Observable.create(subscriber -> {
             mRealm.executeTransactionAsync(
                     realm -> {
@@ -363,7 +363,7 @@ public class DbProvider {
                         }
                     },
                     () -> {
-                        subscriber.onNext(null);
+                        subscriber.onNext(article);
                         subscriber.onCompleted();
                         mRealm.close();
                     },
@@ -374,7 +374,7 @@ public class DbProvider {
         });
     }
 
-    public Observable<Boolean> toggleFavorite(String url) {
+    public Observable<Pair<String, Long>> toggleFavorite(String url) {
         return Observable.create(subscriber -> {
             mRealm.executeTransactionAsync(
                     realm -> {
@@ -391,11 +391,11 @@ public class DbProvider {
                                 applicationInDb.isInFavorite = Article.ORDER_NONE;
                             }
 
-                            subscriber.onNext(applicationInDb.isInFavorite != Article.ORDER_NONE);
+                            subscriber.onNext(new Pair<>(url, applicationInDb.isInFavorite));
                             subscriber.onCompleted();
                         } else {
                             Timber.e("No article to add to favorites for ID: %s", url);
-                            subscriber.onError(new NoArticleForIdError(url));
+                            subscriber.onError(new ScpNoArticleForIdError(url));
                         }
                     },
                     () -> {
@@ -414,7 +414,7 @@ public class DbProvider {
      * @return observable, that emits resulted readen state
      * or error if no artcile found
      */
-    public Observable<Boolean> toggleReaden(String url) {
+    public Observable<Pair<String, Boolean>> toggleReaden(String url) {
         return Observable.create(subscriber -> {
             mRealm.executeTransactionAsync(
                     realm -> {
@@ -424,11 +424,11 @@ public class DbProvider {
                                 .findFirst();
                         if (applicationInDb != null) {
                             applicationInDb.isInReaden = !applicationInDb.isInReaden;
-                            subscriber.onNext(applicationInDb.isInReaden);
+                            subscriber.onNext(new Pair<>(url, applicationInDb.isInReaden));
                             subscriber.onCompleted();
                         } else {
                             Timber.e("No article to add to favorites for ID: %s", url);
-                            subscriber.onError(new NoArticleForIdError(url));
+                            subscriber.onError(new ScpNoArticleForIdError(url));
                         }
                     },
                     () -> {
@@ -442,7 +442,7 @@ public class DbProvider {
         });
     }
 
-    public Observable<Void> deleteArticlesText(String url) {
+    public Observable<String> deleteArticlesText(String url) {
         return Observable.create(subscriber -> {
             mRealm.executeTransactionAsync(
                     realm -> {
@@ -457,11 +457,12 @@ public class DbProvider {
                             applicationInDb.hasTabs = false;
                             applicationInDb.tabsTexts = null;
                             applicationInDb.tabsTitles = null;
-                            subscriber.onNext(null);
+
+                            subscriber.onNext(url);
                             subscriber.onCompleted();
                         } else {
                             Timber.e("No article to add to favorites for ID: %s", url);
-                            subscriber.onError(new NoArticleForIdError(url));
+                            subscriber.onError(new ScpNoArticleForIdError(url));
                         }
                     },
                     () -> {

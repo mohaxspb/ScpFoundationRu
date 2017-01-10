@@ -21,6 +21,7 @@ import ru.kuchanov.scp2.ui.fragment.ObjectsRuArticlesFragment;
 import ru.kuchanov.scp2.ui.fragment.OfflineArticlesFragment;
 import ru.kuchanov.scp2.ui.fragment.RatedArticlesFragment;
 import ru.kuchanov.scp2.ui.fragment.RecentArticlesFragment;
+import ru.kuchanov.scp2.ui.fragment.SiteSearchArticlesFragment;
 
 /**
  * Created by y.kuchanov on 21.12.16.
@@ -56,6 +57,8 @@ public interface AppComponent {
     void inject(Objects3ArticlesFragment fragment);
 
     void inject(ObjectsRuArticlesFragment fragment);
+
+    void inject(SiteSearchArticlesFragment fragment);
 
     void inject(TextSizeDialogFragment dialogFragment);
 

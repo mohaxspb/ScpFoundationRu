@@ -20,6 +20,7 @@ import ru.kuchanov.scp2.mvp.contract.ObjectsRuArticles;
 import ru.kuchanov.scp2.mvp.contract.OfflineArticles;
 import ru.kuchanov.scp2.mvp.contract.RatedArticlesMvp;
 import ru.kuchanov.scp2.mvp.contract.RecentArticlesMvp;
+import ru.kuchanov.scp2.mvp.contract.SiteSearchArticlesMvp;
 import ru.kuchanov.scp2.mvp.presenter.ArticlePresenter;
 import ru.kuchanov.scp2.mvp.presenter.ArticleScreenPresenter;
 import ru.kuchanov.scp2.mvp.presenter.FavoriteArticlesPresenter;
@@ -31,6 +32,7 @@ import ru.kuchanov.scp2.mvp.presenter.Objects2ArticlesPresenter;
 import ru.kuchanov.scp2.mvp.presenter.Objects3ArticlesPresenter;
 import ru.kuchanov.scp2.mvp.presenter.ObjectsRuArticlesPresenter;
 import ru.kuchanov.scp2.mvp.presenter.OfflineArticlesPresenter;
+import ru.kuchanov.scp2.mvp.presenter.SiteSearchArticlesPresenter;
 
 /**
  * Created by y.kuchanov on 21.12.16.
@@ -92,6 +94,17 @@ public class PresentersModule {
             @NonNull ApiClient apiClient
     ) {
         return new MostRatedArticlesPresenter(myPreferencesManager, dbProviderFactory, apiClient);
+    }
+
+    @Provides
+    @Singleton
+    @NonNull
+    SiteSearchArticlesMvp.Presenter providesSiteSearchArticlesPresenter(
+            @NonNull MyPreferenceManager myPreferencesManager,
+            @NonNull DbProviderFactory dbProviderFactory,
+            @NonNull ApiClient apiClient
+    ) {
+        return new SiteSearchArticlesPresenter(myPreferencesManager, dbProviderFactory, apiClient);
     }
 
     @Provides
