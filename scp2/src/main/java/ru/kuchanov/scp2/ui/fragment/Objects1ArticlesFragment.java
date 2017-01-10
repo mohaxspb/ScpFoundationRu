@@ -28,16 +28,6 @@ public class Objects1ArticlesFragment
     }
 
     @Override
-    protected boolean isHasOptionsMenu() {
-        return true;
-    }
-
-    @Override
-    protected int getMenuResId() {
-        return R.menu.menu_search;
-    }
-
-    @Override
     protected void resetOnScrollListener() {
         //FIXME now we do not have paging for favs
     }

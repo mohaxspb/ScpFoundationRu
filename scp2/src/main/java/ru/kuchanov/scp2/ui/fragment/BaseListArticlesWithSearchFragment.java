@@ -22,6 +22,8 @@ import ru.kuchanov.scp2.ui.adapter.RecyclerAdapterListArticlesWithSearch;
  * Created by mohax on 03.01.2017.
  * <p>
  * for scp_ru
+ *
+ * @see <a href="http://stackoverflow.com/a/28732909/3212712">restore search view state</a>
  */
 public abstract class BaseListArticlesWithSearchFragment
         <V extends BaseArticlesListMvp.View, P extends BaseArticlesListMvp.Presenter<V>>

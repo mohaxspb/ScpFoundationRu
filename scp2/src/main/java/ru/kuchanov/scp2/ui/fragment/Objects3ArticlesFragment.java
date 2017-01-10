@@ -15,7 +15,7 @@ import ru.kuchanov.scp2.mvp.contract.OfflineArticles;
  * for scp_ru
  */
 public class Objects3ArticlesFragment
-        extends BaseArticlesListFragment<Objects3Articles.View, Objects3Articles.Presenter>
+        extends BaseListArticlesWithSearchFragment<Objects3Articles.View, Objects3Articles.Presenter>
         implements Objects3Articles.View {
 
     public static final String TAG = Objects3ArticlesFragment.class.getSimpleName();
@@ -27,30 +27,6 @@ public class Objects3ArticlesFragment
     @Override
     protected void callInjections() {
         MyApplication.getAppComponent().inject(this);
-    }
-
-    @Override
-    protected boolean isHasOptionsMenu() {
-        return true;
-    }
-
-    @Override
-    protected int getMenuResId() {
-        return R.menu.menu_search;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        //TODO implement search
-        switch (item.getItemId()) {
-            case R.id.menuItemSearch:
-                //TODO
-                Snackbar.make(root, R.string.not_implemented_yet, Snackbar.LENGTH_SHORT).show();
-                return true;
-            default:
-                break;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
