@@ -1,6 +1,7 @@
 package ru.kuchanov.scp2.ui.base;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.util.TypedValue;
@@ -36,6 +37,12 @@ public abstract class BaseFragment<V extends BaseMvpView, P extends BaseDataPres
 
     @Inject
     protected P mPresenter;
+
+    @NonNull
+    @Override
+    public P createPresenter() {
+        return mPresenter;
+    }
 
     @BindView(R.id.root)
     protected View root;

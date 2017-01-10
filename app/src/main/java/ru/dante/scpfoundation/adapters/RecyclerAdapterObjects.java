@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import ru.dante.scpfoundation.Article;
 import ru.dante.scpfoundation.R;
@@ -34,9 +35,8 @@ import ru.dante.scpfoundation.utils.parsing.DownloadArticleForOffline;
  */
 public class RecyclerAdapterObjects extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private int textSizePrimary;
-    private ArrayList<Article> articles;
-    private ArrayList<Article> sorted = new ArrayList<>();
+    private List<Article> articles;
+    private List<Article> sorted = new ArrayList<>();
 
     public void sortArticles(String searchQuery) {
         sorted.clear();
@@ -48,7 +48,7 @@ public class RecyclerAdapterObjects extends RecyclerView.Adapter<RecyclerView.Vi
         notifyDataSetChanged();
     }
 
-    public RecyclerAdapterObjects(ArrayList<Article> articles, String searchQuery) {
+    public RecyclerAdapterObjects(List<Article> articles, String searchQuery) {
         this.articles = articles;
         sortArticles(searchQuery);
     }
@@ -73,7 +73,7 @@ public class RecyclerAdapterObjects extends RecyclerView.Adapter<RecyclerView.Vi
         final Context ctx = holderText.textView.getContext();
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ctx);
         float uiTextScale = pref.getFloat(ctx.getString(R.string.pref_design_key_text_size_ui), 0.75f);
-        textSizePrimary = ctx.getResources().getDimensionPixelSize(R.dimen.text_size_primary);
+        int textSizePrimary = ctx.getResources().getDimensionPixelSize(R.dimen.text_size_primary);
         holderText.textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * textSizePrimary);
         holderText.textView.setText(sorted.get(position).getTitle());
         holderText.textView.setOnClickListener(new View.OnClickListener() {

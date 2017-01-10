@@ -9,7 +9,7 @@ import ru.kuchanov.scp2.mvp.contract.FavoriteArticlesMvp;
  * for scp_ru
  */
 public class FavoriteArticlesFragment
-        extends BaseArticlesListFragment<FavoriteArticlesMvp.View, FavoriteArticlesMvp.Presenter>
+        extends BaseListArticlesWithSearchFragment<FavoriteArticlesMvp.View, FavoriteArticlesMvp.Presenter>
         implements FavoriteArticlesMvp.View {
 
     public static final String TAG = FavoriteArticlesFragment.class.getSimpleName();

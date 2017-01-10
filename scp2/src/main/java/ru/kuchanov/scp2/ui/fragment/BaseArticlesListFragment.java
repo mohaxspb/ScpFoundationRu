@@ -1,6 +1,5 @@
 package ru.kuchanov.scp2.ui.fragment;
 
-import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
@@ -30,14 +29,16 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
     protected RecyclerAdapterListArticles mAdapter;
 
     @Override
-    protected int getLayoutResId() {
-        return R.layout.fragment_feed;
+    protected RecyclerAdapterListArticles getAdapter() {
+        if (mAdapter == null) {
+            mAdapter = new RecyclerAdapterListArticles();
+        }
+        return mAdapter;
     }
 
-    @NonNull
     @Override
-    public P createPresenter() {
-        return mPresenter;
+    protected int getLayoutResId() {
+        return R.layout.fragment_list;
     }
 
     @Override
@@ -47,10 +48,10 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
 
         initAdapter();
 
-        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setAdapter(getAdapter());
 
         if (mPresenter.getData() != null) {
-            mAdapter.setData(mPresenter.getData());
+            getAdapter().setData(mPresenter.getData());
         } else {
             getDataFromDb();
             //TODO add settings to update list on launch
@@ -66,6 +67,7 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
 
     /**
      * override it if you do not want to update this list on first launch
+     *
      * @return true by default
      */
     protected boolean shouldUpdateThisListOnLaunch() {
@@ -95,8 +97,7 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
      * override it to add something
      */
     protected void initAdapter() {
-        mAdapter = new RecyclerAdapterListArticles();
-        mAdapter.setArticleClickListener(new RecyclerAdapterListArticles.ArticleClickListener() {
+        getAdapter().setArticleClickListener(new RecyclerAdapterListArticles.ArticleClickListener() {
             @Override
             public void onArticleClicked(Article article, int position) {
                 ArticleActivity.startActivity(getActivity(), (ArrayList<String>) Article.getListOfUrls(mPresenter.getData()), position);
@@ -125,7 +126,7 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
         if (!isAdded()) {
             return;
         }
-        mAdapter.setData(data);
+        getAdapter().setData(data);
         resetOnScrollListener();
     }
 
@@ -147,7 +148,7 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
                 Timber.d("onLoadMode with page: %s, and offset: %s", page, view.getAdapter().getItemCount());
                 showBottomProgress(true);
-                mPresenter.getDataFromApi(mAdapter.getItemCount());
+                mPresenter.getDataFromApi(getAdapter().getItemCount());
             }
         });
     }
@@ -157,6 +158,6 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
         if (!isAdded()) {
             return;
         }
-        mAdapter.notifyDataSetChanged();
+        getAdapter().notifyDataSetChanged();
     }
 }

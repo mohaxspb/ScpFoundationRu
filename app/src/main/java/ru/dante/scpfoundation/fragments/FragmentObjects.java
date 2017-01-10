@@ -51,15 +51,29 @@ public class FragmentObjects extends Fragment implements DownloadObjects.UpdateA
     private static final String KEY_SEARCH_QUERY = "KEY_SEARCH_QUERY";
 
     private ImageView loadingIndicator;
-    private SearchView searchView;
     private MenuItem menuItem;
-    private Menu menu;
     private RecyclerView recyclerView;
     private String url;
     private String searchQuery = "";
     private ArrayList<Article> listOfObjects = new ArrayList<>();
 
     private Context ctx;
+
+    public static Fragment newInstance(String url) {
+        Bundle bundle = new Bundle();
+        bundle.putString("url", url);
+        Fragment article = new FragmentObjects();
+        article.setArguments(bundle);
+        return article;
+    }
+
+    public static Fragment newInstance(ArrayList<Article> articles) {
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList(KEY_ARTICLES, articles);
+        Fragment article = new FragmentObjects();
+        article.setArguments(bundle);
+        return article;
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -79,6 +93,7 @@ public class FragmentObjects extends Fragment implements DownloadObjects.UpdateA
         BusProvider.getInstance().unregister(this);
     }
 
+    @SuppressWarnings("unused")
     @Subscribe
     public void onArticleDownloaded(EventArticleDownloaded eventArticleDownloaded) {
         for (int i = 0; i < listOfObjects.size(); i++) {
@@ -101,37 +116,10 @@ public class FragmentObjects extends Fragment implements DownloadObjects.UpdateA
         }
     }
 
-    /**
-     * (Грязный хак исправления цвета текста)
-     */
-    private void changeSearchViewTextColor(View view) {
-        if (view != null) {
-            if (view instanceof TextView) {
-                ((TextView) view).setTextColor(Color.WHITE);
-                return;
-            } else if (view instanceof ViewGroup) {
-                ViewGroup viewGroup = (ViewGroup) view;
-                for (int i = 0; i < viewGroup.getChildCount(); i++) {
-                    changeSearchViewTextColor(viewGroup.getChildAt(i));
-                }
-            }
-        }
-    }
-
-    public static Fragment newInstance(String url) {
-        Bundle bundle = new Bundle();
-        bundle.putString("url", url);
-        Fragment article = new FragmentObjects();
-        article.setArguments(bundle);
-        return article;
-    }
-
-    public static Fragment newInstance(ArrayList<Article> articles) {
-        Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList(KEY_ARTICLES, articles);
-        Fragment article = new FragmentObjects();
-        article.setArguments(bundle);
-        return article;
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     @Nullable
@@ -183,7 +171,7 @@ public class FragmentObjects extends Fragment implements DownloadObjects.UpdateA
             }
         }
 
-        if (listOfObjects.size() == 0 && url != null) {
+        if (listOfObjects != null && listOfObjects.size() == 0 && url != null) {
             ArrayList<Article> objectsFromCache = CacheUtils.getObjectsFromCache(ctx, CacheUtils.getTypeByUrl(url));
             if (objectsFromCache.size() == 0) {
                 DownloadObjects downloadObjects = new DownloadObjects(url, this, ctx);
@@ -210,7 +198,6 @@ public class FragmentObjects extends Fragment implements DownloadObjects.UpdateA
                 recyclerView.setAdapter(new RecyclerAdapterObjects(listOfObjects, searchQuery));
             }
         } else {
-//            RecyclerAdapterArticle adapterArticle= new RecyclerAdapterArticle(articleText);
             recyclerView.setAdapter(new RecyclerAdapterObjects(listOfObjects, searchQuery));
         }
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
@@ -220,7 +207,7 @@ public class FragmentObjects extends Fragment implements DownloadObjects.UpdateA
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        searchView = new SearchView(getActivity());
+        SearchView searchView = new SearchView(getActivity());
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -246,14 +233,7 @@ public class FragmentObjects extends Fragment implements DownloadObjects.UpdateA
         search.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
         menuItem = search;
-        this.menu = menu;
         super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
     }
 
     @Override
@@ -268,7 +248,7 @@ public class FragmentObjects extends Fragment implements DownloadObjects.UpdateA
             return;
         }
         listOfObjects.clear();
-        this.listOfObjects.addAll(articles);
+        listOfObjects.addAll(articles);
         recyclerView.setAdapter(new RecyclerAdapterObjects(listOfObjects, ""));
     }
 
@@ -277,5 +257,21 @@ public class FragmentObjects extends Fragment implements DownloadObjects.UpdateA
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList(KEY_ARTICLES, listOfObjects);
         outState.putString(KEY_SEARCH_QUERY, searchQuery);
+    }
+
+    /**
+     * (Грязный хак исправления цвета текста)
+     */
+    private void changeSearchViewTextColor(View view) {
+        if (view != null) {
+            if (view instanceof TextView) {
+                ((TextView) view).setTextColor(Color.WHITE);
+            } else if (view instanceof ViewGroup) {
+                ViewGroup viewGroup = (ViewGroup) view;
+                for (int i = 0; i < viewGroup.getChildCount(); i++) {
+                    changeSearchViewTextColor(viewGroup.getChildAt(i));
+                }
+            }
+        }
     }
 }

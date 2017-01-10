@@ -28,6 +28,7 @@
         <item name="navigationViewItemTextColor">@color/navigation_item_text_selector_light</item>
         <item name="navigationViewItemIconColor">@color/navigation_item_text_selector_light</item>
         <!---->
+        <item name="colorFAB">@color/zbs_color_red</item>
         <item name="newArticlesTextColor">@color/zbs_color_red</item>
         <item name="toolbarBackgroundGradient">@drawable/gradient_light</item>
         <item name="favoriteIcon">@drawable/ic_favorite_black_24dp</item>
@@ -94,6 +95,7 @@
         <item name="navigationViewItemTextColor">@color/navigation_item_text_selector_dark</item>
         <item name="navigationViewItemIconColor">@color/navigation_item_text_selector_dark</item>
         <!---->
+        <item name="colorFAB">@color/material_amber_500</item>
         <item name="newArticlesTextColor">@color/zbs_color_white</item>
         <item name="toolbarBackgroundGradient">@drawable/gradient_dark</item>
         <item name="favoriteIcon">@drawable/ic_favorite_white_24dp</item>

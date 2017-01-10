@@ -13,7 +13,7 @@ import ru.kuchanov.scp2.mvp.contract.OfflineArticles;
  * for scp_ru
  */
 public class OfflineArticlesFragment
-        extends BaseArticlesListFragment<OfflineArticles.View, OfflineArticles.Presenter>
+        extends BaseListArticlesWithSearchFragment<OfflineArticles.View, OfflineArticles.Presenter>
         implements OfflineArticles.View {
 
     public static final String TAG = OfflineArticlesFragment.class.getSimpleName();

@@ -6,7 +6,6 @@ import android.view.MenuItem;
 import ru.kuchanov.scp2.MyApplication;
 import ru.kuchanov.scp2.R;
 import ru.kuchanov.scp2.mvp.contract.Objects1Articles;
-import ru.kuchanov.scp2.mvp.contract.OfflineArticles;
 
 /**
  * Created by mohax on 03.01.2017.
@@ -14,7 +13,7 @@ import ru.kuchanov.scp2.mvp.contract.OfflineArticles;
  * for scp_ru
  */
 public class Objects1ArticlesFragment
-        extends BaseArticlesListFragment<Objects1Articles.View, Objects1Articles.Presenter>
+        extends BaseListArticlesWithSearchFragment<Objects1Articles.View, Objects1Articles.Presenter>
         implements Objects1Articles.View {
 
     public static final String TAG = Objects1ArticlesFragment.class.getSimpleName();
@@ -26,30 +25,6 @@ public class Objects1ArticlesFragment
     @Override
     protected void callInjections() {
         MyApplication.getAppComponent().inject(this);
-    }
-
-    @Override
-    protected boolean isHasOptionsMenu() {
-        return true;
-    }
-
-    @Override
-    protected int getMenuResId() {
-        return R.menu.menu_search;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        //TODO implement search
-        switch (item.getItemId()) {
-            case R.id.menuItemSearch:
-                //TODO
-                Snackbar.make(root, R.string.not_implemented_yet, Snackbar.LENGTH_SHORT).show();
-                return true;
-            default:
-                break;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
