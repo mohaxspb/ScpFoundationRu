@@ -115,7 +115,6 @@ public abstract class BaseListArticlesWithSearchFragment
                 searchView.setQuery(mSavedQuery, false);
             });
         }
-
     }
 
     @Override

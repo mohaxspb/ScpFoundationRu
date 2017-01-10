@@ -5,6 +5,14 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <item
+        android:id="@+id/menuItemSearch"
+        android:icon="@drawable/ic_search"
+        android:title="@string/search"
+        app:showAsAction="always"
+        tools:ignore="AlwaysShowAction"
+        />
+
+    <item
         android:id="@+id/menuItemDownloadAll"
         android:icon="@drawable/ic_download_white_24dp"
         android:title="@string/download_all"
