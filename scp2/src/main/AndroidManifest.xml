@@ -35,6 +35,8 @@
             android:name="com.vk.sdk.VKServiceActivity"
             android:label="ServiceActivity"
             android:theme="@style/VK.Transparent"/>
+
+        <service android:name=".service.DownloadAllService"/>
     </application>
 
 </manifest>

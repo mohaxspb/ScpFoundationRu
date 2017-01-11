@@ -51,4 +51,20 @@
     <string name="search_hint">Введите запрос</string>
     <string name="error_no_search_results">По вашему запросу ничего не найдено</string>
     <string name="start_download">Статьи нет в базе данных. Начинаю загрузку</string>
+
+    <!--downloads-->
+    <string name="downlad_art_list">Загрузка списка статей</string>
+    <string name="download_all_title">Что скачать?</string>
+    <string name="download">Скачать</string>
+    <string name="cancel">Отмена</string>
+    <string name="stop_download">Остановить загрузку</string>
+    <string name="download_objects_title">Загрузка объектов</string>
+
+    <string-array name="download_types">
+        <item>Объекты I</item>
+        <item>Объекты II</item>
+        <item>Объекты III</item>
+        <item>Объекты RU</item>
+        <item>Все</item>
+    </string-array>
 </resources>

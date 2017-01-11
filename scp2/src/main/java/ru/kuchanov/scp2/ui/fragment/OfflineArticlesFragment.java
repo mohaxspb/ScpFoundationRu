@@ -1,11 +1,17 @@
 package ru.kuchanov.scp2.ui.fragment;
 
-import android.support.design.widget.Snackbar;
+import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
+import android.view.View;
+
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 
 import ru.kuchanov.scp2.MyApplication;
 import ru.kuchanov.scp2.R;
 import ru.kuchanov.scp2.mvp.contract.OfflineArticles;
+import ru.kuchanov.scp2.service.DownloadAllService;
+import timber.log.Timber;
 
 /**
  * Created by mohax on 03.01.2017.
@@ -41,8 +47,7 @@ public class OfflineArticlesFragment
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menuItemDownloadAll:
-                //TODO
-                Snackbar.make(root, R.string.not_implemented_yet, Snackbar.LENGTH_SHORT).show();
+                showDownloadDialog();
                 return true;
             default:
                 break;
@@ -64,5 +69,80 @@ public class OfflineArticlesFragment
     protected boolean isSwipeRefreshEnabled() {
         //FIXME as we do not have api for it, we do not need to update list
         return false;
+    }
+
+    public static final int TYPE_OBJ_1 = 0;
+    public static final int TYPE_OBJ_2 = 1;
+    public static final int TYPE_OBJ_3 = 2;
+    public static final int TYPE_OBJ_RU = 3;
+    public static final int TYPE_ALL = 4;
+
+    @Override
+    public void showDownloadDialog() {
+        MaterialDialog materialDialog;
+        materialDialog = new MaterialDialog.Builder(getActivity())
+                .title(R.string.download_all_title)
+                .items(R.array.download_types)
+                .itemsCallbackSingleChoice(-1, (dialog, itemView, which, text) -> {
+                    Timber.d("which: %s, text: %s", which, text);
+                    if (!DownloadAllService.isRunning()) {
+                        dialog.getActionButton(DialogAction.POSITIVE).setEnabled(true);
+                    }
+                    return true;
+                })
+                .alwaysCallSingleChoiceCallback()
+                .positiveText(R.string.download)
+                .negativeText(R.string.cancel)
+                .autoDismiss(false)
+                .onNegative((dialog, which) -> {
+                    Timber.i("onNegative clicked");
+                    dialog.dismiss();
+                })
+                .onPositive((dialog, which) -> {
+                    Timber.d("onPositive clicked");
+                    Timber.d("dialog.getSelectedIndex(): %s", dialog.getSelectedIndex());
+                    @DownloadAllService.DownloadType
+                    String type;
+                    switch (dialog.getSelectedIndex()) {
+                        case TYPE_OBJ_1:
+                            type = DownloadAllService.DownloadType.TYPE_1;
+                            break;
+                        case TYPE_OBJ_2:
+                            type = DownloadAllService.DownloadType.TYPE_2;
+                            break;
+                        case TYPE_OBJ_3:
+                            type = DownloadAllService.DownloadType.TYPE_3;
+                            break;
+                        case TYPE_OBJ_RU:
+                            type = DownloadAllService.DownloadType.TYPE_RU;
+                            break;
+                        default:
+                        case TYPE_ALL:
+                            type = DownloadAllService.DownloadType.TYPE_ALL;
+                            break;
+                    }
+                    DownloadAllService.startDownloadWithType(getActivity(), type);
+                    dialog.dismiss();
+                })
+                .neutralText(R.string.stop_download)
+                .onNeutral((dialog, which) -> {
+                    Timber.d("onNeutral clicked");
+                    //TODO
+                    DownloadAllService.stopDownload(getActivity());
+                    dialog.dismiss();
+                })
+                .build();
+
+        materialDialog.getActionButton(DialogAction.POSITIVE).setEnabled(false);
+
+        if (DownloadAllService.isRunning()) {
+            materialDialog.getActionButton(DialogAction.NEUTRAL).setEnabled(true);
+        } else {
+            materialDialog.getActionButton(DialogAction.NEUTRAL).setEnabled(false);
+        }
+
+        materialDialog.getRecyclerView().setOverScrollMode(View.OVER_SCROLL_NEVER);
+
+        materialDialog.show();
     }
 }

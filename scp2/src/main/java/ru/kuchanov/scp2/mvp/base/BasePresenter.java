@@ -14,8 +14,6 @@ import ru.kuchanov.scp2.manager.MyPreferenceManager;
  */
 public abstract class BasePresenter<V extends MvpView> extends MvpNullObjectBasePresenter<V> {
 
-    protected static final int ZERO_OFFSET = 0;
-
     protected MyPreferenceManager mMyPreferencesManager;
     protected DbProviderFactory mDbProviderFactory;
     protected ApiClient mApiClient;
