@@ -41,7 +41,6 @@ public class ApiClient {
     private final MyPreferenceManager mPreferencesManager;
     private final OkHttpClient mOkHttpClient;
 
-
     public ApiClient(OkHttpClient okHttpClient, Retrofit retrofit, MyPreferenceManager preferencesManager) {
         mPreferencesManager = preferencesManager;
         mOkHttpClient = okHttpClient;

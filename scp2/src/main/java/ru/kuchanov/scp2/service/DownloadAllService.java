@@ -12,6 +12,8 @@ import android.support.v4.app.NotificationCompat;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -19,7 +21,9 @@ import ru.kuchanov.scp2.Constants;
 import ru.kuchanov.scp2.MyApplication;
 import ru.kuchanov.scp2.R;
 import ru.kuchanov.scp2.api.ApiClient;
+import ru.kuchanov.scp2.db.DbProvider;
 import ru.kuchanov.scp2.db.DbProviderFactory;
+import ru.kuchanov.scp2.db.model.Article;
 import ru.kuchanov.scp2.manager.MyPreferenceManager;
 import rx.Observable;
 import rx.Subscription;
@@ -65,8 +69,9 @@ public class DownloadAllService extends Service {
     @Inject
     DbProviderFactory mDbProviderFactory;
 
-    private int curProgress;
+    private int mCurProgress;
     private int mMaxProgress;
+    private int mNumOfErrors;
 
     private CompositeSubscription mCompositeSubscription;
 
@@ -89,14 +94,6 @@ public class DownloadAllService extends Service {
         intent.setAction(ACTION_STOP);
         ctx.startService(intent);
     }
-//
-//    public DownloadAllService(String name) {
-//        super(name);
-//    }
-//
-//    public DownloadAllService() {
-//        super(DownloadAllService.class.getSimpleName());
-//    }
 
     @Override
     public void onDestroy() {
@@ -119,14 +116,21 @@ public class DownloadAllService extends Service {
         MyApplication.getAppComponent().inject(this);
     }
 
+    private void stopDownloadAndRemoveNotif() {
+        mCurProgress = 0;
+        mMaxProgress = 0;
+        mNumOfErrors = 0;
+        if (mCompositeSubscription != null && !mCompositeSubscription.isUnsubscribed()) {
+            mCompositeSubscription.unsubscribe();
+        }
+        stopForeground(true);
+        stopSelf();
+    }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent.getAction().equals(ACTION_STOP)) {
-            if (mCompositeSubscription != null && !mCompositeSubscription.isUnsubscribed()) {
-                mCompositeSubscription.unsubscribe();
-            }
-            stopForeground(true);
-            stopSelf();
+            stopDownloadAndRemoveNotif();
             return super.onStartCommand(intent, flags, startId);
         }
         @DownloadType
@@ -156,28 +160,77 @@ public class DownloadAllService extends Service {
         showNotificationDownloadObjects();
         //download list
 
+        //just for test use just n elements
+//        final int testMaxProgress = 8;
+
         Subscription subscription = mApiClient.getObjectsArticles(link)
-                .observeOn(Schedulers.io())
                 .doOnNext(articles -> mMaxProgress = articles.size())
+                // just for test use just n elements
+//                .doOnNext(articles -> mMaxProgress = testMaxProgress)
+                .doOnError(throwable -> showNotificationSimple(
+                        getString(R.string.error_notification_objects_list_download),
+                        getString(R.string.error_notification_objects_list_download_content)
+                ))
+                .onExceptionResumeNext(Observable.<List<Article>>empty().delay(5, TimeUnit.SECONDS))
+                //just for test use just n elements
+//                .map(list -> list.subList(0, testMaxProgress))
                 .flatMap(Observable::from)
-                .flatMap(article -> mApiClient.getArticle(article.url))
+                .filter(article -> {
+                    DbProvider dbProvider = mDbProviderFactory.getDbProvider();
+                    Article articleInDb = dbProvider.getUnmanagedArticleSync(article.url);
+                    dbProvider.close();
+                    if (articleInDb == null || articleInDb.text == null) {
+                        return true;
+                    } else {
+                        mCurProgress++;
+                        Timber.d("already downloaded: %s", article.url);
+                        Timber.d("mCurProgress %s, mMaxProgress: %s", mCurProgress, mMaxProgress);
+                        showNotificationDownloadProgress(getString(R.string.download_objects_title), mCurProgress, mMaxProgress, mNumOfErrors);
+                        return false;
+                    }
+                })
+                //try to load article
+                //on error increase counters and resume query, emiting onComplete to article observable
+                .flatMap(article -> mApiClient.getArticle(article.url)
+                        .onErrorResumeNext(throwable -> {
+                            Timber.e(throwable, "error while load article: %s", article.url);
+                            mNumOfErrors++;
+                            mCurProgress++;
+                            showNotificationDownloadProgress(
+                                    getString(R.string.download_objects_title),
+                                    mCurProgress, mMaxProgress, mNumOfErrors
+                            );
+                            return Observable.empty();
+                        })
+                )
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(article -> mDbProviderFactory.getDbProvider().saveArticle(article))
-//                .flatMap(article -> Observable.merge())
-//                .map(article -> new Pair<>(0, 1))
+                .flatMap(article -> {
+                    Timber.d("downloaded: %s", article.url);
+                    mCurProgress++;
+                    Timber.d("mCurProgress %s, mMaxProgress: %s", mCurProgress, mMaxProgress);
+                    if (mCurProgress == mMaxProgress) {
+                        showNotificationSimple(
+                                getString(R.string.download_complete_title),
+                                getString(R.string.download_complete_title_content,
+                                        mCurProgress - mNumOfErrors, mMaxProgress, mNumOfErrors)
+                        );
+                        return Observable.just(article).delay(5, TimeUnit.SECONDS);
+                    } else {
+                        return Observable.just(article);
+                    }
+                })
                 .subscribe(
-                        article -> {
-                            curProgress++;
-                            showNotificationDownloadProgress(getString(R.string.download_objects_title), curProgress, mMaxProgress);
-                        },
+                        article -> showNotificationDownloadProgress(getString(R.string.download_objects_title),
+                                mCurProgress, mMaxProgress, mNumOfErrors),
                         error -> {
                             Timber.e(error, "error download objects");
-                            //TODO
+                            stopDownloadAndRemoveNotif();
                         },
                         () -> {
                             Timber.d("onCompleted");
-                            //TODO}
+                            stopDownloadAndRemoveNotif();
                         }
                 );
         if (mCompositeSubscription == null) {
@@ -198,9 +251,9 @@ public class DownloadAllService extends Service {
         startForeground(NOTIFICATION_ID, builder.build());
     }
 
-    private void showNotificationDownloadProgress(String title, int cur, int max) {
+    private void showNotificationDownloadProgress(String title, int cur, int max, int errorsCount) {
         NotificationCompat.Builder builderArticlesList = new NotificationCompat.Builder(this);
-        String content = "Загружено " + cur + "/" + max;
+        String content = getString(R.string.download_progress_content, cur, max, errorsCount);
         builderArticlesList.setContentTitle(title)
                 .setAutoCancel(false)
                 .setContentText(content)
@@ -211,25 +264,14 @@ public class DownloadAllService extends Service {
         startForeground(NOTIFICATION_ID, builderArticlesList.build());
     }
 
-//    private void showNotificationDownloadProgress(int page, int max) {
-//        NotificationCompat.Builder builderArticlesList = new NotificationCompat.Builder(this);
-//        String title = "Загружено " +
-//                String.valueOf(page * Constants.Api.NUM_OF_ARTICLES_ON_RECENT_PAGE) +
-//                "/" + String.valueOf(max * 30);
-//        builderArticlesList.setContentTitle(title)
-//                .setAutoCancel(false)
-//                .setContentText(getString(R.string.downlad_art_list))
-//                .setProgress(max, page, false)
-//                .setSmallIcon(R.drawable.ic_download_white_24dp);
-//
-//        PendingIntent pendingIntent = PendingIntent.getActivity(
-//                this,
-//                NOTIFICATION_ID,
-//                new Intent(this, MainActivity.class),
-//                PendingIntent.FLAG_UPDATE_CURRENT
-//        );
-//
-//        builderArticlesList.setContentIntent(pendingIntent);
-//        startForeground(NOTIFICATION_ID, builderArticlesList.build());
-//    }
+    private void showNotificationSimple(String title, String content) {
+        NotificationCompat.Builder builderArticlesList = new NotificationCompat.Builder(this);
+        builderArticlesList
+                .setContentTitle(title)
+                .setContentText(content)
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_bug_report_white_48dp))
+                .setSmallIcon(R.drawable.ic_bug_report_white_24dp);
+
+        startForeground(NOTIFICATION_ID, builderArticlesList.build());
+    }
 }

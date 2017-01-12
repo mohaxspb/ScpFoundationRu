@@ -53,7 +53,8 @@ public class NetModule {
     @NonNull
     @Singleton
     Interceptor providesLoggingInterceptor() {
-        return new HttpLoggingInterceptor(message -> Timber.d(message)).setLevel(HttpLoggingInterceptor.Level.HEADERS);
+        return new HttpLoggingInterceptor(message -> Timber.d(message)).setLevel(BuildConfig.DEBUG ?
+                HttpLoggingInterceptor.Level.HEADERS : HttpLoggingInterceptor.Level.NONE);
     }
 
     @Provides
