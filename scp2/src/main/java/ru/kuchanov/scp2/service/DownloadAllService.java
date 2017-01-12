@@ -151,9 +151,94 @@ public class DownloadAllService extends Service {
                 break;
             case TYPE_ALL:
                 //TODO
+                downloadAll();
                 break;
         }
         return super.onStartCommand(intent, flags, startId);
+    }
+
+    private void downloadAll() {
+        Timber.d("downloadAll");
+        showNotificationDownloadObjects();
+        //download list
+
+        //just for test use just n elements
+//        final int testMaxProgress = 8;
+
+        Subscription subscription = mApiClient.getObjectsArticles("")
+                .doOnNext(articles -> mMaxProgress = articles.size())
+                // just for test use just n elements
+//                .doOnNext(articles -> mMaxProgress = testMaxProgress)
+                .doOnError(throwable -> showNotificationSimple(
+                        getString(R.string.error_notification_objects_list_download),
+                        getString(R.string.error_notification_objects_list_download_content)
+                ))
+                .onExceptionResumeNext(Observable.<List<Article>>empty().delay(5, TimeUnit.SECONDS))
+                //just for test use just n elements
+//                .map(list -> list.subList(0, testMaxProgress))
+                .flatMap(Observable::from)
+                .filter(article -> {
+                    DbProvider dbProvider = mDbProviderFactory.getDbProvider();
+                    Article articleInDb = dbProvider.getUnmanagedArticleSync(article.url);
+                    dbProvider.close();
+                    if (articleInDb == null || articleInDb.text == null) {
+                        return true;
+                    } else {
+                        mCurProgress++;
+                        Timber.d("already downloaded: %s", article.url);
+                        Timber.d("mCurProgress %s, mMaxProgress: %s", mCurProgress, mMaxProgress);
+                        showNotificationDownloadProgress(getString(R.string.download_objects_title), mCurProgress, mMaxProgress, mNumOfErrors);
+                        return false;
+                    }
+                })
+                //try to load article
+                //on error increase counters and resume query, emiting onComplete to article observable
+                .flatMap(article -> mApiClient.getArticle(article.url)
+                        .onErrorResumeNext(throwable -> {
+                            Timber.e(throwable, "error while load article: %s", article.url);
+                            mNumOfErrors++;
+                            mCurProgress++;
+                            showNotificationDownloadProgress(
+                                    getString(R.string.download_objects_title),
+                                    mCurProgress, mMaxProgress, mNumOfErrors
+                            );
+                            return Observable.empty();
+                        })
+                )
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .flatMap(article -> mDbProviderFactory.getDbProvider().saveArticle(article))
+                .flatMap(article -> {
+                    Timber.d("downloaded: %s", article.url);
+                    mCurProgress++;
+                    Timber.d("mCurProgress %s, mMaxProgress: %s", mCurProgress, mMaxProgress);
+                    if (mCurProgress == mMaxProgress) {
+                        showNotificationSimple(
+                                getString(R.string.download_complete_title),
+                                getString(R.string.download_complete_title_content,
+                                        mCurProgress - mNumOfErrors, mMaxProgress, mNumOfErrors)
+                        );
+                        return Observable.just(article).delay(5, TimeUnit.SECONDS);
+                    } else {
+                        return Observable.just(article);
+                    }
+                })
+                .subscribe(
+                        article -> showNotificationDownloadProgress(getString(R.string.download_objects_title),
+                                mCurProgress, mMaxProgress, mNumOfErrors),
+                        error -> {
+                            Timber.e(error, "error download objects");
+                            stopDownloadAndRemoveNotif();
+                        },
+                        () -> {
+                            Timber.d("onCompleted");
+                            stopDownloadAndRemoveNotif();
+                        }
+                );
+        if (mCompositeSubscription == null) {
+            mCompositeSubscription = new CompositeSubscription();
+        }
+        mCompositeSubscription.add(subscription);
     }
 
     private void downloadObjects(String link) {

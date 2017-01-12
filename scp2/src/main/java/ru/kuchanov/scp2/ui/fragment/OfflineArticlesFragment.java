@@ -1,6 +1,5 @@
 package ru.kuchanov.scp2.ui.fragment;
 
-import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 import android.view.View;
 

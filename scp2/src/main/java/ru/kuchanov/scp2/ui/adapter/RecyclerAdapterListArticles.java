@@ -129,11 +129,17 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
                         .crossFade()
                         .into(image);
             } else {
-                Glide.with(context)
-                        .load(R.drawable.scp_2)
-                        .centerCrop()
-                        .crossFade()
-                        .into(image);
+//                Glide.with(context)
+//                        .load(R.drawable.ic_scp_file)
+//                        .centerCrop()
+//                        .crossFade()
+//                        .into(image);
+                image.setImageResource(R.drawable.ic_scp_file);
+//                Glide.with(context)
+//                        .load(R.drawable.ic_scp_file)
+//                        .centerCrop()
+//                        .crossFade()
+//                        .into(image);
             }
 
             title.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * textSizePrimary);

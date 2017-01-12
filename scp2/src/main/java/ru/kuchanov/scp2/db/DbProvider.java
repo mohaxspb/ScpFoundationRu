@@ -329,7 +329,8 @@ public class DbProvider {
     }
 
     public Article getUnmanagedArticleSync(String url) {
-        return mRealm.copyFromRealm(mRealm.where(Article.class).equalTo(Article.FIELD_URL, url).findFirst());
+        Article articleFromDb = mRealm.where(Article.class).equalTo(Article.FIELD_URL, url).findFirst();
+        return articleFromDb == null ? null : mRealm.copyFromRealm(articleFromDb);
     }
 
     public Article getArticleSync(String url) {
