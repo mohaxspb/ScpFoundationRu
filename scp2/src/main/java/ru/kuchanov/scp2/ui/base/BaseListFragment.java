@@ -65,10 +65,6 @@ public abstract class BaseListFragment<V extends BaseListMvp.View, P extends Bas
         } else {
             mProgressBarCenter.setVisibility(View.GONE);
         }
-//        mProgressBarCenter.setVisibility(
-//                show && getAdapter() != null && getAdapter().getItemCount() != 0
-//                        ? View.VISIBLE : View.GONE
-//        );
     }
 
     @Override
@@ -76,12 +72,11 @@ public abstract class BaseListFragment<V extends BaseListMvp.View, P extends Bas
         if (!isAdded() || mSwipeRefreshLayout == null) {
             return;
         }
-//        if (!mSwipeRefreshLayout.isRefreshing() && !show) {
-//            return;
-//        }
 
-        int screenHeight = DimensionUtils.getScreenHeight();
-        mSwipeRefreshLayout.setProgressViewEndTarget(false, screenHeight - getActionBarHeight() * 2);
+        if(show) {
+            int screenHeight = DimensionUtils.getScreenHeight();
+            mSwipeRefreshLayout.setProgressViewEndTarget(false, screenHeight - getActionBarHeight() * 2);
+        }
 
         mSwipeRefreshLayout.setRefreshing(show);
     }
