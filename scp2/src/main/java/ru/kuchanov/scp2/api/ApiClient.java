@@ -41,7 +41,6 @@ public class ApiClient {
     private final MyPreferenceManager mPreferencesManager;
     private final OkHttpClient mOkHttpClient;
 
-
     public ApiClient(OkHttpClient okHttpClient, Retrofit retrofit, MyPreferenceManager preferencesManager) {
         mPreferencesManager = preferencesManager;
         mOkHttpClient = okHttpClient;
@@ -60,10 +59,44 @@ public class ApiClient {
                 ;
     }
 
-    public Observable<List<Article>> getRecentArticles(int offset) {
-        return bindWithUtils(Observable.<List<Article>>create(subscriber -> {
-            int page = offset / Constants.Api.NUM_OF_ARTICLES_ON_RECENT_PAGE + 1/*as pages are not zero based*/;
+    public Observable<Integer> getRecentArticlesPageCount() {
+        return bindWithUtils(Observable.<Integer>create(subscriber -> {
+            Request request = new Request.Builder()
+                    .url(BuildConfig.BASE_API_URL + Constants.Api.MOST_RECENT_URL + 1)
+                    .build();
 
+            String responseBody = null;
+            try {
+                Response response = mOkHttpClient.newCall(request).execute();
+                responseBody = response.body().string();
+            } catch (IOException e) {
+                subscriber.onError(new IOException(MyApplication.getAppInstance().getString(R.string.error_connection)));
+                return;
+            }
+            try {
+                Document doc = Jsoup.parse(responseBody);
+
+                //get num of pages
+                Element spanWithNumber = doc.getElementsByClass("pager-no").first();
+                String text = spanWithNumber.text();
+                Integer numOfPages = Integer.valueOf(text.substring(text.lastIndexOf(" ") + 1));
+
+                subscriber.onNext(numOfPages);
+                subscriber.onCompleted();
+            } catch (Exception e) {
+                Timber.e(e, "error while get arts list");
+                subscriber.onError(e);
+            }
+        }));
+    }
+
+    public Observable<List<Article>> getRecentArticlesForOffset(int offset) {
+        int page = offset / Constants.Api.NUM_OF_ARTICLES_ON_RECENT_PAGE + 1/*as pages are not zero based*/;
+        return getRecentArticlesForPage(page);
+    }
+
+    public Observable<List<Article>> getRecentArticlesForPage(int page) {
+        return bindWithUtils(Observable.<List<Article>>create(subscriber -> {
             Request request = new Request.Builder()
                     .url(BuildConfig.BASE_API_URL + Constants.Api.MOST_RECENT_URL + page)
                     .build();
@@ -78,6 +111,12 @@ public class ApiClient {
             }
             try {
                 Document doc = Jsoup.parse(responseBody);
+
+                //get num of pages
+                Element spanWithNumber = doc.getElementsByClass("pager-no").first();
+                String text = spanWithNumber.text();
+                Integer numOfPages = Integer.valueOf(text.substring(text.lastIndexOf(" ") + 1));
+
                 Element pageContent = doc.getElementsByClass("wiki-content-table").first();
                 if (pageContent == null) {
                     subscriber.onError(new ScpParseException(MyApplication.getAppInstance().getString(R.string.error_parse)));

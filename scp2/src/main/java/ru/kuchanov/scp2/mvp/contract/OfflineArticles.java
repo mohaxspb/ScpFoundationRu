@@ -9,6 +9,7 @@ import ru.kuchanov.scp2.mvp.base.BaseArticlesListMvp;
  */
 public interface OfflineArticles {
     interface View extends BaseArticlesListMvp.View {
+       void showDownloadDialog();
     }
 
     interface Presenter extends BaseArticlesListMvp.Presenter<View> {

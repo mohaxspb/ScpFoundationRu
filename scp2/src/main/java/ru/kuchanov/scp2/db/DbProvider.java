@@ -328,6 +328,15 @@ public class DbProvider {
                 .flatMap(arts -> arts.isEmpty() ? Observable.just(null) : Observable.just(arts.first()));
     }
 
+    public Article getUnmanagedArticleSync(String url) {
+        Article articleFromDb = mRealm.where(Article.class).equalTo(Article.FIELD_URL, url).findFirst();
+        return articleFromDb == null ? null : mRealm.copyFromRealm(articleFromDb);
+    }
+
+    public Article getArticleSync(String url) {
+        return mRealm.where(Article.class).equalTo(Article.FIELD_URL, url).findFirst();
+    }
+
     /**
      * @param article obj to save
      * @return Observable that emits unmanaged saved article on successful insert or throws error

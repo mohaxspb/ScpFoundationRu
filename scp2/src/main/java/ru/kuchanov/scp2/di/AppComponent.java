@@ -7,6 +7,7 @@ import ru.kuchanov.scp2.di.module.AppModule;
 import ru.kuchanov.scp2.di.module.NetModule;
 import ru.kuchanov.scp2.di.module.PresentersModule;
 import ru.kuchanov.scp2.di.module.StorageModule;
+import ru.kuchanov.scp2.service.DownloadAllService;
 import ru.kuchanov.scp2.ui.activity.ArticleActivity;
 import ru.kuchanov.scp2.ui.adapter.RecyclerAdapterArticle;
 import ru.kuchanov.scp2.ui.adapter.RecyclerAdapterListArticles;
@@ -65,4 +66,6 @@ public interface AppComponent {
     void inject(RecyclerAdapterListArticles adapterNewArticles);
 
     void inject(RecyclerAdapterArticle adapterNewArticles);
+
+    void inject(DownloadAllService service);
 }

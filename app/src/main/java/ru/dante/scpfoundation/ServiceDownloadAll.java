@@ -6,11 +6,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.StringRes;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -20,8 +22,7 @@ import ru.dante.scpfoundation.utils.parsing.DownloadAllArticlesInfo;
 import ru.dante.scpfoundation.utils.parsing.DownloadArticle;
 import ru.dante.scpfoundation.utils.parsing.DownloadObjects;
 
-public class ServiceDownloadAll extends IntentService
-{
+public class ServiceDownloadAll extends IntentService {
     public static final String LOG = ServiceDownloadAll.class.getSimpleName();
     public static final String KEY_DOWNLOAD_TYPE = "KEY_DOWNLOAD_TYPE";
     public static final String KEY_POSITION = "KEY_POSITION";
@@ -42,23 +43,19 @@ public class ServiceDownloadAll extends IntentService
      *
      * @param name Used to name the worker thread, important only for debugging.
      */
-    public ServiceDownloadAll(String name)
-    {
+    public ServiceDownloadAll(String name) {
         super(name);
     }
 
-    public ServiceDownloadAll()
-    {
+    public ServiceDownloadAll() {
         super(LOG);
     }
 
-    public static boolean isRunning()
-    {
+    public static boolean isRunning() {
         return instance != null;
     }
 
-    public static void startDownloadWithType(Context ctx, DownloadTypes type)
-    {
+    public static void startDownloadWithType(Context ctx, DownloadTypes type) {
         Intent intent = new Intent(ctx, ServiceDownloadAll.class);
         Bundle bundle = new Bundle();
         bundle.putInt(KEY_DOWNLOAD_TYPE, type.ordinal());
@@ -67,8 +64,7 @@ public class ServiceDownloadAll extends IntentService
         ctx.startService(intent);
     }
 
-    public static void stopDownload(Context ctx)
-    {
+    public static void stopDownload(Context ctx) {
         Log.i(LOG, "stopDownload called");
         Intent intent = new Intent(ctx, ServiceDownloadAll.class);
         intent.setAction(ACTION_DELETE);
@@ -78,11 +74,10 @@ public class ServiceDownloadAll extends IntentService
     /**
      * starts service for download objects
      */
-    private static void createIntentForArticleDownload(Context ctx, ArrayList<Article> articles, int position)
-    {
+    private static void createIntentForArticleDownload(Context ctx, List<Article> articles, int position) {
         Intent intent = new Intent(ctx, ServiceDownloadAll.class);
         Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList(Article.KEY_ARTICLE, articles);
+        bundle.putParcelableArrayList(Article.KEY_ARTICLE, (ArrayList<? extends Parcelable>) articles);
         bundle.putInt(KEY_POSITION, position);
         intent.putExtras(bundle);
         intent.setAction(ACTION_DOWNLOAD_ARTICLE);
@@ -92,8 +87,7 @@ public class ServiceDownloadAll extends IntentService
     /**
      * creates intent and starts article download from list of all arts
      */
-    private static void createIntentForArticleDownload(Context ctx, int position, int max)
-    {
+    private static void createIntentForArticleDownload(Context ctx, int position, int max) {
         Intent intent = new Intent(ctx, ServiceDownloadAll.class);
         Bundle bundle = new Bundle();
         bundle.putInt(KEY_POSITION, position);
@@ -103,8 +97,7 @@ public class ServiceDownloadAll extends IntentService
         ctx.startService(intent);
     }
 
-    private static void createIntentForArticlesListDownload(Context ctx, int position, int max)
-    {
+    private static void createIntentForArticlesListDownload(Context ctx, int position, int max) {
         Intent intent = new Intent(ctx, ServiceDownloadAll.class);
         Bundle bundle = new Bundle();
         bundle.putInt(KEY_POSITION, position);
@@ -114,8 +107,7 @@ public class ServiceDownloadAll extends IntentService
         ctx.startService(intent);
     }
 
-    private static PendingIntent getContentIntent(Context ctx)
-    {
+    private static PendingIntent getContentIntent(Context ctx) {
         return PendingIntent.getActivity(ctx,
                 NOTIFICATION_ID,
                 new Intent(ctx, ActivityMain.class),
@@ -123,52 +115,42 @@ public class ServiceDownloadAll extends IntentService
     }
 
     @Override
-    public void onDestroy()
-    {
+    public void onDestroy() {
         Log.i(LOG, "onDestroy");
         instance = null;
         super.onDestroy();
     }
 
     @Override
-    public void onCreate()
-    {
+    public void onCreate() {
         super.onCreate();
         instance = this;
     }
 
     @Override
-    protected void onHandleIntent(Intent intent)
-    {
-        if (intent != null && intent.getAction() != null)
-        {
+    protected void onHandleIntent(Intent intent) {
+        if (intent != null && intent.getAction() != null) {
             Log.i(LOG, "onHandleIntent with action: " + intent.getAction());
             Bundle args = intent.getExtras();
-            switch (intent.getAction())
-            {
+            switch (intent.getAction()) {
                 case ACTION_DELETE:
                     Log.e(LOG, "stop download");
                     shouldStop = true;
                     stopForeground(true);
                     return;
                 case ACTION_DOWNLOAD_ARTICLE:
-                    ArrayList<Article> objects = args.getParcelableArrayList(Article.KEY_ARTICLE);
+                    List<Article> objects = args.getParcelableArrayList(Article.KEY_ARTICLE);
                     int position = args.getInt(KEY_POSITION);
                     int max = args.getInt(KEY_MAX);
-                    if (objects != null)
-                    {
-                        if (position != objects.size())
-                        {
+                    if (objects != null) {
+                        if (position != objects.size()) {
                             downloadArticle(objects, position);
-                        }
-                        else {
+                        } else {
                             notifyDoneAndFinish();
                         }
-                    } else
-                    {
+                    } else {
                         SharedPreferences preferences = getSharedPreferences(getString(R.string.pref_arts_list), MODE_PRIVATE);
-                        for (Map.Entry<String, ?> entry : preferences.getAll().entrySet())
-                        {
+                        for (Map.Entry<String, ?> entry : preferences.getAll().entrySet()) {
                             String url = entry.getKey();
                             String title = entry.getValue().toString();
                             downloadArticle(url, title, position, max);
@@ -186,8 +168,7 @@ public class ServiceDownloadAll extends IntentService
                     int contentTitle;
                     int contentText;
                     String url;
-                    switch (types)
-                    {
+                    switch (types) {
                         case Type1:
                             contentTitle = R.string.download_type_one;
                             contentText = R.string.download_type_one_list;
@@ -223,8 +204,7 @@ public class ServiceDownloadAll extends IntentService
         }
     }
 
-    private void processStartNotification(@StringRes int contentTitle, @StringRes int contentText, String url)
-    {
+    private void processStartNotification(@StringRes int contentTitle, @StringRes int contentText, String url) {
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
         builder.setContentTitle(getString(contentTitle))
                 .setAutoCancel(false)
@@ -235,18 +215,15 @@ public class ServiceDownloadAll extends IntentService
 
         startForeground(NOTIFICATION_ID, builder.build());
 
-        switch (url)
-        {
+        switch (url) {
             case Const.Urls.OBJECTS_1:
             case Const.Urls.OBJECTS_2:
             case Const.Urls.OBJECTS_3:
             case Const.Urls.OBJECTS_RU:
                 ArrayList<Article> objects = DownloadObjects.getAllArticles(url, this);
-                if (objects != null)
-                {
+                if (objects != null) {
                     createIntentForArticleDownload(this, objects, 0);
-                } else
-                {
+                } else {
                     //notify about error and remove notif;
                     notifyErrorAndFinish();
                 }
@@ -254,11 +231,9 @@ public class ServiceDownloadAll extends IntentService
             case Const.Urls.NEW_ARTICLES:
                 //download all
                 Integer numOfPages = DownloadAllArticlesInfo.getNumOfPages();
-                if (numOfPages != null)
-                {
+                if (numOfPages != null) {
                     downloadArticlesList(1, numOfPages);
-                } else
-                {
+                } else {
                     //notify about error and remove notif;
                     Log.e(LOG, "numOfPages is NULL");
                     notifyErrorAndFinish();
@@ -267,20 +242,17 @@ public class ServiceDownloadAll extends IntentService
         }
     }
 
-    private void downloadArticlesList(int position, int max)
-    {
+    private void downloadArticlesList(int position, int max) {
         Log.i(LOG, "downloadArticlesList with position: " + position);
-        if (shouldStop)
-        {
-            Log.i(LOG, "shouldStop: " + shouldStop);
+        if (shouldStop) {
+            Log.i(LOG, "shouldStop: " + true);
             stopForeground(true);
             shouldStop = false;
             return;
         }
 
         SharedPreferences preferences = getSharedPreferences(getString(R.string.pref_arts_list), MODE_PRIVATE);
-        if (position >= max)
-        {
+        if (position >= max) {
             //start article download
             createIntentForArticleDownload(this, 0, preferences.getAll().size());
             return;
@@ -297,15 +269,12 @@ public class ServiceDownloadAll extends IntentService
         startForeground(NOTIFICATION_ID, builderArticlesList.build());
 
         ArrayList<Article> articles = DownloadAllArticlesInfo.getArticlesByPage(position);
-        if (articles != null)
-        {
+        if (articles != null) {
             Log.i(LOG, "downloadArticlesList size: " + articles.size());
             SharedPreferences.Editor editor = preferences.edit();
-            for (Article a : articles)
-            {
+            for (Article a : articles) {
                 //prevent total reloading of all lists
-                if (preferences.contains(a.getURL()))
-                {
+                if (preferences.contains(a.getURL())) {
                     //start article download
                     createIntentForArticleDownload(this, 0, preferences.getAll().size());
                     return;
@@ -314,16 +283,14 @@ public class ServiceDownloadAll extends IntentService
             }
             editor.apply();
             createIntentForArticlesListDownload(this, position + 1, max);
-        } else
-        {
+        } else {
             Log.i(LOG, "downloadArticlesList articles is NULL");
             //notify about error and remove notif;
             notifyErrorAndFinish();
         }
     }
 
-    private void notifyErrorAndFinish()
-    {
+    private void notifyErrorAndFinish() {
         shouldStop = true;
         NotificationCompat.Builder builderError = new NotificationCompat.Builder(this);
         builderError.setContentTitle(getString(R.string.download_error))
@@ -336,8 +303,7 @@ public class ServiceDownloadAll extends IntentService
         sleep(5);
     }
 
-    private void notifyDoneAndFinish()
-    {
+    private void notifyDoneAndFinish() {
         NotificationCompat.Builder builderDone = new NotificationCompat.Builder(this);
         builderDone.setContentTitle(getString(R.string.download_done))
                 .setAutoCancel(true)
@@ -349,17 +315,14 @@ public class ServiceDownloadAll extends IntentService
         sleep(5);
     }
 
-    private void downloadArticle(String url, String title, int position, int max)
-    {
-        if (shouldStop)
-        {
+    private void downloadArticle(String url, String title, int position, int max) {
+        if (shouldStop) {
             stopForeground(true);
             shouldStop = false;
             return;
         }
 
-        if (position >= max)
-        {
+        if (position >= max) {
             notifyDoneAndFinish();
             return;
         }
@@ -374,8 +337,7 @@ public class ServiceDownloadAll extends IntentService
         builderArticle.setContentIntent(getContentIntent(this));
         startForeground(NOTIFICATION_ID, builderArticle.build());
 
-        if (OfflineUtils.hasOfflineWithURL(this, url))
-        {
+        if (OfflineUtils.hasOfflineWithURL(this, url)) {
             SharedPreferences preferences = getSharedPreferences(getString(R.string.pref_arts_list), MODE_PRIVATE);
             preferences.edit().remove(url).apply();
             createIntentForArticleDownload(this, position + 1, max);
@@ -383,35 +345,28 @@ public class ServiceDownloadAll extends IntentService
         }
 
         Article object = DownloadArticle.getArticle(url);
-        if (object != null)
-        {
+        if (object != null) {
             OfflineUtils.updateOfflineOnDevice(this, object.getURL(), object.getTitle(), object.getArticlesText(), false);
             SharedPreferences preferences = getSharedPreferences(getString(R.string.pref_arts_list), MODE_PRIVATE);
             preferences.edit().remove(url).apply();
             createIntentForArticleDownload(this, position + 1, max);
-        } else
-        {
+        } else {
             notifyErrorAndFinish();
         }
     }
 
-    private void downloadArticle(ArrayList<Article> objects, int position)
-    {
+    private void downloadArticle(List<Article> objects, int position) {
         String url = objects.get(position).getURL();
         String title = objects.get(position).getTitle();
         int max = objects.size();
 
-//        downloadArticle(url, title, position, max);
-
-        if (shouldStop)
-        {
+        if (shouldStop) {
             stopForeground(true);
             shouldStop = false;
             return;
         }
 
-        if (position >= max)
-        {
+        if (position >= max) {
             notifyDoneAndFinish();
             return;
         }
@@ -426,36 +381,29 @@ public class ServiceDownloadAll extends IntentService
         builderArticle.setContentIntent(getContentIntent(this));
         startForeground(NOTIFICATION_ID, builderArticle.build());
 
-        if (OfflineUtils.hasOfflineWithURL(this, url))
-        {
+        if (OfflineUtils.hasOfflineWithURL(this, url)) {
             createIntentForArticleDownload(this, objects, position + 1);
             return;
         }
 
         Article object = DownloadArticle.getArticle(url);
-        if (object != null)
-        {
+        if (object != null) {
             OfflineUtils.updateOfflineOnDevice(this, object.getURL(), object.getTitle(), object.getArticlesText(), false);
             createIntentForArticleDownload(this, objects, position + 1);
-        } else
-        {
+        } else {
             notifyErrorAndFinish();
         }
     }
 
-    private void sleep(long seconds)
-    {
-        try
-        {
+    private void sleep(long seconds) {
+        try {
             Thread.sleep(TimeUnit.SECONDS.toMillis(seconds));
-        } catch (InterruptedException e)
-        {
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
-    public enum DownloadTypes
-    {
+    public enum DownloadTypes {
         Type1, Type2, Type3, TypeRu, TypeAll
     }
 }

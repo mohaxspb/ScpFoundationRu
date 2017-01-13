@@ -126,6 +126,9 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
         if (!isAdded()) {
             return;
         }
+        if(data.isEmpty()){
+            showCenterProgress(false);
+        }
         getAdapter().setData(data);
         resetOnScrollListener();
     }
@@ -141,7 +144,8 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
     /**
      * override it to change or disable endless scroolling behavior
      */
-    protected void resetOnScrollListener() {
+    @Override
+    public void resetOnScrollListener() {
         mRecyclerView.clearOnScrollListeners();
         if (mAdapter.getItemCount() < Constants.Api.NUM_OF_ARTICLES_ON_SEARCH_PAGE) {
             //so there is to less arts to be able to load from bottom

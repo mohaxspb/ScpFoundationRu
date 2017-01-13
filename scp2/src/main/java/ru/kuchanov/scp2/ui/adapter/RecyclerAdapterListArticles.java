@@ -88,6 +88,8 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
     }
 
     class ViewHolderText extends RecyclerView.ViewHolder {
+        @BindView(R.id.typeIcon)
+        ImageView typeIcon;
         @BindView(R.id.image)
         ImageView image;
         @BindView(R.id.favorite)
@@ -121,19 +123,27 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
             });
 
             //TODO show them in ViewPager
+            //FIXME - NONONONONONO no viewPager - it's laggy!!!!!!!!!!!!!!!!!!!!!111oneone
             //set image
             if (article.imagesUrls != null && !article.imagesUrls.isEmpty()) {
                 Glide.with(context)
                         .load(article.imagesUrls.first().val)
+                        .error(AttributeGetter.getDrawableId(context, R.attr.iconEmptyImage))
                         .centerCrop()
                         .crossFade()
                         .into(image);
             } else {
-                Glide.with(context)
-                        .load(R.drawable.scp_2)
-                        .centerCrop()
-                        .crossFade()
-                        .into(image);
+//                Glide.with(context)
+//                        .load(R.drawable.ic_scp_file)
+//                        .centerCrop()
+//                        .crossFade()
+//                        .into(image);
+                image.setImageResource(R.drawable.ic_scp_file);
+//                Glide.with(context)
+//                        .load(R.drawable.ic_scp_file)
+//                        .centerCrop()
+//                        .crossFade()
+//                        .into(image);
             }
 
             title.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * textSizePrimary);

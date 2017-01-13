@@ -31,7 +31,7 @@ public class MostRecentArticlesPresenter extends BaseListArticlesPresenter<Recen
 
     @Override
     protected Observable<List<Article>> getApiObservable(int offset) {
-        return mApiClient.getRecentArticles(offset);
+        return mApiClient.getRecentArticlesForOffset(offset);
     }
 
     @Override
