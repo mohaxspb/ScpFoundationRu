@@ -20,6 +20,8 @@ public interface BaseListMvp {
         void enableSwipeRefresh(boolean enable);
 
         void updateData(List<Article> data);
+
+        void resetOnScrollListener();
     }
 
     interface Presenter<V extends View> extends BaseDataPresenter<V> {

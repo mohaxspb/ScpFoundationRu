@@ -120,6 +120,14 @@ public abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.Vi
                             getView().showSwipeProgress(false);
                             getView().showBottomProgress(false);
                             getView().showCenterProgress(false);
+                            //also we need to reset onScrollListener
+                            //if there is data, because we can receive error
+                            //while download with error
+                            //in this case we do not call View#updateData,
+                            //which calls resetOnScrollListener
+                            if (mData != null && !mData.isEmpty()) {
+                                getView().resetOnScrollListener();
+                            }
                         });
     }
 
