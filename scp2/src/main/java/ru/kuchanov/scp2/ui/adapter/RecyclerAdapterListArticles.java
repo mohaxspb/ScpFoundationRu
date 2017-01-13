@@ -125,6 +125,7 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
             if (article.imagesUrls != null && !article.imagesUrls.isEmpty()) {
                 Glide.with(context)
                         .load(article.imagesUrls.first().val)
+                        .error(AttributeGetter.getDrawableId(context, R.attr.iconEmptyImage))
                         .centerCrop()
                         .crossFade()
                         .into(image);

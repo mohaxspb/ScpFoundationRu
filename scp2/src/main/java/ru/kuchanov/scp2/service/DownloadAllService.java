@@ -268,7 +268,6 @@ public class DownloadAllService extends Service {
 
         //just for test use just n elements
 //        final int testMaxProgress = 8;
-
         Subscription subscription = mApiClient.getObjectsArticles(link)
                 .doOnNext(articles -> mMaxProgress = articles.size())
                 // just for test use just n elements
