@@ -28,10 +28,12 @@ public class Article extends RealmObject {
     public static final String FIELD_IS_IN_RECENT = "isInRecent";
     public static final String FIELD_IS_IN_FAVORITE = "isInFavorite";
     public static final String FIELD_IS_IN_MOST_RATED = "isInMostRated";
+
     public static final String FIELD_IS_IN_OBJECTS_1 = "isInObjects1";
     public static final String FIELD_IS_IN_OBJECTS_2 = "isInObjects2";
     public static final String FIELD_IS_IN_OBJECTS_3 = "isInObjects3";
     public static final String FIELD_IS_IN_OBJECTS_RU = "isInObjectsRu";
+
     public static final String FIELD_URL = "url";
     public static final String FIELD_LOCAL_UPDATE_TIME_STAMP = "localUpdateTimeStamp";
     public static final String FIELD_TEXT = "text";

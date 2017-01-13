@@ -88,6 +88,8 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
     }
 
     class ViewHolderText extends RecyclerView.ViewHolder {
+        @BindView(R.id.typeIcon)
+        ImageView typeIcon;
         @BindView(R.id.image)
         ImageView image;
         @BindView(R.id.favorite)
@@ -121,6 +123,7 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
             });
 
             //TODO show them in ViewPager
+            //FIXME - NONONONONONO no viewPager - it's laggy!!!!!!!!!!!!!!!!!!!!!111oneone
             //set image
             if (article.imagesUrls != null && !article.imagesUrls.isEmpty()) {
                 Glide.with(context)

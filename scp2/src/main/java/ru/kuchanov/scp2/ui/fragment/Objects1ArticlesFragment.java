@@ -28,7 +28,7 @@ public class Objects1ArticlesFragment
     }
 
     @Override
-    protected void resetOnScrollListener() {
+    public void resetOnScrollListener() {
         //FIXME now we do not have paging for favs
     }
 

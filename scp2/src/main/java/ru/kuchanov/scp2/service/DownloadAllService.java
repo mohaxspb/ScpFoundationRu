@@ -9,6 +9,7 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringDef;
 import android.support.v4.app.NotificationCompat;
+import android.util.Pair;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -28,6 +29,7 @@ import ru.kuchanov.scp2.manager.MyPreferenceManager;
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
@@ -138,19 +140,18 @@ public class DownloadAllService extends Service {
         Timber.d("onStartCommand with type; %s", type);
         switch (type) {
             case TYPE_1:
-                downloadObjects(Constants.Urls.OBJECTS_1);
+                downloadObjects(Constants.Urls.OBJECTS_1, Article.FIELD_IS_IN_OBJECTS_1);
                 break;
             case TYPE_2:
-                downloadObjects(Constants.Urls.OBJECTS_2);
+                downloadObjects(Constants.Urls.OBJECTS_2, Article.FIELD_IS_IN_OBJECTS_2);
                 break;
             case TYPE_3:
-                downloadObjects(Constants.Urls.OBJECTS_3);
+                downloadObjects(Constants.Urls.OBJECTS_3, Article.FIELD_IS_IN_OBJECTS_3);
                 break;
             case TYPE_RU:
-                downloadObjects(Constants.Urls.OBJECTS_RU);
+                downloadObjects(Constants.Urls.OBJECTS_RU, Article.FIELD_IS_IN_OBJECTS_RU);
                 break;
             case TYPE_ALL:
-                //TODO
                 downloadAll();
                 break;
         }
@@ -164,8 +165,8 @@ public class DownloadAllService extends Service {
         Subscription subscription = mApiClient.getRecentArticlesPageCount()
                 .doOnNext(pageCount -> {
                     mMaxProgress = pageCount;
-                    //FIXME test value
-                    mMaxProgress = 3;
+//                    //test value
+//                    mMaxProgress = 3;
                 })
                 .doOnError(throwable -> showNotificationSimple(
                         getString(R.string.error_notification_title),
@@ -191,11 +192,11 @@ public class DownloadAllService extends Service {
                 .doOnNext(pageCount -> {
                     mCurProgress = 0;
                     mMaxProgress = pageCount.size();
-                    //FIXME test value
-                    mMaxProgress = 30;
+//                    //test value
+//                    mMaxProgress = 30;
                 })
-                //FIXME test value
-                .flatMap(list -> Observable.just(list.subList(0, mMaxProgress)))
+//                //test value
+//                .flatMap(list -> Observable.just(list.subList(0, mMaxProgress)))
                 .flatMap(Observable::from)
                 //TODO refactor it - from here code is equal to objects one
                 .filter(article -> {
@@ -262,7 +263,8 @@ public class DownloadAllService extends Service {
         mCompositeSubscription.add(subscription);
     }
 
-    private void downloadObjects(String link) {
+    //TODO add saving to proper lists
+    private void downloadObjects(String link, String dbField) {
         showNotificationDownloadList();
         //download list
 
@@ -279,6 +281,13 @@ public class DownloadAllService extends Service {
                 .onExceptionResumeNext(Observable.<List<Article>>empty().delay(5, TimeUnit.SECONDS))
                 //just for test use just n elements
 //                .map(list -> list.subList(0, testMaxProgress))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .flatMap(articles -> mDbProviderFactory.getDbProvider()
+                        .<Pair<Integer, Integer>>saveObjectsArticlesList(articles, dbField)
+                        .flatMap(integerIntegerPair -> Observable.just(articles)))
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(Schedulers.io())
                 .flatMap(Observable::from)
                 .filter(article -> {
                     DbProvider dbProvider = mDbProviderFactory.getDbProvider();
