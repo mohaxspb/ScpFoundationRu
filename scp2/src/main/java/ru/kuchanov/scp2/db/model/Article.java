@@ -135,28 +135,33 @@ public class Article extends RealmObject {
         return 42;
     }
 
+//    @Override
+//    public String toString() {
+//        return "Article{" +
+//                "isInRecent=" + isInRecent +
+//                ", isInFavorite=" + isInFavorite +
+//                ", isInMostRated=" + isInMostRated +
+//                ", isInReaden=" + isInReaden +
+//                ", localUpdateTimeStamp=" + localUpdateTimeStamp +
+//                ", hasTabs=" + hasTabs +
+////                ", tabsTexts=" + tabsTexts +
+////                ", tabsTitles=" + tabsTitles +
+////                ", textParts=" + textParts +
+////                ", textPartsTypes=" + textPartsTypes +
+//                ", imagesUrls=" + imagesUrls +
+//                ", url='" + url + '\'' +
+//                ", title='" + title + '\'' +
+////                ", text='" + text + '\'' +
+//                ", rating=" + rating +
+//                ", authorName='" + authorName + '\'' +
+//                ", authorUrl='" + authorUrl + '\'' +
+//                ", createdDate='" + createdDate + '\'' +
+//                ", updatedDate='" + updatedDate + '\'' +
+//                '}';
+//    }
+
     @Override
     public String toString() {
-        return "Article{" +
-                "isInRecent=" + isInRecent +
-                ", isInFavorite=" + isInFavorite +
-                ", isInMostRated=" + isInMostRated +
-                ", isInReaden=" + isInReaden +
-                ", localUpdateTimeStamp=" + localUpdateTimeStamp +
-                ", hasTabs=" + hasTabs +
-//                ", tabsTexts=" + tabsTexts +
-//                ", tabsTitles=" + tabsTitles +
-//                ", textParts=" + textParts +
-//                ", textPartsTypes=" + textPartsTypes +
-                ", imagesUrls=" + imagesUrls +
-                ", url='" + url + '\'' +
-                ", title='" + title + '\'' +
-//                ", text='" + text + '\'' +
-                ", rating=" + rating +
-                ", authorName='" + authorName + '\'' +
-                ", authorUrl='" + authorUrl + '\'' +
-                ", createdDate='" + createdDate + '\'' +
-                ", updatedDate='" + updatedDate + '\'' +
-                '}';
+        return url+"\n";
     }
 }

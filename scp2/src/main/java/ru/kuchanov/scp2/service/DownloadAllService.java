@@ -159,24 +159,45 @@ public class DownloadAllService extends Service {
 
     private void downloadAll() {
         Timber.d("downloadAll");
-        showNotificationDownloadObjects();
+        showNotificationDownloadList();
         //download list
-
-        //just for test use just n elements
-//        final int testMaxProgress = 8;
-
-        Subscription subscription = mApiClient.getObjectsArticles("")
-                .doOnNext(articles -> mMaxProgress = articles.size())
-                // just for test use just n elements
-//                .doOnNext(articles -> mMaxProgress = testMaxProgress)
+        Subscription subscription = mApiClient.getRecentArticlesPageCount()
+                .doOnNext(pageCount -> {
+                    mMaxProgress = pageCount;
+                    //FIXME test value
+                    mMaxProgress = 3;
+                })
                 .doOnError(throwable -> showNotificationSimple(
-                        getString(R.string.error_notification_objects_list_download),
-                        getString(R.string.error_notification_objects_list_download_content)
+                        getString(R.string.error_notification_title),
+                        getString(R.string.error_notification_recent_list_download_content)
                 ))
-                .onExceptionResumeNext(Observable.<List<Article>>empty().delay(5, TimeUnit.SECONDS))
-                //just for test use just n elements
-//                .map(list -> list.subList(0, testMaxProgress))
+                .onExceptionResumeNext(Observable.<Integer>empty().delay(5, TimeUnit.SECONDS))
+                .flatMap(integer -> Observable.range(1, mMaxProgress))
+                .flatMap(integer -> mApiClient.getRecentArticlesForPage(integer)
+                        .doOnNext(list -> {
+                            mCurProgress = integer;
+                            showNotificationDownloadProgress(getString(R.string.notification_recent_list_title),
+                                    mCurProgress, mMaxProgress, mNumOfErrors);
+                        })
+                        .flatMap(Observable::from)
+                        .doOnError(throwable -> {
+                            mCurProgress = integer;
+                            mNumOfErrors++;
+                            showNotificationDownloadProgress(getString(R.string.notification_recent_list_title),
+                                    mCurProgress, mMaxProgress, mNumOfErrors);
+                        })
+                        .onExceptionResumeNext(Observable.empty()))
+                .toList()
+                .doOnNext(pageCount -> {
+                    mCurProgress = 0;
+                    mMaxProgress = pageCount.size();
+                    //FIXME test value
+                    mMaxProgress = 30;
+                })
+                //FIXME test value
+                .flatMap(list -> Observable.just(list.subList(0, mMaxProgress)))
                 .flatMap(Observable::from)
+                //TODO refactor it - from here code is equal to objects one
                 .filter(article -> {
                     DbProvider dbProvider = mDbProviderFactory.getDbProvider();
                     Article articleInDb = dbProvider.getUnmanagedArticleSync(article.url);
@@ -187,7 +208,8 @@ public class DownloadAllService extends Service {
                         mCurProgress++;
                         Timber.d("already downloaded: %s", article.url);
                         Timber.d("mCurProgress %s, mMaxProgress: %s", mCurProgress, mMaxProgress);
-                        showNotificationDownloadProgress(getString(R.string.download_objects_title), mCurProgress, mMaxProgress, mNumOfErrors);
+                        showNotificationDownloadProgress(getString(R.string.download_recent_title),
+                                mCurProgress, mMaxProgress, mNumOfErrors);
                         return false;
                     }
                 })
@@ -198,8 +220,7 @@ public class DownloadAllService extends Service {
                             Timber.e(throwable, "error while load article: %s", article.url);
                             mNumOfErrors++;
                             mCurProgress++;
-                            showNotificationDownloadProgress(
-                                    getString(R.string.download_objects_title),
+                            showNotificationDownloadProgress(getString(R.string.download_recent_title),
                                     mCurProgress, mMaxProgress, mNumOfErrors
                             );
                             return Observable.empty();
@@ -208,8 +229,8 @@ public class DownloadAllService extends Service {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(article -> mDbProviderFactory.getDbProvider().saveArticle(article))
+                //TODO we can show notif here as we do it for articles lists
                 .flatMap(article -> {
-                    Timber.d("downloaded: %s", article.url);
                     mCurProgress++;
                     Timber.d("mCurProgress %s, mMaxProgress: %s", mCurProgress, mMaxProgress);
                     if (mCurProgress == mMaxProgress) {
@@ -242,7 +263,7 @@ public class DownloadAllService extends Service {
     }
 
     private void downloadObjects(String link) {
-        showNotificationDownloadObjects();
+        showNotificationDownloadList();
         //download list
 
         //just for test use just n elements
@@ -253,7 +274,7 @@ public class DownloadAllService extends Service {
                 // just for test use just n elements
 //                .doOnNext(articles -> mMaxProgress = testMaxProgress)
                 .doOnError(throwable -> showNotificationSimple(
-                        getString(R.string.error_notification_objects_list_download),
+                        getString(R.string.error_notification_title),
                         getString(R.string.error_notification_objects_list_download_content)
                 ))
                 .onExceptionResumeNext(Observable.<List<Article>>empty().delay(5, TimeUnit.SECONDS))
@@ -324,7 +345,7 @@ public class DownloadAllService extends Service {
         mCompositeSubscription.add(subscription);
     }
 
-    private void showNotificationDownloadObjects() {
+    private void showNotificationDownloadList() {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
 
         builder.setContentTitle(getString(R.string.download_objects_title))

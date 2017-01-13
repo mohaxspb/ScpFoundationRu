@@ -6,11 +6,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.StringRes;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -72,10 +74,10 @@ public class ServiceDownloadAll extends IntentService {
     /**
      * starts service for download objects
      */
-    private static void createIntentForArticleDownload(Context ctx, ArrayList<Article> articles, int position) {
+    private static void createIntentForArticleDownload(Context ctx, List<Article> articles, int position) {
         Intent intent = new Intent(ctx, ServiceDownloadAll.class);
         Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList(Article.KEY_ARTICLE, articles);
+        bundle.putParcelableArrayList(Article.KEY_ARTICLE, (ArrayList<? extends Parcelable>) articles);
         bundle.putInt(KEY_POSITION, position);
         intent.putExtras(bundle);
         intent.setAction(ACTION_DOWNLOAD_ARTICLE);
@@ -137,7 +139,7 @@ public class ServiceDownloadAll extends IntentService {
                     stopForeground(true);
                     return;
                 case ACTION_DOWNLOAD_ARTICLE:
-                    ArrayList<Article> objects = args.getParcelableArrayList(Article.KEY_ARTICLE);
+                    List<Article> objects = args.getParcelableArrayList(Article.KEY_ARTICLE);
                     int position = args.getInt(KEY_POSITION);
                     int max = args.getInt(KEY_MAX);
                     if (objects != null) {
@@ -243,7 +245,7 @@ public class ServiceDownloadAll extends IntentService {
     private void downloadArticlesList(int position, int max) {
         Log.i(LOG, "downloadArticlesList with position: " + position);
         if (shouldStop) {
-            Log.i(LOG, "shouldStop: " + shouldStop);
+            Log.i(LOG, "shouldStop: " + true);
             stopForeground(true);
             shouldStop = false;
             return;
@@ -353,12 +355,10 @@ public class ServiceDownloadAll extends IntentService {
         }
     }
 
-    private void downloadArticle(ArrayList<Article> objects, int position) {
+    private void downloadArticle(List<Article> objects, int position) {
         String url = objects.get(position).getURL();
         String title = objects.get(position).getTitle();
         int max = objects.size();
-
-//        downloadArticle(url, title, position, max);
 
         if (shouldStop) {
             stopForeground(true);
