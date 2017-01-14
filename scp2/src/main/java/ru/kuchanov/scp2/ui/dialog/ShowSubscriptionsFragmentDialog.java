@@ -18,10 +18,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import ru.kuchanov.scp2.BuildConfig;
 import ru.kuchanov.scp2.MyApplication;
 import ru.kuchanov.scp2.R;
 import ru.kuchanov.scp2.inapp.model.Item;
@@ -34,15 +37,15 @@ import timber.log.Timber;
 
 public class ShowSubscriptionsFragmentDialog extends BaseBottomSheetDialogFragment {
 
-    public static final String DONATE_1_MONTH = "donate_1_month";
-    public static final String DONATE_2_3MONTH = "donate_2_3month";
-    public static final String DONATE_3_6MONTH = "donate_3_6month";
-    public static final String DONATE_4_1YEAR = "donate_4_1year";
-    public static final String DONATE_5_1MONTH = "donate_5_1month";
-    public static final String DONATE_6_3MONTH = "donate_6_3month";
-    public static final String DONATE_7_6MONTH = "donate_7_6month";
-    public static final String DONATE_8_1YEAR = "donate_8_1year";
-    public static final String DONATE_9_1MONTH = "donate_9_1month";
+//    public static final String DONATE_1_MONTH = "donate_1_month";
+//    public static final String DONATE_2_3MONTH = "donate_2_3month";
+//    public static final String DONATE_3_6MONTH = "donate_3_6month";
+//    public static final String DONATE_4_1YEAR = "donate_4_1year";
+//    public static final String DONATE_5_1MONTH = "donate_5_1month";
+//    public static final String DONATE_6_3MONTH = "donate_6_3month";
+//    public static final String DONATE_7_6MONTH = "donate_7_6month";
+//    public static final String DONATE_8_1YEAR = "donate_8_1year";
+//    public static final String DONATE_9_1MONTH = "donate_9_1month";
 
 
     @BindView(R.id.progressCenter)
@@ -123,16 +126,10 @@ public class ShowSubscriptionsFragmentDialog extends BaseBottomSheetDialogFragme
 
                     //get all subs deatailed info
                     List<String> skuList = new ArrayList<>();
-                    //TODO get it from build config
-                    skuList.add(DONATE_1_MONTH);
-                    skuList.add(DONATE_2_3MONTH);
-                    skuList.add(DONATE_3_6MONTH);
-                    skuList.add(DONATE_4_1YEAR);
-                    skuList.add(DONATE_5_1MONTH);
-                    skuList.add(DONATE_6_3MONTH);
-                    skuList.add(DONATE_7_6MONTH);
-                    skuList.add(DONATE_8_1YEAR);
-                    skuList.add(DONATE_9_1MONTH);
+                    //get it from build config
+                    Collections.addAll(skuList, BuildConfig.OLD_SKUS);
+                    Collections.addAll(skuList, BuildConfig.VER_2_SKUS);
+                    Timber.d("skuList: %s", skuList);
 
                     Bundle querySkus = new Bundle();
                     querySkus.putStringArrayList("ITEM_ID_LIST", (ArrayList<String>) skuList);
