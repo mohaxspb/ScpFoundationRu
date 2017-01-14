@@ -1,6 +1,7 @@
 package ru.kuchanov.scp2.ui.dialog;
 
 import android.app.Dialog;
+import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v7.widget.SwitchCompat;
 
 import javax.inject.Inject;
@@ -32,6 +33,10 @@ public class SetttingsBottomSheetDialogFragment extends BaseBottomSheetDialogFra
     protected MyPreferenceManager mMyPreferenceManager;
     @Inject
     protected MyNotificationManager mMyNotificationManager;
+
+    public static BottomSheetDialogFragment newInstance(){
+        return new SetttingsBottomSheetDialogFragment();
+    }
 
     @Override
     protected void callInjection() {

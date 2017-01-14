@@ -14,6 +14,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import ru.kuchanov.scp2.R;
 import ru.kuchanov.scp2.ui.base.BaseActivity;
+import timber.log.Timber;
 
 /**
  * Created by mohax on 14.01.2017.
@@ -42,9 +43,10 @@ public abstract class BaseBottomSheetDialogFragment extends BottomSheetDialogFra
     }
 
     protected BaseActivity getBaseActivity() {
-        if (!(getActivity() instanceof BaseActivity)) {
-            throw new RuntimeException("Activity must implement BaseActivity");
-        }
+//        Timber.d("getActivity().class: %s", getActivity().getClass().getSimpleName());
+//        if (!(getActivity() instanceof BaseActivity)) {
+//            throw new RuntimeException("Activity must implement BaseActivity");
+//        }
         return (BaseActivity) getActivity();
     }
 

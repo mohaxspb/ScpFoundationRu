@@ -24,10 +24,12 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.kuchanov.scp2.R;
+import ru.kuchanov.scp2.manager.InAppBillingServiceConnectionObservable;
 import ru.kuchanov.scp2.manager.MyNotificationManager;
 import ru.kuchanov.scp2.manager.MyPreferenceManager;
 import ru.kuchanov.scp2.mvp.base.BaseMvp;
 import ru.kuchanov.scp2.ui.dialog.SetttingsBottomSheetDialogFragment;
+import ru.kuchanov.scp2.ui.dialog.ShowSubscriptionsFragmentDialog;
 import timber.log.Timber;
 
 /**
@@ -88,17 +90,19 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
         return mService;
     }
 
-    ServiceConnection mServiceConn = new ServiceConnection() {
+    private ServiceConnection mServiceConn = new ServiceConnection() {
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            Timber.d( "onServiceDisconnected");
+            Timber.d("onServiceDisconnected");
             mService = null;
+            InAppBillingServiceConnectionObservable.getInstance().getServiceStatusObservable().onNext(false);
         }
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             Timber.d("onServiceConnected");
             mService = IInAppBillingService.Stub.asInterface(service);
+            InAppBillingServiceConnectionObservable.getInstance().getServiceStatusObservable().onNext(true);
         }
     };
 
@@ -164,8 +168,13 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
         switch (item.getItemId()) {
             case R.id.settings:
                 Timber.d("settings pressed");
-                BottomSheetDialogFragment bottomSheetDialogFragment = new SetttingsBottomSheetDialogFragment();
-                bottomSheetDialogFragment.show(getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
+                BottomSheetDialogFragment settingsDF = SetttingsBottomSheetDialogFragment.newInstance();
+                settingsDF.show(getSupportFragmentManager(), settingsDF.getTag());
+                return true;
+            case R.id.subscribe:
+                Timber.d("subscribe pressed");
+                BottomSheetDialogFragment subsDF = ShowSubscriptionsFragmentDialog.newInstance();
+                subsDF.show(getSupportFragmentManager(), subsDF.getTag());
                 return true;
             default:
                 Timber.wtf("unexpected id: %s", item.getItemId());
