@@ -2,6 +2,7 @@ package ru.kuchanov.scp2.ui.base;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -21,6 +22,7 @@ import ru.kuchanov.scp2.manager.MyPreferenceManager;
 import ru.kuchanov.scp2.mvp.base.BaseDataPresenter;
 import ru.kuchanov.scp2.mvp.base.BaseMvpView;
 import ru.kuchanov.scp2.manager.MyNotificationManager;
+import ru.kuchanov.scp2.ui.dialog.SetttingsBottomSheetDialogFragment;
 import timber.log.Timber;
 
 /**
@@ -127,5 +129,19 @@ public abstract class BaseActivity<V extends BaseMvpView, P extends BaseDataPres
     public void showError(Throwable throwable) {
         //TODO switch errors types
         Snackbar.make(root, throwable.getMessage(), Snackbar.LENGTH_SHORT);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.settings:
+                Timber.d("settings pressed");
+                BottomSheetDialogFragment bottomSheetDialogFragment = new SetttingsBottomSheetDialogFragment();
+                bottomSheetDialogFragment.show(getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
+                return true;
+            default:
+                Timber.wtf("unexpected id: %s", item.getItemId());
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

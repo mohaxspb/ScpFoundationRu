@@ -327,16 +327,16 @@ public class MainActivity
 //                        .title("О приложении")
 //                        .show();
                 return true;
-            case R.id.settings:
-                //TODO
-//                Intent intent = new Intent(ctx, ActivitySettings.class);
-//                ctx.startActivity(intent);
-                return true;
+//            case R.id.settings:
+//                //TODO
+////                Intent intent = new Intent(ctx, ActivitySettings.class);
+////                ctx.startActivity(intent);
+//                return true;
             case R.id.subscribe:
                 //TODO
 //                SubscriptionHelper.showSubscriptionDialog(this);
                 return true;
         }
-        return false;
+        return super.onOptionsItemSelected(item);
     }
 }
