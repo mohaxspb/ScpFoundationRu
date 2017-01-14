@@ -85,7 +85,7 @@ public class ReceiverTimer extends BroadcastReceiver {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(ctx);
 
         //icon appears in device notification bar and right hand corner of notification
-        builder.setSmallIcon(R.drawable.ic_launcher);
+        builder.setSmallIcon(R.drawable.scp_24x24);
 
         //Set the text that is displayed in the status bar when the notification first arrives.
         builder.setTicker(dataFromWeb.get(0).title);

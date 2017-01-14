@@ -14,6 +14,7 @@ import ru.kuchanov.scp2.service.DownloadAllService;
 import ru.kuchanov.scp2.ui.activity.ArticleActivity;
 import ru.kuchanov.scp2.ui.adapter.RecyclerAdapterArticle;
 import ru.kuchanov.scp2.ui.adapter.RecyclerAdapterListArticles;
+import ru.kuchanov.scp2.ui.dialog.SetttingsBottomSheetDialogFragment;
 import ru.kuchanov.scp2.ui.dialog.TextSizeDialogFragment;
 import ru.kuchanov.scp2.ui.fragment.ArticleFragment;
 import ru.kuchanov.scp2.ui.activity.MainActivity;
@@ -76,4 +77,6 @@ public interface AppComponent {
     void inject(ReceiverTimer receiverTimer);
 
     void inject(ReceiverBoot receiverBoot);
+
+    void inject(SetttingsBottomSheetDialogFragment bottomSheetDialogFragment);
 }

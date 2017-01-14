@@ -67,6 +67,11 @@
     <string name="error_notification_recent_list_download_content">Не удалось загрузить список статей</string>
     <string name="notification_recent_list_title">Загузка списка статей</string>
     <string name="download_recent_title">Загрузка статей</string>
+    <string name="settings_notif_on">Уведомления о новых статьях</string>
+    <string name="settings_notif_led_on">LED индикатор</string>
+    <string name="settings_notif_vibrate_on">Вибрация</string>
+    <string name="settings_notif_sound_on">Звук уведомления</string>
+    <string name="settings_notification">Настройки уведомлений</string>
 
     <string-array name="download_types">
         <item>Объекты I</item>
