@@ -1,20 +1,11 @@
 package ru.kuchanov.scp2.ui.dialog;
 
 import android.app.Dialog;
-import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.BottomSheetDialogFragment;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.SwitchCompat;
-import android.view.View;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
 import ru.kuchanov.scp2.MyApplication;
 import ru.kuchanov.scp2.R;
 import ru.kuchanov.scp2.manager.MyNotificationManager;
@@ -26,10 +17,8 @@ import timber.log.Timber;
  * <p>
  * for scp_ru
  */
-public class SetttingsBottomSheetDialogFragment extends BottomSheetDialogFragment {
+public class SetttingsBottomSheetDialogFragment extends BaseBottomSheetDialogFragment {
 
-    @BindView(R.id.root)
-    View root;
     @BindView(R.id.notifIsOnSwitch)
     SwitchCompat notifIsOnSwitch;
     @BindView(R.id.notifLedisOnSwitch)
@@ -39,47 +28,19 @@ public class SetttingsBottomSheetDialogFragment extends BottomSheetDialogFragmen
     @BindView(R.id.notifVibrateIsOnSwitch)
     SwitchCompat notifVibrateIsOnSwitch;
 
-    private Unbinder unbinder;
-
     @Inject
     protected MyPreferenceManager mMyPreferenceManager;
     @Inject
     protected MyNotificationManager mMyNotificationManager;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void callInjection() {
         MyApplication.getAppComponent().inject(this);
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        unbinder.unbind();
-    }
-
-    private BottomSheetBehavior.BottomSheetCallback mBottomSheetBehaviorCallback = new BottomSheetBehavior.BottomSheetCallback() {
-
-        @Override
-        public void onStateChanged(@NonNull View bottomSheet, int newState) {
-            if (newState == BottomSheetBehavior.STATE_HIDDEN) {
-                dismiss();
-            }
-
-        }
-
-        @Override
-        public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-        }
-    };
-
-    @Override
     public void setupDialog(Dialog dialog, int style) {
         super.setupDialog(dialog, style);
-        View contentView = View.inflate(getContext(), R.layout.fragment_bottom_sheet, null);
-        dialog.setContentView(contentView);
-
-        unbinder = ButterKnife.bind(this, dialog);
 
         notifIsOnSwitch.setChecked(mMyPreferenceManager.isNotificationEnabled());
 
@@ -112,12 +73,10 @@ public class SetttingsBottomSheetDialogFragment extends BottomSheetDialogFragmen
             mMyPreferenceManager.setNotificationVibrationEnabled(checked);
             mMyNotificationManager.checkAlarm();
         });
+    }
 
-        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) ((View) contentView.getParent()).getLayoutParams();
-        CoordinatorLayout.Behavior behavior = params.getBehavior();
-
-        if (behavior != null && behavior instanceof BottomSheetBehavior) {
-            ((BottomSheetBehavior) behavior).setBottomSheetCallback(mBottomSheetBehaviorCallback);
-        }
+    @Override
+    protected int getLayoutResId() {
+        return R.layout.fragment_bottom_sheet_notif_settings;
     }
 }

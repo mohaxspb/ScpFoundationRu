@@ -158,10 +158,8 @@ public class MainActivity
         switch (id) {
             case R.id.about:
                 mCurrentSelectedDrawerItemId = id;
-                showFragment(ArticleFragment.newInstance(
-                        Constants.Urls.ABOUT_SCP),
-                        ArticleFragment.TAG + "#" + Constants.Urls.ABOUT_SCP
-                );
+                showFragment(ArticleFragment.newInstance(Constants.Urls.ABOUT_SCP),
+                        ArticleFragment.TAG + "#" + Constants.Urls.ABOUT_SCP);
                 break;
             case R.id.news:
                 mCurrentSelectedDrawerItemId = id;
@@ -199,10 +197,8 @@ public class MainActivity
                 break;
             case R.id.stories:
                 mCurrentSelectedDrawerItemId = id;
-                showFragment(ArticleFragment.newInstance(
-                        Constants.Urls.STORIES),
-                        ArticleFragment.TAG + "#" + Constants.Urls.STORIES
-                );
+                showFragment(ArticleFragment.newInstance(Constants.Urls.STORIES),
+                        ArticleFragment.TAG + "#" + Constants.Urls.STORIES);
                 break;
             case R.id.favorite:
                 mCurrentSelectedDrawerItemId = id;
@@ -327,16 +323,8 @@ public class MainActivity
 //                        .title("О приложении")
 //                        .show();
                 return true;
-//            case R.id.settings:
-//                //TODO
-////                Intent intent = new Intent(ctx, ActivitySettings.class);
-////                ctx.startActivity(intent);
-//                return true;
-            case R.id.subscribe:
-                //TODO
-//                SubscriptionHelper.showSubscriptionDialog(this);
-                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 }

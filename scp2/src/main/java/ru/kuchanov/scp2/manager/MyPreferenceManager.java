@@ -71,6 +71,8 @@ public class MyPreferenceManager {
         mPreferences.edit().putFloat(Keys.TEXT_SCALE_ARTICLE, textScale).apply();
     }
 
+
+    //new arts notifications
     public int getNotificationPeriodInMinutes() {
         return mPreferences.getInt(Keys.NOTIFICATION_PERIOD, 60);
     }
@@ -80,7 +82,7 @@ public class MyPreferenceManager {
     }
 
     public boolean isNotificationEnabled() {
-       return mPreferences.getBoolean(Keys.NOTIFICATION_IS_ON, false);
+        return mPreferences.getBoolean(Keys.NOTIFICATION_IS_ON, true);
     }
 
     public void setNotificationEnabled(boolean enabled) {

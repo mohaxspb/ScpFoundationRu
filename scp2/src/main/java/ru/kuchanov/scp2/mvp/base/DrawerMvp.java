@@ -6,11 +6,11 @@ package ru.kuchanov.scp2.mvp.base;
  * for scp_ru
  */
 public interface DrawerMvp {
-    interface View extends BaseMvpView {
+    interface View extends BaseMvp.View {
         void onNavigationItemClicked(int id);
     }
 
-    interface Presenter<V extends View> extends BaseDataPresenter<V> {
+    interface Presenter<V extends View> extends BaseMvp.Presenter<V> {
         void onNavigationItemClicked(int id);
     }
 }

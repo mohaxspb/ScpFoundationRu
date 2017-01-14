@@ -8,13 +8,11 @@ import ru.dante.scpfoundation.fragments.FragmentDialogShowSubscription;
 /**
  * Created for My Application by Dante on 05.03.2016  23:30.
  */
-public class SubscriptionHelper
-{
-    private static final String LOG = SubscriptionHelper.class.getSimpleName() ;
+public class SubscriptionHelper {
+    private static final String LOG = SubscriptionHelper.class.getSimpleName();
 
-    public static void showSubscriptionDialog(AppCompatActivity ctx)
-    {
-        Log.i(LOG,"showSubscriptionDialog");
+    public static void showSubscriptionDialog(AppCompatActivity ctx) {
+        Log.i(LOG, "showSubscriptionDialog");
         FragmentDialogShowSubscription fragmentDialogShowSubscription = FragmentDialogShowSubscription.newInstance();
         fragmentDialogShowSubscription.show(ctx.getFragmentManager(), FragmentDialogShowSubscription.LOG);
     }

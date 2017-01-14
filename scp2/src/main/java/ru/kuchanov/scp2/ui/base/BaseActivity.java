@@ -1,6 +1,11 @@
 package ru.kuchanov.scp2.ui.base;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.Snackbar;
@@ -9,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.android.vending.billing.IInAppBillingService;
 import com.hannesdorfmann.mosby.mvp.MvpActivity;
 
 import java.lang.reflect.Method;
@@ -18,10 +24,9 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.kuchanov.scp2.R;
-import ru.kuchanov.scp2.manager.MyPreferenceManager;
-import ru.kuchanov.scp2.mvp.base.BaseDataPresenter;
-import ru.kuchanov.scp2.mvp.base.BaseMvpView;
 import ru.kuchanov.scp2.manager.MyNotificationManager;
+import ru.kuchanov.scp2.manager.MyPreferenceManager;
+import ru.kuchanov.scp2.mvp.base.BaseMvp;
 import ru.kuchanov.scp2.ui.dialog.SetttingsBottomSheetDialogFragment;
 import timber.log.Timber;
 
@@ -30,9 +35,9 @@ import timber.log.Timber;
  * <p>
  * for scp_ru
  */
-public abstract class BaseActivity<V extends BaseMvpView, P extends BaseDataPresenter<V>>
+public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Presenter<V>>
         extends MvpActivity<V, P>
-        implements BaseMvpView {
+        implements BaseMvp.View {
 
     @BindView(R.id.root)
     protected View root;
@@ -69,10 +74,33 @@ public abstract class BaseActivity<V extends BaseMvpView, P extends BaseDataPres
         mPresenter.onCreate();
 
         //setAlarm for notification
-        //FIXME delete setting notif
-        mMyPreferenceManager.setNotificationEnabled(true);
         mMyNotificationManager.checkAlarm();
+
+        //init subs serveice
+        Intent serviceIntent = new Intent("com.android.vending.billing.InAppBillingService.BIND");
+        serviceIntent.setPackage("com.android.vending");
+        bindService(serviceIntent, mServiceConn, Context.BIND_AUTO_CREATE);
     }
+
+    private IInAppBillingService mService;
+
+    public IInAppBillingService getIInAppBillingService() {
+        return mService;
+    }
+
+    ServiceConnection mServiceConn = new ServiceConnection() {
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            Timber.d( "onServiceDisconnected");
+            mService = null;
+        }
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Timber.d("onServiceConnected");
+            mService = IInAppBillingService.Stub.asInterface(service);
+        }
+    };
 
     /**
      * @return id of activity layout

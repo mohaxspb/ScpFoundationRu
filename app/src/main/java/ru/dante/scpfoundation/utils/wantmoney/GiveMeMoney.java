@@ -9,28 +9,21 @@ import android.util.Log;
 import com.android.vending.billing.IInAppBillingService;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
+import java.util.List;
 
 import ru.dante.scpfoundation.otto.BusProvider;
 import ru.dante.scpfoundation.otto.EventGiveMeMoney;
 
-/**
- * Created by o.leonov on 06.10.2014.
- */
-public class GiveMeMoney
-{
+public class GiveMeMoney {
     private static final String LOG = GiveMeMoney.class.getSimpleName();
     private WeakReference<Context> cntxRef;
     private static GiveMeMoney instance;
 
-    private GiveMeMoney()
-    {
+    private GiveMeMoney() {
     }
 
-    public static GiveMeMoney init(Activity act)
-    {
-        if (instance == null)
-        {
+    public static GiveMeMoney init(Activity act) {
+        if (instance == null) {
             instance = new GiveMeMoney();
             TimeSettings.setFirstStartTime(act);
         }
@@ -39,47 +32,36 @@ public class GiveMeMoney
         return instance;
     }
 
-
     /***
      * Эта команда как раз и запускает диалог когда необходимо
      */
-    public void showIfNeed(IInAppBillingService inAppBillingService)
-    {
+    public void showIfNeed(IInAppBillingService inAppBillingService) {
         //Показываем если прошло время и есть интернет(без интернета пользователь не может проголосовать)
-        if (TimeSettings.needShowPreRateDialog(cntxRef.get()))
-        {
+        if (TimeSettings.needShowPreRateDialog(cntxRef.get())) {
             Bundle ownedItems = null;
-            try
-            {
+            try {
                 ownedItems = inAppBillingService.getPurchases(3, cntxRef.get().getPackageName(), "subs", null);
                 int response = ownedItems.getInt("RESPONSE_CODE");
-                if (response == 0)
-                {
-                    ArrayList<String> ownedSkus =
-                            ownedItems.getStringArrayList("INAPP_PURCHASE_ITEM_LIST");
-                    if (ownedSkus!=null &&ownedSkus.size()==0)
-                    {
+                if (response == 0) {
+                    List<String> ownedSkus = ownedItems.getStringArrayList("INAPP_PURCHASE_ITEM_LIST");
+                    if (ownedSkus != null && ownedSkus.size() == 0) {
                         Log.i(LOG, "no subs");
                         showRateDialog();
-                    } else
-                    {
+                    } else {
                         Log.i(LOG, "MONEY!!! given");
                     }
                 }
 
-            } catch (RemoteException e)
-            {
+            } catch (RemoteException e) {
                 e.printStackTrace();
             }
 
-        } else
-        {
+        } else {
             Log.i(LOG, "No time to explain");
         }
     }
 
-    public void showRateDialog()
-    {
+    private void showRateDialog() {
         BusProvider.getInstance().post(new EventGiveMeMoney());
         // Ставим флаг, что надо показать позже(если пользователь в самом диалоге не выберет другой вариант)
         TimeSettings.setShowMode(cntxRef.get(), TimeSettings.SHOW_LATER);

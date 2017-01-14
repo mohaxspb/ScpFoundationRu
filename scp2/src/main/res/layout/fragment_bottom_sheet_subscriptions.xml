@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    >
+
+    <TextView
+        android:id="@+id/dialogTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/defaultMargin"
+        android:text="@string/dialog_title_subscriptions"
+        android:textSize="21sp"
+        android:textStyle="bold"
+        />
+
+    <TextView
+        android:id="@+id/currentSubscriptionTitle"
+        android:layout_width="match_parent"
+        android:textSize="19sp"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/defaultMarginSmall"
+        android:text="@string/current_subscription"
+        />
+
+    <TextView
+        android:id="@+id/currentSubscriptionValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:padding="@dimen/defaultMarginSmall"
+        tools:text="Подписка за 30р"
+        />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        />
+
+</LinearLayout>

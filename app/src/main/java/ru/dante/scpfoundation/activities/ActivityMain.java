@@ -167,127 +167,6 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
     ColorStateList csIconDark = new ColorStateList(stateIcon, colorIconDark);
     ////////////
 
-    //workaround from http://stackoverflow.com/a/30337653/3212712 to show menu icons
-    @Override
-    protected boolean onPrepareOptionsPanel(View view, Menu menu) {
-        if (menu != null) {
-            if (menu.getClass().getSimpleName().equals("MenuBuilder")) {
-                try {
-                    Method m = menu.getClass().getDeclaredMethod("setOptionalIconsVisible", Boolean.TYPE);
-                    m.setAccessible(true);
-                    m.invoke(menu, true);
-                } catch (Exception e) {
-                    Log.e(getClass().getSimpleName(), "onMenuOpened...unable to set icons for overflow menu", e);
-                }
-            }
-
-            boolean nightModeIsOn = this.pref.getBoolean("key_design_night_mode", false);
-            MenuItem themeMenuItem = menu.findItem(R.id.night_mode_item);
-            if (nightModeIsOn) {
-                themeMenuItem.setIcon(R.drawable.ic_brightness_5_white_48dp);
-                themeMenuItem.setTitle("Дневной режим");
-            } else {
-                themeMenuItem.setIcon(R.drawable.ic_brightness_3_white_48dp);
-                themeMenuItem.setTitle("Ночной режим");
-            }
-
-        }
-        return super.onPrepareOptionsPanel(view, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        Log.d(LOG, "onOptionsItemSelected");
-
-        int id = item.getItemId();
-
-        switch (id) {
-            case android.R.id.home:
-                this.drawerLayout.openDrawer(GravityCompat.START);
-                return true;
-           /* case R.id.settings:
-                Log.d(LOG, "setting press");
-                return true;*/
-            case R.id.night_mode_item:
-                boolean nightModeOn = pref.getBoolean(ctx.getString(R.string.key_design_night_mode), false);
-                pref.edit().putBoolean(ctx.getString(R.string.key_design_night_mode), !nightModeOn).apply();
-                recreate();
-                return true;
-//            case R.id.set_first_articles:
-//                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-//                sharedPreferences.edit().putString("first articles url", "http://scpfoundation.ru/scp-2682").commit();
-//                return true;
-            case R.id.text_size:
-                Log.d(LOG, "text press");
-                FragmentDialogTextAppearance fragmentDialogTextAppearance = FragmentDialogTextAppearance.newInstance();
-                fragmentDialogTextAppearance.show(getFragmentManager(), "ХЗ");
-                return true;
-            case R.id.info:
-                new MaterialDialog.Builder(ctx)
-                        .content(R.string.dialog_info_content)
-                        .title("О приложении")
-                        .show();
-                return true;
-            case R.id.settings:
-                Intent intent = new Intent(ctx, ActivitySettings.class);
-                ctx.startActivity(intent);
-                return true;
-            case R.id.subscribe:
-                SubscriptionHelper.showSubscriptionDialog(this);
-                return true;
-        }
-        return false;
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START);
-        } else {
-            if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
-                listOfDrawerMenuPressedIds.remove(listOfDrawerMenuPressedIds.size() - 1);
-                uncheckedAllNavigationItems(navigationView);
-                if (listOfDrawerMenuPressedIds.get(listOfDrawerMenuPressedIds.size() - 1) != null) {
-                    navigationView.setCheckedItem(listOfDrawerMenuPressedIds.get(listOfDrawerMenuPressedIds.size() - 1));
-                    toolbar.setTitle(NavigationItemSelectedListenerMain.getTitleById(listOfDrawerMenuPressedIds.get(listOfDrawerMenuPressedIds.size() - 1)));
-                } else {
-                    toolbar.setTitle(NavigationItemSelectedListenerMain.getTitleById(listOfDrawerMenuPressedIds.get(listOfDrawerMenuPressedIds.size() - 1)));
-                }
-                super.onBackPressed();
-            } else {
-                Intent i = new Intent(Intent.ACTION_MAIN);
-                i.addCategory(Intent.CATEGORY_HOME);
-                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(i);
-
-                if (pref.getBoolean(getString(R.string.pref_system_close_app), false)) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        finishAndRemoveTask();
-                    } else {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                            finishAffinity();
-                        } else {
-                            finish();
-                        }
-                    }
-                    Process.killProcess(Process.myPid());
-                }
-            }
-        }
-    }
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        mDrawerToggle.syncState();
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        mDrawerToggle.onConfigurationChanged(newConfig);
-    }
-
     private static final String LOG = ActivityMain.class.getSimpleName();
 
     @Override
@@ -327,13 +206,11 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
         setContentView(R.layout.activity_main);
 //        Log.d("fuck yeah", "message");
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-//        linearLayout = (LinearLayout) findViewById(R.id.content_frame);
         toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolBar);
         setSupportActionBar(toolbar);
         final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayShowTitleEnabled(false);
-
             actionBar.setDisplayHomeAsUpEnabled(true);
 
             mDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.app_name, R.string.app_name) {
@@ -345,7 +222,6 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
                 }
             };
             mDrawerToggle.setDrawerIndicatorEnabled(true);
-
             drawerLayout.setDrawerListener(mDrawerToggle);
         }
 
@@ -463,47 +339,11 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
         }
 //Check if autoload alarm is set
         NotificationUtils.checkAlarm(ctx);
-        /*посылка intant раз в час для закрытия активити*/
-     /*   final Intent intentToCloseActivity = new Intent(Const.INTENT_ACTION_CLOSE_ACTIVITY);
-        boolean alarmfinishActivityUp = (PendingIntent.getBroadcast(this.getApplicationContext(), 0, intentToCloseActivity,
-                PendingIntent.FLAG_NO_CREATE) != null);
-        final PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intentToCloseActivity,
-                PendingIntent.FLAG_UPDATE_CURRENT);
-        if (!alarmfinishActivityUp)
-        {
-            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-            {
-                am.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + AlarmManager.INTERVAL_HOUR, AlarmManager.INTERVAL_HOUR, pendingIntent);
-            } else
-            {
-                am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + AlarmManager.INTERVAL_HOUR, AlarmManager.INTERVAL_HOUR, pendingIntent);
-            }
-        }
-        broadcastReceiver = new BroadcastReceiver()
-        {
-
-            @Override
-            public void onReceive(Context context, Intent intent)
-            {
-                Log.d(LOG, "finish");
-                if (!isActive)
-                {
-                    PendingIntent pendingIntentFinishActivityCancel = PendingIntent.getBroadcast(getApplicationContext(), 0,
-                            intentToCloseActivity,
-                            PendingIntent.FLAG_CANCEL_CURRENT);
-                    am.cancel(pendingIntentFinishActivityCancel);
-                    finish();
-                }
-            }
-        };
-        IntentFilter intentFilter = new IntentFilter(LOG);
-        this.registerReceiver(broadcastReceiver, intentFilter);*/
 
         VKUtils.checkVKAuth((AppCompatActivity) ctx, navigationView);
 
 //        in app покупки
-        Intent serviceIntent =
-                new Intent("com.android.vending.billing.InAppBillingService.BIND");
+        Intent serviceIntent = new Intent("com.android.vending.billing.InAppBillingService.BIND");
         serviceIntent.setPackage("com.android.vending");
         bindService(serviceIntent, mServiceConn, Context.BIND_AUTO_CREATE);
 
@@ -550,9 +390,7 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
 //        isActive = true;
         PreRate.init(this, "mohax.spb@gmail.com", "Отзыв по приложению").showIfNeed();
         AppInstall.init(this).showIfNeed();
-
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -605,6 +443,122 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
                 navigationMenuView.setVerticalScrollBarEnabled(false);
             }
         }
+    }
+
+
+    //workaround from http://stackoverflow.com/a/30337653/3212712 to show menu icons
+    @Override
+    protected boolean onPrepareOptionsPanel(View view, Menu menu) {
+        if (menu != null) {
+            if (menu.getClass().getSimpleName().equals("MenuBuilder")) {
+                try {
+                    Method m = menu.getClass().getDeclaredMethod("setOptionalIconsVisible", Boolean.TYPE);
+                    m.setAccessible(true);
+                    m.invoke(menu, true);
+                } catch (Exception e) {
+                    Log.e(getClass().getSimpleName(), "onMenuOpened...unable to set icons for overflow menu", e);
+                }
+            }
+
+            boolean nightModeIsOn = this.pref.getBoolean("key_design_night_mode", false);
+            MenuItem themeMenuItem = menu.findItem(R.id.night_mode_item);
+            if (nightModeIsOn) {
+                themeMenuItem.setIcon(R.drawable.ic_brightness_5_white_48dp);
+                themeMenuItem.setTitle("Дневной режим");
+            } else {
+                themeMenuItem.setIcon(R.drawable.ic_brightness_3_white_48dp);
+                themeMenuItem.setTitle("Ночной режим");
+            }
+        }
+        return super.onPrepareOptionsPanel(view, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Log.d(LOG, "onOptionsItemSelected");
+
+        int id = item.getItemId();
+        switch (id) {
+            case android.R.id.home:
+                this.drawerLayout.openDrawer(GravityCompat.START);
+                return true;
+           /* case R.id.settings:
+                Log.d(LOG, "setting press");
+                return true;*/
+            case R.id.night_mode_item:
+                boolean nightModeOn = pref.getBoolean(ctx.getString(R.string.key_design_night_mode), false);
+                pref.edit().putBoolean(ctx.getString(R.string.key_design_night_mode), !nightModeOn).apply();
+                recreate();
+                return true;
+            case R.id.text_size:
+                Log.d(LOG, "text press");
+                FragmentDialogTextAppearance fragmentDialogTextAppearance = FragmentDialogTextAppearance.newInstance();
+                fragmentDialogTextAppearance.show(getFragmentManager(), "ХЗ");
+                return true;
+            case R.id.info:
+                new MaterialDialog.Builder(ctx)
+                        .content(R.string.dialog_info_content)
+                        .title("О приложении")
+                        .show();
+                return true;
+            case R.id.settings:
+                Intent intent = new Intent(ctx, ActivitySettings.class);
+                ctx.startActivity(intent);
+                return true;
+            case R.id.subscribe:
+                SubscriptionHelper.showSubscriptionDialog(this);
+                return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
+                listOfDrawerMenuPressedIds.remove(listOfDrawerMenuPressedIds.size() - 1);
+                uncheckedAllNavigationItems(navigationView);
+                if (listOfDrawerMenuPressedIds.get(listOfDrawerMenuPressedIds.size() - 1) != null) {
+                    navigationView.setCheckedItem(listOfDrawerMenuPressedIds.get(listOfDrawerMenuPressedIds.size() - 1));
+                    toolbar.setTitle(NavigationItemSelectedListenerMain.getTitleById(listOfDrawerMenuPressedIds.get(listOfDrawerMenuPressedIds.size() - 1)));
+                } else {
+                    toolbar.setTitle(NavigationItemSelectedListenerMain.getTitleById(listOfDrawerMenuPressedIds.get(listOfDrawerMenuPressedIds.size() - 1)));
+                }
+                super.onBackPressed();
+            } else {
+                Intent i = new Intent(Intent.ACTION_MAIN);
+                i.addCategory(Intent.CATEGORY_HOME);
+                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(i);
+
+                if (pref.getBoolean(getString(R.string.pref_system_close_app), false)) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        finishAndRemoveTask();
+                    } else {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                            finishAffinity();
+                        } else {
+                            finish();
+                        }
+                    }
+                    Process.killProcess(Process.myPid());
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
     public void setNeedToShowDialog(String needToShowDialog) {

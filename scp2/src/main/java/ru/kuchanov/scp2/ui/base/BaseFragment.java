@@ -22,9 +22,8 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import ru.kuchanov.scp2.R;
 import ru.kuchanov.scp2.api.error.ScpParseException;
-import ru.kuchanov.scp2.mvp.base.BaseDataPresenter;
-import ru.kuchanov.scp2.mvp.base.BaseMvpView;
 import ru.kuchanov.scp2.manager.MyNotificationManager;
+import ru.kuchanov.scp2.mvp.base.BaseMvp;
 import timber.log.Timber;
 
 /**
@@ -32,9 +31,9 @@ import timber.log.Timber;
  * <p>
  * for scp_ru
  */
-public abstract class BaseFragment<V extends BaseMvpView, P extends BaseDataPresenter<V>>
+public abstract class BaseFragment<V extends BaseMvp.View, P extends BaseMvp.Presenter<V>>
         extends MvpFragment<V, P>
-        implements BaseMvpView {
+        implements BaseMvp.View {
 
     @Inject
     protected MyNotificationManager mMyNotificationManager;

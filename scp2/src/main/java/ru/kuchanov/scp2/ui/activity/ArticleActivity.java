@@ -189,15 +189,6 @@ public class ArticleActivity
 //                        .title("О приложении")
 //                        .show();
                 return true;
-            case R.id.settings:
-                //TODO
-//                Intent intent = new Intent(ctx, ActivitySettings.class);
-//                ctx.startActivity(intent);
-                return true;
-            case R.id.subscribe:
-                //TODO
-//                SubscriptionHelper.showSubscriptionDialog(this);
-                return true;
             case R.id.menuItemShare:
                 IntentUtils.shareUrl(mUrls.get(mCurPosition));
                 return true;
@@ -207,8 +198,9 @@ public class ArticleActivity
             case R.id.menuItemFavorite:
                 mPresenter.toggleFavorite(mUrls.get(mCurPosition));
                 return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

@@ -10,7 +10,7 @@ import ru.kuchanov.scp2.db.model.Article;
  * for pacanskiypublic
  */
 public interface BaseListMvp {
-    interface View extends BaseMvpView {
+    interface View extends BaseMvp.View {
         void showSwipeProgress(boolean show);
 
         void showCenterProgress(boolean show);
@@ -24,7 +24,7 @@ public interface BaseListMvp {
         void resetOnScrollListener();
     }
 
-    interface Presenter<V extends View> extends BaseDataPresenter<V> {
+    interface Presenter<V extends View> extends BaseMvp.Presenter<V> {
         List<Article> getData();
 
         void getDataFromDb();
