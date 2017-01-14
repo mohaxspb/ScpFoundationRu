@@ -37,6 +37,23 @@
             android:theme="@style/VK.Transparent"/>
 
         <service android:name=".service.DownloadAllService"/>
+
+        <receiver
+            android:name=".receivers.ReceiverTimer"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="@string/receiver_action_timer"/>
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".receivers.ReceiverBoot"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="@string/receiver_action_boot"/>
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>
