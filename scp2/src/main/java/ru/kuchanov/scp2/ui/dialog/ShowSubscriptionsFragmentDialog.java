@@ -1,5 +1,6 @@
 package ru.kuchanov.scp2.ui.dialog;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.Intent;
@@ -7,7 +8,9 @@ import android.content.IntentSender;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Pair;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -18,7 +21,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -28,14 +30,16 @@ import ru.kuchanov.scp2.BuildConfig;
 import ru.kuchanov.scp2.MyApplication;
 import ru.kuchanov.scp2.R;
 import ru.kuchanov.scp2.inapp.model.Item;
+import ru.kuchanov.scp2.inapp.model.Subscription;
 import ru.kuchanov.scp2.manager.InAppBillingServiceConnectionObservable;
+import ru.kuchanov.scp2.ui.adapter.RecyclerAdapterSubscriptions;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 
-public class ShowSubscriptionsFragmentDialog extends BaseBottomSheetDialogFragment {
+public class ShowSubscriptionsFragmentDialog extends BaseBottomSheetDialogFragment implements RecyclerAdapterSubscriptions.SubscriptionClickListener {
 
 //    public static final String DONATE_1_MONTH = "donate_1_month";
 //    public static final String DONATE_2_3MONTH = "donate_2_3month";
@@ -105,16 +109,21 @@ public class ShowSubscriptionsFragmentDialog extends BaseBottomSheetDialogFragme
         refresh.setVisibility(View.GONE);
         progressCenter.setVisibility(View.VISIBLE);
 
-        Observable.<List<Item>>create(subscriber -> {
+        Observable.<Pair<List<Item>, List<Subscription>>>create(subscriber -> {
             try {
                 Bundle ownedItemsBundle = mInAppBillingService.getPurchases(3, getActivity().getPackageName(), "subs", null);
                 Timber.d("ownedItems bundle: %s", ownedItemsBundle);
                 int response = ownedItemsBundle.getInt("RESPONSE_CODE");
                 if (response == 0) {
-                    ArrayList<String> ownedSkus = ownedItemsBundle.getStringArrayList("INAPP_PURCHASE_ITEM_LIST");
-                    ArrayList<String> purchaseDataList = ownedItemsBundle.getStringArrayList("INAPP_PURCHASE_DATA_LIST");
-                    ArrayList<String> signatureList = ownedItemsBundle.getStringArrayList("INAPP_DATA_SIGNATURE_LIST");
+                    List<String> ownedSkus = ownedItemsBundle.getStringArrayList("INAPP_PURCHASE_ITEM_LIST");
+                    List<String> purchaseDataList = ownedItemsBundle.getStringArrayList("INAPP_PURCHASE_DATA_LIST");
+                    List<String> signatureList = ownedItemsBundle.getStringArrayList("INAPP_DATA_SIGNATURE_LIST");
                     String continuationToken = ownedItemsBundle.getString("INAPP_CONTINUATION_TOKEN");
+
+                    if (ownedSkus == null || purchaseDataList == null || signatureList == null) {
+                        subscriber.onError(new IllegalStateException("some of owned items info is null while get owned items"));
+                        return;
+                    }
 
                     List<Item> ownedItemsList = new ArrayList<>();
                     for (int i = 0; i < purchaseDataList.size(); ++i) {
@@ -125,6 +134,7 @@ public class ShowSubscriptionsFragmentDialog extends BaseBottomSheetDialogFragme
                     }
 
                     //get all subs deatailed info
+                    List<Subscription> allSubscriptions = new ArrayList<>();
                     List<String> skuList = new ArrayList<>();
                     //get it from build config
                     Collections.addAll(skuList, BuildConfig.OLD_SKUS);
@@ -134,41 +144,25 @@ public class ShowSubscriptionsFragmentDialog extends BaseBottomSheetDialogFragme
                     Bundle querySkus = new Bundle();
                     querySkus.putStringArrayList("ITEM_ID_LIST", (ArrayList<String>) skuList);
                     Bundle skuDetails = mInAppBillingService.getSkuDetails(3, getActivity().getPackageName(), "subs", querySkus);
+                    Timber.d("skuDetails: %s", skuDetails);
                     if (skuDetails.getInt("RESPONSE_CODE") == 0) {
                         List<String> responseList = skuDetails.getStringArrayList("DETAILS_LIST");
                         if (responseList == null) {
                             subscriber.onError(new IllegalStateException("responseList is null while get subs details"));
                             return;
                         }
+
                         for (String thisResponse : responseList) {
                             JSONObject object = new JSONObject(thisResponse);
-                            final String sku = object.getString("productId");
+                            String sku = object.getString("productId");
                             String price = object.getString("price");
-                            Timber.d("id,price: " + sku + " " + price);
-                            Timber.d(thisResponse);
-                            //TODO need to set adapter
-                            TextView textView = new TextView(getActivity());
-                            textView.setText(object.getString("title").replace("(SCP Foundation RU On/Off-line)", "") + " - " + price);
-                            textView.setOnClickListener(v -> {
-                                try {
-                                    Bundle buyIntentBundle = mInAppBillingService.getBuyIntent(
-                                            3,
-                                            getActivity().getPackageName(),
-                                            sku,
-                                            "subs",
-                                            String.valueOf(System.currentTimeMillis()));
-                                    PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
-                                    if (pendingIntent != null) {
-                                        getActivity().startIntentSenderForResult(pendingIntent.getIntentSender(), 1001, new Intent(), 0, 0, 0);
-                                    }
-                                } catch (RemoteException | IntentSender.SendIntentException e) {
-                                    e.printStackTrace();
-                                }
-                            });
+                            String title = object.getString("title");
+                            allSubscriptions.add(new Subscription(sku, price, title));
+//                            Timber.d(thisResponse);
                         }
                     }
 
-                    subscriber.onNext(ownedItemsList);
+                    subscriber.onNext(new Pair<>(ownedItemsList, allSubscriptions));
                     subscriber.onCompleted();
                 }
             } catch (Exception e) {
@@ -179,21 +173,27 @@ public class ShowSubscriptionsFragmentDialog extends BaseBottomSheetDialogFragme
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        ownedItems -> {
+                        ownedItemsAndSubscriptions -> {
                             if (!isAdded()) {
                                 return;
                             }
-                            Timber.d("items: %s", ownedItems);
+                            Timber.d("items: %s", ownedItemsAndSubscriptions.first);
+                            Timber.d("subs: %s", ownedItemsAndSubscriptions.second);
                             isDataLoaded = true;
                             refresh.setVisibility(View.GONE);
                             progressCenter.setVisibility(View.GONE);
                             infoContainer.setVisibility(View.VISIBLE);
-                            if (ownedItems.isEmpty()) {
+                            if (ownedItemsAndSubscriptions.first.isEmpty()) {
                                 currentSubscriptionValue.setText(getString(R.string.no_subscriptions));
                             } else {
                                 //TODO show multiple subscriptions
-                                currentSubscriptionValue.setText(ownedItems.get(0).sku);
+                                currentSubscriptionValue.setText(ownedItemsAndSubscriptions.first.get(0).sku);
                             }
+                            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                            recyclerView.setHasFixedSize(true);
+                            RecyclerAdapterSubscriptions adapter = new RecyclerAdapterSubscriptions();
+                            adapter.setArticleClickListener(ShowSubscriptionsFragmentDialog.this);
+                            recyclerView.setAdapter(adapter);
                         },
                         error -> {
                             if (!isAdded()) {
@@ -210,21 +210,38 @@ public class ShowSubscriptionsFragmentDialog extends BaseBottomSheetDialogFragme
     }
 
     @Override
+    public void onSubscriptionClicked(Subscription article) {
+        try {
+            Bundle buyIntentBundle = mInAppBillingService.getBuyIntent(
+                    3,
+                    getActivity().getPackageName(),
+                    article.productId,
+                    "subs",
+                    String.valueOf(System.currentTimeMillis()));
+            PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
+            if (pendingIntent != null) {
+                startIntentSenderForResult(pendingIntent.getIntentSender(), 1001, new Intent(), 0, 0, 0, null);
+            }
+        } catch (RemoteException | IntentSender.SendIntentException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Timber.d("onActivityResult requestCode: %s, resultCode: %s", requestCode, resultCode);
+        Timber.d("called in fragment");
         if (requestCode == 1001) {
             int responseCode = data.getIntExtra("RESPONSE_CODE", 0);
             String purchaseData = data.getStringExtra("INAPP_PURCHASE_DATA");
             String dataSignature = data.getStringExtra("INAPP_DATA_SIGNATURE");
 
-            if (resultCode == -1) {
+            if (resultCode == Activity.RESULT_OK) {
                 try {
                     JSONObject jo = new JSONObject(purchaseData);
                     String sku = jo.getString("productId");
-                    Timber.d("You have bought the " + sku + ". Excellent choice, adventurer!");
+                    Timber.d("You have bought the %s", sku);
                 } catch (JSONException e) {
-                    Timber.d("Failed to parse purchase data.");
-                    e.printStackTrace();
+                    Timber.e(e, "Failed to parse purchase data.");
                 }
             }
         } else {

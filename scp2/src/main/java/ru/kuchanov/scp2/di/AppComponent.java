@@ -14,6 +14,7 @@ import ru.kuchanov.scp2.service.DownloadAllService;
 import ru.kuchanov.scp2.ui.activity.ArticleActivity;
 import ru.kuchanov.scp2.ui.adapter.RecyclerAdapterArticle;
 import ru.kuchanov.scp2.ui.adapter.RecyclerAdapterListArticles;
+import ru.kuchanov.scp2.ui.adapter.RecyclerAdapterSubscriptions;
 import ru.kuchanov.scp2.ui.dialog.SetttingsBottomSheetDialogFragment;
 import ru.kuchanov.scp2.ui.dialog.ShowSubscriptionsFragmentDialog;
 import ru.kuchanov.scp2.ui.dialog.TextSizeDialogFragment;
@@ -82,4 +83,6 @@ public interface AppComponent {
     void inject(SetttingsBottomSheetDialogFragment bottomSheetDialogFragment);
 
     void inject(ShowSubscriptionsFragmentDialog fragmentDialog);
+
+    void inject(RecyclerAdapterSubscriptions recyclerAdapterSubscriptions);
 }

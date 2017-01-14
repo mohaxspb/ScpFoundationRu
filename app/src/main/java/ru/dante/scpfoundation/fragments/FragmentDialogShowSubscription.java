@@ -236,7 +236,7 @@ public class FragmentDialogShowSubscription extends DialogFragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.i(LOG, "cold in fragment");
+        Log.i(LOG, "called in fragment");
         if (requestCode == 1001) {
             int responseCode = data.getIntExtra("RESPONSE_CODE", 0);
             String purchaseData = data.getStringExtra("INAPP_PURCHASE_DATA");
