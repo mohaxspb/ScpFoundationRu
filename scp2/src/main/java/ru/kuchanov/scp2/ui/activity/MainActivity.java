@@ -32,7 +32,8 @@ import timber.log.Timber;
 public class MainActivity
         extends BaseDrawerActivity<MainMvp.View, MainMvp.Presenter>
         implements MainMvp.View {
-    private static final String EXTRA_LINK = "EXTRA_LINK";
+
+    public static final String EXTRA_LINK = "EXTRA_LINK";
 
     public static void startActivity(Context context, String link) {
         Timber.d("startActivity: %s", link);

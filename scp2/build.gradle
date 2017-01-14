@@ -26,6 +26,9 @@ android {
         buildConfigField('int', 'TIMEOUT_SECONDS_CONNECT', '60')
         buildConfigField('int', 'TIMEOUT_SECONDS_READ', '60')
         buildConfigField('int', 'TIMEOUT_SECONDS_WRITE', '60')
+
+        resValue('string', 'receiver_action_timer', '\"ru.dante.scpfoundation.receivers.ReceiverTimer\"')
+        resValue('string', 'receiver_action_boot', '\"android.intent.action.BOOT_COMPLETED\"')
     }
     buildTypes {
         release {

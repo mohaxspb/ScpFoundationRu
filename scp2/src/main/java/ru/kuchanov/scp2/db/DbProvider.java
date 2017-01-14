@@ -484,4 +484,8 @@ public class DbProvider {
                     });
         });
     }
+
+    public int getCountOfRecentArticles() {
+        return (int) mRealm.where(Article.class).notEqualTo(Article.FIELD_IS_IN_RECENT, Article.ORDER_NONE).count();
+    }
 }

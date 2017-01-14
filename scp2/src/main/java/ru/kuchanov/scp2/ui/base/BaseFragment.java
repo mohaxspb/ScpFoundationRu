@@ -24,6 +24,7 @@ import ru.kuchanov.scp2.R;
 import ru.kuchanov.scp2.api.error.ScpParseException;
 import ru.kuchanov.scp2.mvp.base.BaseDataPresenter;
 import ru.kuchanov.scp2.mvp.base.BaseMvpView;
+import ru.kuchanov.scp2.manager.MyNotificationManager;
 import timber.log.Timber;
 
 /**
@@ -31,7 +32,12 @@ import timber.log.Timber;
  * <p>
  * for scp_ru
  */
-public abstract class BaseFragment<V extends BaseMvpView, P extends BaseDataPresenter<V>> extends MvpFragment<V, P> implements BaseMvpView {
+public abstract class BaseFragment<V extends BaseMvpView, P extends BaseDataPresenter<V>>
+        extends MvpFragment<V, P>
+        implements BaseMvpView {
+
+    @Inject
+    protected MyNotificationManager mMyNotificationManager;
 
     protected Unbinder mUnbinder;
 
@@ -60,7 +66,8 @@ public abstract class BaseFragment<V extends BaseMvpView, P extends BaseDataPres
     }
 
     /**
-     *  override it to enable menu for fragemnt
+     * override it to enable menu for fragemnt
+     *
      * @return if fragemnt has options menu
      */
     protected boolean isHasOptionsMenu() {
@@ -75,6 +82,7 @@ public abstract class BaseFragment<V extends BaseMvpView, P extends BaseDataPres
 
     /**
      * override it to add menu when add fragment
+     *
      * @return menu res id to add to activities menu
      */
     protected int getMenuResId() {

@@ -20,6 +20,7 @@ import ru.kuchanov.scp2.R;
 import ru.kuchanov.scp2.manager.MyPreferenceManager;
 import ru.kuchanov.scp2.mvp.base.BaseDataPresenter;
 import ru.kuchanov.scp2.mvp.base.BaseMvpView;
+import ru.kuchanov.scp2.manager.MyNotificationManager;
 import timber.log.Timber;
 
 /**
@@ -43,6 +44,8 @@ public abstract class BaseActivity<V extends BaseMvpView, P extends BaseDataPres
     protected P mPresenter;
     @Inject
     protected MyPreferenceManager mMyPreferenceManager;
+    @Inject
+    protected MyNotificationManager mMyNotificationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,10 +65,14 @@ public abstract class BaseActivity<V extends BaseMvpView, P extends BaseDataPres
         }
 
         mPresenter.onCreate();
+
+        //setAlarm for notification
+        //FIXME delete setting notif
+        mMyPreferenceManager.setNotificationEnabled(true);
+        mMyNotificationManager.checkAlarm();
     }
 
     /**
-     *
      * @return id of activity layout
      */
     protected abstract int getLayoutResId();

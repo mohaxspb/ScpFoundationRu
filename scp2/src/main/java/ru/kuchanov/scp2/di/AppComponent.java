@@ -5,8 +5,11 @@ import javax.inject.Singleton;
 import dagger.Component;
 import ru.kuchanov.scp2.di.module.AppModule;
 import ru.kuchanov.scp2.di.module.NetModule;
+import ru.kuchanov.scp2.di.module.NotificationModule;
 import ru.kuchanov.scp2.di.module.PresentersModule;
 import ru.kuchanov.scp2.di.module.StorageModule;
+import ru.kuchanov.scp2.receivers.ReceiverBoot;
+import ru.kuchanov.scp2.receivers.ReceiverTimer;
 import ru.kuchanov.scp2.service.DownloadAllService;
 import ru.kuchanov.scp2.ui.activity.ArticleActivity;
 import ru.kuchanov.scp2.ui.adapter.RecyclerAdapterArticle;
@@ -34,7 +37,8 @@ import ru.kuchanov.scp2.ui.fragment.SiteSearchArticlesFragment;
         AppModule.class,
         StorageModule.class,
         PresentersModule.class,
-        NetModule.class
+        NetModule.class,
+        NotificationModule.class
 })
 public interface AppComponent {
     void inject(MainActivity activity);
@@ -68,4 +72,8 @@ public interface AppComponent {
     void inject(RecyclerAdapterArticle adapterNewArticles);
 
     void inject(DownloadAllService service);
+
+    void inject(ReceiverTimer receiverTimer);
+
+    void inject(ReceiverBoot receiverBoot);
 }
