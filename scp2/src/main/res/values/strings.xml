@@ -41,7 +41,7 @@
     <string name="search">Поиск</string>
 
     <!--drawer items -->
-    <!--TODO maybe use ut unstead of upper ones?..-->
+    <!--TODO maybe use ut instead of upper ones?..-->
     <string name="about_org">Об организации</string>
     <string name="news">Новости</string>
     <string name="stories">Рассказы</string>

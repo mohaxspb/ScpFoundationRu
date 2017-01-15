@@ -21,16 +21,16 @@ public class MainPresenter extends BasePresenter<MainMvp.View> implements MainMv
     @Override
     public void onCreate() {
         Timber.d("onCreate");
-        //TODO
+        //nothing to do
     }
 
     @Override
     public void onDestroy() {
-        //TODO
+        //nothing to do
     }
 
     @Override
     public void onNavigationItemClicked(int id) {
-        //TODO
+        //nothing to do
     }
 }

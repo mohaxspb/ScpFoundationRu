@@ -31,10 +31,6 @@ public class DialogUtils {
                 .placeholder(R.drawable.ic_image_white_48dp)
                 .into(photoView);
 
-        nagDialog.setOnCancelListener(dialog -> {
-            System.out.println("nagDialog.onCancel ArtActivity");
-            //TODO think how to restore image dialog Maybe use fragment dialog?..
-        });
         nagDialog.show();
     }
 }

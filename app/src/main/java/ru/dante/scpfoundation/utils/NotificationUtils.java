@@ -39,7 +39,7 @@ public class NotificationUtils {
         int periodInMinutes = Integer.parseInt(pref.getString(ctx.getString(R.string.pref_notifications_key_period), "30"));
         Log.i(LOG, "setting alarm with period " + periodInMinutes);
         long periodInMiliseconds = periodInMinutes * 60 * 1000;
-//        //TODO test
+//        //test
 //        periodInMiliseconds = 1000 * 20;
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             am.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + periodInMiliseconds, periodInMiliseconds, pendingIntent);

@@ -20,6 +20,7 @@ import ru.dante.scpfoundation.mvp.base.AdsActions;
 import ru.dante.scpfoundation.mvp.contract.ArticleScreenMvp;
 import ru.dante.scpfoundation.ui.adapter.ArticlesPagerAdapter;
 import ru.dante.scpfoundation.ui.base.BaseDrawerActivity;
+import ru.dante.scpfoundation.ui.dialog.NewVersionDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.TextSizeDialogFragment;
 import ru.dante.scpfoundation.ui.fragment.ArticleFragment;
 import ru.dante.scpfoundation.util.IntentUtils;
@@ -218,11 +219,8 @@ public class ArticleActivity
                 fragmentDialogTextAppearance.show(getFragmentManager(), TextSizeDialogFragment.TAG);
                 return true;
             case R.id.info:
-                //TODO
-//                new MaterialDialog.Builder(ctx)
-//                        .content(R.string.dialog_info_content)
-//                        .title("О приложении")
-//                        .show();
+                NewVersionDialogFragment dialogFragment = NewVersionDialogFragment.newInstance();
+                dialogFragment.show(getFragmentManager(), NewVersionDialogFragment.TAG);
                 return true;
             case R.id.menuItemShare:
                 IntentUtils.shareUrl(mUrls.get(mCurPosition));

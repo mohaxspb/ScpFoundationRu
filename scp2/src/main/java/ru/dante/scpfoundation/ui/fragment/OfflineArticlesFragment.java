@@ -56,17 +56,17 @@ public class OfflineArticlesFragment
 
     @Override
     protected void getDataFromApi() {
-        //FIXME now we do not use any server to store favs
+        //do not use any server to store offlines
     }
 
     @Override
     public void resetOnScrollListener() {
-        //FIXME now we do not have paging for favs
+        //we do not have paging
     }
 
     @Override
     protected boolean isSwipeRefreshEnabled() {
-        //FIXME as we do not have api for it, we do not need to update list
+        //have api for it, we do not need to update list
         return false;
     }
 
@@ -126,7 +126,6 @@ public class OfflineArticlesFragment
                 .neutralText(R.string.stop_download)
                 .onNeutral((dialog, which) -> {
                     Timber.d("onNeutral clicked");
-                    //TODO
                     DownloadAllService.stopDownload(getActivity());
                     dialog.dismiss();
                 })
