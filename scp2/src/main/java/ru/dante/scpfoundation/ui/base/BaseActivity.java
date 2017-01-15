@@ -16,6 +16,7 @@ import android.view.View;
 
 import com.android.vending.billing.IInAppBillingService;
 import com.hannesdorfmann.mosby.mvp.MvpActivity;
+import com.yandex.metrica.YandexMetrica;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -194,5 +195,17 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
                 Timber.wtf("unexpected id: %s", item.getItemId());
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        YandexMetrica.onResumeActivity(this);
+    }
+
+    @Override
+    public void onPause() {
+        YandexMetrica.onPauseActivity(this);
+        super.onPause();
     }
 }
