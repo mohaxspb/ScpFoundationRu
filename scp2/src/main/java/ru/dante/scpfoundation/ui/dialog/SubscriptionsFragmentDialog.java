@@ -32,6 +32,7 @@ import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.monetization.model.Item;
 import ru.dante.scpfoundation.monetization.model.Subscription;
 import ru.dante.scpfoundation.manager.InAppBillingServiceConnectionObservable;
+import ru.dante.scpfoundation.mvp.base.AdsActions;
 import ru.dante.scpfoundation.ui.adapter.RecyclerAdapterSubscriptions;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -39,7 +40,7 @@ import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 
-public class ShowSubscriptionsFragmentDialog
+public class SubscriptionsFragmentDialog
         extends BaseBottomSheetDialogFragment
         implements RecyclerAdapterSubscriptions.SubscriptionClickListener {
 
@@ -57,8 +58,8 @@ public class ShowSubscriptionsFragmentDialog
     private IInAppBillingService mInAppBillingService;
     private boolean isDataLoaded;
 
-    public static ShowSubscriptionsFragmentDialog newInstance() {
-        return new ShowSubscriptionsFragmentDialog();
+    public static SubscriptionsFragmentDialog newInstance() {
+        return new SubscriptionsFragmentDialog();
     }
 
     @Override
@@ -125,7 +126,7 @@ public class ShowSubscriptionsFragmentDialog
                             recyclerView.setHasFixedSize(true);
                             RecyclerAdapterSubscriptions adapter = new RecyclerAdapterSubscriptions();
                             adapter.setData(ownedItemsAndSubscriptions.second);
-                            adapter.setArticleClickListener(ShowSubscriptionsFragmentDialog.this);
+                            adapter.setArticleClickListener(SubscriptionsFragmentDialog.this);
                             recyclerView.setAdapter(adapter);
                         },
                         error -> {
@@ -176,6 +177,8 @@ public class ShowSubscriptionsFragmentDialog
                 } catch (JSONException e) {
                     Timber.e(e, "Failed to parse purchase data.");
                 }
+                //remove ads item from menu via updating ownedItems list
+                getBaseActivity().updateOwnedMarketItems();
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
