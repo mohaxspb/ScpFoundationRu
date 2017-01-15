@@ -17,6 +17,7 @@ import ru.dante.scpfoundation.ui.activity.LicenceActivity;
 import ru.dante.scpfoundation.ui.adapter.RecyclerAdapterArticle;
 import ru.dante.scpfoundation.ui.adapter.RecyclerAdapterListArticles;
 import ru.dante.scpfoundation.ui.adapter.RecyclerAdapterSubscriptions;
+import ru.dante.scpfoundation.ui.dialog.NewVersionDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
 import ru.dante.scpfoundation.ui.dialog.TextSizeDialogFragment;
@@ -83,6 +84,8 @@ public interface AppComponent {
     void inject(ReceiverTimer receiverTimer);
 
     void inject(ReceiverBoot receiverBoot);
+
+    void inject(NewVersionDialogFragment dialogFragment);
 
     void inject(SetttingsBottomSheetDialogFragment bottomSheetDialogFragment);
 
