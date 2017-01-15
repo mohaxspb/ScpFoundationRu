@@ -18,12 +18,15 @@ import com.android.vending.billing.IInAppBillingService;
 import com.hannesdorfmann.mosby.mvp.MvpActivity;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.dante.scpfoundation.R;
+import ru.dante.scpfoundation.inapp.model.Item;
 import ru.dante.scpfoundation.manager.InAppBillingServiceConnectionObservable;
 import ru.dante.scpfoundation.manager.MyNotificationManager;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
@@ -55,6 +58,8 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
     protected MyPreferenceManager mMyPreferenceManager;
     @Inject
     protected MyNotificationManager mMyNotificationManager;
+
+    private List<Item> ownedItems = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +108,13 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
             Timber.d("onServiceConnected");
             mService = IInAppBillingService.Stub.asInterface(service);
             InAppBillingServiceConnectionObservable.getInstance().getServiceStatusObservable().onNext(true);
+            ShowSubscriptionsFragmentDialog.getOwnedInappsObserveble(BaseActivity.this, mService)
+                    .subscribe(items -> {
+                        ownedItems = items;
+                        if (!items.isEmpty()) {
+                            supportInvalidateOptionsMenu();
+                        }
+                    });
         }
     };
 
@@ -153,6 +165,8 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
                 themeMenuItem.setTitle(R.string.night_mode);
             }
 
+            MenuItem subs = menu.findItem(R.id.subscribe);
+            subs.setVisible(ownedItems.isEmpty());
         }
         return super.onPrepareOptionsPanel(view, menu);
     }
