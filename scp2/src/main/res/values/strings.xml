@@ -1,0 +1,92 @@
+<resources>
+    <string name="app_name">SCP Foundation RU On/Offline</string>
+    <!--drawer items-->
+    <string name="drawer_item_1">Об организации</string>
+    <string name="drawer_item_2">Новости</string>
+    <string name="drawer_item_3">Статьи по рейтингу</string>
+    <string name="drawer_item_4">Новые статьи</string>
+    <string name="drawer_item_5">Случайная статья</string>
+    <string name="drawer_item_6">Объекты I</string>
+    <string name="drawer_item_7">Объекты II</string>
+    <string name="drawer_item_8">Объекты III</string>
+    <string name="drawer_item_9">Объекты RU</string>
+    <string name="drawer_item_10">Материалы</string>
+    <string name="drawer_item_11">Рассказы</string>
+    <string name="drawer_item_12">Избранное</string>
+    <string name="drawer_item_13">Статьи Offline</string>
+    <string name="drawer_item_14">Галерея</string>
+    <string name="drawer_item_15">Поиск</string>
+    <!--настройки-->
+    <string name="enter">Войти</string>
+    <string name="settings">Настройки</string>
+    <string name="night_mode">Ночной режим</string>
+    <string name="text_size">Размер текста</string>
+    <string name="in_apps">Отключить рекламу</string>
+    <string name="day_mode">Дневной режим</string>
+    <string name="unsupported_link">Эта ссылка не поддерживается</string>
+    <string name="share">Поделиться</string>
+    <string name="open_with">В браузер</string>
+    <string name="add_to_favorites">Добавить в избранное</string>
+    <string name="share_link_text">%1$s\n\nОтправлено с помощью приложения \"SCP Foundation\"\nhttps://play.google.com/store/apps/details?id=%2$s</string>
+    <string name="share_choser_text">Поделиться через…</string>
+    <string name="browser_choser_text">Открыть с помощью…</string>
+    <string name="favorites_add">Добавить в избранное</string>
+    <string name="favorites_remove">Удалить из избранного</string>
+    <string name="text_size_article">Размер текста в статьях</string>
+    <string name="text_size_lists">Размер текста в списках</string>
+    <string name="text_size_dialog_title">Настройки размера текста</string>
+    <string name="close">Закрыть</string>
+    <string name="delete">Удалить</string>
+    <string name="download_all">Скачать всё</string>
+    <string name="search">Поиск</string>
+
+    <!--drawer items -->
+    <!--TODO maybe use ut instead of upper ones?..-->
+    <string name="about_org">Об организации</string>
+    <string name="news">Новости</string>
+    <string name="stories">Рассказы</string>
+
+    <!--utils-->
+    <string name="scrollAwareFABBehavior">ru.kuchanov.scp2.ui.util.ScrollAwareFABBehavior</string>
+    <string name="search_hint">Введите запрос</string>
+    <string name="error_no_search_results">По вашему запросу ничего не найдено</string>
+    <string name="start_download">Статьи нет в базе данных. Начинаю загрузку</string>
+
+    <!--downloads-->
+    <string name="downlad_art_list">Загрузка списка статей</string>
+    <string name="download_all_title">Что скачать?</string>
+    <string name="download">Скачать</string>
+    <string name="cancel">Отмена</string>
+    <string name="stop_download">Остановить загрузку</string>
+    <string name="download_objects_title">Загрузка объектов</string>
+    <string name="error_notification_title">Ошибка</string>
+    <string name="error_notification_objects_list_download_content">Не удалось скачать список объектов</string>
+    <string name="download_complete_title">Загрузка завершена</string>
+    <string name="download_complete_title_content">Загружено %1$d из %2$d. Ошибок: %3$d</string>
+    <string name="download_progress_content">Загружено %1$d/%2$d. Ошибок: %3$d</string>
+    <string name="error_notification_recent_list_download_content">Не удалось загрузить список статей</string>
+    <string name="notification_recent_list_title">Загузка списка статей</string>
+    <string name="download_recent_title">Загрузка статей</string>
+    <string name="settings_notif_on">Уведомления о новых статьях</string>
+    <string name="settings_notif_led_on">LED индикатор</string>
+    <string name="settings_notif_vibrate_on">Вибрация</string>
+    <string name="settings_notif_sound_on">Звук уведомления</string>
+    <string name="settings_notification">Настройки уведомлений</string>
+    <string name="dialog_title_subscriptions">Отключение рекламы</string>
+    <string name="current_subscription">Ваша текущая подписка</string>
+    <string name="no_subscriptions">Пусто</string>
+    <string name="refresh">Обновить</string>
+    <string name="i_accept">Я согласен</string>
+    <string name="error_read_licence">Не удалось открыть файл лицензии</string>
+    <string name="new_version_features">Новая версия</string>
+    <string name="hurray">Ура!</string>
+    <string name="in_progress">В разработке</string>
+
+    <string-array name="download_types">
+        <item>Объекты I</item>
+        <item>Объекты II</item>
+        <item>Объекты III</item>
+        <item>Объекты RU</item>
+        <item>Все</item>
+    </string-array>
+</resources>

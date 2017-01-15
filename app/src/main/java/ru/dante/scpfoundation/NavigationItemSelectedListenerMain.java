@@ -29,31 +29,25 @@ import ru.dante.scpfoundation.fragments.FragmentRateArticles;
 import ru.dante.scpfoundation.fragments.FragmentSearch;
 import ru.dante.scpfoundation.utils.RandomPage;
 
-
 /**
  * Created for SCP Eng by Dante on 27.03.2016  18:03.
  */
-public class NavigationItemSelectedListenerMain implements NavigationView.OnNavigationItemSelectedListener
-{
+public class NavigationItemSelectedListenerMain implements NavigationView.OnNavigationItemSelectedListener {
     private static final String LOG = NavigationItemSelectedListenerMain.class.getSimpleName();
     ActivityMain activityMain;
     private SharedPreferences pref;
 
-    public NavigationItemSelectedListenerMain(ActivityMain activityMain)
-    {
+    public NavigationItemSelectedListenerMain(ActivityMain activityMain) {
         this.activityMain = activityMain;
         pref = PreferenceManager.getDefaultSharedPreferences(activityMain);
     }
 
-    public static String getTitleById(Integer id)
-    {
+    public static String getTitleById(Integer id) {
         String title = "";
-        if (id == null)
-        {
+        if (id == null) {
             return "Материалы";
         }
-        switch (id)
-        {
+        switch (id) {
             case R.id.news:
                 title = "Новости";
                 break;
@@ -98,13 +92,11 @@ public class NavigationItemSelectedListenerMain implements NavigationView.OnNavi
     }
 
     @Override
-    public boolean onNavigationItemSelected(MenuItem menuItem)
-    {
+    public boolean onNavigationItemSelected(MenuItem menuItem) {
         int size = activityMain.getListOfDrawerMenuPressedIds().size();
         if (size != 0
                 && activityMain.getListOfDrawerMenuPressedIds().get(size - 1) != null
-                && menuItem.getItemId() == activityMain.getListOfDrawerMenuPressedIds().get(size - 1))
-        {
+                && menuItem.getItemId() == activityMain.getListOfDrawerMenuPressedIds().get(size - 1)) {
             activityMain.getDrawerLayout().closeDrawers();
             return true;
         }
@@ -113,18 +105,15 @@ public class NavigationItemSelectedListenerMain implements NavigationView.OnNavi
         Fragment fragment;
         String fragmentName;
 
-        if (menuItem.getItemId() != R.id.gallery && menuItem.getItemId() != R.id.random_page)
-        {
+        if (menuItem.getItemId() != R.id.gallery && menuItem.getItemId() != R.id.random_page) {
             activityMain.addIdtoToListOfDrawerMenuPressedIds(menuItem.getItemId());
         }
 
-        switch (menuItem.getItemId())
-        {
+        switch (menuItem.getItemId()) {
             case R.id.news:
                 fragmentName = "news";
                 fragment = fragmentManager.findFragmentByTag(fragmentName);
-                if (fragment == null)
-                {
+                if (fragment == null) {
                     fragment = FragmentArticle.newInstance(Const.Urls.NEWS, "Новости");
                 }
                 fragmentTransaction.replace(R.id.content_frame, fragment, fragmentName);
@@ -137,8 +126,7 @@ public class NavigationItemSelectedListenerMain implements NavigationView.OnNavi
                 fragment = new FragmentNewArticles();
                 fragmentName = ((FragmentNewArticles) fragment).LOG;
                 fragment = fragmentManager.findFragmentByTag(fragmentName);
-                if (fragment == null)
-                {
+                if (fragment == null) {
                     fragment = new FragmentNewArticles();
                 }
                 fragmentTransaction.replace(R.id.content_frame, fragment, fragmentName);
@@ -151,8 +139,7 @@ public class NavigationItemSelectedListenerMain implements NavigationView.OnNavi
                 fragment = new FragmentRateArticles();
                 fragmentName = ((FragmentRateArticles) fragment).LOG;
                 fragment = fragmentManager.findFragmentByTag(fragmentName);
-                if (fragment == null)
-                {
+                if (fragment == null) {
                     fragment = new FragmentRateArticles();
                 }
                 fragmentTransaction.replace(R.id.content_frame, fragment, fragmentName);
@@ -163,8 +150,7 @@ public class NavigationItemSelectedListenerMain implements NavigationView.OnNavi
                 fragment = FragmentArticle.newInstance("http://scpfoundation.ru/about-the-scp-foundation", "Об организации");
                 fragmentName = ((FragmentArticle) fragment).LOG;
                 fragment = fragmentManager.findFragmentByTag(fragmentName);
-                if (fragment == null)
-                {
+                if (fragment == null) {
                     fragment = FragmentArticle.newInstance(Const.Urls.ABOUT_SCP, "Об организации");
                 }
                 fragmentTransaction.replace(R.id.content_frame, fragment, fragmentName);
@@ -175,8 +161,7 @@ public class NavigationItemSelectedListenerMain implements NavigationView.OnNavi
                 fragmentName = "http://scpfoundation.ru/scp-list";
 
                 fragment = fragmentManager.findFragmentByTag(fragmentName);
-                if (fragment == null)
-                {
+                if (fragment == null) {
                     fragment = FragmentObjects.newInstance(Const.Urls.OBJECTS_1);
                 }
                 fragmentTransaction.replace(R.id.content_frame, fragment, fragmentName);
@@ -186,8 +171,7 @@ public class NavigationItemSelectedListenerMain implements NavigationView.OnNavi
             case R.id.objects_II:
                 fragmentName = "http://scpfoundation.ru/scp-list-2";
                 fragment = fragmentManager.findFragmentByTag(fragmentName);
-                if (fragment == null)
-                {
+                if (fragment == null) {
                     fragment = FragmentObjects.newInstance(Const.Urls.OBJECTS_2);
                 }
                 fragmentTransaction.replace(R.id.content_frame, fragment, fragmentName);
@@ -197,8 +181,7 @@ public class NavigationItemSelectedListenerMain implements NavigationView.OnNavi
             case R.id.objects_III:
                 fragmentName = "http://scpfoundation.ru/scp-list-3";
                 fragment = fragmentManager.findFragmentByTag(fragmentName);
-                if (fragment == null)
-                {
+                if (fragment == null) {
                     fragment = FragmentObjects.newInstance(Const.Urls.OBJECTS_3);
                 }
                 fragmentTransaction.replace(R.id.content_frame, fragment, fragmentName);
@@ -208,8 +191,7 @@ public class NavigationItemSelectedListenerMain implements NavigationView.OnNavi
             case R.id.objects_RU:
                 fragmentName = "http://scpfoundation.ru/scp-list-ru";
                 fragment = fragmentManager.findFragmentByTag(fragmentName);
-                if (fragment == null)
-                {
+                if (fragment == null) {
                     fragment = FragmentObjects.newInstance(Const.Urls.OBJECTS_RU);
                 }
                 fragmentTransaction.replace(R.id.content_frame, fragment, fragmentName);
@@ -218,8 +200,7 @@ public class NavigationItemSelectedListenerMain implements NavigationView.OnNavi
                 break;
             case R.id.random_page:
                 Log.d(LOG, "random_page clicked");
-                if (pref.contains(activityMain.getString(R.string.pref_key_random_url)))
-                {
+                if (pref.contains(activityMain.getString(R.string.pref_key_random_url))) {
                     Intent intent = new Intent(activityMain, ActivityArticles.class);
                     Bundle bundle = new Bundle();
                     bundle.putString("title", "");
@@ -228,8 +209,7 @@ public class NavigationItemSelectedListenerMain implements NavigationView.OnNavi
                     activityMain.startActivity(intent);
                     pref.edit().remove(activityMain.getString(R.string.pref_key_random_url)).apply();
                     RandomPage.getRandomPage(activityMain);
-                } else
-                {
+                } else {
                     RandomPage.getRandomPage(activityMain);
                     Toast.makeText(activityMain, "Создаю случайную статью,нажмите еще раз", Toast.LENGTH_SHORT).show();
                 }
@@ -238,8 +218,7 @@ public class NavigationItemSelectedListenerMain implements NavigationView.OnNavi
                 ArrayList<Article> favoriteArticles = new ArrayList<>();
                 final SharedPreferences sharedPreferencesFavorites = activityMain.getSharedPreferences(activityMain.getString(R.string.pref_favorites), Context.MODE_PRIVATE);
                 Set<String> keySet = sharedPreferencesFavorites.getAll().keySet();
-                for (String key : keySet)
-                {
+                for (String key : keySet) {
                     Article article = new Article();
                     article.setURL(key);
                     article.setTitle(sharedPreferencesFavorites.getString(key, ""));
@@ -247,8 +226,7 @@ public class NavigationItemSelectedListenerMain implements NavigationView.OnNavi
                 }
                 fragmentName = "favorite";
                 fragment = fragmentManager.findFragmentByTag(fragmentName);
-                if (fragment == null)
-                {
+                if (fragment == null) {
                     fragment = FragmentFavorite.newInstance(favoriteArticles);
                 }
                 fragmentTransaction.replace(R.id.content_frame, fragment, fragmentName);
@@ -259,15 +237,11 @@ public class NavigationItemSelectedListenerMain implements NavigationView.OnNavi
                 ArrayList<Article> offlineArticles = new ArrayList<>();
                 final SharedPreferences sharedPreferencesOffline = activityMain.getSharedPreferences(activityMain.getString(R.string.pref_offline), Context.MODE_PRIVATE);
                 Set<String> keySetOffline = sharedPreferencesOffline.getAll().keySet();
-                for (String key : keySetOffline)
-                {
-                    if (key.endsWith("text") || key.endsWith("show"))
-                    {
+                for (String key : keySetOffline) {
+                    if (key.endsWith("text") || key.endsWith("show")) {
                         continue;
-                    } else
-                    {
-                        if (!sharedPreferencesOffline.getBoolean(key + "show", false))
-                        {
+                    } else {
+                        if (!sharedPreferencesOffline.getBoolean(key + "show", false)) {
                             continue;
                         }
                     }
@@ -279,8 +253,7 @@ public class NavigationItemSelectedListenerMain implements NavigationView.OnNavi
                 }
                 fragmentName = "offline";
                 fragment = fragmentManager.findFragmentByTag(fragmentName);
-                if (fragment == null)
-                {
+                if (fragment == null) {
                     fragment = FragmentOffline.newInstance(offlineArticles);
                 }
                 fragmentTransaction.replace(R.id.content_frame, fragment, fragmentName);
@@ -291,8 +264,7 @@ public class NavigationItemSelectedListenerMain implements NavigationView.OnNavi
                 Log.d(LOG, "Материалы");
                 fragmentName = FragmentMaterialsAll.LOG;
                 fragment = fragmentManager.findFragmentByTag(fragmentName);
-                if (fragment == null)
-                {
+                if (fragment == null) {
                     fragment = new FragmentMaterialsAll();
                 }
                 fragmentTransaction.replace(R.id.content_frame, fragment, fragmentName);
@@ -303,8 +275,7 @@ public class NavigationItemSelectedListenerMain implements NavigationView.OnNavi
                 fragment = FragmentArticle.newInstance(Const.Urls.STORIES, "Рассказы");
                 fragmentName = ((FragmentArticle) fragment).LOG;
                 fragment = fragmentManager.findFragmentByTag(fragmentName);
-                if (fragment == null)
-                {
+                if (fragment == null) {
                     fragment = FragmentArticle.newInstance(Const.Urls.STORIES, "Рассказы");
                 }
                 fragmentTransaction.replace(R.id.content_frame, fragment, fragmentName);
@@ -318,8 +289,7 @@ public class NavigationItemSelectedListenerMain implements NavigationView.OnNavi
             case R.id.site_search:
                 fragmentName = "site_search";
                 fragment = fragmentManager.findFragmentByTag(fragmentName);
-                if (fragment == null)
-                {
+                if (fragment == null) {
                     fragment = FragmentSearch.newInstance();
                 }
                 fragmentTransaction.replace(R.id.content_frame, fragment, fragmentName);
@@ -327,8 +297,7 @@ public class NavigationItemSelectedListenerMain implements NavigationView.OnNavi
                 fragmentTransaction.commit();
                 break;
         }
-        if (menuItem.getItemId() != R.id.gallery && menuItem.getItemId() != R.id.random_page)
-        {
+        if (menuItem.getItemId() != R.id.gallery && menuItem.getItemId() != R.id.random_page) {
             menuItem.setChecked(true);
             activityMain.getToolbar().setTitle(NavigationItemSelectedListenerMain.getTitleById(menuItem.getItemId()));
         }

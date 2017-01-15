@@ -19,41 +19,28 @@ import ru.dante.scpfoundation.utils.licensingfuckup.LicenseUtils;
 
 /**
  * Created by Dante on 09.01.2016.
+ * <p>
+ * for scp_ru
  */
-public class DownloadNewArticles extends AsyncTask<Void, Void, ArrayList<Article>>
-{
+public class DownloadNewArticles extends AsyncTask<Void, Void, ArrayList<Article>> {
     private static final String LOG = DownloadNewArticles.class.getSimpleName();
     int pageNumber;
-//    RecyclerView recyclerView;
     public static final String DOMAIN_NAME = "http://scpfoundation.ru";
     UpdateArticlesList updateArticlesList;
     Context ctx;
 
-    public interface UpdateArticlesList
-    {
-        public void update(ArrayList<Article> listArticles);
+    public interface UpdateArticlesList {
+        void update(ArrayList<Article> listArticles);
     }
 
-
-    @Override
-    protected void onPreExecute()
-    {
-        super.onPreExecute();
-
-    }
-
-    public DownloadNewArticles(int pageNumber/* RecyclerView recyclerView*/, UpdateArticlesList updateArticlesList,Context ctx)
-    {
+    public DownloadNewArticles(int pageNumber, UpdateArticlesList updateArticlesList, Context ctx) {
         this.pageNumber = pageNumber;
-//        this.recyclerView = recyclerView;
         this.updateArticlesList = updateArticlesList;
-        this.ctx=ctx;
+        this.ctx = ctx;
     }
 
     @Override
-    protected ArrayList<Article> doInBackground(Void... params)
-    {
-
+    protected ArrayList<Article> doInBackground(Void... params) {
         Log.d(LOG, "doInBackground started");
         ArrayList<Article> articles = new ArrayList<>();
 
@@ -66,20 +53,17 @@ public class DownloadNewArticles extends AsyncTask<Void, Void, ArrayList<Article
                 .build();
 
         Response response = null;
-        try
-        {
+        try {
             response = client.newCall(request).execute();
 //            System.out.println(response.body().string());
             Document doc = Jsoup.parse(response.body().string());
             org.jsoup.nodes.Element pageContent = doc.getElementsByClass("wiki-content-table").first();
-            if (pageContent == null)
-            {
+            if (pageContent == null) {
                 return null;
             }
 
             ArrayList<Element> listOfElements = pageContent.getElementsByTag("tr");
-            for (int i = 1; i < listOfElements.size(); i++)
-            {
+            for (int i = 1; i < listOfElements.size(); i++) {
                 ArrayList<Element> listOfTd = listOfElements.get(i).getElementsByTag("td");
                 Element firstTd = listOfTd.get(0);
                 Element tagA = firstTd.getElementsByTag("a").first();
@@ -98,8 +82,7 @@ public class DownloadNewArticles extends AsyncTask<Void, Void, ArrayList<Article
 //                Log.d(LOG, listOfArts.get(i));
 //            }
             return articles;
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -107,20 +90,12 @@ public class DownloadNewArticles extends AsyncTask<Void, Void, ArrayList<Article
     }
 
     @Override
-    protected void onPostExecute(final ArrayList<Article> result)
-    {
+    protected void onPostExecute(final ArrayList<Article> result) {
         super.onPostExecute(result);
-
-        if (result == null)
-        {
+        if (result == null) {
             Log.e(LOG, "Connection lost");
-//            if (recyclerView != null)
-//            {
-//                Snackbar.make(recyclerView, "Connection lost", Snackbar.LENGTH_LONG).show();
-//            }
             updateArticlesList.update(null);
-        } else
-        {
+        } else {
             updateArticlesList.update(result);
         }
 

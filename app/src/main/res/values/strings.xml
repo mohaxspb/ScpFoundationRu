@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">SCP Foundation RU On/Off-line</string>
-    <string name="splash_screen_description">Подключаюсь к Фонду...</string>
+    <string name="splash_screen_description">Подключаюсь к Фонду…</string>
     <string name="key_new_articles_counter">key_new_articles_counter</string>
     <string name="share_link">Поделится ссылкой</string>
     <string name="pref_design_key_text_size_ui">pref_design_key_text_size_ui</string>
@@ -14,9 +14,7 @@
     <string name="pref_key_interstitial_counter">pref_key_interstitial_counter</string>
     <string name="pref_key_interstitial_need_to_show">pref_key_interstitial_need_to_show</string>
     <string name="pref_key_interstitial_no_ads_limit">pref_key_no_ads_limit</string>
-    <string name="admob_baner_id_interstitial">ca-app-pub-2231528705144312/4989766186</string>
-    <string name="abmob_baner_id_smart">ca-app-pub-2231528705144312/6466499387</string>
-    <string name="targeting_402_developer_id">6c21e744-81ee-43d9-9b05-36fc12d1a090</string>
+
     <string name="yes">Да</string>
     <string name="cancel">Отмена</string>
     <string name="not_now">Не сейчас</string>
@@ -80,6 +78,7 @@
     <string name="stop_download">Остановить загрузку</string>
     <string name="pref_arts_list">pref_arts_list</string>
     <string name="downlad_art_list">Загружаю список статей</string>
+
     <string-array name="download_types">
         <item>Объекты I</item>
         <item>Объекты II</item>
@@ -110,18 +109,19 @@
     <string name="install">Установить</string>
     <string name="buy_subs">Поддержать</string>
     <string name="givemymoney">Если вам нравится приложение, вы можете поддержать разработчиков</string>
+
     <string-array name="pref_notificdtion_period_entries">
         <item>Раз в пол часа</item>
         <item>Раз в час</item>
         <item>Раз в два часа</item>
         <item>Раз в шесть часов</item>
     </string-array>
+
     <string-array name="pref_notification_period_values">
         <item>30</item>
         <item>60</item>
         <item>120</item>
         <item>360</item>
     </string-array>
-
 
 </resources>

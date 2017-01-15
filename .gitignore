@@ -1,6 +1,5 @@
 *.iml
 .gradle
-/gradle
 /local.properties
 /.idea
 .DS_Store
@@ -9,4 +8,8 @@
 keystore.properties
 gradlew
 gradlew.bat
-gradle.properties
+*.keystore
+*.jks
+/marketSkus.properties
+*.apk
+google-services.json

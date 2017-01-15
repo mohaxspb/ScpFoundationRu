@@ -38,106 +38,91 @@ import ru.dante.scpfoundation.utils.parsing.DownloadNewArticles;
 
 /**
  * Created by Dante on 16.01.2016.
+ * <p>
+ * for scp_ru
  */
-public class FragmentNewArticles extends Fragment implements DownloadNewArticles.UpdateArticlesList, SharedPreferences.OnSharedPreferenceChangeListener
-{
+public class FragmentNewArticles extends Fragment implements DownloadNewArticles.UpdateArticlesList, SharedPreferences.OnSharedPreferenceChangeListener {
     public static final String LOG = FragmentNewArticles.class.getSimpleName();
     private final static String KEY_CURRENT_PAGE_TO_LOAD = "KEY_CURRENT_PAGE_TO_LOAD";
     SwipeRefreshLayout swipeRefreshLayout;
     boolean isLoadingFromTop = true;
     Context ctx;
 
+    int currentPageToLoad = 1;
+    ArrayList<Article> listArticles = new ArrayList<>();
+    RecyclerView recyclerView;
+
+
     @Override
-    public void onAttach(Context context)
-    {
+    public void onAttach(Context context) {
         this.ctx = context;
         super.onAttach(context);
     }
 
     @Override
-    public void onStart()
-    {
+    public void onStart() {
         super.onStart();
         BusProvider.getInstance().register(this);
     }
 
     @Override
-    public void onStop()
-    {
+    public void onStop() {
         super.onStop();
         BusProvider.getInstance().unregister(this);
     }
 
     @Subscribe
-    public void onAppInstallNeedToShow(EventAppInstall eventAppInstall)
-    {
-        ((RecyclerAdapterNewArticles)recyclerView.getAdapter()).showAppInstall();
+    public void onAppInstallNeedToShow(EventAppInstall eventAppInstall) {
+        ((RecyclerAdapterNewArticles) recyclerView.getAdapter()).showAppInstall();
     }
 
     @Subscribe
-    public void onGiveMeMoneyNeedToShow(EventGiveMeMoney eventGiveMeMoney)
-    {
-        ((RecyclerAdapterNewArticles)recyclerView.getAdapter()).showGiveMeMoney();
+    public void onGiveMeMoneyNeedToShow(EventGiveMeMoney eventGiveMeMoney) {
+        ((RecyclerAdapterNewArticles) recyclerView.getAdapter()).showGiveMeMoney();
     }
 
     @Subscribe
-    public void onArticleDownloaded(EventArticleDownloaded eventArticleDownloaded)
-    {
-        for (int i = 0; i < listArticles.size(); i++)
-        {
-            if (listArticles.get(i).getURL().equals(eventArticleDownloaded.getLink()))
-            {
+    public void onArticleDownloaded(EventArticleDownloaded eventArticleDownloaded) {
+        for (int i = 0; i < listArticles.size(); i++) {
+            if (listArticles.get(i).getURL().equals(eventArticleDownloaded.getLink())) {
                 recyclerView.getAdapter().notifyItemChanged(i);
                 break;
             }
         }
     }
 
-    private void setLoading(final boolean isLoading)
-    {
-        if (isLoading && swipeRefreshLayout.isRefreshing())
-        {
+    private void setLoading(final boolean isLoading) {
+        if (isLoading && swipeRefreshLayout.isRefreshing()) {
 //            Log.i(LOG, "isLoading and  swipeRefreshLayout.isRefreshing() are both TRUE, so RETURN!!!");
             return;
         }
 
         int actionBarSize = AttributeGetter.getDimentionPixelSize(ctx, android.R.attr.actionBarSize);
-        if (isLoading)
-        {
-            if (this.isLoadingFromTop)
-            {
+        if (isLoading) {
+            if (this.isLoadingFromTop) {
                 swipeRefreshLayout.setProgressViewEndTarget(false, actionBarSize);
-            } else
-            {
+            } else {
                 int screenHeight = ScreenProperties.getHeight((AppCompatActivity) ctx);
                 swipeRefreshLayout.setProgressViewEndTarget(false, screenHeight - actionBarSize * 2);
             }
 //            swipeRefreshLayout.setRefreshing(true);
-        } else
-        {
+        } else {
             swipeRefreshLayout.setProgressViewEndTarget(false, actionBarSize);
 //            swipeRefreshLayout.setRefreshing(false);
         }
 
         //workaround from
         //http://stackoverflow.com/a/26910973/3212712
-        swipeRefreshLayout.post(new Runnable()
-        {
+        swipeRefreshLayout.post(new Runnable() {
             @Override
-            public void run()
-            {
+            public void run() {
                 swipeRefreshLayout.setRefreshing(isLoading);
             }
         });
     }
 
-    int currentPageToLoad = 1;
-    ArrayList<Article> listArticles = new ArrayList<>();
-    RecyclerView recyclerView;
-
     @Override
-    public void onSaveInstanceState(Bundle outState)
-    {
+    public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList(LOG, listArticles);
         outState.putInt(KEY_CURRENT_PAGE_TO_LOAD, currentPageToLoad);
@@ -145,23 +130,18 @@ public class FragmentNewArticles extends Fragment implements DownloadNewArticles
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-    {
-
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(LOG, "on create view called");
-        if (savedInstanceState != null)
-        {
+        if (savedInstanceState != null) {
             listArticles = savedInstanceState.getParcelableArrayList(LOG);
             currentPageToLoad = savedInstanceState.getInt(KEY_CURRENT_PAGE_TO_LOAD);
         }
 
         View v = inflater.inflate(R.layout.fragment_new_articles, container, false);
         swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipe_refresh);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener()
-        {
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
-            public void onRefresh()
-            {
+            public void onRefresh() {
                 currentPageToLoad = 1;
                 isLoadingFromTop = true;
                 DownloadNewArticles downloadNewArticles = new DownloadNewArticles(currentPageToLoad, FragmentNewArticles.this, ctx);
@@ -180,15 +160,13 @@ public class FragmentNewArticles extends Fragment implements DownloadNewArticles
 
 //        resetOnScrollListener();
 
-        if (listArticles.size() == 0)
-        {
+        if (listArticles.size() == 0) {
             RecyclerAdapterNewArticles recyclerAdapterNewArticles = new RecyclerAdapterNewArticles(listArticles);
             recyclerView.setAdapter(recyclerAdapterNewArticles);
             DownloadNewArticles downloadNewArticles = new DownloadNewArticles(currentPageToLoad, this, ctx);
             downloadNewArticles.execute();
             setLoading(true);
-        } else
-        {
+        } else {
             RecyclerAdapterNewArticles recyclerAdapterNewArticles = new RecyclerAdapterNewArticles(listArticles);
             recyclerView.setAdapter(recyclerAdapterNewArticles);
             resetOnScrollListener();
@@ -199,20 +177,16 @@ public class FragmentNewArticles extends Fragment implements DownloadNewArticles
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
     }
 
-    private void resetOnScrollListener()
-    {
+    private void resetOnScrollListener() {
         recyclerView.clearOnScrollListeners();
-        recyclerView.addOnScrollListener(new RecyclerViewOnScrollListener()
-        {
+        recyclerView.addOnScrollListener(new RecyclerViewOnScrollListener() {
             @Override
-            public void onLoadMore()
-            {
+            public void onLoadMore() {
                 currentPageToLoad++;
                 DownloadNewArticles downloadNewArticles = new DownloadNewArticles(currentPageToLoad, FragmentNewArticles.this, ctx);
                 downloadNewArticles.execute();
@@ -224,46 +198,37 @@ public class FragmentNewArticles extends Fragment implements DownloadNewArticles
 
     @SuppressLint("CommitPrefEdits")
     @Override
-    public void update(ArrayList<Article> listArticles)
-    {
-        if (!isAdded())
-        {
+    public void update(ArrayList<Article> listArticles) {
+        if (!isAdded()) {
             return;
         }
         setLoading(false);
-        if (listArticles == null)
-        {
+        if (listArticles == null) {
             Snackbar.make(recyclerView, "Connection lost", Snackbar.LENGTH_LONG).show();
-            if (currentPageToLoad > 1)
-            {
+            if (currentPageToLoad > 1) {
                 currentPageToLoad--;
             }
             resetOnScrollListener();
             return;
         }
         int previousListSize = this.listArticles.size();
-        if (currentPageToLoad == 1)
-        {
+        if (currentPageToLoad == 1) {
             this.listArticles.clear();
-            if (recyclerView.getAdapter() != null)
-            {
+            if (recyclerView.getAdapter() != null) {
                 recyclerView.getAdapter().notifyItemRangeRemoved(0, previousListSize);
             }
         }
         this.listArticles.addAll(listArticles);
-        if (recyclerView.getAdapter() == null)
-        {
+        if (recyclerView.getAdapter() == null) {
             RecyclerAdapterNewArticles recyclerAdapterNewArticles = new RecyclerAdapterNewArticles(this.listArticles);
             recyclerView.setAdapter(recyclerAdapterNewArticles);
-        } else
-        {
+        } else {
             recyclerView.getAdapter().notifyItemRangeInserted(previousListSize, this.listArticles.size());
         }
         resetOnScrollListener();
         int firstVisibleItemPosition = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
         int lastVisibleItemPosition = ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition();
-        if (firstVisibleItemPosition == 0 && lastVisibleItemPosition == listArticles.size() - 1)
-        {
+        if (firstVisibleItemPosition == 0 && lastVisibleItemPosition == listArticles.size() - 1) {
             currentPageToLoad++;
             DownloadNewArticles downloadNewArticles = new DownloadNewArticles(currentPageToLoad, FragmentNewArticles.this, ctx);
             downloadNewArticles.execute();
@@ -272,46 +237,16 @@ public class FragmentNewArticles extends Fragment implements DownloadNewArticles
         }
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ctx);
-//        boolean isNotFirstLoading = sharedPreferences.contains("first articles url");
-//        if (isNotFirstLoading)
-//        {
-//            String firstArticleUrl = sharedPreferences.getString("first articles url", "");
-//            for (int i = 0; i < listArticles.size(); i++)
-//            {
-//                String currentArticlesUrl = listArticles.get(i).getURL();
-//                if (firstArticleUrl.equals(currentArticlesUrl))
-//                {
-//                    if (i == 0)
-//                    {
-//                        Toast.makeText(getActivity(), "Новых станей не обнаружено", Toast.LENGTH_SHORT).show();
-//                    } else
-//                    {
-//                        Toast.makeText(getActivity(), i + " новых статей", Toast.LENGTH_SHORT).show();
-//                    }
-//                    break;
-//                }
-//                else {
-//                    if (i==listArticles.size()-1){
-//                        Log.d(LOG, "обнаружено больше");
-//                       Toast.makeText(getActivity(),"Обнаружено более "+ Const.DEFAULT_NUM_OF_ARTICLE_OF_PAGE+" новых статей",Toast.LENGTH_SHORT).show();
-//                    }
-//                }
-//            }
-//        }
         sharedPreferences.edit().putString(ctx.getString(R.string.pref_key_first_article_url), listArticles.get(0).getURL()).commit();
     }
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
-    {
-        if (!isAdded())
-        {
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (!isAdded()) {
             return;
         }
-        if (key.equals(getString(R.string.pref_design_key_text_size_ui)))
-        {
-            if (recyclerView.getAdapter() != null)
-            {
+        if (key.equals(getString(R.string.pref_design_key_text_size_ui))) {
+            if (recyclerView.getAdapter() != null) {
                 recyclerView.getAdapter().notifyDataSetChanged();
             }
         }

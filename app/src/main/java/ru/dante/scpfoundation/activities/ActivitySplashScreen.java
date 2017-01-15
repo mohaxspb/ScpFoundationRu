@@ -23,61 +23,39 @@ import ru.dante.scpfoundation.utils.licensingfuckup.LicenseUtils;
 /**
  * Created for My Application by Dante on 02.02.2016  18:19.
  */
-public class ActivitySplashScreen extends AppCompatActivity
-{
+public class ActivitySplashScreen extends AppCompatActivity {
     private final static String LOG = ActivitySplashScreen.class.getSimpleName();
     ProgressBar progressBar;
     Timer timer = new Timer();
     Context ctx;
 
-    class UpdateBallTask extends TimerTask
-    {
-        public void run()
-        {
+    class UpdateBallTask extends TimerTask {
+        public void run() {
             progressBar.setProgress(progressBar.getProgress() + 10);
-            if (progressBar.getProgress() == progressBar.getMax())
-            {
+            if (progressBar.getProgress() == progressBar.getMax()) {
                 timer.cancel();
-               /* if (CheckTimeToAds.isTimeToShowAds(ctx)&&checkTimeToAds.isAdLoaded()){
-                    ((AppCompatActivity)ctx).runOnUiThread(new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            checkTimeToAds.show();
-                        }
-                    });
-                }
-                else {
-                    startActivity(new Intent(ActivitySplashScreen.this, ActivityMain.class));
-                }*/
-//                CheckTimeToAds.isTimeToShowAds(ctx);
                 startActivity(new Intent(ActivitySplashScreen.this, ActivityMain.class));
             }
         }
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.Base_Theme_Light);
         super.onCreate(savedInstanceState);
         ctx = this;
         RandomPage.getRandomPage(ctx);
         /*Первичная запись авторов*/
-        SharedPreferences pref= PreferenceManager.getDefaultSharedPreferences(ctx);
-        if (!pref.contains(ctx.getString(R.string.authors_exists))){
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ctx);
+        if (!pref.contains(ctx.getString(R.string.authors_exists))) {
             LicenseUtils.writeLicenseInfoToPref(ctx);
-            pref.edit().putBoolean(ctx.getString(R.string.authors_exists),true).commit();
+            pref.edit().putBoolean(ctx.getString(R.string.authors_exists), true).apply();
         }
         String data = this.getIntent().getDataString();
         Log.d(LOG, "Uri data: " + data);
-        if (data != null)
-        {
-            for (String pressedLink : Const.Urls.ALL_LINKS_ARRAY)
-            {
-                if (data.equals(pressedLink))
-                {
+        if (data != null) {
+            for (String pressedLink : Const.Urls.ALL_LINKS_ARRAY) {
+                if (data.equals(pressedLink)) {
                     ActivityMain.startActivityMain(data, this);
                     return;
                 }
@@ -99,7 +77,5 @@ public class ActivitySplashScreen extends AppCompatActivity
         progressBar.setMax(300);
         TimerTask updateBall = new UpdateBallTask();
         timer.scheduleAtFixedRate(updateBall, 0, 100);
-
     }
-
 }

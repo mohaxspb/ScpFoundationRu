@@ -18,7 +18,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import ru.dante.scpfoundation.Article;
 import ru.dante.scpfoundation.R;
@@ -31,68 +31,52 @@ import ru.dante.scpfoundation.utils.parsing.DownloadArticleForOffline;
 
 /**
  * Created by Dante on 17.01.2016.
+ *
+ * for scp_ru
  */
-public class RecyclerAdapterSearch extends RecyclerView.Adapter<RecyclerView.ViewHolder>
-{
-    ArrayList<Article> articles;
-    //    public static final int TYPE_TEXT = 0;
-//    public static final int TYPE_SPOILER = 1;
-//    public static final int TYPE_IMAGE = 2;
-    private static final String LOG = RecyclerAdapterSearch.class.getSimpleName();
-    int textSizePrimary;
-    private int textSizeSecondary;
+public class RecyclerAdapterSearch extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private List<Article> articles;
 
-
-    public RecyclerAdapterSearch(ArrayList<Article> articles)
-    {
+    public RecyclerAdapterSearch(List<Article> articles) {
         this.articles = articles;
     }
 
     @Override
-    public int getItemViewType(int position)
-    {
+    public int getItemViewType(int position) {
         return 0;
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
-    {
-
-        RecyclerView.ViewHolder viewHolder = null;
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        RecyclerView.ViewHolder viewHolder;
         View view;
         view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_search, parent, false);
         viewHolder = new ViewHolderText(view);
         return viewHolder;
     }
 
-
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position)
-    {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         final ViewHolderText holderText = (ViewHolderText) holder;
         final Context ctx = holderText.title.getContext();
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ctx);
         float uiTextScale = pref.getFloat(ctx.getString(R.string.pref_design_key_text_size_ui), 0.75f);
-        textSizePrimary = ctx.getResources().getDimensionPixelSize(R.dimen.text_size_primary);
-        textSizeSecondary = ctx.getResources().getDimensionPixelSize(R.dimen.text_size_secondary);
+        int textSizePrimary = ctx.getResources().getDimensionPixelSize(R.dimen.text_size_primary);
+        int textSizeSecondary = ctx.getResources().getDimensionPixelSize(R.dimen.text_size_secondary);
         holderText.title.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * textSizePrimary);
         holderText.title.setText(Html.fromHtml(articles.get(position).getTitle()));
         holderText.preview.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * textSizeSecondary);
-        if (articles.get(position).getPreview()!=null)
-        {
+        if (articles.get(position).getPreview() != null) {
             new SetTextViewHTML(ctx).setText(holderText.preview, articles.get(position).getPreview());
         }
-        holderText.titlePreview.setOnClickListener(new View.OnClickListener()
-        {
+        holderText.titlePreview.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("CommitPrefEdits")
             @Override
-            public void onClick(View v)
-            {
-                if (articles.get(position).getURL()==null){
+            public void onClick(View v) {
+                if (articles.get(position).getURL() == null) {
                     return;
                 }
                 articles.get(position).setIsRead(true);
-//                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(holderText.title.getContext());
                 SharedPreferences sharedPreferences = ctx.getSharedPreferences(ctx.getString(R.string.read_articles), Context.MODE_PRIVATE);
                 sharedPreferences.edit().putBoolean(articles.get(position).getURL(), true).commit();
                 notifyItemChanged(position);
@@ -102,15 +86,12 @@ public class RecyclerAdapterSearch extends RecyclerView.Adapter<RecyclerView.Vie
                 bundle.putString("url", articles.get(position).getURL());
                 intent.putExtras(bundle);
                 ctx.startActivity(intent);
-
-//                CheckTimeToAds.starActivityOrShowAds(ctx,intent);
             }
         });
-//        (отмечание прочитанного)
+        //(отмечание прочитанного)
         final SharedPreferences sharedPreferences = ctx.getSharedPreferences("read_articles", Context.MODE_PRIVATE);
 
-        if (sharedPreferences.contains(articles.get(position).getURL()))
-        {
+        if (sharedPreferences.contains(articles.get(position).getURL())) {
             int colorId;
             int[] attrs = new int[]{R.attr.readTextColor};
             TypedArray ta = holderText.linearLayout.getContext().obtainStyledAttributes(attrs);
@@ -119,9 +100,7 @@ public class RecyclerAdapterSearch extends RecyclerView.Adapter<RecyclerView.Vie
             holderText.title.setTextColor(colorId);
             int readSelectedIcon = AttributeGetter.getDrawableId(holderText.linearLayout.getContext(), R.attr.readIcon);
             holderText.read.setImageResource(readSelectedIcon);
-
-        } else
-        {
+        } else {
             int colorId;
             int[] attrs = new int[]{R.attr.newArticlesTextColor};
             TypedArray ta = holderText.linearLayout.getContext().obtainStyledAttributes(attrs);
@@ -131,87 +110,66 @@ public class RecyclerAdapterSearch extends RecyclerView.Adapter<RecyclerView.Vie
             int readUnSelectedIcon = AttributeGetter.getDrawableId(holderText.linearLayout.getContext(), R.attr.readIconUnselected);
             holderText.read.setImageResource(readUnSelectedIcon);
         }
-        holderText.read.setOnClickListener(new View.OnClickListener()
-        {
+        holderText.read.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("CommitPrefEdits")
             @Override
-            public void onClick(View v)
-            {
-                if (sharedPreferences.contains(articles.get(position).getURL()))
-                {
-//                    sharedPreferences.edit().putBoolean(articles.get(position).getURL(), false).commit();
+            public void onClick(View v) {
+                if (sharedPreferences.contains(articles.get(position).getURL())) {
                     sharedPreferences.edit().remove(articles.get(position).getURL()).commit();
-                } else
-                {
+                } else {
                     sharedPreferences.edit().putBoolean(articles.get(position).getURL(), true).commit();
                 }
                 notifyItemChanged(position);
             }
         });
-
-//        (отмтка избранных статей)
-        if (FavoriteUtils.hasFavoriteWithURL(ctx, articles.get(position).getURL()))
-        {
+        //(отмтка избранных статей)
+        if (FavoriteUtils.hasFavoriteWithURL(ctx, articles.get(position).getURL())) {
             int readSelectedIcon = AttributeGetter.getDrawableId(ctx, R.attr.favoriteIcon);
             holderText.favorite.setImageResource(readSelectedIcon);
-
-        } else
-        {
-
+        } else {
             int readUnSelectedIcon = AttributeGetter.getDrawableId(ctx, R.attr.favoriteIconUnselected);
             holderText.favorite.setImageResource(readUnSelectedIcon);
         }
-        holderText.favorite.setOnClickListener(new View.OnClickListener()
-        {
+        holderText.favorite.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("CommitPrefEdits")
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 FavoriteUtils.updateFavoritesOnDevice(ctx, articles.get(position).getURL(), articles.get(position).getTitle());
                 notifyItemChanged(position);
             }
         });
-/*Кнопки Offline*/
-        if (OfflineUtils.hasOfflineWithURL(ctx, articles.get(position).getURL()))
-        {
+        /*Кнопки Offline*/
+        if (OfflineUtils.hasOfflineWithURL(ctx, articles.get(position).getURL())) {
             int readSelectedIcon = AttributeGetter.getDrawableId(ctx, R.attr.iconOfflineRemove);
             holderText.offline.setImageResource(readSelectedIcon);
 
-        } else
-        {
+        } else {
 
             int readUnSelectedIcon = AttributeGetter.getDrawableId(ctx, R.attr.iconOfflineAdd);
             holderText.offline.setImageResource(readUnSelectedIcon);
         }
-        holderText.offline.setOnClickListener(new View.OnClickListener()
-        {
+        holderText.offline.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("CommitPrefEdits")
             @Override
-            public void onClick(View v)
-            {
-                if (OfflineUtils.hasOfflineWithURL(ctx, articles.get(position).getURL()))
-                {
+            public void onClick(View v) {
+                if (OfflineUtils.hasOfflineWithURL(ctx, articles.get(position).getURL())) {
                     String articletext = OfflineUtils.getTextByUrl(ctx, articles.get(position).getURL());
-                    OfflineUtils.updateOfflineOnDevice(ctx, articles.get(position).getURL(), articles.get(position).getTitle(), articletext,true);
+                    OfflineUtils.updateOfflineOnDevice(ctx, articles.get(position).getURL(), articles.get(position).getTitle(), articletext, true);
                     notifyItemChanged(position);
-                } else
-                {
+                } else {
                     DownloadArticleForOffline articleForOffline = new DownloadArticleForOffline(ctx, articles.get(position).getURL(), 0);
                     articleForOffline.execute();
                 }
             }
         });
-
     }
 
     @Override
-    public int getItemCount()
-    {
+    public int getItemCount() {
         return this.articles.size();
     }
 
-    public static class ViewHolderText extends RecyclerView.ViewHolder
-    {
+    public static class ViewHolderText extends RecyclerView.ViewHolder {
         ImageView favorite;
         ImageView read;
         ImageView offline;
@@ -220,8 +178,7 @@ public class RecyclerAdapterSearch extends RecyclerView.Adapter<RecyclerView.Vie
         LinearLayout linearLayout;
         View titlePreview;
 
-        public ViewHolderText(View itemView)
-        {
+        ViewHolderText(View itemView) {
             super(itemView);
             favorite = (ImageView) itemView.findViewById(R.id.favorite);
             read = (ImageView) itemView.findViewById(R.id.read);
@@ -232,5 +189,4 @@ public class RecyclerAdapterSearch extends RecyclerView.Adapter<RecyclerView.Vie
             titlePreview = itemView.findViewById(R.id.title_preview);
         }
     }
-
 }

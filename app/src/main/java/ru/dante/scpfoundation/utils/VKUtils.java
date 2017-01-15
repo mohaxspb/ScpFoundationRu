@@ -23,7 +23,7 @@ import com.vk.sdk.api.model.VKApiUser;
 import com.vk.sdk.api.model.VKList;
 
 import ru.dante.scpfoundation.R;
-import ru.dante.scpfoundation.utils.inapp.SubscriptionHelper;
+import ru.dante.scpfoundation.fragments.FragmentDialogShowSubscription;
 
 /**
  * Created for My Application by Dante on 28.02.2016  21:14.
@@ -161,7 +161,9 @@ public class VKUtils
             @Override
             public void onClick(View v)
             {
-                SubscriptionHelper.showSubscriptionDialog(activity);
+                FragmentDialogShowSubscription fragmentDialogShowSubscription = FragmentDialogShowSubscription.newInstance();
+                fragmentDialogShowSubscription.show(activity.getFragmentManager(), FragmentDialogShowSubscription.LOG);
+
             }
         });
     }

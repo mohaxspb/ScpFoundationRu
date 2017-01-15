@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import ru.dante.scpfoundation.Article;
 import ru.dante.scpfoundation.R;
@@ -29,68 +30,55 @@ import ru.dante.scpfoundation.utils.parsing.DownloadArticleForOffline;
 
 /**
  * Created by Dante on 17.01.2016.
+ *
+ * for scp_ru
  */
-public class RecyclerAdapterObjects extends RecyclerView.Adapter<RecyclerView.ViewHolder>
-{
-    ArrayList<Article> articles;
-    ArrayList<Article> sorted = new ArrayList<>();
+public class RecyclerAdapterObjects extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    public void sortArticles(String searchQuery)
-    {
+    private List<Article> articles;
+    private List<Article> sorted = new ArrayList<>();
+
+    public void sortArticles(String searchQuery) {
         sorted.clear();
-        for (Article article : articles)
-        {
-            if (article.getTitle().toLowerCase().contains(searchQuery.toLowerCase()))
-            {
+        for (Article article : articles) {
+            if (article.getTitle().toLowerCase().contains(searchQuery.toLowerCase())) {
                 sorted.add(article);
             }
         }
         notifyDataSetChanged();
     }
 
-    private static final String LOG = RecyclerAdapterObjects.class.getSimpleName();
-    int textSizePrimary;
-
-
-    public RecyclerAdapterObjects(ArrayList<Article> articles, String searchQuery)
-    {
+    public RecyclerAdapterObjects(List<Article> articles, String searchQuery) {
         this.articles = articles;
         sortArticles(searchQuery);
     }
 
     @Override
-    public int getItemViewType(int position)
-    {
+    public int getItemViewType(int position) {
         return 0;
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
-    {
-
-        RecyclerView.ViewHolder viewHolder = null;
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        RecyclerView.ViewHolder viewHolder;
         View view;
         view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_objects, parent, false);
         viewHolder = new ViewHolderText(view);
         return viewHolder;
     }
 
-
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position)
-    {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         final ViewHolderText holderText = (ViewHolderText) holder;
         final Context ctx = holderText.textView.getContext();
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ctx);
         float uiTextScale = pref.getFloat(ctx.getString(R.string.pref_design_key_text_size_ui), 0.75f);
-        textSizePrimary = ctx.getResources().getDimensionPixelSize(R.dimen.text_size_primary);
+        int textSizePrimary = ctx.getResources().getDimensionPixelSize(R.dimen.text_size_primary);
         holderText.textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * textSizePrimary);
         holderText.textView.setText(sorted.get(position).getTitle());
-        holderText.textView.setOnClickListener(new View.OnClickListener()
-        {
+        holderText.textView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 Intent intent = new Intent(holderText.textView.getContext(), ActivityArticles.class);
                 Bundle bundle = new Bundle();
                 bundle.putString("title", sorted.get(position).getTitle());
@@ -104,8 +92,7 @@ public class RecyclerAdapterObjects extends RecyclerView.Adapter<RecyclerView.Vi
         //        (отмечание прочитанного)
         final SharedPreferences sharedPreferences = ctx.getSharedPreferences("read_articles", Context.MODE_PRIVATE);
 
-        if (sharedPreferences.contains(sorted.get(position).getURL()))
-        {
+        if (sharedPreferences.contains(sorted.get(position).getURL())) {
             int colorId;
             int[] attrs = new int[]{R.attr.readTextColor};
             TypedArray ta = ctx.obtainStyledAttributes(attrs);
@@ -115,8 +102,7 @@ public class RecyclerAdapterObjects extends RecyclerView.Adapter<RecyclerView.Vi
             int readSelectedIcon = AttributeGetter.getDrawableId(ctx, R.attr.readIcon);
             holderText.read.setImageResource(readSelectedIcon);
 
-        } else
-        {
+        } else {
             int colorId;
             int[] attrs = new int[]{R.attr.newArticlesTextColor};
             TypedArray ta = ctx.obtainStyledAttributes(attrs);
@@ -126,17 +112,13 @@ public class RecyclerAdapterObjects extends RecyclerView.Adapter<RecyclerView.Vi
             int readUnSelectedIcon = AttributeGetter.getDrawableId(ctx, R.attr.readIconUnselected);
             holderText.read.setImageResource(readUnSelectedIcon);
         }
-        holderText.read.setOnClickListener(new View.OnClickListener()
-        {
+        holderText.read.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("CommitPrefEdits")
             @Override
-            public void onClick(View v)
-            {
-                if (sharedPreferences.contains(sorted.get(position).getURL()))
-                {
+            public void onClick(View v) {
+                if (sharedPreferences.contains(sorted.get(position).getURL())) {
                     sharedPreferences.edit().remove(sorted.get(position).getURL()).commit();
-                } else
-                {
+                } else {
                     sharedPreferences.edit().putBoolean(sorted.get(position).getURL(), true).commit();
                 }
                 notifyItemChanged(position);
@@ -144,77 +126,62 @@ public class RecyclerAdapterObjects extends RecyclerView.Adapter<RecyclerView.Vi
         });
 
 //        (отмтка избранных статей)
-
-        if (FavoriteUtils.hasFavoriteWithURL(ctx,sorted.get(position).getURL()))
-        {
+        if (FavoriteUtils.hasFavoriteWithURL(ctx, sorted.get(position).getURL())) {
             int readSelectedIcon = AttributeGetter.getDrawableId(ctx, R.attr.favoriteIcon);
             holderText.favorite.setImageResource(readSelectedIcon);
 
-        } else
-        {
+        } else {
 
             int readUnSelectedIcon = AttributeGetter.getDrawableId(ctx, R.attr.favoriteIconUnselected);
             holderText.favorite.setImageResource(readUnSelectedIcon);
         }
-        holderText.favorite.setOnClickListener(new View.OnClickListener()
-        {
+        holderText.favorite.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("CommitPrefEdits")
             @Override
-            public void onClick(View v)
-            {
-                FavoriteUtils.updateFavoritesOnDevice(ctx,sorted.get(position).getURL(),sorted.get(position).getTitle());
+            public void onClick(View v) {
+                FavoriteUtils.updateFavoritesOnDevice(ctx, sorted.get(position).getURL(), sorted.get(position).getTitle());
                 notifyItemChanged(position);
             }
         });
         /*Кнопки Offline*/
-        if (OfflineUtils.hasOfflineWithURL(ctx, sorted.get(position).getURL()))
-        {
+        if (OfflineUtils.hasOfflineWithURL(ctx, sorted.get(position).getURL())) {
             int readSelectedIcon = AttributeGetter.getDrawableId(ctx, R.attr.iconOfflineRemove);
             holderText.offline.setImageResource(readSelectedIcon);
 
-        } else
-        {
+        } else {
 
             int readUnSelectedIcon = AttributeGetter.getDrawableId(ctx, R.attr.iconOfflineAdd);
             holderText.offline.setImageResource(readUnSelectedIcon);
         }
-        holderText.offline.setOnClickListener(new View.OnClickListener()
-        {
+        holderText.offline.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("CommitPrefEdits")
             @Override
-            public void onClick(View v)
-            {
-                if (OfflineUtils.hasOfflineWithURL(ctx, sorted.get(position).getURL()))
-                {
+            public void onClick(View v) {
+                if (OfflineUtils.hasOfflineWithURL(ctx, sorted.get(position).getURL())) {
                     String articletext = OfflineUtils.getTextByUrl(ctx, sorted.get(position).getURL());
-                    OfflineUtils.updateOfflineOnDevice(ctx, sorted.get(position).getURL(), sorted.get(position).getTitle(), articletext,true);
+                    OfflineUtils.updateOfflineOnDevice(ctx, sorted.get(position).getURL(), sorted.get(position).getTitle(), articletext, true);
                     notifyItemChanged(position);
-                } else
-                {
+                } else {
                     DownloadArticleForOffline articleForOffline = new DownloadArticleForOffline(ctx, sorted.get(position).getURL(), 0);
                     articleForOffline.execute();
                 }
             }
         });
-
     }
 
     @Override
-    public int getItemCount()
-    {
-        return this.sorted.size();
+    public int getItemCount() {
+        return sorted.size();
     }
 
-    public static class ViewHolderText extends RecyclerView.ViewHolder
-    {
+    public static class ViewHolderText extends RecyclerView.ViewHolder {
         ImageView favorite;
         ImageView read;
         ImageView offline;
         TextView textView;
         ImageView imageView;
 
-        public ViewHolderText(View itemView)
-        {
+        ViewHolderText(View itemView) {
             super(itemView);
             favorite = (ImageView) itemView.findViewById(R.id.favorite);
             read = (ImageView) itemView.findViewById(R.id.read);
@@ -223,5 +190,4 @@ public class RecyclerAdapterObjects extends RecyclerView.Adapter<RecyclerView.Vi
             imageView = (ImageView) itemView.findViewById(R.id.image);
         }
     }
-
 }

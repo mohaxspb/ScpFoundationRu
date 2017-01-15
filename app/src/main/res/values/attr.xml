@@ -5,7 +5,7 @@
     <attr name="navigation_view_style" format="reference"/>
     <attr name="newArticlesTextColor" format="color|reference"/>
     <attr name="readTextColor" format="color|reference"/>
-    <attr name="toolbar_backgound_gradient" format="reference"/>
+    <attr name="toolbarBackgroundGradient" format="reference"/>
     <attr name="favoriteIcon" format="reference"/>
     <attr name="readIcon" format="reference"/>
     <attr name="favoriteIconUnselected" format="reference"/>
