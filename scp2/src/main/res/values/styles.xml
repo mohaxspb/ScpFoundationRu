@@ -55,8 +55,6 @@
         <item name="md_negative_color">@color/zbs_color_red</item>
         <!--<item name="md_btn_ripple_color">@color/zbs_color_red</item>-->
         <item name="md_widget_color">@color/zbs_color_red</item>
-        <!--todo add selector for items-->
-        <!--<item name="md_list_selector">@drawable/selector</item>-->
     </style>
 
     <style name="хуй_light" parent="Base.TextAppearance.AppCompat.Widget.PopupMenu.Large">
@@ -129,8 +127,6 @@
         <item name="md_negative_color">@color/material_amber_500</item>
         <!--<item name="md_btn_ripple_color">@color/material_amber_500</item>-->
         <item name="md_widget_color">@color/material_amber_500</item>
-        <!--todo add selector for items-->
-        <!--<item name="md_list_selector">@drawable/selector</item>-->
     </style>
 
     <style name="хуй_Dark" parent="Base.TextAppearance.AppCompat.Widget.PopupMenu.Large">

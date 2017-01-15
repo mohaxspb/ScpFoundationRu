@@ -328,11 +328,8 @@ public class MainActivity
                 fragmentDialogTextAppearance.show(getFragmentManager(), TextSizeDialogFragment.TAG);
                 return true;
             case R.id.info:
-                //TODO
-//                new MaterialDialog.Builder(ctx)
-//                        .content(R.string.dialog_info_content)
-//                        .title("О приложении")
-//                        .show();
+                NewVersionDialogFragment dialogFragment = NewVersionDialogFragment.newInstance();
+                dialogFragment.show(getFragmentManager(), NewVersionDialogFragment.TAG);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

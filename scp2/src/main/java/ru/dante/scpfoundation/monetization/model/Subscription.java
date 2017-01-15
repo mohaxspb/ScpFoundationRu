@@ -18,8 +18,7 @@ public class Subscription {
     public Subscription(String productId, String price, String title) {
         this.productId = productId;
         this.price = price;
-        //TODO move to adapter
-        this.title = title.replace("(SCP Foundation RU On/Off-line)", "");
+        this.title = title;
     }
 
     @Override
