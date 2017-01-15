@@ -42,13 +42,13 @@ import java.lang.reflect.Method;
 import ru.dante.scpfoundation.Const;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.fragments.FragmentArticle;
+import ru.dante.scpfoundation.fragments.FragmentDialogShowSubscription;
 import ru.dante.scpfoundation.fragments.FragmentDialogTextAppearance;
 import ru.dante.scpfoundation.otto.BusProvider;
 import ru.dante.scpfoundation.otto.EventServiceConnected;
 import ru.dante.scpfoundation.utils.RandomPage;
 import ru.dante.scpfoundation.utils.SetTextViewHTML;
 import ru.dante.scpfoundation.utils.VKUtils;
-import ru.dante.scpfoundation.utils.inapp.SubscriptionHelper;
 
 public class ActivityArticles extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
     private static final String LOG = ActivityArticles.class.getSimpleName();
@@ -263,7 +263,8 @@ public class ActivityArticles extends AppCompatActivity implements SharedPrefere
                 ctx.startActivity(intent);
                 return true;
             case R.id.subscribe:
-                SubscriptionHelper.showSubscriptionDialog(this);
+                FragmentDialogShowSubscription fragmentDialogShowSubscription = FragmentDialogShowSubscription.newInstance();
+                fragmentDialogShowSubscription.show(getFragmentManager(), FragmentDialogShowSubscription.LOG);
                 return true;
         }
         return super.onOptionsItemSelected(item);

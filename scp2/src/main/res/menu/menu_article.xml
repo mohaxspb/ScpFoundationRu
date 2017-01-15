@@ -4,6 +4,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
     <item
+        android:id="@+id/subscribe"
+        android:icon="@drawable/ic_monetization_on_white_24dp"
+        android:title="@string/in_apps"
+        app:showAsAction="never"
+        />
+    <item
         android:id="@+id/settings"
         android:icon="@drawable/ic_settings_white_24dp"
         android:title="@string/settings"
@@ -18,12 +24,6 @@
         android:id="@+id/text_size"
         android:icon="@drawable/ic_text_size_white_24dp"
         android:title="@string/text_size"
-        app:showAsAction="never"
-        />
-    <item
-        android:id="@+id/subscribe"
-        android:icon="@drawable/ic_monetization_on_white_24dp"
-        android:title="@string/in_apps"
         app:showAsAction="never"
         />
     <item

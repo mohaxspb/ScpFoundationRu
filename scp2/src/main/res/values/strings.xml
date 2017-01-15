@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SCP Foundation RU On/Off-line</string>
+    <string name="app_name">SCP Foundation RU On/Offline</string>
     <!--drawer items-->
     <string name="drawer_item_1">Об организации</string>
     <string name="drawer_item_2">Новости</string>
@@ -21,7 +21,7 @@
     <string name="settings">Настройки</string>
     <string name="night_mode">Ночной режим</string>
     <string name="text_size">Размер текста</string>
-    <string name="in_apps">Поддержка проекта</string>
+    <string name="in_apps">Отключить рекламу</string>
     <string name="day_mode">Дневной режим</string>
     <string name="unsupported_link">Эта ссылка не поддерживается</string>
     <string name="share">Поделиться</string>
@@ -72,6 +72,10 @@
     <string name="settings_notif_vibrate_on">Вибрация</string>
     <string name="settings_notif_sound_on">Звук уведомления</string>
     <string name="settings_notification">Настройки уведомлений</string>
+    <string name="dialog_title_subscriptions">Отключение рекламы</string>
+    <string name="current_subscription">Ваша текущая подписка</string>
+    <string name="no_subscriptions">Пусто</string>
+    <string name="refresh">Обновить</string>
 
     <string-array name="download_types">
         <item>Объекты I</item>

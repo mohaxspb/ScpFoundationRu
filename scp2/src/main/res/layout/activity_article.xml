@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="ru.kuchanov.scp2.ui.activity.MainActivity"
+    tools:context="ru.dante.scpfoundation.ui.activity.MainActivity"
     >
 
     <LinearLayout
