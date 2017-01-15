@@ -13,11 +13,12 @@ import ru.dante.scpfoundation.receivers.ReceiverBoot;
 import ru.dante.scpfoundation.receivers.ReceiverTimer;
 import ru.dante.scpfoundation.service.DownloadAllService;
 import ru.dante.scpfoundation.ui.activity.ArticleActivity;
+import ru.dante.scpfoundation.ui.activity.LicenceActivity;
 import ru.dante.scpfoundation.ui.adapter.RecyclerAdapterArticle;
 import ru.dante.scpfoundation.ui.adapter.RecyclerAdapterListArticles;
 import ru.dante.scpfoundation.ui.adapter.RecyclerAdapterSubscriptions;
 import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
-import ru.dante.scpfoundation.ui.dialog.ShowSubscriptionsFragmentDialog;
+import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
 import ru.dante.scpfoundation.ui.dialog.TextSizeDialogFragment;
 import ru.dante.scpfoundation.ui.fragment.ArticleFragment;
 import ru.dante.scpfoundation.ui.activity.MainActivity;
@@ -48,6 +49,8 @@ public interface AppComponent {
     void inject(MainActivity activity);
 
     void inject(ArticleActivity activity);
+
+    void inject(LicenceActivity activity);
 
     void inject(ArticleFragment fragment);
 
@@ -83,7 +86,7 @@ public interface AppComponent {
 
     void inject(SetttingsBottomSheetDialogFragment bottomSheetDialogFragment);
 
-    void inject(ShowSubscriptionsFragmentDialog fragmentDialog);
+    void inject(SubscriptionsFragmentDialog fragmentDialog);
 
     void inject(RecyclerAdapterSubscriptions recyclerAdapterSubscriptions);
 

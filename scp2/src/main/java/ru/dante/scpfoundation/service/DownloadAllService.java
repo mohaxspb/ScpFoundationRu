@@ -262,7 +262,6 @@ public class DownloadAllService extends Service {
         mCompositeSubscription.add(subscription);
     }
 
-    //TODO add saving to proper lists
     private void downloadObjects(String link, String dbField) {
         showNotificationDownloadList();
         //download list
@@ -358,7 +357,7 @@ public class DownloadAllService extends Service {
         builder.setContentTitle(getString(R.string.download_objects_title))
                 .setAutoCancel(false)
                 .setContentText(getString(R.string.downlad_art_list))
-                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_download_white_48dp))
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher))
                 .setSmallIcon(R.drawable.ic_download_white_24dp);
 
         startForeground(NOTIFICATION_ID, builder.build());
@@ -371,7 +370,7 @@ public class DownloadAllService extends Service {
                 .setAutoCancel(false)
                 .setContentText(content)
                 .setProgress(max, cur, false)
-                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_download_white_48dp))
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher))
                 .setSmallIcon(R.drawable.ic_download_white_24dp);
 
         startForeground(NOTIFICATION_ID, builderArticlesList.build());
@@ -382,7 +381,7 @@ public class DownloadAllService extends Service {
         builderArticlesList
                 .setContentTitle(title)
                 .setContentText(content)
-                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_bug_report_white_48dp))
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher))
                 .setSmallIcon(R.drawable.ic_bug_report_white_24dp);
 
         startForeground(NOTIFICATION_ID, builderArticlesList.build());

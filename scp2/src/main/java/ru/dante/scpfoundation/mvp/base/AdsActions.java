@@ -22,4 +22,6 @@ public interface AdsActions {
     boolean isAdsLoaded();
 
     void requestNewInterstitial();
+
+    void updateOwnedMarketItems();
 }

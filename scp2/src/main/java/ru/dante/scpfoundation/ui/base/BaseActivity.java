@@ -38,7 +38,7 @@ import ru.dante.scpfoundation.monetization.util.MyAdListener;
 import ru.dante.scpfoundation.mvp.base.AdsActions;
 import ru.dante.scpfoundation.mvp.base.BaseMvp;
 import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
-import ru.dante.scpfoundation.ui.dialog.ShowSubscriptionsFragmentDialog;
+import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
 import timber.log.Timber;
 
 /**
@@ -160,15 +160,19 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
             Timber.d("onServiceConnected");
             mService = IInAppBillingService.Stub.asInterface(service);
             InAppBillingServiceConnectionObservable.getInstance().getServiceStatusObservable().onNext(true);
-            ShowSubscriptionsFragmentDialog.getOwnedInappsObserveble(BaseActivity.this, mService)
-                    .subscribe(items -> {
-                        mOwnedMarketItems = items;
-//                        if (!mOwnedMarketItems.isEmpty()) {
-                        supportInvalidateOptionsMenu();
-//                        }
-                    });
+            updateOwnedMarketItems();
         }
     };
+
+    @Override
+    public void updateOwnedMarketItems() {
+        SubscriptionsFragmentDialog.getOwnedInappsObserveble(this, mService)
+                .subscribe(items -> {
+                    Timber.d("market items: %s", items);
+                    mOwnedMarketItems = items;
+                    supportInvalidateOptionsMenu();
+                });
+    }
 
     /**
      * @return id of activity layout
@@ -224,6 +228,15 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem subs = menu.findItem(R.id.subscribe);
+        if (subs != null) {
+            subs.setVisible(mOwnedMarketItems.isEmpty());
+        }
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public void showError(Throwable throwable) {
         //TODO switch errors types
         Snackbar.make(root, throwable.getMessage(), Snackbar.LENGTH_SHORT);
@@ -239,7 +252,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
                 return true;
             case R.id.subscribe:
                 Timber.d("subscribe pressed");
-                BottomSheetDialogFragment subsDF = ShowSubscriptionsFragmentDialog.newInstance();
+                BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
                 subsDF.show(getSupportFragmentManager(), subsDF.getTag());
                 return true;
             default:

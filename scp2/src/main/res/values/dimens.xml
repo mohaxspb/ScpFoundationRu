@@ -10,4 +10,5 @@
     <dimen name="text_size_primary">21sp</dimen>
     <dimen name="text_size_secondary">19sp</dimen>
     <dimen name="text_size_tertiary">17sp</dimen>
+    <dimen name="defaultMarginBig">24dp</dimen>
 </resources>
