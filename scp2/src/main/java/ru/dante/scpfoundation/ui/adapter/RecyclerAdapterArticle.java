@@ -174,7 +174,8 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
 
             int textSizePrimary = ctx.getResources().getDimensionPixelSize(R.dimen.text_size_large);
             textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, articleTextScale * textSizePrimary);
-            textView.setTextIsSelectable(true);
+            //TODO add settings for it
+//            textView.setTextIsSelectable(true);
             textView.setText(title);
         }
     }
@@ -197,7 +198,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
             textView.setLinksClickable(true);
             textView.setMovementMethod(LinkMovementMethod.getInstance());
             //TODO add settings for it
-            textView.setTextIsSelectable(true);
+//            textView.setTextIsSelectable(true);
             SetTextViewHTML.setText(textView, text, mTextItemsClickListener);
         }
     }
@@ -222,7 +223,8 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
             ArrayList<String> spoilerParts = ParseHtmlUtils.getSpoilerParts(textPart);
 
             title.setText(spoilerParts.get(0));
-            content.setTextIsSelectable(true);
+            //TODO add settings for it
+//            content.setTextIsSelectable(true);
             content.setLinksClickable(true);
             content.setMovementMethod(LinkMovementMethod.getInstance());
             SetTextViewHTML.setText(content, spoilerParts.get(1), mTextItemsClickListener);
@@ -251,15 +253,16 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
         }
 
         void bind(String articleTextPart) {
-            Context ctx = itemView.getContext();
+            Context context = itemView.getContext();
             Document document = Jsoup.parse(articleTextPart);
             Element imageTag = document.getElementsByTag("img").first();
             String imageUrl = imageTag.attr("src");
 
 //            Timber.d("image: %s", imageUrl);
 
-            Glide.with(ctx)
+            Glide.with(context)
                     .load(imageUrl)
+                    .error(AttributeGetter.getDrawableId(context, R.attr.iconEmptyImage))
                     .fitCenter()
                     .crossFade()
                     .listener(new RequestListener<String, GlideDrawable>() {
@@ -282,13 +285,14 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
 
                             imageView.setScaleType(ImageView.ScaleType.FIT_XY);
 
-                            imageView.setOnClickListener(v -> DialogUtils.showImageDialog(ctx, imageUrl));
+                            imageView.setOnClickListener(v -> DialogUtils.showImageDialog(context, imageUrl));
                             return false;
                         }
                     })
                     .into(imageView);
 
             String title = document.getElementsByTag("span").text();
+            //TODO add settings for it
             titleTextView.setTextIsSelectable(true);
             titleTextView.setText(title);
         }

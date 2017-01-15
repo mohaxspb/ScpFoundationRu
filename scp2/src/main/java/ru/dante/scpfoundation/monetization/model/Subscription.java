@@ -1,4 +1,4 @@
-package ru.dante.scpfoundation.inapp.model;
+package ru.dante.scpfoundation.monetization.model;
 
 import java.util.Comparator;
 

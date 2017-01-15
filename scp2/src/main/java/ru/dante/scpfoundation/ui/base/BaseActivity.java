@@ -15,7 +15,11 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.android.vending.billing.IInAppBillingService;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
 import com.hannesdorfmann.mosby.mvp.MvpActivity;
+import com.yandex.metrica.YandexMetrica;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -26,10 +30,12 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.dante.scpfoundation.R;
-import ru.dante.scpfoundation.inapp.model.Item;
 import ru.dante.scpfoundation.manager.InAppBillingServiceConnectionObservable;
 import ru.dante.scpfoundation.manager.MyNotificationManager;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
+import ru.dante.scpfoundation.monetization.model.Item;
+import ru.dante.scpfoundation.monetization.util.MyAdListener;
+import ru.dante.scpfoundation.mvp.base.AdsActions;
 import ru.dante.scpfoundation.mvp.base.BaseMvp;
 import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.ShowSubscriptionsFragmentDialog;
@@ -42,7 +48,7 @@ import timber.log.Timber;
  */
 public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Presenter<V>>
         extends MvpActivity<V, P>
-        implements BaseMvp.View {
+        implements BaseMvp.View, AdsActions {
 
     @BindView(R.id.root)
     protected View root;
@@ -59,7 +65,10 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
     @Inject
     protected MyNotificationManager mMyNotificationManager;
 
-    private List<Item> ownedItems = new ArrayList<>();
+    //inapps and ads
+    private IInAppBillingService mService;
+    private List<Item> mOwnedMarketItems = new ArrayList<>();
+    private InterstitialAd mInterstitialAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,13 +92,56 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
         //setAlarm for notification
         mMyNotificationManager.checkAlarm();
 
-        //init subs serveice
+        //initAds subs service
         Intent serviceIntent = new Intent("com.android.vending.billing.InAppBillingService.BIND");
         serviceIntent.setPackage("com.android.vending");
         bindService(serviceIntent, mServiceConn, Context.BIND_AUTO_CREATE);
+
+        //ads
+        initAds();
     }
 
-    private IInAppBillingService mService;
+    @Override
+    public boolean isTimeToShowAds() {
+        return mOwnedMarketItems.isEmpty() && mMyPreferenceManager.isTimeToShowAds();
+    }
+
+    @Override
+    public boolean isAdsLoaded() {
+        return mInterstitialAd.isLoaded();
+    }
+
+    @Override
+    public void showAds() {
+        mInterstitialAd.setAdListener(new MyAdListener());
+        mInterstitialAd.show();
+    }
+
+    @Override
+    public void showAds(MyAdListener adListener) {
+        mInterstitialAd.setAdListener(adListener);
+        mInterstitialAd.show();
+    }
+
+    @Override
+    public void initAds() {
+        MobileAds.initialize(getApplicationContext(), getString(R.string.ads_app_id));
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId(getString(R.string.ad_unit_id_interstitial));
+        mInterstitialAd.setAdListener(new MyAdListener());
+
+        if (isTimeToShowAds()) {
+            requestNewInterstitial();
+        }
+    }
+
+    @Override
+    public void requestNewInterstitial() {
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice("A22E60ED57ABD5DD2947708F10EB5342")
+                .build();
+        mInterstitialAd.loadAd(adRequest);
+    }
 
     public IInAppBillingService getIInAppBillingService() {
         return mService;
@@ -110,10 +162,10 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
             InAppBillingServiceConnectionObservable.getInstance().getServiceStatusObservable().onNext(true);
             ShowSubscriptionsFragmentDialog.getOwnedInappsObserveble(BaseActivity.this, mService)
                     .subscribe(items -> {
-                        ownedItems = items;
-                        if (!items.isEmpty()) {
-                            supportInvalidateOptionsMenu();
-                        }
+                        mOwnedMarketItems = items;
+//                        if (!mOwnedMarketItems.isEmpty()) {
+                        supportInvalidateOptionsMenu();
+//                        }
                     });
         }
     };
@@ -141,7 +193,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
         return true;
     }
 
-    //workaround from http://stackoverflow.com/a/30337653/3212712 to show menu icons
+    //workaround from http://stackoverflow.com/a/30337653/3212712 to showAds menu icons
     @Override
     protected boolean onPrepareOptionsPanel(View view, Menu menu) {
         if (menu != null) {
@@ -166,7 +218,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
             }
 
             MenuItem subs = menu.findItem(R.id.subscribe);
-            subs.setVisible(ownedItems.isEmpty());
+            subs.setVisible(mOwnedMarketItems.isEmpty());
         }
         return super.onPrepareOptionsPanel(view, menu);
     }
@@ -194,5 +246,21 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
                 Timber.wtf("unexpected id: %s", item.getItemId());
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        YandexMetrica.onResumeActivity(this);
+
+        if (isTimeToShowAds() && !isAdsLoaded()) {
+            requestNewInterstitial();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        YandexMetrica.onPauseActivity(this);
+        super.onPause();
     }
 }

@@ -4,6 +4,7 @@ import android.app.Application;
 import android.util.Log;
 
 import com.vk.sdk.VKSdk;
+import com.yandex.metrica.YandexMetrica;
 
 import io.realm.Realm;
 import ru.dante.scpfoundation.di.AppComponent;
@@ -35,6 +36,11 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        // Инициализация AppMetrica SDK
+        YandexMetrica.activate(getApplicationContext(), getString(R.string.yandex_metrica_api_key));
+        // Отслеживание активности пользователей
+        YandexMetrica.enableActivityAutoTracking(this);
 
         sAppInstance = this;
         sAppComponent = DaggerAppComponent.builder()

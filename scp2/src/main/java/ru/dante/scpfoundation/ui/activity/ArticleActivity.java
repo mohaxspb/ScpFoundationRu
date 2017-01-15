@@ -14,6 +14,8 @@ import butterknife.BindView;
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
+import ru.dante.scpfoundation.monetization.util.MyAdListener;
+import ru.dante.scpfoundation.mvp.base.AdsActions;
 import ru.dante.scpfoundation.mvp.contract.ArticleScreenMvp;
 import ru.dante.scpfoundation.ui.adapter.ArticlesPagerAdapter;
 import ru.dante.scpfoundation.ui.base.BaseDrawerActivity;
@@ -35,10 +37,32 @@ public class ArticleActivity
     private int mCurPosition;
     private List<String> mUrls;
 
-    private ArticlesPagerAdapter mAdapter;
-
     public static void startActivity(Context context, ArrayList<String> urls, int position) {
         Timber.d("startActivity: urls.size() %s, position: %s", urls.size(), position);
+        if (context instanceof AdsActions) {
+            AdsActions adsActions = (AdsActions) context;
+            if (adsActions.isTimeToShowAds()) {
+                if (adsActions.isAdsLoaded()) {
+                    adsActions.showAds(new MyAdListener() {
+                        @Override
+                        public void onAdClosed() {
+                            super.onAdClosed();
+                            Intent intent = new Intent(context, ArticleActivity.class);
+                            intent.putExtra(EXTRA_ARTICLES_URLS_LIST, urls);
+                            intent.putExtra(EXTRA_POSITION, position);
+                            context.startActivity(intent);
+                        }
+                    });
+                    return;
+                } else {
+                    Timber.d("Ads not loaded yet");
+                }
+            } else {
+                Timber.d("it's not time to showAds ads");
+            }
+        } else {
+            Timber.wtf("context IS NOT instanceof AdsActions");
+        }
         Intent intent = new Intent(context, ArticleActivity.class);
         intent.putExtra(EXTRA_ARTICLES_URLS_LIST, urls);
         intent.putExtra(EXTRA_POSITION, position);
@@ -62,14 +86,21 @@ public class ArticleActivity
             mPresenter.setArticlesUrls(mUrls);
             mCurPosition = getIntent().getIntExtra(EXTRA_POSITION, 0);
         }
-        mAdapter = new ArticlesPagerAdapter(getSupportFragmentManager());
-        mAdapter.setData(getIntent().getStringArrayListExtra(EXTRA_ARTICLES_URLS_LIST));
-        mViewPager.setAdapter(mAdapter);
+        ArticlesPagerAdapter adapter = new ArticlesPagerAdapter(getSupportFragmentManager());
+        adapter.setData(getIntent().getStringArrayListExtra(EXTRA_ARTICLES_URLS_LIST));
+        mViewPager.setAdapter(adapter);
 
         mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
                 mCurPosition = position;
+                if (isTimeToShowAds()) {
+                    if (isAdsLoaded()) {
+                        showAds();
+                    } else {
+                        requestNewInterstitial();
+                    }
+                }
             }
         });
 

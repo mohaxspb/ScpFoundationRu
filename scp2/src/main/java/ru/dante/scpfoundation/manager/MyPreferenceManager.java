@@ -11,6 +11,10 @@ import android.preference.PreferenceManager;
  */
 public class MyPreferenceManager {
 
+    //test value
+//    private static final long PERIOD_BETWEEN_ADS = 30 * 1000;
+    private static final long PERIOD_BETWEEN_ADS = 3 * 60 * 60 * 1000;
+
     public interface Keys {
         String SESSION_ID = "SESSION_ID";
         String USER_ID = "USER_ID";
@@ -23,6 +27,7 @@ public class MyPreferenceManager {
         String NOTIFICATION_VIBRATION_IS_ON = "NOTIFICATION_VIBRATION_IS_ON";
         String NOTIFICATION_LED_IS_ON = "NOTIFICATION_LED_IS_ON";
         String NOTIFICATION_SOUND_IS_ON = "NOTIFICATION_SOUND_IS_ON";
+        String ADS_LAST_TIME_SHOWS = "ADS_LAST_TIME_SHOWS";
     }
 
     private SharedPreferences mPreferences;
@@ -111,5 +116,21 @@ public class MyPreferenceManager {
 
     public void setNotificationSoundEnabled(boolean enabled) {
         mPreferences.edit().putBoolean(Keys.NOTIFICATION_SOUND_IS_ON, enabled).apply();
+    }
+
+    public boolean isTimeToShowAds() {
+        return System.currentTimeMillis() - getLastTimeAdsShows() >= PERIOD_BETWEEN_ADS;
+    }
+
+    public void setLastTimeAdsShows(long timeInMillis) {
+        mPreferences.edit().putLong(Keys.ADS_LAST_TIME_SHOWS, timeInMillis).apply();
+    }
+
+    private long getLastTimeAdsShows() {
+        long timeFromLastShow = mPreferences.getLong(Keys.ADS_LAST_TIME_SHOWS, 0);
+        if (timeFromLastShow == 0) {
+            setLastTimeAdsShows(System.currentTimeMillis());
+        }
+        return timeFromLastShow;
     }
 }

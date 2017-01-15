@@ -16,7 +16,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
-import ru.dante.scpfoundation.inapp.model.Subscription;
+import ru.dante.scpfoundation.monetization.model.Subscription;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import timber.log.Timber;
 

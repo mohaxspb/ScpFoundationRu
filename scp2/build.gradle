@@ -36,7 +36,6 @@ android {
         //add market skus to buildConfig
         //there is a way to store it in res... but it's awful
         //http://stackoverflow.com/a/41655569/3212712
-
         //Load market SKUs
         if (rootProject.file('keystore.properties').exists()) {
             def marketSkusPropertiesFile = rootProject.file("marketSkus.properties");
@@ -48,6 +47,20 @@ android {
         } else {
             buildConfigField('String[]', 'OLD_SKUS', "{\"\",\"\",\"\"}")
             buildConfigField('String[]', 'VER_2_SKUS', "{\"\",\"\",\"\"}")
+        }
+        //set API keys from secret file or with default values
+        if (rootProject.file('apiKeys.properties').exists()) {
+            def apiKeysPropertiesFile = rootProject.file("apiKeys.properties");
+            def apiKeysProperties = new Properties()
+            apiKeysProperties.load(new FileInputStream(apiKeysPropertiesFile))
+
+            resValue('string', 'yandex_metrica_api_key', apiKeysProperties.get("yandexMetricaApiKey"))
+            resValue('string', 'ads_app_id', apiKeysProperties.get("adMobAppId"))
+            resValue('string', 'ad_unit_id_interstitial', apiKeysProperties.get("adsBannerIdInterstitial"))
+        } else {
+            resValue('string', 'yandex_metrica_api_key', 'null')
+            resValue('string', 'ads_app_id', 'null')
+            resValue('string', 'ad_unit_id_interstitial', 'null')
         }
     }
 
@@ -141,4 +154,11 @@ dependencies {
     compile 'com.afollestad.material-dialogs:core:0.9.1.0'
     //fonts
     compile 'uk.co.chrisjenx:calligraphy:2.2.0'
+    //ads
+    compile 'com.google.firebase:firebase-core:10.0.1'
+    compile 'com.google.firebase:firebase-ads:10.0.1'
+    // AppMetrica
+    compile 'com.yandex.android:mobmetricalib:2.60'
 }
+
+apply plugin: 'com.google.gms.google-services'
