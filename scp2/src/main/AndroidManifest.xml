@@ -42,7 +42,7 @@
             android:name="ru.dante.scpfoundation.receivers.ReceiverTimer"
             android:exported="false">
             <intent-filter>
-                <action android:name="@string/receiver_action_timer"/>
+                <action android:name="ru.dante.scpfoundation.receivers.ReceiverTimer"/>
             </intent-filter>
         </receiver>
 
@@ -50,7 +50,7 @@
             android:name="ru.dante.scpfoundation.receivers.ReceiverBoot"
             android:exported="false">
             <intent-filter>
-                <action android:name="@string/receiver_action_boot"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>
 
