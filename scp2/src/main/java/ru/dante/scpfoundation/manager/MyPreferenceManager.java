@@ -11,9 +11,9 @@ import android.preference.PreferenceManager;
  */
 public class MyPreferenceManager {
 
-    //FIXME test value
-    private static final long PERIOD_BETWEEN_ADS = 0;
-//    private static final long PERIOD_BETWEEN_ADS = 3 * 60 * 60 * 1000;
+    //test value
+//    private static final long PERIOD_BETWEEN_ADS = 30 * 1000;
+    private static final long PERIOD_BETWEEN_ADS = 3 * 60 * 60 * 1000;
 
     public interface Keys {
         String SESSION_ID = "SESSION_ID";
@@ -27,7 +27,6 @@ public class MyPreferenceManager {
         String NOTIFICATION_VIBRATION_IS_ON = "NOTIFICATION_VIBRATION_IS_ON";
         String NOTIFICATION_LED_IS_ON = "NOTIFICATION_LED_IS_ON";
         String NOTIFICATION_SOUND_IS_ON = "NOTIFICATION_SOUND_IS_ON";
-//        String ADS_NEED_TO_SHOW = "ADS_NEED_TO_SHOW";
         String ADS_LAST_TIME_SHOWS = "ADS_LAST_TIME_SHOWS";
     }
 
@@ -128,6 +127,10 @@ public class MyPreferenceManager {
     }
 
     private long getLastTimeAdsShows() {
-        return mPreferences.getLong(Keys.ADS_LAST_TIME_SHOWS, 0);
+        long timeFromLastShow = mPreferences.getLong(Keys.ADS_LAST_TIME_SHOWS, 0);
+        if (timeFromLastShow == 0) {
+            setLastTimeAdsShows(System.currentTimeMillis());
+        }
+        return timeFromLastShow;
     }
 }

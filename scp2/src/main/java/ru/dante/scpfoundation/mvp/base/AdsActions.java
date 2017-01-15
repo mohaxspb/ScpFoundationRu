@@ -20,4 +20,6 @@ public interface AdsActions {
     boolean isTimeToShowAds();
 
     boolean isAdsLoaded();
+
+    void requestNewInterstitial();
 }

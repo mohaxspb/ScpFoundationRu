@@ -94,8 +94,12 @@ public class ArticleActivity
             @Override
             public void onPageSelected(int position) {
                 mCurPosition = position;
-                if (isTimeToShowAds() && isAdsLoaded()) {
-                    showAds();
+                if (isTimeToShowAds()) {
+                    if (isAdsLoaded()) {
+                        showAds();
+                    } else {
+                        requestNewInterstitial();
+                    }
                 }
             }
         });

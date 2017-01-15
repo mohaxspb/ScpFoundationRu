@@ -135,7 +135,8 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
         }
     }
 
-    private void requestNewInterstitial() {
+    @Override
+    public void requestNewInterstitial() {
         AdRequest adRequest = new AdRequest.Builder()
                 .addTestDevice("A22E60ED57ABD5DD2947708F10EB5342")
                 .build();
@@ -163,7 +164,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
                     .subscribe(items -> {
                         mOwnedMarketItems = items;
 //                        if (!mOwnedMarketItems.isEmpty()) {
-                            supportInvalidateOptionsMenu();
+                        supportInvalidateOptionsMenu();
 //                        }
                     });
         }
