@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardBackgroundColor="?artListCardBackgroundColor"
-    app:cardElevation="3dp"
     app:cardCornerRadius="3dp"
+    app:cardElevation="3dp"
     app:cardUseCompatPadding="true"
     >
 
@@ -41,8 +41,8 @@
                 android:layout_margin="@dimen/defaultMargin"
                 android:contentDescription="@string/app_name"
                 android:scaleType="centerCrop"
-                tools:src="@drawable/ic_scp_icon_new"
                 android:tint="@color/material_red_500"
+                tools:src="@drawable/ic_scp_icon_new"
                 />
         </FrameLayout>
 

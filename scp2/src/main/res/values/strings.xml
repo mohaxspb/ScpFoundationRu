@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SCP Foundation RU On/Off-line</string>
+    <string name="app_name">SCP Foundation RU On/Offline</string>
     <!--drawer items-->
     <string name="drawer_item_1">Об организации</string>
     <string name="drawer_item_2">Новости</string>
