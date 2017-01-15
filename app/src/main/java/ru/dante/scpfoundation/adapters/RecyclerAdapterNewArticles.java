@@ -27,10 +27,10 @@ import java.util.ArrayList;
 import ru.dante.scpfoundation.Article;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.activities.ActivityArticles;
+import ru.dante.scpfoundation.fragments.FragmentDialogShowSubscription;
 import ru.dante.scpfoundation.utils.AttributeGetter;
 import ru.dante.scpfoundation.utils.FavoriteUtils;
 import ru.dante.scpfoundation.utils.OfflineUtils;
-import ru.dante.scpfoundation.utils.inapp.SubscriptionHelper;
 import ru.dante.scpfoundation.utils.parsing.DownloadArticleForOffline;
 
 /**
@@ -199,7 +199,8 @@ public class RecyclerAdapterNewArticles extends RecyclerView.Adapter<RecyclerVie
                 public void onClick(View v) {
                     needToShowGiveMeMoney = false;
                     notifyItemChanged(0);
-                    SubscriptionHelper.showSubscriptionDialog((AppCompatActivity) ctx);
+                    FragmentDialogShowSubscription fragmentDialogShowSubscription = FragmentDialogShowSubscription.newInstance();
+                    fragmentDialogShowSubscription.show(((AppCompatActivity) ctx).getFragmentManager(), FragmentDialogShowSubscription.LOG);
                 }
             });
             install.setText(R.string.buy_subs);

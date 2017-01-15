@@ -18,7 +18,6 @@ android {
         minSdkVersion 17
         targetSdkVersion 25
         versionCode buildVersionCode()
-//        versionCode 116
         versionName version
 
         manifestPlaceholders = [debuggable: true]

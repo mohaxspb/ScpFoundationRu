@@ -1,6 +1,5 @@
 package ru.dante.scpfoundation.activities;
 
-import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -48,6 +47,7 @@ import java.util.ArrayList;
 import ru.dante.scpfoundation.Const;
 import ru.dante.scpfoundation.NavigationItemSelectedListenerMain;
 import ru.dante.scpfoundation.R;
+import ru.dante.scpfoundation.fragments.FragmentDialogShowSubscription;
 import ru.dante.scpfoundation.fragments.FragmentDialogTextAppearance;
 import ru.dante.scpfoundation.fragments.FragmentMaterials;
 import ru.dante.scpfoundation.fragments.FragmentMaterialsAll;
@@ -57,7 +57,6 @@ import ru.dante.scpfoundation.utils.NotificationUtils;
 import ru.dante.scpfoundation.utils.RandomPage;
 import ru.dante.scpfoundation.utils.SetTextViewHTML;
 import ru.dante.scpfoundation.utils.VKUtils;
-import ru.dante.scpfoundation.utils.inapp.SubscriptionHelper;
 import ru.dante.scpfoundation.utils.instaleng.AppInstall;
 import ru.dante.scpfoundation.utils.prerate.PreRate;
 import ru.dante.scpfoundation.utils.wantmoney.GiveMeMoney;
@@ -506,7 +505,8 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
                 ctx.startActivity(intent);
                 return true;
             case R.id.subscribe:
-                SubscriptionHelper.showSubscriptionDialog(this);
+                FragmentDialogShowSubscription fragmentDialogShowSubscription = FragmentDialogShowSubscription.newInstance();
+                fragmentDialogShowSubscription.show(getFragmentManager(), FragmentDialogShowSubscription.LOG);
                 return true;
         }
         return false;

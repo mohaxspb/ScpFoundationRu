@@ -1,11 +1,16 @@
 package ru.dante.scpfoundation.inapp.model;
 
+import java.util.Comparator;
+
 /**
  * Created by mohax on 14.01.2017.
  * <p>
  * for scp_ru
  */
 public class Subscription {
+    /**
+     * aka SKU
+     */
     public String productId;
     public String price;
     public String title;
@@ -40,4 +45,16 @@ public class Subscription {
                 ", title='" + title + '\'' +
                 '}';
     }
+
+    public static final Comparator<Subscription> COMPARATOR_SKU =
+            (d, d1) -> d.productId.compareTo(d1.productId);
+
+    public static final Comparator<Subscription> COMPARATOR_PRICE = (d, d1) -> {
+        try {
+            return Integer.valueOf(d.price.replaceAll("[^\\d.]", ""))
+                    .compareTo(Integer.valueOf((d1.price.replaceAll("[^\\d.]", ""))));
+        } catch (Exception e) {
+            return d.price.compareTo(d1.price);
+        }
+    };
 }
