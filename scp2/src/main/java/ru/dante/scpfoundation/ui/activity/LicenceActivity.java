@@ -65,6 +65,7 @@ public class LicenceActivity extends AppCompatActivity {
         }
     }
 
+    //TODO move to utils
     public static String readFromAssets(Context context, String filename) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(context.getAssets().open(filename), "UTF-8"));
 

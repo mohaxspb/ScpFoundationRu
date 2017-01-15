@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewPager;
 import android.view.MenuItem;
 
@@ -157,6 +158,7 @@ public class ArticleActivity
                 break;
             case R.id.random_page:
                 //TODO
+                Snackbar.make(root, R.string.in_progress, Snackbar.LENGTH_SHORT).show();
                 break;
             case R.id.objects_I:
                 link = Constants.Urls.OBJECTS_1;
@@ -172,6 +174,7 @@ public class ArticleActivity
                 break;
             case R.id.files:
                 //TODO launch new activity
+                Snackbar.make(root, R.string.in_progress, Snackbar.LENGTH_SHORT).show();
                 break;
             case R.id.stories:
                 link = Constants.Urls.STORIES;
@@ -184,6 +187,7 @@ public class ArticleActivity
                 break;
             case R.id.gallery:
                 //TODO
+                Snackbar.make(root, R.string.in_progress, Snackbar.LENGTH_SHORT).show();
                 break;
             case R.id.siteSearch:
                 link = Constants.Urls.SEARCH;

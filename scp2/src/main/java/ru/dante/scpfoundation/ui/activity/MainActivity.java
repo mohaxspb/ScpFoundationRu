@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -11,11 +12,13 @@ import android.view.MenuItem;
 
 import java.util.List;
 
+import ru.dante.scpfoundation.BuildConfig;
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.mvp.contract.MainMvp;
 import ru.dante.scpfoundation.ui.base.BaseDrawerActivity;
+import ru.dante.scpfoundation.ui.dialog.NewVersionDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.TextSizeDialogFragment;
 import ru.dante.scpfoundation.ui.fragment.ArticleFragment;
 import ru.dante.scpfoundation.ui.fragment.FavoriteArticlesFragment;
@@ -123,6 +126,11 @@ public class MainActivity
         }
         mNavigationView.setCheckedItem(mCurrentSelectedDrawerItemId);
         setToolbarTitleByDrawerItemId(mCurrentSelectedDrawerItemId);
+
+        if (mMyPreferenceManager.getCurAppVersion() != BuildConfig.VERSION_CODE) {
+            NewVersionDialogFragment dialogFragment = NewVersionDialogFragment.newInstance();
+            dialogFragment.show(getFragmentManager(), NewVersionDialogFragment.TAG);
+        }
     }
 
     @Override
@@ -175,6 +183,7 @@ public class MainActivity
                 break;
             case R.id.random_page:
                 //TODO
+                Snackbar.make(root, R.string.in_progress, Snackbar.LENGTH_SHORT).show();
                 break;
             case R.id.objects_I:
                 mCurrentSelectedDrawerItemId = id;
@@ -194,6 +203,7 @@ public class MainActivity
                 break;
             case R.id.files:
                 //TODO launch new activity
+                Snackbar.make(root, R.string.in_progress, Snackbar.LENGTH_SHORT).show();
                 break;
             case R.id.stories:
                 mCurrentSelectedDrawerItemId = id;
@@ -210,6 +220,7 @@ public class MainActivity
                 break;
             case R.id.gallery:
                 //TODO
+                Snackbar.make(root, R.string.in_progress, Snackbar.LENGTH_SHORT).show();
                 break;
             case R.id.siteSearch:
                 mCurrentSelectedDrawerItemId = id;

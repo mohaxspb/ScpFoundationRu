@@ -29,6 +29,7 @@ public class MyPreferenceManager {
         String NOTIFICATION_SOUND_IS_ON = "NOTIFICATION_SOUND_IS_ON";
         String ADS_LAST_TIME_SHOWS = "ADS_LAST_TIME_SHOWS";
         String LICENCE_ACCEPTED = "LICENCE_ACCEPTED";
+        String CUR_APP_VERSION = "CUR_APP_VERSION";
     }
 
     private SharedPreferences mPreferences;
@@ -141,5 +142,13 @@ public class MyPreferenceManager {
 
     public void setLicenceAccepted(boolean accepted) {
         mPreferences.edit().putBoolean(Keys.LICENCE_ACCEPTED, accepted).apply();
+    }
+
+    public int getCurAppVersion() {
+        return mPreferences.getInt(Keys.CUR_APP_VERSION, 0);
+    }
+
+    public void setCurAppVersion(int versionCode) {
+        mPreferences.edit().putInt(Keys.CUR_APP_VERSION, versionCode).apply();
     }
 }

@@ -78,6 +78,9 @@
     <string name="refresh">Обновить</string>
     <string name="i_accept">Я согласен</string>
     <string name="error_read_licence">Не удалось открыть файл лицензии</string>
+    <string name="new_version_features">Новая версия</string>
+    <string name="hurray">Ура!</string>
+    <string name="in_progress">В разработке</string>
 
     <string-array name="download_types">
         <item>Объекты I</item>
