@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
 import io.realm.RealmList;
 import okhttp3.OkHttpClient;
@@ -48,14 +47,14 @@ public class ApiClient {
 
     private <T> Observable<T> bindWithUtils(Observable<T> observable) {
         return observable
-                .doOnError(throwable -> {
-                    try {
-                        Thread.sleep(2000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                })
-                .delay(2, TimeUnit.SECONDS)
+//                .doOnError(throwable -> {
+//                    try {
+//                        Thread.sleep(2000);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                })
+//                .delay(2, TimeUnit.SECONDS)
                 ;
     }
 
@@ -111,11 +110,6 @@ public class ApiClient {
             }
             try {
                 Document doc = Jsoup.parse(responseBody);
-
-                //get num of pages
-                Element spanWithNumber = doc.getElementsByClass("pager-no").first();
-                String text = spanWithNumber.text();
-                Integer numOfPages = Integer.valueOf(text.substring(text.lastIndexOf(" ") + 1));
 
                 Element pageContent = doc.getElementsByClass("wiki-content-table").first();
                 if (pageContent == null) {
