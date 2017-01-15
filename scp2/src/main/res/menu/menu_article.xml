@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools">
     <item
         android:id="@+id/subscribe"
+        android:visible="false"
         android:icon="@drawable/ic_monetization_on_white_24dp"
         android:title="@string/in_apps"
         app:showAsAction="never"

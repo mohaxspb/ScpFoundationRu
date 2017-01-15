@@ -1,4 +1,4 @@
-package ru.dante.scpfoundation.inapp.model;
+package ru.dante.scpfoundation.monetization.model;
 
 /**
  * Created by mohax on 14.01.2017.

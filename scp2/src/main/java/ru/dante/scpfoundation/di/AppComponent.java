@@ -8,6 +8,7 @@ import ru.dante.scpfoundation.di.module.NetModule;
 import ru.dante.scpfoundation.di.module.NotificationModule;
 import ru.dante.scpfoundation.di.module.PresentersModule;
 import ru.dante.scpfoundation.di.module.StorageModule;
+import ru.dante.scpfoundation.monetization.util.MyAdListener;
 import ru.dante.scpfoundation.receivers.ReceiverBoot;
 import ru.dante.scpfoundation.receivers.ReceiverTimer;
 import ru.dante.scpfoundation.service.DownloadAllService;
@@ -85,4 +86,6 @@ public interface AppComponent {
     void inject(ShowSubscriptionsFragmentDialog fragmentDialog);
 
     void inject(RecyclerAdapterSubscriptions recyclerAdapterSubscriptions);
+
+    void inject(MyAdListener adListener);
 }

@@ -15,7 +15,6 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.android.vending.billing.IInAppBillingService;
-import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
@@ -31,10 +30,11 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.dante.scpfoundation.R;
-import ru.dante.scpfoundation.inapp.model.Item;
 import ru.dante.scpfoundation.manager.InAppBillingServiceConnectionObservable;
 import ru.dante.scpfoundation.manager.MyNotificationManager;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
+import ru.dante.scpfoundation.monetization.model.Item;
+import ru.dante.scpfoundation.monetization.util.MyAdListener;
 import ru.dante.scpfoundation.mvp.base.AdsActions;
 import ru.dante.scpfoundation.mvp.base.BaseMvp;
 import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
@@ -67,7 +67,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
 
     //inapps and ads
     private IInAppBillingService mService;
-    private List<Item> ownedItems = new ArrayList<>();
+    private List<Item> mOwnedMarketItems = new ArrayList<>();
     private InterstitialAd mInterstitialAd;
 
     @Override
@@ -103,19 +103,24 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
 
     @Override
     public boolean isTimeToShowAds() {
-        //TODO
-        return false;
+        return mOwnedMarketItems.isEmpty() && mMyPreferenceManager.isTimeToShowAds();
     }
 
     @Override
-    public void show() {
+    public boolean isAdsLoaded() {
+        return mInterstitialAd.isLoaded();
+    }
+
+    @Override
+    public void showAds() {
+        mInterstitialAd.setAdListener(new MyAdListener());
         mInterstitialAd.show();
     }
 
     @Override
-    public void show(AdListener adListener) {
+    public void showAds(MyAdListener adListener) {
         mInterstitialAd.setAdListener(adListener);
-        show();
+        mInterstitialAd.show();
     }
 
     @Override
@@ -123,13 +128,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
         MobileAds.initialize(getApplicationContext(), getString(R.string.ads_app_id));
         mInterstitialAd = new InterstitialAd(this);
         mInterstitialAd.setAdUnitId(getString(R.string.ad_unit_id_interstitial));
-        mInterstitialAd.setAdListener(new AdListener() {
-            @Override
-            public void onAdClosed() {
-                //ads shown, update status
-                //TODO
-            }
-        });
+        mInterstitialAd.setAdListener(new MyAdListener());
 
         if (isTimeToShowAds()) {
             requestNewInterstitial();
@@ -162,10 +161,10 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
             InAppBillingServiceConnectionObservable.getInstance().getServiceStatusObservable().onNext(true);
             ShowSubscriptionsFragmentDialog.getOwnedInappsObserveble(BaseActivity.this, mService)
                     .subscribe(items -> {
-                        ownedItems = items;
-                        if (!items.isEmpty()) {
+                        mOwnedMarketItems = items;
+//                        if (!mOwnedMarketItems.isEmpty()) {
                             supportInvalidateOptionsMenu();
-                        }
+//                        }
                     });
         }
     };
@@ -193,7 +192,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
         return true;
     }
 
-    //workaround from http://stackoverflow.com/a/30337653/3212712 to show menu icons
+    //workaround from http://stackoverflow.com/a/30337653/3212712 to showAds menu icons
     @Override
     protected boolean onPrepareOptionsPanel(View view, Menu menu) {
         if (menu != null) {
@@ -218,7 +217,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
             }
 
             MenuItem subs = menu.findItem(R.id.subscribe);
-            subs.setVisible(ownedItems.isEmpty());
+            subs.setVisible(mOwnedMarketItems.isEmpty());
         }
         return super.onPrepareOptionsPanel(view, menu);
     }
@@ -252,6 +251,10 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
     public void onResume() {
         super.onResume();
         YandexMetrica.onResumeActivity(this);
+
+        if (isTimeToShowAds() && !isAdsLoaded()) {
+            requestNewInterstitial();
+        }
     }
 
     @Override
