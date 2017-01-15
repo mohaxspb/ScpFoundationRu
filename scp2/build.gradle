@@ -55,8 +55,12 @@ android {
             apiKeysProperties.load(new FileInputStream(apiKeysPropertiesFile))
 
             resValue('string', 'yandex_metrica_api_key', apiKeysProperties.get("yandexMetricaApiKey"))
+            resValue('string', 'ads_app_id', apiKeysProperties.get("adMobAppId"))
+            resValue('string', 'ad_unit_id_interstitial', apiKeysProperties.get("adsBannerIdInterstitial"))
         } else {
             resValue('string', 'yandex_metrica_api_key', 'null')
+            resValue('string', 'ads_app_id', 'null')
+            resValue('string', 'ad_unit_id_interstitial', 'null')
         }
     }
 

@@ -15,6 +15,10 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.android.vending.billing.IInAppBillingService;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
 import com.hannesdorfmann.mosby.mvp.MvpActivity;
 import com.yandex.metrica.YandexMetrica;
 
@@ -31,6 +35,7 @@ import ru.dante.scpfoundation.inapp.model.Item;
 import ru.dante.scpfoundation.manager.InAppBillingServiceConnectionObservable;
 import ru.dante.scpfoundation.manager.MyNotificationManager;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
+import ru.dante.scpfoundation.mvp.base.AdsActions;
 import ru.dante.scpfoundation.mvp.base.BaseMvp;
 import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.ShowSubscriptionsFragmentDialog;
@@ -43,7 +48,7 @@ import timber.log.Timber;
  */
 public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Presenter<V>>
         extends MvpActivity<V, P>
-        implements BaseMvp.View {
+        implements BaseMvp.View, AdsActions {
 
     @BindView(R.id.root)
     protected View root;
@@ -60,7 +65,10 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
     @Inject
     protected MyNotificationManager mMyNotificationManager;
 
+    //inapps and ads
+    private IInAppBillingService mService;
     private List<Item> ownedItems = new ArrayList<>();
+    private InterstitialAd mInterstitialAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,13 +92,56 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
         //setAlarm for notification
         mMyNotificationManager.checkAlarm();
 
-        //init subs serveice
+        //initAds subs service
         Intent serviceIntent = new Intent("com.android.vending.billing.InAppBillingService.BIND");
         serviceIntent.setPackage("com.android.vending");
         bindService(serviceIntent, mServiceConn, Context.BIND_AUTO_CREATE);
+
+        //ads
+        initAds();
     }
 
-    private IInAppBillingService mService;
+    @Override
+    public boolean isTimeToShowAds() {
+        //TODO
+        return false;
+    }
+
+    @Override
+    public void show() {
+        mInterstitialAd.show();
+    }
+
+    @Override
+    public void show(AdListener adListener) {
+        mInterstitialAd.setAdListener(adListener);
+        show();
+    }
+
+    @Override
+    public void initAds() {
+        MobileAds.initialize(getApplicationContext(), getString(R.string.ads_app_id));
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId(getString(R.string.ad_unit_id_interstitial));
+        mInterstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdClosed() {
+                //ads shown, update status
+                //TODO
+            }
+        });
+
+        if (isTimeToShowAds()) {
+            requestNewInterstitial();
+        }
+    }
+
+    private void requestNewInterstitial() {
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice("A22E60ED57ABD5DD2947708F10EB5342")
+                .build();
+        mInterstitialAd.loadAd(adRequest);
+    }
 
     public IInAppBillingService getIInAppBillingService() {
         return mService;
