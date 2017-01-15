@@ -28,6 +28,7 @@ public class MyPreferenceManager {
         String NOTIFICATION_LED_IS_ON = "NOTIFICATION_LED_IS_ON";
         String NOTIFICATION_SOUND_IS_ON = "NOTIFICATION_SOUND_IS_ON";
         String ADS_LAST_TIME_SHOWS = "ADS_LAST_TIME_SHOWS";
+        String LICENCE_ACCEPTED = "LICENCE_ACCEPTED";
     }
 
     private SharedPreferences mPreferences;
@@ -132,5 +133,13 @@ public class MyPreferenceManager {
             setLastTimeAdsShows(System.currentTimeMillis());
         }
         return timeFromLastShow;
+    }
+
+    public boolean isLicenceAccepted() {
+        return mPreferences.getBoolean(Keys.LICENCE_ACCEPTED, false);
+    }
+
+    public void setLicenceAccepted(boolean accepted) {
+        mPreferences.edit().putBoolean(Keys.LICENCE_ACCEPTED, accepted).apply();
     }
 }

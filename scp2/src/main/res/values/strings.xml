@@ -76,6 +76,8 @@
     <string name="current_subscription">Ваша текущая подписка</string>
     <string name="no_subscriptions">Пусто</string>
     <string name="refresh">Обновить</string>
+    <string name="i_accept">Я согласен</string>
+    <string name="error_read_licence">Не удалось открыть файл лицензии</string>
 
     <string-array name="download_types">
         <item>Объекты I</item>
