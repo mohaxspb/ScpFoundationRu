@@ -256,7 +256,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
             Context context = itemView.getContext();
             Document document = Jsoup.parse(articleTextPart);
             Element imageTag = document.getElementsByTag("img").first();
-            String imageUrl = imageTag.attr("src");
+            String imageUrl = imageTag == null ? null : imageTag.attr("src");
 
 //            Timber.d("image: %s", imageUrl);
 
