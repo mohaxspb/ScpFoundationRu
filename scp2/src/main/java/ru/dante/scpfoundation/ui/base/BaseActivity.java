@@ -4,8 +4,10 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.Snackbar;
@@ -48,7 +50,7 @@ import timber.log.Timber;
  */
 public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Presenter<V>>
         extends MvpActivity<V, P>
-        implements BaseMvp.View, AdsActions {
+        implements BaseMvp.View, AdsActions, SharedPreferences.OnSharedPreferenceChangeListener {
 
     @BindView(R.id.root)
     protected View root;
@@ -99,6 +101,8 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
 
         //ads
         initAds();
+
+        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -275,5 +279,10 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
     public void onPause() {
         YandexMetrica.onPauseActivity(this);
         super.onPause();
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
+        //TODO
     }
 }

@@ -12,8 +12,38 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="@dimen/defaultMargin"
+        android:text="@string/settings_design"
         android:textSize="21sp"
+        android:textStyle="bold"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/defaultMargin"
+        >
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/settings_design_list_new"
+            />
+
+        <android.support.v7.widget.SwitchCompat
+            android:id="@+id/designListNewIsOnSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/defaultMargin"
         android:text="@string/settings_notification"
+        android:textSize="21sp"
         android:textStyle="bold"
         />
 
