@@ -13,4 +13,4 @@ gradlew.bat
 /marketSkus.properties
 *.apk
 google-services.json
-/apiKeys.properties
+apiKeys.properties
