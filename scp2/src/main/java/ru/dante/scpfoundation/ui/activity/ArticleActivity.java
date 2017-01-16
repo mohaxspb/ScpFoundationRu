@@ -20,8 +20,6 @@ import ru.dante.scpfoundation.mvp.base.AdsActions;
 import ru.dante.scpfoundation.mvp.contract.ArticleScreenMvp;
 import ru.dante.scpfoundation.ui.adapter.ArticlesPagerAdapter;
 import ru.dante.scpfoundation.ui.base.BaseDrawerActivity;
-import ru.dante.scpfoundation.ui.dialog.NewVersionDialogFragment;
-import ru.dante.scpfoundation.ui.dialog.TextSizeDialogFragment;
 import ru.dante.scpfoundation.ui.fragment.ArticleFragment;
 import ru.dante.scpfoundation.util.IntentUtils;
 import timber.log.Timber;
@@ -209,18 +207,6 @@ public class ArticleActivity
             case android.R.id.home:
                 //TODO move to abstract
                 onBackPressed();
-                return true;
-            case R.id.night_mode_item:
-                mMyPreferenceManager.setIsNightMode(!mMyPreferenceManager.isNightMode());
-                recreate();
-                return true;
-            case R.id.text_size:
-                TextSizeDialogFragment fragmentDialogTextAppearance = TextSizeDialogFragment.newInstance();
-                fragmentDialogTextAppearance.show(getFragmentManager(), TextSizeDialogFragment.TAG);
-                return true;
-            case R.id.info:
-                NewVersionDialogFragment dialogFragment = NewVersionDialogFragment.newInstance();
-                dialogFragment.show(getFragmentManager(), NewVersionDialogFragment.TAG);
                 return true;
             case R.id.menuItemShare:
                 IntentUtils.shareUrl(mUrls.get(mCurPosition));

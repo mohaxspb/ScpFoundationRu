@@ -39,8 +39,10 @@ import ru.dante.scpfoundation.monetization.model.Item;
 import ru.dante.scpfoundation.monetization.util.MyAdListener;
 import ru.dante.scpfoundation.mvp.base.AdsActions;
 import ru.dante.scpfoundation.mvp.base.BaseMvp;
+import ru.dante.scpfoundation.ui.dialog.NewVersionDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
+import ru.dante.scpfoundation.ui.dialog.TextSizeDialogFragment;
 import timber.log.Timber;
 
 /**
@@ -259,6 +261,17 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
                 BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
                 subsDF.show(getSupportFragmentManager(), subsDF.getTag());
                 return true;
+            case R.id.night_mode_item:
+                mMyPreferenceManager.setIsNightMode(!mMyPreferenceManager.isNightMode());
+                return true;
+            case R.id.text_size:
+                TextSizeDialogFragment fragmentDialogTextAppearance = TextSizeDialogFragment.newInstance();
+                fragmentDialogTextAppearance.show(getFragmentManager(), TextSizeDialogFragment.TAG);
+                return true;
+            case R.id.info:
+                NewVersionDialogFragment dialogFragment = NewVersionDialogFragment.newInstance();
+                dialogFragment.show(getFragmentManager(), NewVersionDialogFragment.TAG);
+                return true;
             default:
                 Timber.wtf("unexpected id: %s", item.getItemId());
                 return super.onOptionsItemSelected(item);
@@ -283,6 +296,19 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
-        //TODO
+        Timber.d("onSharedPreferenceChanged with key: %s", s);
+        switch (s) {
+            case MyPreferenceManager.Keys.NIGHT_MODE:
+                recreate();
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
+        super.onDestroy();
     }
 }

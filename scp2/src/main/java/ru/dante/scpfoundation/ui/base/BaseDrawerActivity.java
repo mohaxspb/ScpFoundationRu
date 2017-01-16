@@ -7,11 +7,13 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.view.MenuItem;
 import android.view.View;
 
 import butterknife.BindView;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.mvp.base.DrawerMvp;
+import timber.log.Timber;
 
 /**
  * Created by mohax on 02.01.2017.
@@ -83,7 +85,6 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
     }
 
     /**
-     *
      * @return true if need to show hamburger. False if want show arrow
      */
     protected abstract boolean isDrawerIndicatorEnabled();
@@ -106,6 +107,19 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
             mDrawerLayout.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Timber.d("onOptionsItemSelected with id: %s", item);
+
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                mDrawerLayout.openDrawer(GravityCompat.START);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 }
