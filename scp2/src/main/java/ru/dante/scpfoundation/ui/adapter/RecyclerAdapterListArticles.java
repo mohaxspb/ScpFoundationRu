@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -31,7 +30,7 @@ import ru.dante.scpfoundation.util.AttributeGetter;
  * <p>
  * for scp_ru
  */
-public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAdapterListArticles.ViewHolderText> {
+public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAdapterListArticles.HolderSimple> {
 
     @Inject
     MyPreferenceManager mMyPreferenceManager;
@@ -57,16 +56,22 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
     }
 
     @Override
-    public RecyclerAdapterListArticles.ViewHolderText onCreateViewHolder(ViewGroup parent, int viewType) {
-        RecyclerAdapterListArticles.ViewHolderText viewHolder;
+    public HolderSimple onCreateViewHolder(ViewGroup parent, int viewType) {
+        HolderSimple viewHolder;
         View view;
-        view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_article, parent, false);
-        viewHolder = new ViewHolderText(view);
+        if(mMyPreferenceManager.isDesignListNewEnabled()) {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_article, parent, false);
+            viewHolder = new HolderWithImage(view);
+        } else {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_article_ugly_old_style, parent, false);
+            viewHolder = new HolderSimple(view);
+        }
+
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(RecyclerAdapterListArticles.ViewHolderText holder, int position) {
+    public void onBindViewHolder(HolderSimple holder, int position) {
         holder.bind(mData.get(position));
     }
 
@@ -87,11 +92,7 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
         shouldShowPreview = show;
     }
 
-    class ViewHolderText extends RecyclerView.ViewHolder {
-        @BindView(R.id.typeIcon)
-        ImageView typeIcon;
-        @BindView(R.id.image)
-        ImageView image;
+    class HolderSimple extends RecyclerView.ViewHolder {
         @BindView(R.id.favorite)
         ImageView favorite;
         @BindView(R.id.read)
@@ -102,10 +103,8 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
         TextView title;
         @BindView(R.id.preview)
         TextView preview;
-        @BindView(R.id.root)
-        LinearLayout root;
 
-        ViewHolderText(View itemView) {
+        HolderSimple(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
@@ -121,25 +120,6 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
                     mArticleClickListener.onArticleClicked(article, getAdapterPosition());
                 }
             });
-
-            //TODO show them in ViewPager
-            //FIXME - NONONONONONO no viewPager - it's laggy!!!!!!!!!!!!!!!!!!!!!111oneone
-            //set image
-            if (article.imagesUrls != null && !article.imagesUrls.isEmpty()) {
-                Glide.with(context)
-                        .load(article.imagesUrls.first().val)
-                        .error(AttributeGetter.getDrawableId(context, R.attr.iconEmptyImage))
-                        .centerCrop()
-                        .crossFade()
-                        .into(image);
-            } else {
-//                Glide.with(context)
-//                        .load(R.drawable.ic_scp_file)
-//                        .centerCrop()
-//                        .crossFade()
-//                        .into(image);
-                image.setImageResource(R.drawable.ic_scp_file);
-            }
 
             title.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * textSizePrimary);
             title.setText(Html.fromHtml(article.title));
@@ -222,6 +202,42 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
                     }
                 }
             });
+        }
+    }
+
+    class HolderWithImage extends HolderSimple {
+        @BindView(R.id.typeIcon)
+        ImageView typeIcon;
+        @BindView(R.id.image)
+        ImageView image;
+
+        HolderWithImage(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
+
+        void bind(Article article) {
+            super.bind(article);
+            Context context = itemView.getContext();
+
+            //TODO show them in ViewPager
+            //FIXME - NONONONONONO no viewPager - it's laggy!!!!!!!!!!!!!!!!!!!!!111oneone
+            //set image
+            if (article.imagesUrls != null && !article.imagesUrls.isEmpty()) {
+                Glide.with(context)
+                        .load(article.imagesUrls.first().val)
+                        .error(AttributeGetter.getDrawableId(context, R.attr.iconEmptyImage))
+                        .centerCrop()
+                        .crossFade()
+                        .into(image);
+            } else {
+//                Glide.with(context)
+//                        .load(R.drawable.ic_scp_file)
+//                        .centerCrop()
+//                        .crossFade()
+//                        .into(image);
+                image.setImageResource(R.drawable.ic_scp_file);
+            }
         }
     }
 

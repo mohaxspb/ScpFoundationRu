@@ -37,7 +37,7 @@ public class RecyclerAdapterListArticlesWithSearch extends RecyclerAdapterListAr
     }
 
     @Override
-    public void onBindViewHolder(RecyclerAdapterListArticles.ViewHolderText holder, int position) {
+    public void onBindViewHolder(HolderSimple holder, int position) {
         holder.bind(mSortedData.get(position));
     }
 
