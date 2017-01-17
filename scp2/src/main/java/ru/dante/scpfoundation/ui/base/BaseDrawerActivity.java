@@ -1,5 +1,6 @@
 package ru.dante.scpfoundation.ui.base;
 
+import android.app.ProgressDialog;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -10,9 +11,12 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+
 import butterknife.BindView;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.mvp.base.DrawerMvp;
+import ru.dante.scpfoundation.ui.activity.ArticleActivity;
 import timber.log.Timber;
 
 /**
@@ -31,6 +35,8 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
     protected DrawerLayout mDrawerLayout;
     @BindView(R.id.navigationView)
     protected NavigationView mNavigationView;
+
+    protected MaterialDialog dialog;
 
     protected ActionBarDrawerToggle mDrawerToggle;
 
@@ -69,9 +75,8 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
 
         mNavigationView.setNavigationItemSelectedListener(item -> {
             mPresenter.onNavigationItemClicked(item.getItemId());
-            onNavigationItemClicked(item.getItemId());
             mDrawerLayout.closeDrawer(GravityCompat.START);
-            return true;
+            return onNavigationItemClicked(item.getItemId());
         });
 
         if (savedInstanceState != null) {
@@ -120,6 +125,26 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void startArticleActivity(String url) {
+        ArticleActivity.startActivity(this, url);
+    }
+
+    @Override
+    public void showProgressDialog(boolean show) {
+        if (show) {
+            MaterialDialog.Builder builder = new MaterialDialog.Builder(this);
+            builder.title(R.string.dialog_random_page_title);
+            builder.content(R.string.dialog_random_page_message);
+            builder.progress(true, 0);
+            builder.cancelable(false);
+            dialog = builder.build();
+            dialog.show();
+        } else if (dialog != null) {
+            dialog.dismiss();
         }
     }
 }

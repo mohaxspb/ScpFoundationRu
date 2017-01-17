@@ -12,7 +12,9 @@ import timber.log.Timber;
  * <p>
  * for TappAwards
  */
-public class MainPresenter extends BasePresenter<MainMvp.View> implements MainMvp.Presenter {
+public class MainPresenter
+        extends BaseDrawerPresenter<MainMvp.View>
+        implements MainMvp.Presenter {
 
     public MainPresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
         super(myPreferencesManager, dbProviderFactory, apiClient);

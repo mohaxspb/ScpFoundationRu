@@ -15,6 +15,7 @@ public interface Constants {
          * second - num of page
          */
         String SEARCH_URL = "/search:site/a/p/q/%1$s/p/%2$s";
+        String RANDOM_PAGE_SCRIPT_URL = "https://beta.scpfoundation.net/wikidot_random_page";
         int NUM_OF_ARTICLES_ON_RECENT_PAGE = 30;
         int NUM_OF_ARTICLES_ON_RATED_PAGE = 20;
         int ZERO_OFFSET = 0;
