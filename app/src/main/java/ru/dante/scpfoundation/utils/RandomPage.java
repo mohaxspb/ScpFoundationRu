@@ -17,46 +17,35 @@ import ru.dante.scpfoundation.R;
 /**
  * Created for MyApplication by Dante on 10.04.2016  1:59.
  */
-public class RandomPage
-{
-    public static void getRandomPage(final Context ctx)
-    {
+public class RandomPage {
+    private static final String TAG = RandomPage.class.getSimpleName();
+
+    public static void getRandomPage(final Context ctx) {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ctx);
-        if (!pref.contains(ctx.getString(R.string.pref_key_random_url)))
-        {
-            Thread thread = new Thread()
-            {
+        if (!pref.contains(ctx.getString(R.string.pref_key_random_url))) {
+            Thread thread = new Thread() {
                 @Override
-                public void run()
-                {
-                    try
-                    {
+                public void run() {
+                    try {
                         makeRequest(ctx);
-                    } catch (IOException e)
-                    {
-                        e.printStackTrace();
-                        final AppCompatActivity activity= (AppCompatActivity) ctx;
-                        activity.runOnUiThread(new Runnable()
-                        {
+                    } catch (IOException e) {
+                        Log.e(TAG, "error make request", e);
+                        final AppCompatActivity activity = (AppCompatActivity) ctx;
+                        activity.runOnUiThread(new Runnable() {
                             @Override
-                            public void run()
-                            {
+                            public void run() {
                                 Toast.makeText(activity, "Не удалось получить случайную статью", Toast.LENGTH_SHORT).show();
                             }
                         });
-
                     }
                 }
             };
-
             thread.start();
         }
     }
 
-    private static void makeRequest(Context ctx) throws IOException
-    {
+    private static void makeRequest(Context ctx) throws IOException {
         OkHttpClient client = new OkHttpClient.Builder()
-                .followRedirects(false)
                 .build();
 
         String url = "https://beta.scpfoundation.net/wikidot_random_page";
@@ -71,11 +60,13 @@ public class RandomPage
 
         Response response = client.newCall(request.build()).execute();
 
-        String randomURL = response.body().string();
-        randomURL = randomURL.substring(randomURL.indexOf("\"") + 1, randomURL.lastIndexOf("\""));
-        Log.i("LOG", randomURL);
+        Request requestResult = response.request();
+        Log.d(TAG, "requestResult:" + requestResult);
+        Log.d(TAG, "requestResult.url().url():" + requestResult.url().url());
+
+        String randomURL = requestResult.url().url().toString();
+        Log.d(TAG, "randomUrl = " + randomURL);
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ctx);
         pref.edit().putString(ctx.getString(R.string.pref_key_random_url), randomURL).apply();
-
     }
 }

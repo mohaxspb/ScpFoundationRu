@@ -157,7 +157,7 @@ public class MainActivity
     }
 
     @Override
-    public void onNavigationItemClicked(int id) {
+    public boolean onNavigationItemClicked(int id) {
         Timber.d("onNavigationItemClicked with id: %s", id);
         setToolbarTitleByDrawerItemId(id);
         switch (id) {
@@ -165,67 +165,66 @@ public class MainActivity
                 mCurrentSelectedDrawerItemId = id;
                 showFragment(ArticleFragment.newInstance(Constants.Urls.ABOUT_SCP),
                         ArticleFragment.TAG + "#" + Constants.Urls.ABOUT_SCP);
-                break;
+                return true;
             case R.id.news:
                 mCurrentSelectedDrawerItemId = id;
                 showFragment(ArticleFragment.newInstance(Constants.Urls.NEWS), ArticleFragment.TAG + "#" + Constants.Urls.NEWS);
-                break;
+                return true;
             case R.id.mostRatedArticles:
                 mCurrentSelectedDrawerItemId = id;
                 showFragment(RatedArticlesFragment.newInstance(), RatedArticlesFragment.TAG);
-                break;
+                return true;
             case R.id.mostRecentArticles:
                 mCurrentSelectedDrawerItemId = id;
                 showFragment(RecentArticlesFragment.newInstance(), RecentArticlesFragment.TAG);
-                break;
+                return true;
             case R.id.random_page:
-                //TODO
-                Snackbar.make(root, R.string.in_progress, Snackbar.LENGTH_SHORT).show();
-                break;
+                mPresenter.getRandomArticleUrl();
+                return false;
             case R.id.objects_I:
                 mCurrentSelectedDrawerItemId = id;
                 showFragment(Objects1ArticlesFragment.newInstance(), Objects1ArticlesFragment.TAG);
-                break;
+                return true;
             case R.id.objects_II:
                 mCurrentSelectedDrawerItemId = id;
                 showFragment(Objects2ArticlesFragment.newInstance(), Objects2ArticlesFragment.TAG);
-                break;
+                return true;
             case R.id.objects_III:
                 mCurrentSelectedDrawerItemId = id;
                 showFragment(Objects3ArticlesFragment.newInstance(), Objects3ArticlesFragment.TAG);
-                break;
+                return true;
             case R.id.objects_RU:
                 mCurrentSelectedDrawerItemId = id;
                 showFragment(ObjectsRuArticlesFragment.newInstance(), ObjectsRuArticlesFragment.TAG);
-                break;
+                return true;
             case R.id.files:
                 //TODO launch new activity
                 Snackbar.make(root, R.string.in_progress, Snackbar.LENGTH_SHORT).show();
-                break;
+                return false;
             case R.id.stories:
                 mCurrentSelectedDrawerItemId = id;
                 showFragment(ArticleFragment.newInstance(Constants.Urls.STORIES),
                         ArticleFragment.TAG + "#" + Constants.Urls.STORIES);
-                break;
+                return true;
             case R.id.favorite:
                 mCurrentSelectedDrawerItemId = id;
                 showFragment(FavoriteArticlesFragment.newInstance(), FavoriteArticlesFragment.TAG);
-                break;
+                return true;
             case R.id.offline:
                 mCurrentSelectedDrawerItemId = id;
                 showFragment(OfflineArticlesFragment.newInstance(), OfflineArticlesFragment.TAG);
-                break;
+                return true;
             case R.id.gallery:
                 //TODO
                 Snackbar.make(root, R.string.in_progress, Snackbar.LENGTH_SHORT).show();
-                break;
+                return false;
             case R.id.siteSearch:
                 mCurrentSelectedDrawerItemId = id;
                 showFragment(SiteSearchArticlesFragment.newInstance(), SiteSearchArticlesFragment.TAG);
-                break;
+                return true;
             default:
                 Timber.e("unexpected item ID");
-                break;
+                return true;
         }
     }
 

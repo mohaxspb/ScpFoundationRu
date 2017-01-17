@@ -139,7 +139,7 @@ public class ArticleActivity
     }
 
     @Override
-    public void onNavigationItemClicked(int id) {
+    public boolean onNavigationItemClicked(int id) {
         Timber.d("onNavigationItemClicked with id: %s", id);
         String link = null;
         switch (id) {
@@ -156,8 +156,7 @@ public class ArticleActivity
                 link = Constants.Urls.NEW_ARTICLES;
                 break;
             case R.id.random_page:
-                //TODO
-                Snackbar.make(root, R.string.in_progress, Snackbar.LENGTH_SHORT).show();
+                mPresenter.getRandomArticleUrl();
                 break;
             case R.id.objects_I:
                 link = Constants.Urls.OBJECTS_1;
@@ -198,6 +197,7 @@ public class ArticleActivity
         if (link != null) {
             MainActivity.startActivity(this, link);
         }
+        return false;
     }
 
     @Override
