@@ -53,7 +53,11 @@ public class SetttingsBottomSheetDialogFragment
         super.setupDialog(dialog, style);
 
         //design
-        notifIsOnSwitch.setChecked(mMyPreferenceManager.isDesignListNewEnabled());
+        designListNewIsOnSwitch.setChecked(mMyPreferenceManager.isDesignListNewEnabled());
+        designListNewIsOnSwitch.setOnCheckedChangeListener((compoundButton, checked) -> {
+            Timber.d("notifOnCheckChanged checked: %s", checked);
+            mMyPreferenceManager.setDesignListNewEnabled(checked);
+        });
 
         //notif
         notifIsOnSwitch.setChecked(mMyPreferenceManager.isNotificationEnabled());

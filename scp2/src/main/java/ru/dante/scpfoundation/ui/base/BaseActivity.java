@@ -295,9 +295,9 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
     }
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
-        Timber.d("onSharedPreferenceChanged with key: %s", s);
-        switch (s) {
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        Timber.d("onSharedPreferenceChanged with key: %s", key);
+        switch (key) {
             case MyPreferenceManager.Keys.NIGHT_MODE:
                 recreate();
                 break;
