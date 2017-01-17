@@ -7,8 +7,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.GravityCompat;
-import android.view.MenuItem;
 
 import java.util.List;
 
@@ -19,7 +17,6 @@ import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.mvp.contract.MainMvp;
 import ru.dante.scpfoundation.ui.base.BaseDrawerActivity;
 import ru.dante.scpfoundation.ui.dialog.NewVersionDialogFragment;
-import ru.dante.scpfoundation.ui.dialog.TextSizeDialogFragment;
 import ru.dante.scpfoundation.ui.fragment.ArticleFragment;
 import ru.dante.scpfoundation.ui.fragment.FavoriteArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.Objects1ArticlesFragment;
@@ -308,31 +305,5 @@ public class MainActivity
             transaction.hide(fragment);
         }
         transaction.commit();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        Timber.d("onOptionsItemSelected with id: %s", item);
-
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                //TODO move to abstract
-                mDrawerLayout.openDrawer(GravityCompat.START);
-                return true;
-            case R.id.night_mode_item:
-                mMyPreferenceManager.setIsNightMode(!mMyPreferenceManager.isNightMode());
-                recreate();
-                return true;
-            case R.id.text_size:
-                TextSizeDialogFragment fragmentDialogTextAppearance = TextSizeDialogFragment.newInstance();
-                fragmentDialogTextAppearance.show(getFragmentManager(), TextSizeDialogFragment.TAG);
-                return true;
-            case R.id.info:
-                NewVersionDialogFragment dialogFragment = NewVersionDialogFragment.newInstance();
-                dialogFragment.show(getFragmentManager(), NewVersionDialogFragment.TAG);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
     }
 }

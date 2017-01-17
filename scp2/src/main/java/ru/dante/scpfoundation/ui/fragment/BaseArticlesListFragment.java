@@ -1,5 +1,6 @@
 package ru.dante.scpfoundation.ui.fragment;
 
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
@@ -43,6 +44,7 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
 
     @Override
     protected void initViews() {
+        super.initViews();
         Timber.d("initViews");
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 

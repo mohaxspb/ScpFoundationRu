@@ -81,6 +81,8 @@
     <string name="new_version_features">Новая версия</string>
     <string name="hurray">Ура!</string>
     <string name="in_progress">В разработке</string>
+    <string name="settings_design">Внешний вид</string>
+    <string name="settings_design_list_new">Новый дизайн в списках</string>
 
     <string-array name="download_types">
         <item>Объекты I</item>
