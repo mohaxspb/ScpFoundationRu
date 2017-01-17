@@ -229,16 +229,32 @@ public class MainActivity
     }
 
     private void showFragment(Fragment fragmentToShow, String tag) {
-        hideFragments();
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        hideFragments(transaction);
         Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
         if (fragment == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(content.getId(), fragmentToShow, tag)
+            transaction.add(content.getId(), fragmentToShow, tag)
                     .commit();
         } else {
-            getSupportFragmentManager().beginTransaction()
+            transaction
                     .show(fragment)
                     .commit();
+        }
+    }
+
+    private void hideFragments(FragmentTransaction transaction) {
+        List<Fragment> fragments = getSupportFragmentManager().getFragments();
+        if (fragments == null || fragments.isEmpty()) {
+            return;
+        }
+        for (Fragment fragment : fragments) {
+            if (fragment != null && fragment.isAdded()) {
+                transaction.hide(fragment);
+            } else {
+                Timber.e("fragment != null && fragment.isAdded() FALSE while switch fragments");
+//                showError(new IllegalStateException("fragment != null && fragment.isAdded() FALSE while switch fragments"));
+            }
         }
     }
 
@@ -292,17 +308,5 @@ public class MainActivity
         if (title != null) {
             mToolbar.setTitle(title);
         }
-    }
-
-    private void hideFragments() {
-        List<Fragment> fragments = getSupportFragmentManager().getFragments();
-        if (fragments == null || fragments.isEmpty()) {
-            return;
-        }
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        for (Fragment fragment : fragments) {
-            transaction.hide(fragment);
-        }
-        transaction.commit();
     }
 }
