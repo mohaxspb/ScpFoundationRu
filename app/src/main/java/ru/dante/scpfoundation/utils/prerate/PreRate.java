@@ -1,5 +1,6 @@
 package ru.dante.scpfoundation.utils.prerate;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -8,6 +9,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -20,11 +22,10 @@ import java.lang.ref.WeakReference;
 
 import ru.dante.scpfoundation.R;
 
-/**
- * Created by o.leonov on 06.10.2014.
- */
-public class PreRate
-{
+public class PreRate {
+
+    private static String appName;
+
     private WeakReference<Context> cntxRef;
     private static PreRate instance;
     private Dialog lastDialog;
@@ -33,70 +34,76 @@ public class PreRate
     private String emailSubject;
     private String firstDialogText;
     private int titleColor;
+    @SuppressLint("unused")
     private int lineColor;
 
-    private PreRate()
-    {
+    private PreRate() {
     }
-    public static PreRate init(Activity act, String feedbackEmailTo, String feedbackSubj)
-    {
-        if(instance==null)
-        {
-            instance=new PreRate();
-            instance.titleColor=act.getResources().getColor(R.color.pre_rate_main_color);
-            instance.lineColor=instance.titleColor;
+
+    public static PreRate init(Activity act, String feedbackEmailTo, String feedbackSubj) {
+        if (instance == null) {
+            instance = new PreRate();
+            instance.titleColor = ContextCompat.getColor(act, R.color.pre_rate_main_color);
+            instance.lineColor = instance.titleColor;
             TimeSettings.setFirstStartTime(act);
         }
-        instance.cntxRef=new WeakReference<Context>(act);
+        instance.cntxRef = new WeakReference<Context>(act);
 
-        instance.emailAddress=feedbackEmailTo;
-        instance.emailSubject=feedbackSubj;
-        instance.firstDialogText=act.getResources().getString(R.string.main_dialog_text);
+        instance.emailAddress = feedbackEmailTo;
+        instance.emailSubject = feedbackSubj;
+        instance.firstDialogText = act.getResources().getString(R.string.main_dialog_text);
         return instance;
     }
-    public PreRate configureColors(int titleColor, int lineColor)
-    {
-        this.titleColor=titleColor;
-        this.lineColor=lineColor;
+
+    @SuppressLint("unused")
+    public PreRate configureColors(int titleColor, int lineColor) {
+        this.titleColor = titleColor;
+        this.lineColor = lineColor;
         return this;
     }
-    public PreRate configureText(String firstDialogText)
-    {
-        this.firstDialogText=firstDialogText;
+
+    @SuppressLint("unused")
+    public PreRate configureText(String firstDialogText) {
+        this.firstDialogText = firstDialogText;
         return this;
     }
-    /*** Эта команда как раз и запускает диалог когда необходимо */
-    public void showIfNeed()
-    {
+
+    /***
+     * Эта команда как раз и запускает диалог когда необходимо
+     */
+    public void showIfNeed() {
         //Показываем если прошло время и есть интернет(без интернета пользователь не может проголосовать)
-        if(TimeSettings.needShowPreRateDialog(cntxRef.get())&&
-                (lastDialog==null||!lastDialog.isShowing())&&
+        if (TimeSettings.needShowPreRateDialog(cntxRef.get()) &&
+                (lastDialog == null || !lastDialog.isShowing()) &&
                 isConnected(cntxRef.get()))
             showRateDialog();
     }
-    /*** Вызвать в onDestroy */
-    public static void clearDialogIfOpen()
-    {
-        if(instance!=null&&instance.lastDialog!=null&&
+
+    /***
+     * Вызвать в onDestroy
+     */
+    public static void clearDialogIfOpen() {
+        if (instance != null && instance.lastDialog != null &&
                 instance.lastDialog.isShowing())
             instance.lastDialog.dismiss();
     }
-    public void showRateDialog()
-    {
+
+    private void showRateDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(cntxRef.get());
         builder.setCancelable(false);
 
         builder.setTitle(cntxRef.get().getString(R.string.rate_app_title, getApplicationName(cntxRef.get())));
         builder.setMessage(firstDialogText);
 
-        builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+        builder
+                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
                         //Отображаем пред диалог
                         showPreStarsDialog();
                     }
                 })
-                .setNeutralButton(R.string.not_now,  new DialogInterface.OnClickListener() {
+                .setNeutralButton(R.string.not_now, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         //У нас и так уже поставилось показать позже(при запуске диалога)
                         lastDialog.dismiss();
@@ -114,20 +121,21 @@ public class PreRate
         TimeSettings.setShowMode(cntxRef.get(), TimeSettings.SHOW_LATER);
         TimeSettings.saveLastShowTime(cntxRef.get());
     }
-    private void showPreStarsDialog()
-    {
+
+    private void showPreStarsDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(cntxRef.get());
         builder.setCancelable(false);
 
         LayoutInflater inflater = LayoutInflater.from(cntxRef.get().getApplicationContext());
-        View customView=inflater.inflate(R.layout.pre_rate_stars_dialog_1, null);
+        @SuppressLint("InflateParams")
+        View customView = inflater.inflate(R.layout.pre_rate_stars_dialog, null, false);
 
         builder.setTitle(getApplicationName(cntxRef.get()));
 
-        TextView tvText=(TextView)customView.findViewById(R.id.tvText);
+        TextView tvText = (TextView) customView.findViewById(R.id.tvText);
         tvText.setTypeface(Fonts.getLightFont(cntxRef.get()));
 
-        final RatingBar rating_bar_0=(RatingBar)customView.findViewById(R.id.rating_bar_0);
+        final RatingBar rating_bar_0 = (RatingBar) customView.findViewById(R.id.rating_bar_0);
 
         builder.setView(customView)
                 .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
@@ -158,20 +166,20 @@ public class PreRate
         lastDialog.show();
     }
 
-    private void showFeedbackDialog()
-    {
+    private void showFeedbackDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(cntxRef.get());
         builder.setCancelable(false);
 
         LayoutInflater inflater = LayoutInflater.from(cntxRef.get().getApplicationContext());
-        View customView=inflater.inflate(R.layout.feedback_dialog_2, null);
+        @SuppressLint("InflateParams")
+        View customView = inflater.inflate(R.layout.pre_rate_feedback_dialog, null);
 
         builder.setTitle(R.string.help_us);
 
-        TextView tvText=(TextView)customView.findViewById(R.id.tvText);
+        TextView tvText = (TextView) customView.findViewById(R.id.tvText);
         tvText.setTypeface(Fonts.getLightFont(cntxRef.get()));
 
-        final EditText etEmailText=(EditText)customView.findViewById(R.id.etEmailText);
+        final EditText etEmailText = (EditText) customView.findViewById(R.id.etEmailText);
         etEmailText.setTypeface(Fonts.getLightFont(cntxRef.get()));
 
         builder.setView(customView)
@@ -201,19 +209,17 @@ public class PreRate
         TimeSettings.setShowMode(cntxRef.get(), TimeSettings.NOT_SHOW);
     }
 
-    private static String appName;
-    public static String getApplicationName(Context context) {
-        if(appName==null) {
+    private static String getApplicationName(Context context) {
+        if (appName == null) {
             int stringId = context.getApplicationInfo().labelRes;
             appName = context.getString(stringId);
         }
         return appName;
     }
 
-    public static boolean isConnected(Context context) {
+    private static boolean isConnected(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         return netInfo != null && netInfo.isConnectedOrConnecting();
     }
-
 }

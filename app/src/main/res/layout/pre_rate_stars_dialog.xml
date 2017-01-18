@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/horizontal_padding"
+    android:paddingRight="@dimen/dialog_padding"
+    tools:ignore="RtlHardcoded">
+
+    <TextView
+        android:id="@+id/tvText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/dialog_padding"
+        android:layout_marginTop="@dimen/dialog_padding"
+        android:text="@string/rate_title"
+        android:textColor="@color/pre_rate_text_color"
+        android:textSize="@dimen/text_size"
+        />
+
+    <RatingBar
+        android:id="@+id/rating_bar_0"
+        style="@style/FeedbackRatingBar"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="@dimen/dialog_double_padding"/>
+
+</LinearLayout>

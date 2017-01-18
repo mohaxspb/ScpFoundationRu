@@ -27,6 +27,7 @@ import ru.dante.scpfoundation.ui.fragment.OfflineArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.RatedArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.RecentArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.SiteSearchArticlesFragment;
+import ru.dante.scpfoundation.util.prerate.PreRate;
 import timber.log.Timber;
 
 public class MainActivity
@@ -308,5 +309,17 @@ public class MainActivity
         if (title != null) {
             mToolbar.setTitle(title);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        PreRate.init(this, "neva.spb.rx@gmail.com", "Отзыв на SCP RU").showIfNeed();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        PreRate.clearDialogIfOpen();
     }
 }
