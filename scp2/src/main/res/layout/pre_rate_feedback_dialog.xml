@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingRight="@dimen/horizontal_padding"
+    android:paddingLeft="@dimen/horizontal_padding"
+    android:weightSum="1">
+
+    <TextView
+        android:id="@+id/tvText"
+        android:text="@string/thanks_for_rate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dialog_padding"
+        android:textColor="@color/pre_rate_text_color"
+        android:textSize="@dimen/text_size"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:inputType="textMultiLine"
+        android:ems="10"
+        android:id="@+id/etEmailText"
+        android:layout_marginTop="@dimen/dialog_padding"
+        android:padding="@dimen/edit_text_padding"
+        android:background="@drawable/edit_text_white"
+        android:textColor="@color/pre_rate_text_color"
+        android:hint="@string/feedback_hint"
+        android:gravity="top|left" />
+</LinearLayout>
