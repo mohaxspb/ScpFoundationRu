@@ -67,5 +67,8 @@ public class MyApplication extends Application {
         SystemUtils.printCertificateFingerprints();
 
         Realm.init(this);
+
+        //print versionCode
+        Timber.d("VERSION_CODE: %s", BuildConfig.VERSION_CODE);
     }
 }
