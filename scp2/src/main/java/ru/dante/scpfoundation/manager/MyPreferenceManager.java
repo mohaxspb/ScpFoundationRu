@@ -12,7 +12,7 @@ import android.preference.PreferenceManager;
 public class MyPreferenceManager {
 
     //test value
-//    private static final long PERIOD_BETWEEN_ADS = 30 * 1000;
+//    private static final long PERIOD_BETWEEN_ADS = 20 * 1000;
     private static final long PERIOD_BETWEEN_ADS = 3 * 60 * 60 * 1000;
 
     public interface Keys {

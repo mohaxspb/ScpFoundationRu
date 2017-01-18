@@ -51,8 +51,6 @@ public class SubscriptionsFragmentDialog
     View refresh;
     @BindView(R.id.infoContainer)
     View infoContainer;
-    //    @BindView(R.id.currentSubscriptionValue)
-//    TextView currentSubscriptionValue;
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
 
