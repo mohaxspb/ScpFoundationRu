@@ -29,10 +29,9 @@ import butterknife.OnClick;
 import ru.dante.scpfoundation.BuildConfig;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
+import ru.dante.scpfoundation.manager.InAppBillingServiceConnectionObservable;
 import ru.dante.scpfoundation.monetization.model.Item;
 import ru.dante.scpfoundation.monetization.model.Subscription;
-import ru.dante.scpfoundation.manager.InAppBillingServiceConnectionObservable;
-import ru.dante.scpfoundation.mvp.base.AdsActions;
 import ru.dante.scpfoundation.ui.adapter.RecyclerAdapterSubscriptions;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -43,6 +42,8 @@ import timber.log.Timber;
 public class SubscriptionsFragmentDialog
         extends BaseBottomSheetDialogFragment
         implements RecyclerAdapterSubscriptions.SubscriptionClickListener {
+
+    public static final int REQUEST_CODE_SUBSCRIPTION = 1001;
 
     @BindView(R.id.progressCenter)
     ProgressBar progressCenter;
@@ -164,7 +165,7 @@ public class SubscriptionsFragmentDialog
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Timber.d("called in fragment");
-        if (requestCode == 1001) {
+        if (requestCode == REQUEST_CODE_SUBSCRIPTION) {
             int responseCode = data.getIntExtra("RESPONSE_CODE", 0);
             String purchaseData = data.getStringExtra("INAPP_PURCHASE_DATA");
             String dataSignature = data.getStringExtra("INAPP_DATA_SIGNATURE");

@@ -172,7 +172,7 @@ public class ArticleActivity
                 break;
             case R.id.files:
                 //TODO launch new activity
-                Snackbar.make(root, R.string.in_progress, Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(mRoot, R.string.in_progress, Snackbar.LENGTH_SHORT).show();
                 break;
             case R.id.stories:
                 link = Constants.Urls.STORIES;
@@ -185,7 +185,7 @@ public class ArticleActivity
                 break;
             case R.id.gallery:
                 //TODO
-                Snackbar.make(root, R.string.in_progress, Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(mRoot, R.string.in_progress, Snackbar.LENGTH_SHORT).show();
                 break;
             case R.id.siteSearch:
                 link = Constants.Urls.SEARCH;

@@ -45,7 +45,7 @@ public class PreRate {
             instance.lineColor = instance.titleColor;
             TimeSettings.setFirstStartTime(act);
         }
-        instance.cntxRef = new WeakReference<Context>(act);
+        instance.cntxRef = new WeakReference<>(act);
 
         instance.emailAddress = feedbackEmailTo;
         instance.emailSubject = feedbackSubj;

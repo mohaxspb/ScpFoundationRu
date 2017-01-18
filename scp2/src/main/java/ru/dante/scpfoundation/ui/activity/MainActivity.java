@@ -119,7 +119,7 @@ public class MainActivity
             setDrawerItemFromIntent();
         }
 
-        if (getSupportFragmentManager().findFragmentById(content.getId()) == null) {
+        if (getSupportFragmentManager().findFragmentById(mContent.getId()) == null) {
             onNavigationItemClicked(mCurrentSelectedDrawerItemId);
         }
         mNavigationView.setCheckedItem(mCurrentSelectedDrawerItemId);
@@ -200,7 +200,7 @@ public class MainActivity
                 return true;
             case R.id.files:
                 //TODO launch new activity
-                Snackbar.make(root, R.string.in_progress, Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(mRoot, R.string.in_progress, Snackbar.LENGTH_SHORT).show();
                 return false;
             case R.id.stories:
                 mCurrentSelectedDrawerItemId = id;
@@ -217,7 +217,7 @@ public class MainActivity
                 return true;
             case R.id.gallery:
                 //TODO
-                Snackbar.make(root, R.string.in_progress, Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(mRoot, R.string.in_progress, Snackbar.LENGTH_SHORT).show();
                 return false;
             case R.id.siteSearch:
                 mCurrentSelectedDrawerItemId = id;
@@ -230,12 +230,12 @@ public class MainActivity
     }
 
     private void showFragment(Fragment fragmentToShow, String tag) {
-
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         hideFragments(transaction);
         Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
         if (fragment == null) {
-            transaction.add(content.getId(), fragmentToShow, tag)
+            transaction
+                    .add(mContent.getId(), fragmentToShow, tag)
                     .commit();
         } else {
             transaction
