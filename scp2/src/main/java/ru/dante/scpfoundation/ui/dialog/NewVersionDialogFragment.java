@@ -20,8 +20,8 @@ import ru.dante.scpfoundation.BuildConfig;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
+import ru.dante.scpfoundation.ui.util.MyHtmlTagHandler;
 import timber.log.Timber;
-
 
 public class NewVersionDialogFragment extends DialogFragment {
     public static final String TAG = NewVersionDialogFragment.class.getSimpleName();
@@ -53,10 +53,9 @@ public class NewVersionDialogFragment extends DialogFragment {
 
         MaterialDialog.Builder dialogTextSizeBuilder = new MaterialDialog.Builder(getActivity());
         dialogTextSizeBuilder
-                .content(Html.fromHtml(newVersionFeatures))
+                .content(Html.fromHtml(newVersionFeatures, null, new MyHtmlTagHandler()))
                 .title(R.string.new_version_features)
                 .positiveText(R.string.hurray);
-//                .customView(R.layout.dialog_text_size, true);
 
         dialogTextSize = dialogTextSizeBuilder.build();
 
