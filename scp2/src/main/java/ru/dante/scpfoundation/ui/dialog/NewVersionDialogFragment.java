@@ -26,8 +26,14 @@ import timber.log.Timber;
 public class NewVersionDialogFragment extends DialogFragment {
     public static final String TAG = NewVersionDialogFragment.class.getSimpleName();
 
-    public static NewVersionDialogFragment newInstance() {
-        return new NewVersionDialogFragment();
+    public static final String EXTRA_TITLE = NewVersionDialogFragment.class.getSimpleName();
+
+    public static DialogFragment newInstance(String title) {
+        DialogFragment fragment = new NewVersionDialogFragment();
+        Bundle args = new Bundle();
+        args.putString(EXTRA_TITLE, title);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Inject
@@ -51,10 +57,12 @@ public class NewVersionDialogFragment extends DialogFragment {
             Timber.e(e, "error while read newVersionFeatures from file");
         }
 
+        String title = getArguments().getString(EXTRA_TITLE, getString(R.string.app_name));
+
         MaterialDialog.Builder dialogTextSizeBuilder = new MaterialDialog.Builder(getActivity());
         dialogTextSizeBuilder
                 .content(Html.fromHtml(newVersionFeatures, null, new MyHtmlTagHandler()))
-                .title(R.string.new_version_features)
+                .title(title)
                 .positiveText(R.string.hurray);
 
         dialogTextSize = dialogTextSizeBuilder.build();

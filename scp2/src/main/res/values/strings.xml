@@ -87,6 +87,7 @@
     <string name="dialog_random_page_message">Проверяю уровень допуска</string>
     <string name="remove_ads">Отключить рекламу?</string>
     <string name="yes_bliad">Да!</string>
+    <string name="app_info">О приложении</string>
 
     <string-array name="download_types">
         <item>Объекты I</item>
