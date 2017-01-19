@@ -40,7 +40,7 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
 
     protected ActionBarDrawerToggle mDrawerToggle;
 
-    protected int mCurrentSelectedDrawerItemId = getDefaultNavItemId();
+    protected int mCurrentSelectedDrawerItemId;
 
     protected abstract int getDefaultNavItemId();
 
@@ -53,6 +53,8 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mCurrentSelectedDrawerItemId = getDefaultNavItemId();
 
         final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {

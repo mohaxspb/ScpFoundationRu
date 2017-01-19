@@ -26,4 +26,10 @@
         android:title="@string/text_size"
         app:showAsAction="never"
         />
+    <item
+        android:id="@+id/info"
+        android:icon="@drawable/ic_info_outline"
+        android:title="@string/app_info"
+        app:showAsAction="never"
+        />
 </menu>

@@ -1,5 +1,6 @@
 package ru.dante.scpfoundation.ui.activity;
 
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -29,6 +30,8 @@ import ru.dante.scpfoundation.ui.fragment.RecentArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.SiteSearchArticlesFragment;
 import ru.dante.scpfoundation.util.prerate.PreRate;
 import timber.log.Timber;
+
+import static ru.dante.scpfoundation.ui.activity.LicenceActivity.EXTRA_SHOW_ABOUT;
 
 public class MainActivity
         extends BaseDrawerActivity<MainMvp.View, MainMvp.Presenter>
@@ -107,11 +110,6 @@ public class MainActivity
     }
 
     @Override
-    protected int getDefaultNavItemId() {
-        return R.id.mostRatedArticles;
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -126,9 +124,14 @@ public class MainActivity
         setToolbarTitleByDrawerItemId(mCurrentSelectedDrawerItemId);
 
         if (mMyPreferenceManager.getCurAppVersion() != BuildConfig.VERSION_CODE) {
-            NewVersionDialogFragment dialogFragment = NewVersionDialogFragment.newInstance();
+            DialogFragment dialogFragment = NewVersionDialogFragment.newInstance(getString(R.string.new_version_features));
             dialogFragment.show(getFragmentManager(), NewVersionDialogFragment.TAG);
         }
+    }
+
+    @Override
+    protected int getDefaultNavItemId() {
+        return getIntent().hasExtra(EXTRA_SHOW_ABOUT) ? R.id.about : R.id.mostRatedArticles;
     }
 
     @Override

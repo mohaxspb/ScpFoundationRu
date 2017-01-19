@@ -1,5 +1,6 @@
 package ru.dante.scpfoundation.ui.base;
 
+import android.app.DialogFragment;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -291,7 +292,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
                 fragmentDialogTextAppearance.show(getFragmentManager(), TextSizeDialogFragment.TAG);
                 return true;
             case R.id.info:
-                NewVersionDialogFragment dialogFragment = NewVersionDialogFragment.newInstance();
+                DialogFragment dialogFragment = NewVersionDialogFragment.newInstance(getString(R.string.app_info));
                 dialogFragment.show(getFragmentManager(), NewVersionDialogFragment.TAG);
                 return true;
             default:
