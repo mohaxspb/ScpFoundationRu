@@ -12,7 +12,7 @@ import android.preference.PreferenceManager;
 public class MyPreferenceManager {
 
     //test value
-//    private static final long PERIOD_BETWEEN_ADS = 30 * 1000;
+//    private static final long PERIOD_BETWEEN_ADS = 20 * 1000;
     private static final long PERIOD_BETWEEN_ADS = 3 * 60 * 60 * 1000;
 
     public interface Keys {
@@ -30,6 +30,7 @@ public class MyPreferenceManager {
         String ADS_LAST_TIME_SHOWS = "ADS_LAST_TIME_SHOWS";
         String LICENCE_ACCEPTED = "LICENCE_ACCEPTED";
         String CUR_APP_VERSION = "CUR_APP_VERSION";
+        String DESIGN_LIST_NEW_IS_ON = "DESIGN_LIST_NEW_IS_ON";
     }
 
     private SharedPreferences mPreferences;
@@ -78,6 +79,14 @@ public class MyPreferenceManager {
         mPreferences.edit().putFloat(Keys.TEXT_SCALE_ARTICLE, textScale).apply();
     }
 
+    //design settings
+    public boolean isDesignListNewEnabled() {
+        return mPreferences.getBoolean(Keys.DESIGN_LIST_NEW_IS_ON, true);
+    }
+
+    public void setDesignListNewEnabled(boolean enabled) {
+        mPreferences.edit().putBoolean(Keys.DESIGN_LIST_NEW_IS_ON, enabled).apply();
+    }
 
     //new arts notifications
     public int getNotificationPeriodInMinutes() {

@@ -4,7 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.view.MenuItem;
 
@@ -20,8 +22,7 @@ import ru.dante.scpfoundation.mvp.base.AdsActions;
 import ru.dante.scpfoundation.mvp.contract.ArticleScreenMvp;
 import ru.dante.scpfoundation.ui.adapter.ArticlesPagerAdapter;
 import ru.dante.scpfoundation.ui.base.BaseDrawerActivity;
-import ru.dante.scpfoundation.ui.dialog.NewVersionDialogFragment;
-import ru.dante.scpfoundation.ui.dialog.TextSizeDialogFragment;
+import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
 import ru.dante.scpfoundation.ui.fragment.ArticleFragment;
 import ru.dante.scpfoundation.util.IntentUtils;
 import timber.log.Timber;
@@ -32,6 +33,8 @@ public class ArticleActivity
 
     public static final String EXTRA_ARTICLES_URLS_LIST = "EXTRA_ARTICLES_URLS_LIST";
     public static final String EXTRA_POSITION = "EXTRA_POSITION";
+
+    public static final String EXTRA_SHOW_DISABLE_ADS = "EXTRA_SHOW_DISABLE_ADS";
 
     @BindView(R.id.content)
     ViewPager mViewPager;
@@ -52,6 +55,7 @@ public class ArticleActivity
                             Intent intent = new Intent(context, ArticleActivity.class);
                             intent.putExtra(EXTRA_ARTICLES_URLS_LIST, urls);
                             intent.putExtra(EXTRA_POSITION, position);
+                            intent.putExtra(EXTRA_SHOW_DISABLE_ADS, true);
                             context.startActivity(intent);
                         }
                     });
@@ -107,6 +111,17 @@ public class ArticleActivity
         });
 
         mViewPager.setCurrentItem(mCurPosition);
+
+        if (getIntent().hasExtra(EXTRA_SHOW_DISABLE_ADS)) {
+            Snackbar snackbar = Snackbar.make(mRoot, R.string.remove_ads, Snackbar.LENGTH_LONG);
+            snackbar.setAction(R.string.yes_bliad, v -> {
+                snackbar.dismiss();
+                BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
+                subsDF.show(getSupportFragmentManager(), subsDF.getTag());
+            });
+            snackbar.setActionTextColor(ContextCompat.getColor(this, R.color.material_amber_500));
+            snackbar.show();
+        }
     }
 
     @Override
@@ -141,7 +156,7 @@ public class ArticleActivity
     }
 
     @Override
-    public void onNavigationItemClicked(int id) {
+    public boolean onNavigationItemClicked(int id) {
         Timber.d("onNavigationItemClicked with id: %s", id);
         String link = null;
         switch (id) {
@@ -158,8 +173,7 @@ public class ArticleActivity
                 link = Constants.Urls.NEW_ARTICLES;
                 break;
             case R.id.random_page:
-                //TODO
-                Snackbar.make(root, R.string.in_progress, Snackbar.LENGTH_SHORT).show();
+                mPresenter.getRandomArticleUrl();
                 break;
             case R.id.objects_I:
                 link = Constants.Urls.OBJECTS_1;
@@ -175,7 +189,7 @@ public class ArticleActivity
                 break;
             case R.id.files:
                 //TODO launch new activity
-                Snackbar.make(root, R.string.in_progress, Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(mRoot, R.string.in_progress, Snackbar.LENGTH_SHORT).show();
                 break;
             case R.id.stories:
                 link = Constants.Urls.STORIES;
@@ -188,7 +202,7 @@ public class ArticleActivity
                 break;
             case R.id.gallery:
                 //TODO
-                Snackbar.make(root, R.string.in_progress, Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(mRoot, R.string.in_progress, Snackbar.LENGTH_SHORT).show();
                 break;
             case R.id.siteSearch:
                 link = Constants.Urls.SEARCH;
@@ -200,6 +214,7 @@ public class ArticleActivity
         if (link != null) {
             MainActivity.startActivity(this, link);
         }
+        return false;
     }
 
     @Override
@@ -209,18 +224,6 @@ public class ArticleActivity
             case android.R.id.home:
                 //TODO move to abstract
                 onBackPressed();
-                return true;
-            case R.id.night_mode_item:
-                mMyPreferenceManager.setIsNightMode(!mMyPreferenceManager.isNightMode());
-                recreate();
-                return true;
-            case R.id.text_size:
-                TextSizeDialogFragment fragmentDialogTextAppearance = TextSizeDialogFragment.newInstance();
-                fragmentDialogTextAppearance.show(getFragmentManager(), TextSizeDialogFragment.TAG);
-                return true;
-            case R.id.info:
-                NewVersionDialogFragment dialogFragment = NewVersionDialogFragment.newInstance();
-                dialogFragment.show(getFragmentManager(), NewVersionDialogFragment.TAG);
                 return true;
             case R.id.menuItemShare:
                 IntentUtils.shareUrl(mUrls.get(mCurPosition));

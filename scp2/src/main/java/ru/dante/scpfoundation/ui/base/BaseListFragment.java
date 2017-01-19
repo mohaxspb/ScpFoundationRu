@@ -4,9 +4,12 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ProgressBar;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import ru.dante.scpfoundation.R;
@@ -34,9 +37,24 @@ public abstract class BaseListFragment<V extends BaseListMvp.View, P extends Bas
     @BindView(R.id.recyclerView)
     protected RecyclerView mRecyclerView;
 
+    protected DividerItemDecoration mDividerItemDecoration;
+
+    @Inject
+    protected MyPreferenceManager mMyPreferenceManager;
+
     protected abstract <A extends RecyclerView.Adapter> A getAdapter();
 
     protected abstract boolean isSwipeRefreshEnabled();
+
+    @Override
+    protected void initViews() {
+        mDividerItemDecoration = new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL);
+        if (mMyPreferenceManager.isDesignListNewEnabled()) {
+            mRecyclerView.removeItemDecoration(mDividerItemDecoration);
+        } else {
+            mRecyclerView.addItemDecoration(mDividerItemDecoration);
+        }
+    }
 
     @Override
     public void showSwipeProgress(boolean show) {
@@ -73,7 +91,7 @@ public abstract class BaseListFragment<V extends BaseListMvp.View, P extends Bas
             return;
         }
 
-        if(show) {
+        if (show) {
             int screenHeight = DimensionUtils.getScreenHeight();
             mSwipeRefreshLayout.setProgressViewEndTarget(false, screenHeight - getActionBarHeight() * 2);
         }
@@ -108,6 +126,19 @@ public abstract class BaseListFragment<V extends BaseListMvp.View, P extends Bas
         switch (s) {
             case MyPreferenceManager.Keys.TEXT_SCALE_UI:
                 onTextSizeUiChanged();
+                break;
+            case MyPreferenceManager.Keys.DESIGN_LIST_NEW_IS_ON:
+                if (!isAdded()) {
+                    return;
+                }
+                if (mMyPreferenceManager.isDesignListNewEnabled()) {
+                    mRecyclerView.removeItemDecoration(mDividerItemDecoration);
+                } else {
+                    mRecyclerView.addItemDecoration(mDividerItemDecoration);
+                }
+                mRecyclerView.setAdapter(null);
+                mRecyclerView.setAdapter(getAdapter());
+//                getAdapter().notifyDataSetChanged();
                 break;
             default:
                 //do nothing

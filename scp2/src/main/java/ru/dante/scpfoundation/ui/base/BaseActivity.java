@@ -1,14 +1,18 @@
 package ru.dante.scpfoundation.ui.base;
 
+import android.app.DialogFragment;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -37,8 +41,10 @@ import ru.dante.scpfoundation.monetization.model.Item;
 import ru.dante.scpfoundation.monetization.util.MyAdListener;
 import ru.dante.scpfoundation.mvp.base.AdsActions;
 import ru.dante.scpfoundation.mvp.base.BaseMvp;
+import ru.dante.scpfoundation.ui.dialog.NewVersionDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
+import ru.dante.scpfoundation.ui.dialog.TextSizeDialogFragment;
 import timber.log.Timber;
 
 /**
@@ -48,12 +54,12 @@ import timber.log.Timber;
  */
 public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Presenter<V>>
         extends MvpActivity<V, P>
-        implements BaseMvp.View, AdsActions {
+        implements BaseMvp.View, AdsActions, SharedPreferences.OnSharedPreferenceChangeListener {
 
     @BindView(R.id.root)
-    protected View root;
+    protected View mRoot;
     @BindView(R.id.content)
-    protected View content;
+    protected View mContent;
     @Nullable
     @BindView(R.id.toolBar)
     protected Toolbar mToolbar;
@@ -99,10 +105,15 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
 
         //ads
         initAds();
+
+        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
     public boolean isTimeToShowAds() {
+        Timber.d("isTimeToShowAds mOwnedMarketItems.isEmpty(): %s, mMyPreferenceManager.isTimeToShowAds(): %s",
+                mOwnedMarketItems.isEmpty(),
+                mMyPreferenceManager.isTimeToShowAds());
         return mOwnedMarketItems.isEmpty() && mMyPreferenceManager.isTimeToShowAds();
     }
 
@@ -113,7 +124,20 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
 
     @Override
     public void showAds() {
-        mInterstitialAd.setAdListener(new MyAdListener());
+        mInterstitialAd.setAdListener(new MyAdListener() {
+            @Override
+            public void onAdClosed() {
+                super.onAdClosed();
+                Snackbar snackbar = Snackbar.make(mRoot, R.string.remove_ads, Snackbar.LENGTH_LONG);
+                snackbar.setAction(R.string.yes_bliad, v -> {
+                    snackbar.dismiss();
+                    BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
+                    subsDF.show(getSupportFragmentManager(), subsDF.getTag());
+                });
+                snackbar.setActionTextColor(ContextCompat.getColor(BaseActivity.this, R.color.material_amber_500));
+                snackbar.show();
+            }
+        });
         mInterstitialAd.show();
     }
 
@@ -129,18 +153,19 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
         mInterstitialAd = new InterstitialAd(this);
         mInterstitialAd.setAdUnitId(getString(R.string.ad_unit_id_interstitial));
         mInterstitialAd.setAdListener(new MyAdListener());
-
-        if (isTimeToShowAds()) {
-            requestNewInterstitial();
-        }
     }
 
     @Override
     public void requestNewInterstitial() {
-        AdRequest adRequest = new AdRequest.Builder()
-                .addTestDevice("A22E60ED57ABD5DD2947708F10EB5342")
-                .build();
-        mInterstitialAd.loadAd(adRequest);
+        Timber.d("requestNewInterstitial");
+        if (mInterstitialAd.isLoading()) {
+            Timber.d("loading already in progress");
+        } else {
+            AdRequest adRequest = new AdRequest.Builder()
+                    .addTestDevice("A22E60ED57ABD5DD2947708F10EB5342")
+                    .build();
+            mInterstitialAd.loadAd(adRequest);
+        }
     }
 
     public IInAppBillingService getIInAppBillingService() {
@@ -161,6 +186,10 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
             mService = IInAppBillingService.Stub.asInterface(service);
             InAppBillingServiceConnectionObservable.getInstance().getServiceStatusObservable().onNext(true);
             updateOwnedMarketItems();
+
+            if (isTimeToShowAds()) {
+                requestNewInterstitial();
+            }
         }
     };
 
@@ -239,7 +268,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
     @Override
     public void showError(Throwable throwable) {
         //TODO switch errors types
-        Snackbar.make(root, throwable.getMessage(), Snackbar.LENGTH_SHORT);
+        Snackbar.make(mRoot, throwable.getMessage(), Snackbar.LENGTH_SHORT);
     }
 
     @Override
@@ -254,6 +283,17 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
                 Timber.d("subscribe pressed");
                 BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
                 subsDF.show(getSupportFragmentManager(), subsDF.getTag());
+                return true;
+            case R.id.night_mode_item:
+                mMyPreferenceManager.setIsNightMode(!mMyPreferenceManager.isNightMode());
+                return true;
+            case R.id.text_size:
+                TextSizeDialogFragment fragmentDialogTextAppearance = TextSizeDialogFragment.newInstance();
+                fragmentDialogTextAppearance.show(getFragmentManager(), TextSizeDialogFragment.TAG);
+                return true;
+            case R.id.info:
+                DialogFragment dialogFragment = NewVersionDialogFragment.newInstance(getString(R.string.app_info));
+                dialogFragment.show(getFragmentManager(), NewVersionDialogFragment.TAG);
                 return true;
             default:
                 Timber.wtf("unexpected id: %s", item.getItemId());
@@ -275,5 +315,23 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
     public void onPause() {
         YandexMetrica.onPauseActivity(this);
         super.onPause();
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        Timber.d("onSharedPreferenceChanged with key: %s", key);
+        switch (key) {
+            case MyPreferenceManager.Keys.NIGHT_MODE:
+                recreate();
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
+        super.onDestroy();
     }
 }

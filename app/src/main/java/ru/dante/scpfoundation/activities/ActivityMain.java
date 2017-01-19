@@ -386,7 +386,6 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
         super.onResume();
         YandexMetrica.onResumeActivity(this);
 
-//        isActive = true;
         PreRate.init(this, "mohax.spb@gmail.com", "Отзыв по приложению").showIfNeed();
         AppInstall.init(this).showIfNeed();
     }

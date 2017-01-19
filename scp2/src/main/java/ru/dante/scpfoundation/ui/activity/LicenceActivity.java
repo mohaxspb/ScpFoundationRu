@@ -31,6 +31,8 @@ import timber.log.Timber;
  */
 public class LicenceActivity extends AppCompatActivity {
 
+    public static final String EXTRA_SHOW_ABOUT = "EXTRA_SHOW_ABOUT";
+
     @BindView(R.id.text)
     TextView text;
     @BindView(R.id.root)
@@ -42,7 +44,7 @@ public class LicenceActivity extends AppCompatActivity {
     @OnClick(R.id.accept)
     public void onAcceptClick() {
         mMyPreferenceManager.setLicenceAccepted(true);
-        startActivity(new Intent(this, MainActivity.class));
+        startActivity(new Intent(this, MainActivity.class).putExtra(EXTRA_SHOW_ABOUT, true));
         finish();
     }
 
@@ -51,7 +53,8 @@ public class LicenceActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         MyApplication.getAppComponent().inject(this);
         if (mMyPreferenceManager.isLicenceAccepted()) {
-            onAcceptClick();
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
         }
         setContentView(R.layout.activity_license);
         ButterKnife.bind(this);

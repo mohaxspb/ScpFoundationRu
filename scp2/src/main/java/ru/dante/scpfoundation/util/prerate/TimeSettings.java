@@ -1,4 +1,4 @@
-package ru.dante.scpfoundation.utils.prerate;
+package ru.dante.scpfoundation.util.prerate;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -6,6 +6,9 @@ import android.content.SharedPreferences;
 class TimeSettings {
     private static final long FIRST_SHOW_INTERVALE = 2 * 24 * 60 * 60 * 1000;// Через 2 дней показывать первый диалог
     private static final long SHOW_LATER_INTERVALE = 7 * 24 * 60 * 60 * 1000;// Через 7 дней показывать если нажали показать позже
+//    private static final long FIRST_SHOW_INTERVALE = 1000;
+//    private static final long SHOW_LATER_INTERVALE = 1000;
+
     private final static String KEY_FIRST_START_TIME = "firstRunTime";
     private final static String KEY_LAST_SHOW_TIME = "last_show_time";
 

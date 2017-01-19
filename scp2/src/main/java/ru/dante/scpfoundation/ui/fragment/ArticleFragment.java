@@ -171,7 +171,7 @@ public class ArticleFragment
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
 //        Timber.d("setUserVisibleHint url: %s, isVisibleToUser: %b", url, isVisibleToUser);
-        if (isVisibleToUser) {
+        if (isVisibleToUser && mArticle != null) {
             if (getActivity() instanceof ToolbarStateSetter) {
                 if (mArticle.title != null) {
                     ((ToolbarStateSetter) getActivity()).setTitle(mArticle.title);

@@ -8,16 +8,18 @@ import android.graphics.Typeface;
  */
 class Fonts {
     private static Typeface light;
-    public static Typeface getLightFont(Context cntx)
-    {
-        if(light==null) light=Typeface.createFromAsset(cntx.getApplicationContext().getAssets(),"fonts/Roboto-Light.ttf");
+
+    public static Typeface getLightFont(Context cntx) {
+        if (light == null)
+            light = Typeface.createFromAsset(cntx.getApplicationContext().getAssets(), "fonts/Roboto-Light.ttf");
         return light;
     }
 
     private static Typeface regular;
-    public static Typeface getRegularFont(Context cntx)
-    {
-        if(regular==null) regular=Typeface.createFromAsset(cntx.getApplicationContext().getAssets(),"fonts/Roboto-Regular.ttf");
+
+    public static Typeface getRegularFont(Context cntx) {
+        if (regular == null)
+            regular = Typeface.createFromAsset(cntx.getApplicationContext().getAssets(), "fonts/Roboto-Regular.ttf");
         return regular;
     }
 }

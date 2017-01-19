@@ -1,5 +1,6 @@
 package ru.dante.scpfoundation.ui.activity;
 
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,8 +8,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.GravityCompat;
-import android.view.MenuItem;
 
 import java.util.List;
 
@@ -19,7 +18,6 @@ import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.mvp.contract.MainMvp;
 import ru.dante.scpfoundation.ui.base.BaseDrawerActivity;
 import ru.dante.scpfoundation.ui.dialog.NewVersionDialogFragment;
-import ru.dante.scpfoundation.ui.dialog.TextSizeDialogFragment;
 import ru.dante.scpfoundation.ui.fragment.ArticleFragment;
 import ru.dante.scpfoundation.ui.fragment.FavoriteArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.Objects1ArticlesFragment;
@@ -30,7 +28,10 @@ import ru.dante.scpfoundation.ui.fragment.OfflineArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.RatedArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.RecentArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.SiteSearchArticlesFragment;
+import ru.dante.scpfoundation.util.prerate.PreRate;
 import timber.log.Timber;
+
+import static ru.dante.scpfoundation.ui.activity.LicenceActivity.EXTRA_SHOW_ABOUT;
 
 public class MainActivity
         extends BaseDrawerActivity<MainMvp.View, MainMvp.Presenter>
@@ -109,11 +110,6 @@ public class MainActivity
     }
 
     @Override
-    protected int getDefaultNavItemId() {
-        return R.id.mostRatedArticles;
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -121,16 +117,21 @@ public class MainActivity
             setDrawerItemFromIntent();
         }
 
-        if (getSupportFragmentManager().findFragmentById(content.getId()) == null) {
+        if (getSupportFragmentManager().findFragmentById(mContent.getId()) == null) {
             onNavigationItemClicked(mCurrentSelectedDrawerItemId);
         }
         mNavigationView.setCheckedItem(mCurrentSelectedDrawerItemId);
         setToolbarTitleByDrawerItemId(mCurrentSelectedDrawerItemId);
 
         if (mMyPreferenceManager.getCurAppVersion() != BuildConfig.VERSION_CODE) {
-            NewVersionDialogFragment dialogFragment = NewVersionDialogFragment.newInstance();
+            DialogFragment dialogFragment = NewVersionDialogFragment.newInstance(getString(R.string.new_version_features));
             dialogFragment.show(getFragmentManager(), NewVersionDialogFragment.TAG);
         }
+    }
+
+    @Override
+    protected int getDefaultNavItemId() {
+        return getIntent().hasExtra(EXTRA_SHOW_ABOUT) ? R.id.about : R.id.mostRatedArticles;
     }
 
     @Override
@@ -160,7 +161,7 @@ public class MainActivity
     }
 
     @Override
-    public void onNavigationItemClicked(int id) {
+    public boolean onNavigationItemClicked(int id) {
         Timber.d("onNavigationItemClicked with id: %s", id);
         setToolbarTitleByDrawerItemId(id);
         switch (id) {
@@ -168,81 +169,96 @@ public class MainActivity
                 mCurrentSelectedDrawerItemId = id;
                 showFragment(ArticleFragment.newInstance(Constants.Urls.ABOUT_SCP),
                         ArticleFragment.TAG + "#" + Constants.Urls.ABOUT_SCP);
-                break;
+                return true;
             case R.id.news:
                 mCurrentSelectedDrawerItemId = id;
                 showFragment(ArticleFragment.newInstance(Constants.Urls.NEWS), ArticleFragment.TAG + "#" + Constants.Urls.NEWS);
-                break;
+                return true;
             case R.id.mostRatedArticles:
                 mCurrentSelectedDrawerItemId = id;
                 showFragment(RatedArticlesFragment.newInstance(), RatedArticlesFragment.TAG);
-                break;
+                return true;
             case R.id.mostRecentArticles:
                 mCurrentSelectedDrawerItemId = id;
                 showFragment(RecentArticlesFragment.newInstance(), RecentArticlesFragment.TAG);
-                break;
+                return true;
             case R.id.random_page:
-                //TODO
-                Snackbar.make(root, R.string.in_progress, Snackbar.LENGTH_SHORT).show();
-                break;
+                mPresenter.getRandomArticleUrl();
+                return false;
             case R.id.objects_I:
                 mCurrentSelectedDrawerItemId = id;
                 showFragment(Objects1ArticlesFragment.newInstance(), Objects1ArticlesFragment.TAG);
-                break;
+                return true;
             case R.id.objects_II:
                 mCurrentSelectedDrawerItemId = id;
                 showFragment(Objects2ArticlesFragment.newInstance(), Objects2ArticlesFragment.TAG);
-                break;
+                return true;
             case R.id.objects_III:
                 mCurrentSelectedDrawerItemId = id;
                 showFragment(Objects3ArticlesFragment.newInstance(), Objects3ArticlesFragment.TAG);
-                break;
+                return true;
             case R.id.objects_RU:
                 mCurrentSelectedDrawerItemId = id;
                 showFragment(ObjectsRuArticlesFragment.newInstance(), ObjectsRuArticlesFragment.TAG);
-                break;
+                return true;
             case R.id.files:
                 //TODO launch new activity
-                Snackbar.make(root, R.string.in_progress, Snackbar.LENGTH_SHORT).show();
-                break;
+                Snackbar.make(mRoot, R.string.in_progress, Snackbar.LENGTH_SHORT).show();
+                return false;
             case R.id.stories:
                 mCurrentSelectedDrawerItemId = id;
                 showFragment(ArticleFragment.newInstance(Constants.Urls.STORIES),
                         ArticleFragment.TAG + "#" + Constants.Urls.STORIES);
-                break;
+                return true;
             case R.id.favorite:
                 mCurrentSelectedDrawerItemId = id;
                 showFragment(FavoriteArticlesFragment.newInstance(), FavoriteArticlesFragment.TAG);
-                break;
+                return true;
             case R.id.offline:
                 mCurrentSelectedDrawerItemId = id;
                 showFragment(OfflineArticlesFragment.newInstance(), OfflineArticlesFragment.TAG);
-                break;
+                return true;
             case R.id.gallery:
                 //TODO
-                Snackbar.make(root, R.string.in_progress, Snackbar.LENGTH_SHORT).show();
-                break;
+                Snackbar.make(mRoot, R.string.in_progress, Snackbar.LENGTH_SHORT).show();
+                return false;
             case R.id.siteSearch:
                 mCurrentSelectedDrawerItemId = id;
                 showFragment(SiteSearchArticlesFragment.newInstance(), SiteSearchArticlesFragment.TAG);
-                break;
+                return true;
             default:
                 Timber.e("unexpected item ID");
-                break;
+                return true;
         }
     }
 
     private void showFragment(Fragment fragmentToShow, String tag) {
-        hideFragments();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        hideFragments(transaction);
         Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
         if (fragment == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(content.getId(), fragmentToShow, tag)
+            transaction
+                    .add(mContent.getId(), fragmentToShow, tag)
                     .commit();
         } else {
-            getSupportFragmentManager().beginTransaction()
+            transaction
                     .show(fragment)
                     .commit();
+        }
+    }
+
+    private void hideFragments(FragmentTransaction transaction) {
+        List<Fragment> fragments = getSupportFragmentManager().getFragments();
+        if (fragments == null || fragments.isEmpty()) {
+            return;
+        }
+        for (Fragment fragment : fragments) {
+            if (fragment != null && fragment.isAdded()) {
+                transaction.hide(fragment);
+            } else {
+                Timber.e("fragment != null && fragment.isAdded() FALSE while switch fragments");
+//                showError(new IllegalStateException("fragment != null && fragment.isAdded() FALSE while switch fragments"));
+            }
         }
     }
 
@@ -298,41 +314,15 @@ public class MainActivity
         }
     }
 
-    private void hideFragments() {
-        List<Fragment> fragments = getSupportFragmentManager().getFragments();
-        if (fragments == null || fragments.isEmpty()) {
-            return;
-        }
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        for (Fragment fragment : fragments) {
-            transaction.hide(fragment);
-        }
-        transaction.commit();
+    @Override
+    public void onResume() {
+        super.onResume();
+        PreRate.init(this, "neva.spb.rx@gmail.com", "Отзыв на SCP RU").showIfNeed();
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        Timber.d("onOptionsItemSelected with id: %s", item);
-
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                //TODO move to abstract
-                mDrawerLayout.openDrawer(GravityCompat.START);
-                return true;
-            case R.id.night_mode_item:
-                mMyPreferenceManager.setIsNightMode(!mMyPreferenceManager.isNightMode());
-                recreate();
-                return true;
-            case R.id.text_size:
-                TextSizeDialogFragment fragmentDialogTextAppearance = TextSizeDialogFragment.newInstance();
-                fragmentDialogTextAppearance.show(getFragmentManager(), TextSizeDialogFragment.TAG);
-                return true;
-            case R.id.info:
-                NewVersionDialogFragment dialogFragment = NewVersionDialogFragment.newInstance();
-                dialogFragment.show(getFragmentManager(), NewVersionDialogFragment.TAG);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
+    protected void onDestroy() {
+        super.onDestroy();
+        PreRate.clearDialogIfOpen();
     }
 }

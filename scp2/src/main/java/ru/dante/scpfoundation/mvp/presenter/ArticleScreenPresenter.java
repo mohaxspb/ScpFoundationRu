@@ -14,7 +14,9 @@ import timber.log.Timber;
  * <p>
  * for TappAwards
  */
-public class ArticleScreenPresenter extends BasePresenter<ArticleScreenMvp.View> implements ArticleScreenMvp.Presenter {
+public class ArticleScreenPresenter
+        extends BaseDrawerPresenter<ArticleScreenMvp.View>
+        implements ArticleScreenMvp.Presenter {
 
     /**
      * urls (aka IDs) of arts

@@ -58,6 +58,36 @@ public class ApiClient {
                 ;
     }
 
+    public Observable<String> getRandomUrl() {
+        return bindWithUtils(Observable.create(subscriber -> {
+
+            Request.Builder request = new Request.Builder();
+            request.url(Constants.Api.RANDOM_PAGE_SCRIPT_URL);
+            request.addHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+            request.addHeader("Accept-Encoding", "gzip, deflate, br");
+            request.addHeader("Accept-Language", "en-US,en;q=0.8,de-DE;q=0.5,de;q=0.3");
+            request.addHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101 Firefox/45.0");
+            request.get();
+
+            try {
+                Response response = mOkHttpClient.newCall(request.build()).execute();
+
+                Request requestResult = response.request();
+                Timber.d("requestResult:" + requestResult);
+                Timber.d("requestResult.url().url():" + requestResult.url().url());
+
+                String randomURL = requestResult.url().url().toString();
+                Timber.d("randomUrl = " + randomURL);
+
+                subscriber.onNext(randomURL);
+                subscriber.onCompleted();
+            } catch (IOException e) {
+                Timber.e(e);
+                subscriber.onError(e);
+            }
+        }));
+    }
+
     public Observable<Integer> getRecentArticlesPageCount() {
         return bindWithUtils(Observable.<Integer>create(subscriber -> {
             Request request = new Request.Builder()

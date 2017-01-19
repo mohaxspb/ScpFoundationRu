@@ -18,8 +18,13 @@ import timber.log.Timber;
  * <p>
  * for scp_ru
  */
-public class SetttingsBottomSheetDialogFragment extends BaseBottomSheetDialogFragment {
+public class SetttingsBottomSheetDialogFragment
+        extends BaseBottomSheetDialogFragment {
 
+    //design
+    @BindView(R.id.designListNewIsOnSwitch)
+    SwitchCompat designListNewIsOnSwitch;
+    //notif
     @BindView(R.id.notifIsOnSwitch)
     SwitchCompat notifIsOnSwitch;
     @BindView(R.id.notifLedisOnSwitch)
@@ -34,7 +39,7 @@ public class SetttingsBottomSheetDialogFragment extends BaseBottomSheetDialogFra
     @Inject
     protected MyNotificationManager mMyNotificationManager;
 
-    public static BottomSheetDialogFragment newInstance(){
+    public static BottomSheetDialogFragment newInstance() {
         return new SetttingsBottomSheetDialogFragment();
     }
 
@@ -47,12 +52,17 @@ public class SetttingsBottomSheetDialogFragment extends BaseBottomSheetDialogFra
     public void setupDialog(Dialog dialog, int style) {
         super.setupDialog(dialog, style);
 
+        //design
+        designListNewIsOnSwitch.setChecked(mMyPreferenceManager.isDesignListNewEnabled());
+        designListNewIsOnSwitch.setOnCheckedChangeListener((compoundButton, checked) -> {
+            Timber.d("notifOnCheckChanged checked: %s", checked);
+            mMyPreferenceManager.setDesignListNewEnabled(checked);
+        });
+
+        //notif
         notifIsOnSwitch.setChecked(mMyPreferenceManager.isNotificationEnabled());
-
         notifLedIsOnSwitch.setChecked(mMyPreferenceManager.isNotificationLedEnabled());
-
         notifSoundIsOnSwitch.setChecked(mMyPreferenceManager.isNotificationSoundEnabled());
-
         notifVibrateIsOnSwitch.setChecked(mMyPreferenceManager.isNotificationVibrationEnabled());
 
         notifIsOnSwitch.setOnCheckedChangeListener((compoundButton, checked) -> {
