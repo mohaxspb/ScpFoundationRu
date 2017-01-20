@@ -59,7 +59,7 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
     public HolderSimple onCreateViewHolder(ViewGroup parent, int viewType) {
         HolderSimple viewHolder;
         View view;
-        if(mMyPreferenceManager.isDesignListNewEnabled()) {
+        if (mMyPreferenceManager.isDesignListNewEnabled()) {
             view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_article, parent, false);
             viewHolder = new HolderWithImage(view);
         } else {
@@ -224,19 +224,22 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
             //FIXME - NONONONONONO no viewPager - it's laggy!!!!!!!!!!!!!!!!!!!!!111oneone
             //set image
             if (article.imagesUrls != null && !article.imagesUrls.isEmpty()) {
+                Glide.clear(image);
                 Glide.with(context)
                         .load(article.imagesUrls.first().val)
+                        .placeholder(AttributeGetter.getDrawableId(context, R.attr.iconEmptyImage))
                         .error(AttributeGetter.getDrawableId(context, R.attr.iconEmptyImage))
+                        .animate(android.R.anim.fade_in)
                         .centerCrop()
-                        .crossFade()
                         .into(image);
             } else {
-//                Glide.with(context)
-//                        .load(R.drawable.ic_scp_file)
-//                        .centerCrop()
-//                        .crossFade()
-//                        .into(image);
-                image.setImageResource(R.drawable.ic_scp_file);
+                Glide.with(context)
+                        .load(R.drawable.ic_default_image_big)
+                        .placeholder(AttributeGetter.getDrawableId(context, R.attr.iconEmptyImage))
+                        .error(AttributeGetter.getDrawableId(context, R.attr.iconEmptyImage))
+                        .centerCrop()
+                        .animate(android.R.anim.fade_in)
+                        .into(image);
             }
         }
     }
