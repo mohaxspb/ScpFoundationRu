@@ -5,7 +5,6 @@ import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.design.widget.Snackbar;
@@ -155,8 +154,9 @@ public class SubscriptionsFragmentDialog
             if (pendingIntent != null) {
                 startIntentSenderForResult(pendingIntent.getIntentSender(), 1001, new Intent(), 0, 0, 0, null);
             }
-        } catch (RemoteException | IntentSender.SendIntentException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            Timber.e(e, "error ");
+            Snackbar.make(root, e.getMessage(), Snackbar.LENGTH_SHORT).show();
         }
     }
 
@@ -221,7 +221,7 @@ public class SubscriptionsFragmentDialog
     public static Observable<List<Subscription>> getInappsListToBuyObserveble(Context context, IInAppBillingService mInAppBillingService) {
         return Observable.create(subscriber -> {
             try {
-                //get all subs deatailed info
+                //get all subs detailed info
                 List<Subscription> allSubscriptions = new ArrayList<>();
                 List<String> skuList = new ArrayList<>();
                 //get it from build config
