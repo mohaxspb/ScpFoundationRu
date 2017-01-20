@@ -221,7 +221,7 @@ public class SubscriptionsFragmentDialog
     public static Observable<List<Subscription>> getInappsListToBuyObserveble(Context context, IInAppBillingService mInAppBillingService) {
         return Observable.create(subscriber -> {
             try {
-                //get all subs deatailed info
+                //get all subs detailed info
                 List<Subscription> allSubscriptions = new ArrayList<>();
                 List<String> skuList = new ArrayList<>();
                 //get it from build config
