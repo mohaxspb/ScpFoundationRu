@@ -209,8 +209,9 @@ public class SubscriptionsFragmentDialog
                         subscriber.onNext(ownedItemsList);
                         subscriber.onCompleted();
                     }
+                } else {
+                    subscriber.onError(new IllegalStateException("ownedItemsBundle.getInt(\"RESPONSE_CODE\") is not 0"));
                 }
-                subscriber.onError(new IllegalStateException("ownedItemsBundle.getInt(\"RESPONSE_CODE\") is not 0"));
             } catch (RemoteException e) {
                 Timber.e(e);
                 subscriber.onError(e);

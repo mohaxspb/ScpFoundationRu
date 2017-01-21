@@ -196,11 +196,15 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
     @Override
     public void updateOwnedMarketItems() {
         SubscriptionsFragmentDialog.getOwnedInappsObserveble(this, mService)
-                .subscribe(items -> {
-                    Timber.d("market items: %s", items);
-                    mOwnedMarketItems = items;
-                    supportInvalidateOptionsMenu();
-                });
+                .subscribe(
+                        items -> {
+                            Timber.d("market items: %s", items);
+                            mOwnedMarketItems = items;
+                            supportInvalidateOptionsMenu();
+                        },
+                        error -> {
+                            Timber.e(error, "errror while getting owned items");
+                        });
     }
 
     /**
@@ -288,8 +292,8 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
                 mMyPreferenceManager.setIsNightMode(!mMyPreferenceManager.isNightMode());
                 return true;
             case R.id.text_size:
-                TextSizeDialogFragment fragmentDialogTextAppearance = TextSizeDialogFragment.newInstance();
-                fragmentDialogTextAppearance.show(getFragmentManager(), TextSizeDialogFragment.TAG);
+                BottomSheetDialogFragment fragmentDialogTextAppearance = TextSizeDialogFragment.newInstance(TextSizeDialogFragment.TextSizeType.ALL);
+                fragmentDialogTextAppearance.show(getSupportFragmentManager(), TextSizeDialogFragment.TAG);
                 return true;
             case R.id.info:
                 DialogFragment dialogFragment = NewVersionDialogFragment.newInstance(getString(R.string.app_info));
