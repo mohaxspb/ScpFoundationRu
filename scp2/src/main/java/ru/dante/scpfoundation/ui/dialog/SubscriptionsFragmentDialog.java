@@ -13,6 +13,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Pair;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.android.vending.billing.IInAppBillingService;
 import com.google.android.gms.ads.AdRequest;
@@ -106,9 +107,6 @@ public class SubscriptionsFragmentDialog
             public void onRewardedVideoAdLoaded() {
                 //TODO
                 Timber.d("onRewardedVideoAdLoaded");
-                mMyPreferenceManager.applyRewardFromAds();
-
-                Snackbar.make(root, R.string.ads_reward_gained, Snackbar.LENGTH_SHORT).show();
             }
 
             @Override
@@ -129,6 +127,10 @@ public class SubscriptionsFragmentDialog
             @Override
             public void onRewarded(RewardItem rewardItem) {
                 Timber.d("onRewarded type: %s, amount: %s", rewardItem.getType(), rewardItem.getAmount());
+
+                mMyPreferenceManager.applyRewardFromAds();
+
+                Snackbar.make(root, R.string.ads_reward_gained, Snackbar.LENGTH_SHORT).show();
             }
 
             @Override
@@ -164,6 +166,7 @@ public class SubscriptionsFragmentDialog
     @OnClick(R.id.removeAdsOneDay)
     void onRemoveAdsOneDayClicked() {
         Timber.d("onRemoveAdsOneDayClicked");
+//        dismiss();
         showRewardedVideo();
     }
 
