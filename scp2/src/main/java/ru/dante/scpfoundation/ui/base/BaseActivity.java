@@ -266,8 +266,12 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
             if (BuildConfig.DEBUG) {
                 @SuppressLint("HardwareIds")
                 String androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-                String deviceId = SystemUtils.MD5(androidId).toUpperCase();
-                adRequest.addTestDevice(deviceId);
+                String deviceId;
+                deviceId = SystemUtils.MD5(androidId);
+                if (deviceId != null) {
+                    deviceId = deviceId.toUpperCase();
+                    adRequest.addTestDevice(deviceId);
+                }
 //                boolean isTestDevice = adRequest.isTestDevice(this);
 //                Timber.v("is Admob Test Device ? %s, %s", deviceId, isTestDevice);
             }
@@ -338,7 +342,9 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
         return true;
     }
 
-    //workaround from http://stackoverflow.com/a/30337653/3212712 to showInterstitial menu icons
+    /**
+     * workaround from http://stackoverflow.com/a/30337653/3212712 to show menu icons
+     */
     @Override
     protected boolean onPrepareOptionsPanel(View view, Menu menu) {
         if (menu != null) {

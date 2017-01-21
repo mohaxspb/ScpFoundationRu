@@ -1,8 +1,15 @@
 package ru.dante.scpfoundation.ui.dialog;
 
 import android.app.Dialog;
+import android.support.annotation.StringDef;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v7.widget.SwitchCompat;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 import javax.inject.Inject;
 
@@ -22,8 +29,12 @@ public class SetttingsBottomSheetDialogFragment
         extends BaseBottomSheetDialogFragment {
 
     //design
-    @BindView(R.id.designListNewIsOnSwitch)
-    SwitchCompat designListNewIsOnSwitch;
+//    @BindView(R.id.designListNewIsOnSwitch)
+//    SwitchCompat designListNewIsOnSwitch;
+    @BindView(R.id.listItemStyle)
+    View listItemStyle;
+    @BindView(R.id.listItemSpinner)
+    Spinner listItemSpinner;
     //notif
     @BindView(R.id.notifIsOnSwitch)
     SwitchCompat notifIsOnSwitch;
@@ -44,6 +55,11 @@ public class SetttingsBottomSheetDialogFragment
     }
 
     @Override
+    protected int getLayoutResId() {
+        return R.layout.fragment_bottom_sheet_notif_settings;
+    }
+
+    @Override
     protected void callInjection() {
         MyApplication.getAppComponent().inject(this);
     }
@@ -53,11 +69,22 @@ public class SetttingsBottomSheetDialogFragment
         super.setupDialog(dialog, style);
 
         //design
-        designListNewIsOnSwitch.setChecked(mMyPreferenceManager.isDesignListNewEnabled());
-        designListNewIsOnSwitch.setOnCheckedChangeListener((compoundButton, checked) -> {
-            Timber.d("notifOnCheckChanged checked: %s", checked);
-            mMyPreferenceManager.setDesignListNewEnabled(checked);
+//        designListNewIsOnSwitch.setChecked(mMyPreferenceManager.isDesignListNewEnabled());
+//        designListNewIsOnSwitch.setOnCheckedChangeListener((compoundButton, checked) -> {
+//            Timber.d("notifOnCheckChanged checked: %s", checked);
+//            mMyPreferenceManager.setDesignListNewEnabled(checked);
+//        });
+        listItemStyle.setOnClickListener(view -> {
+            listItemSpinner.performClick();
         });
+        String[] types = new String[]{ListItemType.MIN, ListItemType.MIDDLE, ListItemType.MAX};
+
+        ArrayAdapter<String> adapter =
+                new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, types);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        listItemSpinner.setAdapter(adapter);
+        listItemSpinner.setSelection(0);
 
         //notif
         notifIsOnSwitch.setChecked(mMyPreferenceManager.isNotificationEnabled());
@@ -90,8 +117,15 @@ public class SetttingsBottomSheetDialogFragment
         });
     }
 
-    @Override
-    protected int getLayoutResId() {
-        return R.layout.fragment_bottom_sheet_notif_settings;
+    @StringDef({
+            ListItemType.MIN,
+            ListItemType.MIDDLE,
+            ListItemType.MAX
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ListItemType {
+        String MIN = "MIN";
+        String MIDDLE = "MIDDLE";
+        String MAX = "MAX";
     }
 }

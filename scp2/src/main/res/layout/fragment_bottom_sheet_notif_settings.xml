@@ -22,26 +22,40 @@
             android:textStyle="bold"
             />
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/listItemStyle"
+            android:background="?selectableItemBackground"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="@dimen/defaultMargin"
-            >
+            android:text="@string/settings_design_list_type"
+            />
 
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/settings_design_list_new"
-                />
+        <Spinner
+            android:id="@+id/listItemSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
 
-            <android.support.v7.widget.SwitchCompat
-                android:id="@+id/designListNewIsOnSwitch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                />
-        </LinearLayout>
+        <!--<LinearLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:orientation="horizontal"-->
+            <!--android:padding="@dimen/defaultMargin"-->
+            <!--&gt;-->
+
+            <!--<TextView-->
+                <!--android:layout_width="0dp"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_weight="1"-->
+                <!--android:text="@string/settings_design_list_type"-->
+                <!--/>-->
+
+            <!--<android.support.v7.widget.SwitchCompat-->
+                <!--android:id="@+id/designListNewIsOnSwitch"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--/>-->
+        <!--</LinearLayout>-->
 
         <TextView
             android:layout_width="match_parent"
