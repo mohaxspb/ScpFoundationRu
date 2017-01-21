@@ -13,14 +13,8 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Pair;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.android.vending.billing.IInAppBillingService;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.reward.RewardItem;
-import com.google.android.gms.ads.reward.RewardedVideoAd;
-import com.google.android.gms.ads.reward.RewardedVideoAdListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,7 +40,6 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-
 public class SubscriptionsFragmentDialog
         extends BaseBottomSheetDialogFragment
         implements RecyclerAdapterSubscriptions.SubscriptionClickListener {
@@ -61,16 +54,12 @@ public class SubscriptionsFragmentDialog
     View infoContainer;
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
-//    @BindView(R.id.removeAdsOneDay)
-//    View removeAdsOneDay;
 
     @Inject
     MyPreferenceManager mMyPreferenceManager;
 
     private IInAppBillingService mInAppBillingService;
     private boolean isDataLoaded;
-
-    private RewardedVideoAd mRewardedVideoAd;
 
     public static SubscriptionsFragmentDialog newInstance() {
         return new SubscriptionsFragmentDialog();
@@ -98,94 +87,19 @@ public class SubscriptionsFragmentDialog
                 });
 
         getMarketData();
-
-        MobileAds.initialize(getActivity(), BuildConfig.ADS_APP_ID);
-
-        mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(getActivity());
-        mRewardedVideoAd.setRewardedVideoAdListener(new RewardedVideoAdListener() {
-            @Override
-            public void onRewardedVideoAdLoaded() {
-                //TODO
-                Timber.d("onRewardedVideoAdLoaded");
-            }
-
-            @Override
-            public void onRewardedVideoAdOpened() {
-
-            }
-
-            @Override
-            public void onRewardedVideoStarted() {
-
-            }
-
-            @Override
-            public void onRewardedVideoAdClosed() {
-
-            }
-
-            @Override
-            public void onRewarded(RewardItem rewardItem) {
-                Timber.d("onRewarded type: %s, amount: %s", rewardItem.getType(), rewardItem.getAmount());
-
-                mMyPreferenceManager.applyRewardFromAds();
-
-                Snackbar.make(root, R.string.ads_reward_gained, Snackbar.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onRewardedVideoAdLeftApplication() {
-
-            }
-
-            @Override
-            public void onRewardedVideoAdFailedToLoad(int i) {
-                //TODO
-                Timber.e("onRewardedVideoAdFailedToLoad: %s", i);
-                loadRewardedVideoAd();
-            }
-        });
-        loadRewardedVideoAd();
-    }
-
-    private void loadRewardedVideoAd() {
-        if (!mRewardedVideoAd.isLoaded()) {
-            AdRequest adRequest = new AdRequest.Builder()
-//                    .addTestDevice("A22E60ED57ABD5DD2947708F10EB5342")
-                    .build();
-            mRewardedVideoAd.loadAd(BuildConfig.AD_UNIT_ID_REWARDED, adRequest);
-        }
-    }
-
-    private void showRewardedVideo() {
-        if (mRewardedVideoAd.isLoaded()) {
-            mRewardedVideoAd.show();
-        }
     }
 
     @OnClick(R.id.removeAdsOneDay)
     void onRemoveAdsOneDayClicked() {
         Timber.d("onRemoveAdsOneDayClicked");
-//        dismiss();
-        showRewardedVideo();
+        dismiss();
+        getBaseActivity().startRewardedVideoFlow();
     }
 
     @OnClick(R.id.refresh)
     void onRefreshClicked() {
         Timber.d("onRefreshClicked");
         getMarketData();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        mRewardedVideoAd.pause(getActivity());
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mRewardedVideoAd.resume(getActivity());
     }
 
     private void getMarketData() {
@@ -250,35 +164,11 @@ public class SubscriptionsFragmentDialog
                     String.valueOf(System.currentTimeMillis()));
             PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
             if (pendingIntent != null) {
-                startIntentSenderForResult(pendingIntent.getIntentSender(), 1001, new Intent(), 0, 0, 0, null);
+                startIntentSenderForResult(pendingIntent.getIntentSender(), REQUEST_CODE_SUBSCRIPTION, new Intent(), 0, 0, 0, null);
             }
         } catch (Exception e) {
             Timber.e(e, "error ");
             Snackbar.make(root, e.getMessage(), Snackbar.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Timber.d("called in fragment");
-        if (requestCode == REQUEST_CODE_SUBSCRIPTION) {
-            int responseCode = data.getIntExtra("RESPONSE_CODE", 0);
-            String purchaseData = data.getStringExtra("INAPP_PURCHASE_DATA");
-            String dataSignature = data.getStringExtra("INAPP_DATA_SIGNATURE");
-
-            if (resultCode == Activity.RESULT_OK) {
-                try {
-                    JSONObject jo = new JSONObject(purchaseData);
-                    String sku = jo.getString("productId");
-                    Timber.d("You have bought the %s", sku);
-                } catch (JSONException e) {
-                    Timber.e(e, "Failed to parse purchase data.");
-                }
-                //remove ads item from menu via updating ownedItems list
-                getBaseActivity().updateOwnedMarketItems();
-            }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 
@@ -359,5 +249,29 @@ public class SubscriptionsFragmentDialog
                 subscriber.onError(e);
             }
         });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Timber.d("called in fragment");
+        if (requestCode == REQUEST_CODE_SUBSCRIPTION) {
+            int responseCode = data.getIntExtra("RESPONSE_CODE", 0);
+            String purchaseData = data.getStringExtra("INAPP_PURCHASE_DATA");
+            String dataSignature = data.getStringExtra("INAPP_DATA_SIGNATURE");
+
+            if (resultCode == Activity.RESULT_OK) {
+                try {
+                    JSONObject jo = new JSONObject(purchaseData);
+                    String sku = jo.getString("productId");
+                    Timber.d("You have bought the %s", sku);
+                } catch (JSONException e) {
+                    Timber.e(e, "Failed to parse purchase data.");
+                }
+                //remove ads item from menu via updating ownedItems list
+                getBaseActivity().updateOwnedMarketItems();
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 }

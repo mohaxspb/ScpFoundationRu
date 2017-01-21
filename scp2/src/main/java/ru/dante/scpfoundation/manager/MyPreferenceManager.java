@@ -11,11 +11,11 @@ import android.preference.PreferenceManager;
  */
 public class MyPreferenceManager {
 
-    //test value
-    private static final long PERIOD_BETWEEN_ADS = 20 * 1000;
-    private static final long PERIOD_REWARDED_ADS_SHOWN = 60 * 1000;
-//    private static final long PERIOD_BETWEEN_ADS = 3 * 60 * 60 * 1000;
-//    private static final long PERIOD_REWARDED_ADS_SHOWN = 24 * 60 * 60 * 1000;
+    //test values
+//    private static final long PERIOD_BETWEEN_ADS = 20 * 1000;
+//    private static final long PERIOD_REWARDED_ADS_SHOWN = 60 * 1000;
+    private static final long PERIOD_BETWEEN_ADS = 3 * 60 * 60 * 1000;
+    private static final long PERIOD_REWARDED_ADS_SHOWN = 24 * 60 * 60 * 1000;
 
     public interface Keys {
         String SESSION_ID = "SESSION_ID";
@@ -23,16 +23,19 @@ public class MyPreferenceManager {
         String NIGHT_MODE = "NIGHT_MODE";
         String TEXT_SCALE_UI = "TEXT_SCALE_UI";
         String TEXT_SCALE_ARTICLE = "TEXT_SCALE_ARTICLE";
+        String DESIGN_LIST_NEW_IS_ON = "DESIGN_LIST_NEW_IS_ON";
 
         String NOTIFICATION_IS_ON = "NOTIFICATION_IS_ON";
         String NOTIFICATION_PERIOD = "NOTIFICATION_PERIOD";
         String NOTIFICATION_VIBRATION_IS_ON = "NOTIFICATION_VIBRATION_IS_ON";
         String NOTIFICATION_LED_IS_ON = "NOTIFICATION_LED_IS_ON";
         String NOTIFICATION_SOUND_IS_ON = "NOTIFICATION_SOUND_IS_ON";
+
         String ADS_LAST_TIME_SHOWS = "ADS_LAST_TIME_SHOWS";
+        String ADS_REWARDED_DESCRIPTION_IS_SHOWN = "ADS_REWARDED_DESCRIPTION_IS_SHOWN";
+
         String LICENCE_ACCEPTED = "LICENCE_ACCEPTED";
         String CUR_APP_VERSION = "CUR_APP_VERSION";
-        String DESIGN_LIST_NEW_IS_ON = "DESIGN_LIST_NEW_IS_ON";
     }
 
     private SharedPreferences mPreferences;
@@ -131,12 +134,21 @@ public class MyPreferenceManager {
         mPreferences.edit().putBoolean(Keys.NOTIFICATION_SOUND_IS_ON, enabled).apply();
     }
 
+    //ads
     public boolean isTimeToShowAds() {
         return System.currentTimeMillis() - getLastTimeAdsShows() >= PERIOD_BETWEEN_ADS;
     }
 
     public void applyRewardFromAds() {
         setLastTimeAdsShows(System.currentTimeMillis() + PERIOD_REWARDED_ADS_SHOWN);
+    }
+
+    public boolean isRewardedDescriptionShown() {
+        return mPreferences.getBoolean(Keys.ADS_REWARDED_DESCRIPTION_IS_SHOWN, false);
+    }
+
+    public void setRewardedDescriptionIsNotShown(boolean isShown) {
+        mPreferences.edit().putBoolean(Keys.ADS_REWARDED_DESCRIPTION_IS_SHOWN, isShown).apply();
     }
 
     public void setLastTimeAdsShows(long timeInMillis) {
@@ -151,6 +163,7 @@ public class MyPreferenceManager {
         return timeFromLastShow;
     }
 
+    //utils
     public boolean isLicenceAccepted() {
         return mPreferences.getBoolean(Keys.LICENCE_ACCEPTED, false);
     }

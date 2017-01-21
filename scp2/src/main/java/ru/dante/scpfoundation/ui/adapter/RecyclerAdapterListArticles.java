@@ -123,7 +123,7 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
 
             title.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * textSizePrimary);
             title.setText(Html.fromHtml(article.title));
-            //showAds preview only on siteSearch fragment
+            //showInterstitial preview only on siteSearch fragment
             if (shouldShowPreview) {
                 preview.setVisibility(View.VISIBLE);
                 preview.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * textSizeTertiary);

@@ -49,7 +49,7 @@ public class ArticleActivity
             AdsActions adsActions = (AdsActions) context;
             if (adsActions.isTimeToShowAds()) {
                 if (adsActions.isAdsLoaded()) {
-                    adsActions.showAds(new MyAdListener() {
+                    adsActions.showInterstitial(new MyAdListener() {
                         @Override
                         public void onAdClosed() {
                             super.onAdClosed();
@@ -65,7 +65,7 @@ public class ArticleActivity
                     Timber.d("Ads not loaded yet");
                 }
             } else {
-                Timber.d("it's not time to showAds ads");
+                Timber.d("it's not time to showInterstitial ads");
             }
         } else {
             Timber.wtf("context IS NOT instanceof AdsActions");
@@ -103,7 +103,7 @@ public class ArticleActivity
                 mCurPosition = position;
                 if (isTimeToShowAds()) {
                     if (isAdsLoaded()) {
-                        showAds();
+                        showInterstitial();
                     } else {
                         requestNewInterstitial();
                     }
