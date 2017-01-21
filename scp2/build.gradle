@@ -43,7 +43,7 @@ android {
         //there is a way to store it in res... but it's awful
         //http://stackoverflow.com/a/41655569/3212712
         //Load market SKUs
-        if (rootProject.file('keystore.properties').exists()) {
+        if (rootProject.file('marketSkus.properties').exists()) {
             def marketSkusPropertiesFile = rootProject.file("marketSkus.properties");
             def marketSkusProperties = new Properties()
             marketSkusProperties.load(new FileInputStream(marketSkusPropertiesFile))
