@@ -196,11 +196,15 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
     @Override
     public void updateOwnedMarketItems() {
         SubscriptionsFragmentDialog.getOwnedInappsObserveble(this, mService)
-                .subscribe(items -> {
-                    Timber.d("market items: %s", items);
-                    mOwnedMarketItems = items;
-                    supportInvalidateOptionsMenu();
-                });
+                .subscribe(
+                        items -> {
+                            Timber.d("market items: %s", items);
+                            mOwnedMarketItems = items;
+                            supportInvalidateOptionsMenu();
+                        },
+                        error -> {
+                            Timber.e(error, "errror while getting owned items");
+                        });
     }
 
     /**

@@ -247,6 +247,9 @@ public class MainActivity
         }
     }
 
+    /**
+     * adds all found fragments to transaction via hide method
+     */
     private void hideFragments(FragmentTransaction transaction) {
         List<Fragment> fragments = getSupportFragmentManager().getFragments();
         if (fragments == null || fragments.isEmpty()) {
