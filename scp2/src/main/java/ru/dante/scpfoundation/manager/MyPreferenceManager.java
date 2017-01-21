@@ -12,8 +12,10 @@ import android.preference.PreferenceManager;
 public class MyPreferenceManager {
 
     //test value
-//    private static final long PERIOD_BETWEEN_ADS = 20 * 1000;
-    private static final long PERIOD_BETWEEN_ADS = 3 * 60 * 60 * 1000;
+    private static final long PERIOD_BETWEEN_ADS = 20 * 1000;
+    private static final long PERIOD_REWARDED_ADS_SHOWN = 60 * 1000;
+//    private static final long PERIOD_BETWEEN_ADS = 3 * 60 * 60 * 1000;
+//    private static final long PERIOD_REWARDED_ADS_SHOWN = 24 * 60 * 60 * 1000;
 
     public interface Keys {
         String SESSION_ID = "SESSION_ID";
@@ -131,6 +133,10 @@ public class MyPreferenceManager {
 
     public boolean isTimeToShowAds() {
         return System.currentTimeMillis() - getLastTimeAdsShows() >= PERIOD_BETWEEN_ADS;
+    }
+
+    public void applyRewardFromAds() {
+        setLastTimeAdsShows(System.currentTimeMillis() + PERIOD_REWARDED_ADS_SHOWN);
     }
 
     public void setLastTimeAdsShows(long timeInMillis) {

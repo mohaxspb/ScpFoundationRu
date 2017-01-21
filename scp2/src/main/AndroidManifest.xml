@@ -23,17 +23,13 @@
 
         <meta-data
             android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
+            android:value="@integer/google_play_services_version"/>
 
-        <activity android:name="ru.dante.scpfoundation.ui.activity.MainActivity">
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN"/>-->
+        <activity
+            android:name="ru.dante.scpfoundation.ui.activity.MainActivity"/>
 
-                <!--<category android:name="android.intent.category.LAUNCHER"/>-->
-            <!--</intent-filter>-->
-        </activity>
-
-        <activity android:name="ru.dante.scpfoundation.ui.activity.LicenceActivity">
+        <activity
+            android:name="ru.dante.scpfoundation.ui.activity.LicenceActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -53,15 +49,32 @@
         <activity
             android:name="com.google.android.gms.ads.AdActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
-            android:theme="@android:style/Theme.Translucent" />
+            android:theme="@android:style/Theme.Translucent"/>
 
-        <activity android:name="com.adcolony.sdk.AdColonyInterstitialActivity"
-                  android:configChanges="keyboardHidden|orientation|screenSize"
-                  android:hardwareAccelerated="true"/>
+        <activity
+            android:name="com.adcolony.sdk.AdColonyInterstitialActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:hardwareAccelerated="true"/>
 
-        <activity android:name="com.adcolony.sdk.AdColonyAdViewActivity"
-                  android:configChanges="keyboardHidden|orientation|screenSize"
-                  android:hardwareAccelerated="true"/>
+        <activity
+            android:name="com.adcolony.sdk.AdColonyAdViewActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:hardwareAccelerated="true"/>
+
+        <activity
+            android:name="com.jirbo.adcolony.AdColonyOverlay"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"/>
+
+        <activity
+            android:name="com.jirbo.adcolony.AdColonyFullscreen"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"/>
+
+        <activity
+            android:name="com.jirbo.adcolony.AdColonyBrowser"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"/>
 
         <!--service-->
 

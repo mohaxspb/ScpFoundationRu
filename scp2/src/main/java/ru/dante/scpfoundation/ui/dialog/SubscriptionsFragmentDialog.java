@@ -28,12 +28,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.OnClick;
 import ru.dante.scpfoundation.BuildConfig;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.manager.InAppBillingServiceConnectionObservable;
+import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.monetization.model.Item;
 import ru.dante.scpfoundation.monetization.model.Subscription;
 import ru.dante.scpfoundation.ui.adapter.RecyclerAdapterSubscriptions;
@@ -59,6 +62,9 @@ public class SubscriptionsFragmentDialog
     RecyclerView recyclerView;
 //    @BindView(R.id.removeAdsOneDay)
 //    View removeAdsOneDay;
+
+    @Inject
+    MyPreferenceManager mMyPreferenceManager;
 
     private IInAppBillingService mInAppBillingService;
     private boolean isDataLoaded;
@@ -99,6 +105,10 @@ public class SubscriptionsFragmentDialog
             @Override
             public void onRewardedVideoAdLoaded() {
                 //TODO
+                Timber.d("onRewardedVideoAdLoaded");
+                mMyPreferenceManager.applyRewardFromAds();
+
+                Snackbar.make(root, R.string.ads_reward_gained, Snackbar.LENGTH_SHORT).show();
             }
 
             @Override
@@ -139,7 +149,7 @@ public class SubscriptionsFragmentDialog
     private void loadRewardedVideoAd() {
         if (!mRewardedVideoAd.isLoaded()) {
             AdRequest adRequest = new AdRequest.Builder()
-                    .addTestDevice("A22E60ED57ABD5DD2947708F10EB5342")
+//                    .addTestDevice("A22E60ED57ABD5DD2947708F10EB5342")
                     .build();
             mRewardedVideoAd.loadAd(BuildConfig.AD_UNIT_ID_REWARDED, adRequest);
         }

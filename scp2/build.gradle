@@ -13,6 +13,12 @@ android {
     compileSdkVersion 25
     buildToolsVersion "24.0.3"
 
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+
     defaultConfig {
         applicationId "ru.dante.scpfoundation"
         minSdkVersion 17

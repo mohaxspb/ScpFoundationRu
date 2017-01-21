@@ -89,6 +89,7 @@
     <string name="yes_bliad">Да!</string>
     <string name="app_info">О приложении</string>
     <string name="remove_ads_one_day">Отключить рекламу на день бесплатно</string>
+    <string name="ads_reward_gained">Ура! Никакой рекламы на 24 часа!</string>
 
     <string-array name="download_types">
         <item>Объекты I</item>
