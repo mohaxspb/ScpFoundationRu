@@ -15,6 +15,11 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import com.android.vending.billing.IInAppBillingService;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.reward.RewardItem;
+import com.google.android.gms.ads.reward.RewardedVideoAd;
+import com.google.android.gms.ads.reward.RewardedVideoAdListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,9 +57,13 @@ public class SubscriptionsFragmentDialog
     View infoContainer;
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
+//    @BindView(R.id.removeAdsOneDay)
+//    View removeAdsOneDay;
 
     private IInAppBillingService mInAppBillingService;
     private boolean isDataLoaded;
+
+    private RewardedVideoAd mRewardedVideoAd;
 
     public static SubscriptionsFragmentDialog newInstance() {
         return new SubscriptionsFragmentDialog();
@@ -82,12 +91,88 @@ public class SubscriptionsFragmentDialog
                 });
 
         getMarketData();
+
+        MobileAds.initialize(getActivity(), BuildConfig.ADS_APP_ID);
+
+        mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(getActivity());
+        mRewardedVideoAd.setRewardedVideoAdListener(new RewardedVideoAdListener() {
+            @Override
+            public void onRewardedVideoAdLoaded() {
+                //TODO
+            }
+
+            @Override
+            public void onRewardedVideoAdOpened() {
+
+            }
+
+            @Override
+            public void onRewardedVideoStarted() {
+
+            }
+
+            @Override
+            public void onRewardedVideoAdClosed() {
+
+            }
+
+            @Override
+            public void onRewarded(RewardItem rewardItem) {
+                Timber.d("onRewarded type: %s, amount: %s", rewardItem.getType(), rewardItem.getAmount());
+            }
+
+            @Override
+            public void onRewardedVideoAdLeftApplication() {
+
+            }
+
+            @Override
+            public void onRewardedVideoAdFailedToLoad(int i) {
+                //TODO
+                Timber.e("onRewardedVideoAdFailedToLoad: %s", i);
+                loadRewardedVideoAd();
+            }
+        });
+        loadRewardedVideoAd();
+    }
+
+    private void loadRewardedVideoAd() {
+        if (!mRewardedVideoAd.isLoaded()) {
+            AdRequest adRequest = new AdRequest.Builder()
+                    .addTestDevice("A22E60ED57ABD5DD2947708F10EB5342")
+                    .build();
+            mRewardedVideoAd.loadAd(BuildConfig.AD_UNIT_ID_REWARDED, adRequest);
+        }
+    }
+
+    private void showRewardedVideo() {
+        if (mRewardedVideoAd.isLoaded()) {
+            mRewardedVideoAd.show();
+        }
+    }
+
+    @OnClick(R.id.removeAdsOneDay)
+    void onRemoveAdsOneDayClicked() {
+        Timber.d("onRemoveAdsOneDayClicked");
+        showRewardedVideo();
     }
 
     @OnClick(R.id.refresh)
     void onRefreshClicked() {
         Timber.d("onRefreshClicked");
         getMarketData();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mRewardedVideoAd.pause(getActivity());
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mRewardedVideoAd.resume(getActivity());
     }
 
     private void getMarketData() {

@@ -21,6 +21,10 @@
         android:theme="@style/SCP.Theme.Light"
         tools:ignore="GoogleAppIndexingWarning,HardcodedDebugMode">
 
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
         <activity android:name="ru.dante.scpfoundation.ui.activity.MainActivity">
             <!--<intent-filter>-->
                 <!--<action android:name="android.intent.action.MAIN"/>-->
@@ -44,7 +48,26 @@
             android:label="ServiceActivity"
             android:theme="@style/VK.Transparent"/>
 
+        <!--ads-->
+
+        <activity
+            android:name="com.google.android.gms.ads.AdActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
+            android:theme="@android:style/Theme.Translucent" />
+
+        <activity android:name="com.adcolony.sdk.AdColonyInterstitialActivity"
+                  android:configChanges="keyboardHidden|orientation|screenSize"
+                  android:hardwareAccelerated="true"/>
+
+        <activity android:name="com.adcolony.sdk.AdColonyAdViewActivity"
+                  android:configChanges="keyboardHidden|orientation|screenSize"
+                  android:hardwareAccelerated="true"/>
+
+        <!--service-->
+
         <service android:name="ru.dante.scpfoundation.service.DownloadAllService"/>
+
+        <!--receiver-->
 
         <receiver
             android:name="ru.dante.scpfoundation.receivers.ReceiverTimer"
