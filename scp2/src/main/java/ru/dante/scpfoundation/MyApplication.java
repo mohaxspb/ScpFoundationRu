@@ -1,6 +1,6 @@
 package ru.dante.scpfoundation;
 
-import android.app.Application;
+import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 
 import com.vk.sdk.VKSdk;
@@ -15,12 +15,14 @@ import ru.dante.scpfoundation.di.module.StorageModule;
 import ru.dante.scpfoundation.util.SystemUtils;
 import timber.log.Timber;
 
+import static com.vk.sdk.VKUIHelper.getApplicationContext;
+
 /**
  * Created by mohax on 01.01.2017.
  * <p>
  * for scp_ru
  */
-public class MyApplication extends Application {
+public class MyApplication extends MultiDexApplication {
 
     private static AppComponent sAppComponent;
     private static MyApplication sAppInstance;

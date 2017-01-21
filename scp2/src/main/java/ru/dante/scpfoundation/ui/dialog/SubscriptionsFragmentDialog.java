@@ -23,12 +23,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.OnClick;
 import ru.dante.scpfoundation.BuildConfig;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.manager.InAppBillingServiceConnectionObservable;
+import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.monetization.model.Item;
 import ru.dante.scpfoundation.monetization.model.Subscription;
 import ru.dante.scpfoundation.ui.adapter.RecyclerAdapterSubscriptions;
@@ -36,7 +39,6 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
-
 
 public class SubscriptionsFragmentDialog
         extends BaseBottomSheetDialogFragment
@@ -52,6 +54,9 @@ public class SubscriptionsFragmentDialog
     View infoContainer;
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
+
+    @Inject
+    MyPreferenceManager mMyPreferenceManager;
 
     private IInAppBillingService mInAppBillingService;
     private boolean isDataLoaded;
@@ -82,6 +87,13 @@ public class SubscriptionsFragmentDialog
                 });
 
         getMarketData();
+    }
+
+    @OnClick(R.id.removeAdsOneDay)
+    void onRemoveAdsOneDayClicked() {
+        Timber.d("onRemoveAdsOneDayClicked");
+        dismiss();
+        getBaseActivity().startRewardedVideoFlow();
     }
 
     @OnClick(R.id.refresh)
@@ -152,35 +164,11 @@ public class SubscriptionsFragmentDialog
                     String.valueOf(System.currentTimeMillis()));
             PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
             if (pendingIntent != null) {
-                startIntentSenderForResult(pendingIntent.getIntentSender(), 1001, new Intent(), 0, 0, 0, null);
+                startIntentSenderForResult(pendingIntent.getIntentSender(), REQUEST_CODE_SUBSCRIPTION, new Intent(), 0, 0, 0, null);
             }
         } catch (Exception e) {
             Timber.e(e, "error ");
             Snackbar.make(root, e.getMessage(), Snackbar.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Timber.d("called in fragment");
-        if (requestCode == REQUEST_CODE_SUBSCRIPTION) {
-            int responseCode = data.getIntExtra("RESPONSE_CODE", 0);
-            String purchaseData = data.getStringExtra("INAPP_PURCHASE_DATA");
-            String dataSignature = data.getStringExtra("INAPP_DATA_SIGNATURE");
-
-            if (resultCode == Activity.RESULT_OK) {
-                try {
-                    JSONObject jo = new JSONObject(purchaseData);
-                    String sku = jo.getString("productId");
-                    Timber.d("You have bought the %s", sku);
-                } catch (JSONException e) {
-                    Timber.e(e, "Failed to parse purchase data.");
-                }
-                //remove ads item from menu via updating ownedItems list
-                getBaseActivity().updateOwnedMarketItems();
-            }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 
@@ -261,5 +249,29 @@ public class SubscriptionsFragmentDialog
                 subscriber.onError(e);
             }
         });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Timber.d("called in fragment");
+        if (requestCode == REQUEST_CODE_SUBSCRIPTION) {
+            int responseCode = data.getIntExtra("RESPONSE_CODE", 0);
+            String purchaseData = data.getStringExtra("INAPP_PURCHASE_DATA");
+            String dataSignature = data.getStringExtra("INAPP_DATA_SIGNATURE");
+
+            if (resultCode == Activity.RESULT_OK) {
+                try {
+                    JSONObject jo = new JSONObject(purchaseData);
+                    String sku = jo.getString("productId");
+                    Timber.d("You have bought the %s", sku);
+                } catch (JSONException e) {
+                    Timber.e(e, "Failed to parse purchase data.");
+                }
+                //remove ads item from menu via updating ownedItems list
+                getBaseActivity().updateOwnedMarketItems();
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 }

@@ -75,7 +75,7 @@ public abstract class BaseListArticlesWithSearchFragment
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
             mSearchQuery = savedInstanceState.getString(EXTRA_SEARCH_QUERY);
-            mSavedQuery =  mSearchQuery;
+            mSavedQuery = mSearchQuery;
         }
     }
 
@@ -126,6 +126,10 @@ public abstract class BaseListArticlesWithSearchFragment
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                //fix crash by NPE
+                if (mSearchFAB == null) {
+                    return;
+                }
                 if (dy > 0 || dy < 0 && mSearchFAB.isShown()) {
                     mSearchFAB.hide();
                 }
@@ -133,6 +137,10 @@ public abstract class BaseListArticlesWithSearchFragment
 
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                //fix crash by NPE
+                if (mSearchFAB == null) {
+                    return;
+                }
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     mSearchFAB.show();
                 }
