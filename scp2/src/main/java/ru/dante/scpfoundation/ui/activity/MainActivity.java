@@ -5,9 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.view.MenuItem;
 
 import java.util.List;
 
@@ -18,6 +20,7 @@ import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.mvp.contract.MainMvp;
 import ru.dante.scpfoundation.ui.base.BaseDrawerActivity;
 import ru.dante.scpfoundation.ui.dialog.NewVersionDialogFragment;
+import ru.dante.scpfoundation.ui.dialog.TextSizeDialogFragment;
 import ru.dante.scpfoundation.ui.fragment.ArticleFragment;
 import ru.dante.scpfoundation.ui.fragment.FavoriteArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.Objects1ArticlesFragment;
@@ -327,5 +330,18 @@ public class MainActivity
     protected void onDestroy() {
         super.onDestroy();
         PreRate.clearDialogIfOpen();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.text_size:
+                BottomSheetDialogFragment fragmentDialogTextAppearance =
+                        TextSizeDialogFragment.newInstance(TextSizeDialogFragment.TextSizeType.UI);
+                fragmentDialogTextAppearance.show(getSupportFragmentManager(), TextSizeDialogFragment.TAG);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

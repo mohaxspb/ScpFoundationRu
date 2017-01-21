@@ -23,6 +23,7 @@ import ru.dante.scpfoundation.mvp.contract.ArticleScreenMvp;
 import ru.dante.scpfoundation.ui.adapter.ArticlesPagerAdapter;
 import ru.dante.scpfoundation.ui.base.BaseDrawerActivity;
 import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
+import ru.dante.scpfoundation.ui.dialog.TextSizeDialogFragment;
 import ru.dante.scpfoundation.ui.fragment.ArticleFragment;
 import ru.dante.scpfoundation.util.IntentUtils;
 import timber.log.Timber;
@@ -233,6 +234,11 @@ public class ArticleActivity
                 return true;
             case R.id.menuItemFavorite:
                 mPresenter.toggleFavorite(mUrls.get(mCurPosition));
+                return true;
+            case R.id.text_size:
+                BottomSheetDialogFragment fragmentDialogTextAppearance =
+                        TextSizeDialogFragment.newInstance(TextSizeDialogFragment.TextSizeType.ARTICLE);
+                fragmentDialogTextAppearance.show(getSupportFragmentManager(), TextSizeDialogFragment.TAG);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
