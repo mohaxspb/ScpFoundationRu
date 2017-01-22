@@ -335,6 +335,16 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
             ButterKnife.bind(this, itemView);
         }
 
+        @Override
+        void bind(Article article) {
+            super.bind(article);
+
+            Context context = itemView.getContext();
+            float uiTextScale = mMyPreferenceManager.getUiTextScale();
+            int textSizeLarge = context.getResources().getDimensionPixelSize(R.dimen.text_size_large);
+            title.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * textSizeLarge);
+        }
+
         protected void setTypesIcons(Article article) {
             switch (article.type) {
                 default:

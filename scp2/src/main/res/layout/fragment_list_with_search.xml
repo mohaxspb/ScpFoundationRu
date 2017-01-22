@@ -18,10 +18,19 @@
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scrollbarThumbVertical="?scrollbar"
             android:scrollbars="vertical"
             />
+        <!--android:scrollbarThumbVertical="?scrollbar"-->
     </android.support.v4.widget.SwipeRefreshLayout>
+
+    <xyz.danoz.recyclerviewfastscroller.vertical.VerticalRecyclerViewFastScroller
+        android:id="@+id/fastScroller"
+        android:layout_width="@dimen/defaultMarginSmall"
+        android:layout_height="match_parent"
+        android:layout_gravity="right"
+        app:rfs_barColor="@android:color/transparent"
+        app:rfs_handleColor="?newArticlesTextColor"
+        />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/searchFAB"

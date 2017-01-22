@@ -1,6 +1,5 @@
 package ru.dante.scpfoundation.ui.fragment;
 
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
@@ -163,6 +162,9 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
                 mPresenter.getDataFromApi(getAdapter().getItemCount());
             }
         });
+
+        // Connect the scroller to the recycler (to let the recycler scroll the scroller's handle)
+        mRecyclerView.addOnScrollListener(mVerticalRecyclerViewFastScroller.getOnScrollListener());
     }
 
     @Override
