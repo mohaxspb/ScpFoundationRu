@@ -41,7 +41,6 @@
                 android:layout_margin="@dimen/defaultMargin"
                 android:contentDescription="@string/app_name"
                 android:scaleType="centerCrop"
-                android:tint="@color/material_red_500"
                 tools:src="@drawable/ic_scp_icon_new"
                 />
         </FrameLayout>
@@ -92,10 +91,19 @@
                 android:src="?favoriteIcon"
                 />
 
-            <Space
+            <TextView
+                android:id="@+id/rating"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"/>
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:maxLines="1"
+                android:paddingBottom="@dimen/defaultMarginSmall"
+                android:paddingTop="@dimen/defaultMargin"
+                android:textColor="?newArticlesTextColor"
+                android:textSize="14sp"
+                tools:text="Рейтинг +42"
+                />
 
             <ImageView
                 android:id="@+id/read"
@@ -110,10 +118,19 @@
                 android:src="?readIcon"
                 />
 
-            <Space
+            <TextView
+                android:id="@+id/date"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"/>
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:maxLines="1"
+                android:paddingBottom="@dimen/defaultMarginSmall"
+                android:paddingTop="@dimen/defaultMargin"
+                android:textColor="?newArticlesTextColor"
+                android:textSize="14sp"
+                tools:text="25.12.12"
+                />
 
             <ImageView
                 android:id="@+id/offline"
@@ -127,6 +144,7 @@
                 android:paddingTop="@dimen/defaultMargin"
                 android:src="?iconOfflineAdd"
                 />
+
         </LinearLayout>
     </LinearLayout>
 </android.support.v7.widget.CardView>

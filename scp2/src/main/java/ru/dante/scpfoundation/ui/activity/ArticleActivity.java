@@ -10,6 +10,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.view.MenuItem;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -119,6 +121,11 @@ public class ArticleActivity
                 snackbar.dismiss();
                 BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
                 subsDF.show(getSupportFragmentManager(), subsDF.getTag());
+
+                Bundle bundle = new Bundle();
+                bundle.putString(FirebaseAnalytics.Param.LOCATION, Constants.Analitics.StartScreen.MAIN_TO_ARTICLE_SNACK_BAR);
+                bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Analitics.EventType.OPEN_SUBS_DIALOG);
+                mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
             });
             snackbar.setActionTextColor(ContextCompat.getColor(this, R.color.material_amber_500));
             snackbar.show();

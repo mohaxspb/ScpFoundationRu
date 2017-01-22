@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
+
 /**
  * Created by y.kuchanov on 22.12.16.
  * <p>
@@ -86,11 +88,18 @@ public class MyPreferenceManager {
 
     //design settings
     public boolean isDesignListNewEnabled() {
-        return mPreferences.getBoolean(Keys.DESIGN_LIST_NEW_IS_ON, true);
+        return !mPreferences.getString(Keys.DESIGN_LIST_NEW_IS_ON, SetttingsBottomSheetDialogFragment.ListItemType.MIDDLE).equals(SetttingsBottomSheetDialogFragment.ListItemType.MIN);
     }
 
-    public void setDesignListNewEnabled(boolean enabled) {
-        mPreferences.edit().putBoolean(Keys.DESIGN_LIST_NEW_IS_ON, enabled).apply();
+    public void setListDesignType(@SetttingsBottomSheetDialogFragment.ListItemType String type) {
+        mPreferences.edit().putString(Keys.DESIGN_LIST_NEW_IS_ON, type).apply();
+    }
+
+    @SetttingsBottomSheetDialogFragment.ListItemType
+    public String getListDesignType() {
+        @SetttingsBottomSheetDialogFragment.ListItemType
+        String type = mPreferences.getString(Keys.DESIGN_LIST_NEW_IS_ON, SetttingsBottomSheetDialogFragment.ListItemType.MIDDLE);
+        return type;
     }
 
     //new arts notifications

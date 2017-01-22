@@ -28,6 +28,7 @@ import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.reward.RewardItem;
 import com.google.android.gms.ads.reward.RewardedVideoAd;
 import com.google.android.gms.ads.reward.RewardedVideoAdListener;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.hannesdorfmann.mosby.mvp.MvpActivity;
 import com.yandex.metrica.YandexMetrica;
 
@@ -40,6 +41,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.dante.scpfoundation.BuildConfig;
+import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.manager.InAppBillingServiceConnectionObservable;
 import ru.dante.scpfoundation.manager.MyNotificationManager;
@@ -79,6 +81,8 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
     @Inject
     protected MyNotificationManager mMyNotificationManager;
 
+    protected FirebaseAnalytics mFirebaseAnalytics;
+
     //inapps and ads
     private IInAppBillingService mService;
     private List<Item> mOwnedMarketItems = new ArrayList<>();
@@ -115,6 +119,8 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
 
         //ads
         initAds();
+        //analitics
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
     }
@@ -156,6 +162,8 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
 
     @Override
     public void showRewardedVideo() {
+        //TODO think if we need other networks from
+        //https://firebase.google.com/docs/admob/android/mediation-networks
         if (mRewardedVideoAd.isLoaded()) {
             mRewardedVideoAd.show();
         }
@@ -185,6 +193,11 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
                     snackbar.dismiss();
                     BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
                     subsDF.show(getSupportFragmentManager(), subsDF.getTag());
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString(FirebaseAnalytics.Param.LOCATION, Constants.Analitics.StartScreen.SNACK_BAR);
+                    bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Analitics.EventType.OPEN_SUBS_DIALOG);
+                    mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
                 });
                 snackbar.setActionTextColor(ContextCompat.getColor(BaseActivity.this, R.color.material_amber_500));
                 snackbar.show();
@@ -266,8 +279,12 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
             if (BuildConfig.DEBUG) {
                 @SuppressLint("HardwareIds")
                 String androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-                String deviceId = SystemUtils.MD5(androidId).toUpperCase();
-                adRequest.addTestDevice(deviceId);
+                String deviceId;
+                deviceId = SystemUtils.MD5(androidId);
+                if (deviceId != null) {
+                    deviceId = deviceId.toUpperCase();
+                    adRequest.addTestDevice(deviceId);
+                }
 //                boolean isTestDevice = adRequest.isTestDevice(this);
 //                Timber.v("is Admob Test Device ? %s, %s", deviceId, isTestDevice);
             }
@@ -338,7 +355,9 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
         return true;
     }
 
-    //workaround from http://stackoverflow.com/a/30337653/3212712 to showInterstitial menu icons
+    /**
+     * workaround from http://stackoverflow.com/a/30337653/3212712 to show menu icons
+     */
     @Override
     protected boolean onPrepareOptionsPanel(View view, Menu menu) {
         if (menu != null) {
@@ -395,6 +414,11 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
                 Timber.d("subscribe pressed");
                 BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
                 subsDF.show(getSupportFragmentManager(), subsDF.getTag());
+
+                Bundle bundle = new Bundle();
+                bundle.putString(FirebaseAnalytics.Param.LOCATION, Constants.Analitics.StartScreen.MENU);
+                bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Analitics.EventType.OPEN_SUBS_DIALOG);
+                mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
                 return true;
             case R.id.night_mode_item:
                 mMyPreferenceManager.setIsNightMode(!mMyPreferenceManager.isNightMode());

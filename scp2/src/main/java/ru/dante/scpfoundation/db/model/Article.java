@@ -41,7 +41,14 @@ public class Article extends RealmObject {
     public static final int ORDER_NONE = -1;
 
     @Retention(RetentionPolicy.SOURCE)
-    @StringDef({ObjectType.NONE, ObjectType.NEUTRAL_OR_NOT_ADDED, ObjectType.SAFE, ObjectType.EUCLID, ObjectType.KETER, ObjectType.THAUMIEL})
+    @StringDef({
+            ObjectType.NONE,
+            ObjectType.NEUTRAL_OR_NOT_ADDED,
+            ObjectType.SAFE,
+            ObjectType.EUCLID,
+            ObjectType.KETER,
+            ObjectType.THAUMIEL
+    })
     public @interface ObjectType {
         String NONE = "NONE"; //default
         String NEUTRAL_OR_NOT_ADDED = "na"; //na.png — Не назначен или нейтрализован
@@ -97,10 +104,15 @@ public class Article extends RealmObject {
     public String authorUrl;
     /**
      * in format 01:06 01.07.2010
+     *
+     * or 17 Jan 2017 21:16
      */
     public String createdDate;
+
     /**
      * in format 01:06 01.07.2010
+     *
+     * or 17 Jan 2017 21:16
      */
     public String updatedDate;
 
@@ -164,6 +176,6 @@ public class Article extends RealmObject {
 
     @Override
     public String toString() {
-        return url+"\n";
+        return url + "\n";
     }
 }

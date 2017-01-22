@@ -22,6 +22,18 @@ public interface Constants {
         int NUM_OF_ARTICLES_ON_SEARCH_PAGE = 10;
     }
 
+    interface Analitics {
+        interface EventType {
+            String OPEN_SUBS_DIALOG = "OPEN_SUBS_DIALOG";
+        }
+
+        interface StartScreen {
+            String MAIN_TO_ARTICLE_SNACK_BAR = "MAIN_TO_ARTICLE_SNACK_BAR";
+            String SNACK_BAR = "SNACK_BAR";
+            String MENU = "MENU";
+        }
+    }
+
     interface Urls {
         String MAIN = "http://scpfoundation.ru/";
         String RATE = "http://scpfoundation.ru/top-rated-pages";
