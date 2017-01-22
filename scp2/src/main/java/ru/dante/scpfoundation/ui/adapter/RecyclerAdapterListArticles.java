@@ -23,7 +23,9 @@ import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
+import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
 import ru.dante.scpfoundation.util.AttributeGetter;
+import ru.dante.scpfoundation.util.DateUtils;
 
 /**
  * Created by Dante on 17.01.2016.
@@ -31,6 +33,10 @@ import ru.dante.scpfoundation.util.AttributeGetter;
  * for scp_ru
  */
 public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAdapterListArticles.HolderSimple> {
+
+    private static final int TYPE_MIN = 0;
+    private static final int TYPE_MIDDLE = 1;
+    private static final int TYPE_MAX = 2;
 
     @Inject
     MyPreferenceManager mMyPreferenceManager;
@@ -52,19 +58,35 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
 
     @Override
     public int getItemViewType(int position) {
-        return 0;
+        switch (mMyPreferenceManager.getListDesignType()) {
+            case SetttingsBottomSheetDialogFragment.ListItemType.MIN:
+                return TYPE_MIN;
+            default:
+            case SetttingsBottomSheetDialogFragment.ListItemType.MIDDLE:
+                return TYPE_MIDDLE;
+            case SetttingsBottomSheetDialogFragment.ListItemType.MAX:
+                return TYPE_MAX;
+        }
     }
 
     @Override
     public HolderSimple onCreateViewHolder(ViewGroup parent, int viewType) {
         HolderSimple viewHolder;
         View view;
-        if(mMyPreferenceManager.isDesignListNewEnabled()) {
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_article, parent, false);
-            viewHolder = new HolderWithImage(view);
-        } else {
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_article_ugly_old_style, parent, false);
-            viewHolder = new HolderSimple(view);
+        switch (viewType) {
+            case TYPE_MIN:
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_article_ugly_old_style, parent, false);
+                viewHolder = new HolderSimple(view);
+                break;
+            default:
+            case TYPE_MIDDLE:
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_article_medium, parent, false);
+                viewHolder = new HolderMedium(view);
+                break;
+            case TYPE_MAX:
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_article, parent, false);
+                viewHolder = new HolderWithImage(view);
+                break;
         }
 
         return viewHolder;
@@ -88,7 +110,7 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
         shouldShowPopupOnFavoriteClick = show;
     }
 
-    public void setShouldShowpreview(boolean show) {
+    public void setShouldShowPreview(boolean show) {
         shouldShowPreview = show;
     }
 
@@ -104,6 +126,9 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
         @BindView(R.id.preview)
         TextView preview;
 
+        @BindView(R.id.typeIcon)
+        ImageView typeIcon;
+
         HolderSimple(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
@@ -111,6 +136,7 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
 
         void bind(Article article) {
             Context context = itemView.getContext();
+
             float uiTextScale = mMyPreferenceManager.getUiTextScale();
             int textSizePrimary = context.getResources().getDimensionPixelSize(R.dimen.text_size_primary);
             int textSizeTertiary = context.getResources().getDimensionPixelSize(R.dimen.text_size_tertiary);
@@ -123,7 +149,7 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
 
             title.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * textSizePrimary);
             title.setText(Html.fromHtml(article.title));
-            //showAds preview only on siteSearch fragment
+            //showInterstitial preview only on siteSearch fragment
             if (shouldShowPreview) {
                 preview.setVisibility(View.VISIBLE);
                 preview.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * textSizeTertiary);
@@ -202,6 +228,32 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
                     }
                 }
             });
+
+            setTypesIcons(article);
+        }
+
+        protected void setTypesIcons(Article article) {
+            switch (article.type) {
+                default:
+                case Article.ObjectType.NONE:
+                    typeIcon.setImageResource(R.drawable.ic_none_small);
+                    break;
+                case Article.ObjectType.NEUTRAL_OR_NOT_ADDED:
+                    typeIcon.setImageResource(R.drawable.ic_not_add_small);
+                    break;
+                case Article.ObjectType.SAFE:
+                    typeIcon.setImageResource(R.drawable.ic_safe_small);
+                    break;
+                case Article.ObjectType.EUCLID:
+                    typeIcon.setImageResource(R.drawable.ic_euclid_small);
+                    break;
+                case Article.ObjectType.KETER:
+                    typeIcon.setImageResource(R.drawable.ic_keter_small);
+                    break;
+                case Article.ObjectType.THAUMIEL:
+                    typeIcon.setImageResource(R.drawable.ic_thaumiel_small);
+                    break;
+            }
         }
     }
 
@@ -210,6 +262,10 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
         ImageView typeIcon;
         @BindView(R.id.image)
         ImageView image;
+        @BindView(R.id.rating)
+        TextView rating;
+        @BindView(R.id.date)
+        TextView date;
 
         HolderWithImage(View itemView) {
             super(itemView);
@@ -224,19 +280,92 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
             //FIXME - NONONONONONO no viewPager - it's laggy!!!!!!!!!!!!!!!!!!!!!111oneone
             //set image
             if (article.imagesUrls != null && !article.imagesUrls.isEmpty()) {
+                Glide.clear(image);
                 Glide.with(context)
                         .load(article.imagesUrls.first().val)
+                        .placeholder(AttributeGetter.getDrawableId(context, R.attr.iconEmptyImage))
                         .error(AttributeGetter.getDrawableId(context, R.attr.iconEmptyImage))
+                        .animate(android.R.anim.fade_in)
                         .centerCrop()
-                        .crossFade()
                         .into(image);
             } else {
-//                Glide.with(context)
-//                        .load(R.drawable.ic_scp_file)
-//                        .centerCrop()
-//                        .crossFade()
-//                        .into(image);
-                image.setImageResource(R.drawable.ic_scp_file);
+                Glide.clear(image);
+                Glide.with(context)
+                        .load(R.drawable.ic_default_image_big)
+                        .placeholder(AttributeGetter.getDrawableId(context, R.attr.iconEmptyImage))
+                        .error(AttributeGetter.getDrawableId(context, R.attr.iconEmptyImage))
+                        .centerCrop()
+                        .animate(android.R.anim.fade_in)
+                        .into(image);
+            }
+
+            rating.setText(article.rating != 0 ? context.getString(R.string.rating, article.rating) : null);
+            date.setText(article.updatedDate != null ? DateUtils.getArticleDateShortFormat(article.updatedDate) : null);
+        }
+
+        protected void setTypesIcons(Article article) {
+            switch (article.type) {
+                default:
+                case Article.ObjectType.NONE:
+                    typeIcon.setImageResource(R.drawable.ic_none_big);
+                    break;
+                case Article.ObjectType.NEUTRAL_OR_NOT_ADDED:
+                    typeIcon.setImageResource(R.drawable.ic_not_add_big);
+                    break;
+                case Article.ObjectType.SAFE:
+                    typeIcon.setImageResource(R.drawable.ic_safe_big);
+                    break;
+                case Article.ObjectType.EUCLID:
+                    typeIcon.setImageResource(R.drawable.ic_euclid_big);
+                    break;
+                case Article.ObjectType.KETER:
+                    typeIcon.setImageResource(R.drawable.ic_keter_big);
+                    break;
+                case Article.ObjectType.THAUMIEL:
+                    typeIcon.setImageResource(R.drawable.ic_thaumiel_big);
+                    break;
+            }
+        }
+    }
+
+    class HolderMedium extends HolderWithImage {
+
+        HolderMedium(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
+
+        @Override
+        void bind(Article article) {
+            super.bind(article);
+
+            Context context = itemView.getContext();
+            float uiTextScale = mMyPreferenceManager.getUiTextScale();
+            int textSizeLarge = context.getResources().getDimensionPixelSize(R.dimen.text_size_large);
+            title.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * textSizeLarge);
+        }
+
+        protected void setTypesIcons(Article article) {
+            switch (article.type) {
+                default:
+                case Article.ObjectType.NONE:
+                    typeIcon.setImageResource(R.drawable.ic_none_medium);
+                    break;
+                case Article.ObjectType.NEUTRAL_OR_NOT_ADDED:
+                    typeIcon.setImageResource(R.drawable.ic_not_add_medium);
+                    break;
+                case Article.ObjectType.SAFE:
+                    typeIcon.setImageResource(R.drawable.ic_safe_medium);
+                    break;
+                case Article.ObjectType.EUCLID:
+                    typeIcon.setImageResource(R.drawable.ic_euclid_medium);
+                    break;
+                case Article.ObjectType.KETER:
+                    typeIcon.setImageResource(R.drawable.ic_keter_medium);
+                    break;
+                case Article.ObjectType.THAUMIEL:
+                    typeIcon.setImageResource(R.drawable.ic_thaumiel_medium);
+                    break;
             }
         }
     }

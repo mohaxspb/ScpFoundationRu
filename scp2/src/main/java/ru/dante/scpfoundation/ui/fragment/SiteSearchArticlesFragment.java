@@ -53,7 +53,7 @@ public class SiteSearchArticlesFragment
     @Override
     protected void initAdapter() {
         super.initAdapter();
-        mAdapter.setShouldShowpreview(true);
+        mAdapter.setShouldShowPreview(true);
     }
 
     @Override

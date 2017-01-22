@@ -88,6 +88,17 @@
     <string name="remove_ads">Отключить рекламу?</string>
     <string name="yes_bliad">Да!</string>
     <string name="app_info">О приложении</string>
+    <string name="remove_ads_one_day">Отключить рекламу на день бесплатно</string>
+    <string name="ads_reward_gained">Ура! Никакой рекламы на 24 часа!</string>
+    <string name="wait">Подождите…</string>
+    <string name="dialog_download">Загрузка</string>
+    <string name="ads_reward_error_loading">Не удалось загрузить. Пробую ещё раз…</string>
+    <string name="ads_reward_description_title">Инструкция</string>
+    <string name="ads_reward_description_content">Мы покажем вам видео и, после просмотра, отключим рекламу на сутки. Вы можете отключать её хоть каждый день!</string>
+    <string name="ads_reward_ok">Всё понятно!</string>
+    <string name="settings_design_list_type">Дизайн статьи в списке</string>
+    <string name="rating">Рейтинг %d</string>
+    <string name="yes_sir">Так точно!</string>
 
     <string-array name="download_types">
         <item>Объекты I</item>

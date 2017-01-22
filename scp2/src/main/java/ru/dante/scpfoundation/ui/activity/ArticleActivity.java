@@ -10,6 +10,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.view.MenuItem;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +25,7 @@ import ru.dante.scpfoundation.mvp.contract.ArticleScreenMvp;
 import ru.dante.scpfoundation.ui.adapter.ArticlesPagerAdapter;
 import ru.dante.scpfoundation.ui.base.BaseDrawerActivity;
 import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
+import ru.dante.scpfoundation.ui.dialog.TextSizeDialogFragment;
 import ru.dante.scpfoundation.ui.fragment.ArticleFragment;
 import ru.dante.scpfoundation.util.IntentUtils;
 import timber.log.Timber;
@@ -48,7 +51,7 @@ public class ArticleActivity
             AdsActions adsActions = (AdsActions) context;
             if (adsActions.isTimeToShowAds()) {
                 if (adsActions.isAdsLoaded()) {
-                    adsActions.showAds(new MyAdListener() {
+                    adsActions.showInterstitial(new MyAdListener() {
                         @Override
                         public void onAdClosed() {
                             super.onAdClosed();
@@ -64,7 +67,7 @@ public class ArticleActivity
                     Timber.d("Ads not loaded yet");
                 }
             } else {
-                Timber.d("it's not time to showAds ads");
+                Timber.d("it's not time to showInterstitial ads");
             }
         } else {
             Timber.wtf("context IS NOT instanceof AdsActions");
@@ -102,7 +105,7 @@ public class ArticleActivity
                 mCurPosition = position;
                 if (isTimeToShowAds()) {
                     if (isAdsLoaded()) {
-                        showAds();
+                        showInterstitial();
                     } else {
                         requestNewInterstitial();
                     }
@@ -118,6 +121,11 @@ public class ArticleActivity
                 snackbar.dismiss();
                 BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
                 subsDF.show(getSupportFragmentManager(), subsDF.getTag());
+
+                Bundle bundle = new Bundle();
+                bundle.putString(FirebaseAnalytics.Param.LOCATION, Constants.Analitics.StartScreen.MAIN_TO_ARTICLE_SNACK_BAR);
+                bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Analitics.EventType.OPEN_SUBS_DIALOG);
+                mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
             });
             snackbar.setActionTextColor(ContextCompat.getColor(this, R.color.material_amber_500));
             snackbar.show();
@@ -233,6 +241,11 @@ public class ArticleActivity
                 return true;
             case R.id.menuItemFavorite:
                 mPresenter.toggleFavorite(mUrls.get(mCurPosition));
+                return true;
+            case R.id.text_size:
+                BottomSheetDialogFragment fragmentDialogTextAppearance =
+                        TextSizeDialogFragment.newInstance(TextSizeDialogFragment.TextSizeType.ARTICLE);
+                fragmentDialogTextAppearance.show(getSupportFragmentManager(), TextSizeDialogFragment.TAG);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

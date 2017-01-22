@@ -1,6 +1,5 @@
 package ru.dante.scpfoundation.ui.base;
 
-import android.app.ProgressDialog;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;

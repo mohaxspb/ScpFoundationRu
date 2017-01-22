@@ -1,7 +1,5 @@
 package ru.dante.scpfoundation.mvp.base;
 
-import com.google.android.gms.ads.AdListener;
-
 import ru.dante.scpfoundation.monetization.util.MyAdListener;
 
 /**
@@ -13,9 +11,9 @@ public interface AdsActions {
 
     void initAds();
 
-    void showAds();
+    void showInterstitial();
 
-    void showAds(MyAdListener adListener);
+    void showInterstitial(MyAdListener adListener);
 
     boolean isTimeToShowAds();
 
@@ -24,4 +22,10 @@ public interface AdsActions {
     void requestNewInterstitial();
 
     void updateOwnedMarketItems();
+
+    void loadRewardedVideoAd();
+
+    void showRewardedVideo();
+
+    void startRewardedVideoFlow();
 }

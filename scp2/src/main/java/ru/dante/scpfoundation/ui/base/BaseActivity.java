@@ -1,5 +1,6 @@
 package ru.dante.scpfoundation.ui.base;
 
+import android.annotation.SuppressLint;
 import android.app.DialogFragment;
 import android.content.ComponentName;
 import android.content.Context;
@@ -9,6 +10,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.Snackbar;
@@ -18,10 +20,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.vending.billing.IInAppBillingService;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.reward.RewardItem;
+import com.google.android.gms.ads.reward.RewardedVideoAd;
+import com.google.android.gms.ads.reward.RewardedVideoAdListener;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.hannesdorfmann.mosby.mvp.MvpActivity;
 import com.yandex.metrica.YandexMetrica;
 
@@ -33,6 +40,8 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import ru.dante.scpfoundation.BuildConfig;
+import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.manager.InAppBillingServiceConnectionObservable;
 import ru.dante.scpfoundation.manager.MyNotificationManager;
@@ -45,6 +54,7 @@ import ru.dante.scpfoundation.ui.dialog.NewVersionDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
 import ru.dante.scpfoundation.ui.dialog.TextSizeDialogFragment;
+import ru.dante.scpfoundation.util.SystemUtils;
 import timber.log.Timber;
 
 /**
@@ -71,10 +81,14 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
     @Inject
     protected MyNotificationManager mMyNotificationManager;
 
+    protected FirebaseAnalytics mFirebaseAnalytics;
+
     //inapps and ads
     private IInAppBillingService mService;
     private List<Item> mOwnedMarketItems = new ArrayList<>();
     private InterstitialAd mInterstitialAd;
+    private RewardedVideoAd mRewardedVideoAd;
+    private MaterialDialog mDialogRewardProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,8 +119,54 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
 
         //ads
         initAds();
+        //analitics
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void startRewardedVideoFlow() {
+        if (mMyPreferenceManager.isRewardedDescriptionShown()) {
+            //load ads
+            mDialogRewardProgress = new MaterialDialog.Builder(this)
+                    .progress(true, 0)
+                    .title(R.string.dialog_download)
+                    .content(R.string.wait)
+                    .build();
+            mDialogRewardProgress.show();
+            loadRewardedVideoAd();
+        } else {
+            new MaterialDialog.Builder(this)
+                    .title(R.string.ads_reward_description_title)
+                    .content(R.string.ads_reward_description_content)
+                    .positiveText(R.string.ads_reward_ok)
+                    .onPositive((dialog, which) -> {
+                        mMyPreferenceManager.setRewardedDescriptionIsNotShown(true);
+                        startRewardedVideoFlow();
+                    })
+                    .show();
+        }
+    }
+
+    @Override
+    public void loadRewardedVideoAd() {
+        if (!mRewardedVideoAd.isLoaded()) {
+            AdRequest adRequest = new AdRequest.Builder()
+                    //do not use test device as test ads turns on in networks console
+//                    .addTestDevice("A22E60ED57ABD5DD2947708F10EB5342")
+                    .build();
+            mRewardedVideoAd.loadAd(BuildConfig.AD_UNIT_ID_REWARDED, adRequest);
+        }
+    }
+
+    @Override
+    public void showRewardedVideo() {
+        //TODO think if we need other networks from
+        //https://firebase.google.com/docs/admob/android/mediation-networks
+        if (mRewardedVideoAd.isLoaded()) {
+            mRewardedVideoAd.show();
+        }
     }
 
     @Override
@@ -123,7 +183,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
     }
 
     @Override
-    public void showAds() {
+    public void showInterstitial() {
         mInterstitialAd.setAdListener(new MyAdListener() {
             @Override
             public void onAdClosed() {
@@ -133,6 +193,11 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
                     snackbar.dismiss();
                     BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
                     subsDF.show(getSupportFragmentManager(), subsDF.getTag());
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString(FirebaseAnalytics.Param.LOCATION, Constants.Analitics.StartScreen.SNACK_BAR);
+                    bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Analitics.EventType.OPEN_SUBS_DIALOG);
+                    mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
                 });
                 snackbar.setActionTextColor(ContextCompat.getColor(BaseActivity.this, R.color.material_amber_500));
                 snackbar.show();
@@ -142,7 +207,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
     }
 
     @Override
-    public void showAds(MyAdListener adListener) {
+    public void showInterstitial(MyAdListener adListener) {
         mInterstitialAd.setAdListener(adListener);
         mInterstitialAd.show();
     }
@@ -153,6 +218,53 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
         mInterstitialAd = new InterstitialAd(this);
         mInterstitialAd.setAdUnitId(getString(R.string.ad_unit_id_interstitial));
         mInterstitialAd.setAdListener(new MyAdListener());
+
+        mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
+        mRewardedVideoAd.setRewardedVideoAdListener(new RewardedVideoAdListener() {
+            @Override
+            public void onRewardedVideoAdLoaded() {
+                Timber.d("onRewardedVideoAdLoaded");
+                mDialogRewardProgress.dismiss();
+                showRewardedVideo();
+            }
+
+            @Override
+            public void onRewardedVideoAdOpened() {
+
+            }
+
+            @Override
+            public void onRewardedVideoStarted() {
+
+            }
+
+            @Override
+            public void onRewardedVideoAdClosed() {
+
+            }
+
+            @Override
+            public void onRewarded(RewardItem rewardItem) {
+                Timber.d("onRewarded type: %s, amount: %s", rewardItem.getType(), rewardItem.getAmount());
+
+                mMyPreferenceManager.applyRewardFromAds();
+
+                Snackbar.make(mRoot, R.string.ads_reward_gained, Snackbar.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onRewardedVideoAdLeftApplication() {
+
+            }
+
+            @Override
+            public void onRewardedVideoAdFailedToLoad(int i) {
+                Timber.e("onRewardedVideoAdFailedToLoad: %s", i);
+                loadRewardedVideoAd();
+
+                Snackbar.make(mRoot, R.string.ads_reward_error_loading, Snackbar.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -161,10 +273,23 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
         if (mInterstitialAd.isLoading()) {
             Timber.d("loading already in progress");
         } else {
-            AdRequest adRequest = new AdRequest.Builder()
-                    .addTestDevice("A22E60ED57ABD5DD2947708F10EB5342")
-                    .build();
-            mInterstitialAd.loadAd(adRequest);
+            AdRequest.Builder adRequest = new AdRequest.Builder();
+
+            if (BuildConfig.DEBUG) {
+                @SuppressLint("HardwareIds")
+                String androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+                String deviceId;
+                deviceId = SystemUtils.MD5(androidId);
+                if (deviceId != null) {
+                    deviceId = deviceId.toUpperCase();
+                    adRequest.addTestDevice(deviceId);
+                }
+                adRequest.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
+//                boolean isTestDevice = adRequest.isTestDevice(this);
+//                Timber.v("is Admob Test Device ? %s, %s", deviceId, isTestDevice);
+            }
+
+            mInterstitialAd.loadAd(adRequest.build());
         }
     }
 
@@ -196,11 +321,15 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
     @Override
     public void updateOwnedMarketItems() {
         SubscriptionsFragmentDialog.getOwnedInappsObserveble(this, mService)
-                .subscribe(items -> {
-                    Timber.d("market items: %s", items);
-                    mOwnedMarketItems = items;
-                    supportInvalidateOptionsMenu();
-                });
+                .subscribe(
+                        items -> {
+                            Timber.d("market items: %s", items);
+                            mOwnedMarketItems = items;
+                            supportInvalidateOptionsMenu();
+                        },
+                        error -> {
+                            Timber.e(error, "errror while getting owned items");
+                        });
     }
 
     /**
@@ -226,7 +355,9 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
         return true;
     }
 
-    //workaround from http://stackoverflow.com/a/30337653/3212712 to showAds menu icons
+    /**
+     * workaround from http://stackoverflow.com/a/30337653/3212712 to show menu icons
+     */
     @Override
     protected boolean onPrepareOptionsPanel(View view, Menu menu) {
         if (menu != null) {
@@ -283,13 +414,18 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
                 Timber.d("subscribe pressed");
                 BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
                 subsDF.show(getSupportFragmentManager(), subsDF.getTag());
+
+                Bundle bundle = new Bundle();
+                bundle.putString(FirebaseAnalytics.Param.LOCATION, Constants.Analitics.StartScreen.MENU);
+                bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Analitics.EventType.OPEN_SUBS_DIALOG);
+                mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
                 return true;
             case R.id.night_mode_item:
                 mMyPreferenceManager.setIsNightMode(!mMyPreferenceManager.isNightMode());
                 return true;
             case R.id.text_size:
-                TextSizeDialogFragment fragmentDialogTextAppearance = TextSizeDialogFragment.newInstance();
-                fragmentDialogTextAppearance.show(getFragmentManager(), TextSizeDialogFragment.TAG);
+                BottomSheetDialogFragment fragmentDialogTextAppearance = TextSizeDialogFragment.newInstance(TextSizeDialogFragment.TextSizeType.ALL);
+                fragmentDialogTextAppearance.show(getSupportFragmentManager(), TextSizeDialogFragment.TAG);
                 return true;
             case R.id.info:
                 DialogFragment dialogFragment = NewVersionDialogFragment.newInstance(getString(R.string.app_info));
@@ -309,11 +445,14 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
         if (isTimeToShowAds() && !isAdsLoaded()) {
             requestNewInterstitial();
         }
+
+        mRewardedVideoAd.resume(this);
     }
 
     @Override
     public void onPause() {
         YandexMetrica.onPauseActivity(this);
+        mRewardedVideoAd.pause(this);
         super.onPause();
     }
 
@@ -332,6 +471,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
     @Override
     protected void onDestroy() {
         PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
+        mRewardedVideoAd.destroy(this);
         super.onDestroy();
     }
 }

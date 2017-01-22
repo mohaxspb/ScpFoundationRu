@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="SCP.Theme.Light" parent="Base.Theme.Light">
-        <item name="android:windowTranslucentStatus">true</item>
-        <item name="android:fitsSystemWindows">true</item>
-        <item name="android:windowBackground">@android:color/black</item>
+        <!--<item name="android:windowTranslucentStatus">true</item>-->
+        <!--<item name="android:fitsSystemWindows">true</item>-->
+        <!--<item name="android:windowBackground">@android:color/black</item>-->
     </style>
 
     <style name="SCP.Theme.Dark" parent="Base.Theme.Dark">
-        <item name="android:windowTranslucentStatus">true</item>
-        <item name="android:fitsSystemWindows">true</item>
-        <item name="android:windowBackground">@android:color/black</item>
+        <!--<item name="android:windowTranslucentStatus">true</item>-->
+        <!--<item name="android:fitsSystemWindows">true</item>-->
+        <!--<item name="android:windowBackground">@android:color/black</item>-->
     </style>
 </resources>

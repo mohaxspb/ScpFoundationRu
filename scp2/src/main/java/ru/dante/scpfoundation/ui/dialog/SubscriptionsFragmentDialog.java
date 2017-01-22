@@ -5,7 +5,6 @@ import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.design.widget.Snackbar;
@@ -24,12 +23,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.OnClick;
 import ru.dante.scpfoundation.BuildConfig;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.manager.InAppBillingServiceConnectionObservable;
+import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.monetization.model.Item;
 import ru.dante.scpfoundation.monetization.model.Subscription;
 import ru.dante.scpfoundation.ui.adapter.RecyclerAdapterSubscriptions;
@@ -37,7 +39,6 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
-
 
 public class SubscriptionsFragmentDialog
         extends BaseBottomSheetDialogFragment
@@ -53,6 +54,9 @@ public class SubscriptionsFragmentDialog
     View infoContainer;
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
+
+    @Inject
+    MyPreferenceManager mMyPreferenceManager;
 
     private IInAppBillingService mInAppBillingService;
     private boolean isDataLoaded;
@@ -83,6 +87,13 @@ public class SubscriptionsFragmentDialog
                 });
 
         getMarketData();
+    }
+
+    @OnClick(R.id.removeAdsOneDay)
+    void onRemoveAdsOneDayClicked() {
+        Timber.d("onRemoveAdsOneDayClicked");
+        dismiss();
+        getBaseActivity().startRewardedVideoFlow();
     }
 
     @OnClick(R.id.refresh)
@@ -153,34 +164,11 @@ public class SubscriptionsFragmentDialog
                     String.valueOf(System.currentTimeMillis()));
             PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
             if (pendingIntent != null) {
-                startIntentSenderForResult(pendingIntent.getIntentSender(), 1001, new Intent(), 0, 0, 0, null);
+                startIntentSenderForResult(pendingIntent.getIntentSender(), REQUEST_CODE_SUBSCRIPTION, new Intent(), 0, 0, 0, null);
             }
-        } catch (RemoteException | IntentSender.SendIntentException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Timber.d("called in fragment");
-        if (requestCode == REQUEST_CODE_SUBSCRIPTION) {
-            int responseCode = data.getIntExtra("RESPONSE_CODE", 0);
-            String purchaseData = data.getStringExtra("INAPP_PURCHASE_DATA");
-            String dataSignature = data.getStringExtra("INAPP_DATA_SIGNATURE");
-
-            if (resultCode == Activity.RESULT_OK) {
-                try {
-                    JSONObject jo = new JSONObject(purchaseData);
-                    String sku = jo.getString("productId");
-                    Timber.d("You have bought the %s", sku);
-                } catch (JSONException e) {
-                    Timber.e(e, "Failed to parse purchase data.");
-                }
-                //remove ads item from menu via updating ownedItems list
-                getBaseActivity().updateOwnedMarketItems();
-            }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
+        } catch (Exception e) {
+            Timber.e(e, "error ");
+            Snackbar.make(root, e.getMessage(), Snackbar.LENGTH_SHORT).show();
         }
     }
 
@@ -209,8 +197,9 @@ public class SubscriptionsFragmentDialog
                         subscriber.onNext(ownedItemsList);
                         subscriber.onCompleted();
                     }
+                } else {
+                    subscriber.onError(new IllegalStateException("ownedItemsBundle.getInt(\"RESPONSE_CODE\") is not 0"));
                 }
-                subscriber.onError(new IllegalStateException("ownedItemsBundle.getInt(\"RESPONSE_CODE\") is not 0"));
             } catch (RemoteException e) {
                 Timber.e(e);
                 subscriber.onError(e);
@@ -221,7 +210,7 @@ public class SubscriptionsFragmentDialog
     public static Observable<List<Subscription>> getInappsListToBuyObserveble(Context context, IInAppBillingService mInAppBillingService) {
         return Observable.create(subscriber -> {
             try {
-                //get all subs deatailed info
+                //get all subs detailed info
                 List<Subscription> allSubscriptions = new ArrayList<>();
                 List<String> skuList = new ArrayList<>();
                 //get it from build config
@@ -260,5 +249,29 @@ public class SubscriptionsFragmentDialog
                 subscriber.onError(e);
             }
         });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Timber.d("called in fragment");
+        if (requestCode == REQUEST_CODE_SUBSCRIPTION) {
+            int responseCode = data.getIntExtra("RESPONSE_CODE", 0);
+            String purchaseData = data.getStringExtra("INAPP_PURCHASE_DATA");
+            String dataSignature = data.getStringExtra("INAPP_DATA_SIGNATURE");
+
+            if (resultCode == Activity.RESULT_OK) {
+                try {
+                    JSONObject jo = new JSONObject(purchaseData);
+                    String sku = jo.getString("productId");
+                    Timber.d("You have bought the %s", sku);
+                } catch (JSONException e) {
+                    Timber.e(e, "Failed to parse purchase data.");
+                }
+                //remove ads item from menu via updating ownedItems list
+                getBaseActivity().updateOwnedMarketItems();
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 }

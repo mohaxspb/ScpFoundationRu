@@ -1,33 +1,38 @@
 package ru.dante.scpfoundation.ui.dialog;
 
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.StringDef;
+import android.support.design.widget.BottomSheetDialogFragment;
 import android.view.View;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import timber.log.Timber;
 
 
-public class TextSizeDialogFragment extends DialogFragment {
+public class TextSizeDialogFragment
+        extends BaseBottomSheetDialogFragment {
     public static final String TAG = TextSizeDialogFragment.class.getSimpleName();
+
+    private static final String EXTRA_TEXT_SIZE_TYPE = "EXTRA_TEXT_SIZE_TYPE";
 
     @Inject
     MyPreferenceManager mMyPreferenceManager;
 
+    @BindView(R.id.title)
+    TextView title;
     @BindView(R.id.seekbarUi)
     SeekBar seekbarUI;
     @BindView(R.id.seekbarArticle)
@@ -37,39 +42,51 @@ public class TextSizeDialogFragment extends DialogFragment {
     @BindView(R.id.textSizeArticle)
     TextView tvArticle;
 
-    protected Unbinder mUnbinder;
+    @TextSizeType
+    private String mType;
 
-    public static TextSizeDialogFragment newInstance() {
-        return new TextSizeDialogFragment();
+    public static BottomSheetDialogFragment newInstance(@TextSizeType String type) {
+        BottomSheetDialogFragment fragment = new TextSizeDialogFragment();
+        Bundle args = new Bundle();
+        args.putString(EXTRA_TEXT_SIZE_TYPE, type);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
-    public void onCreate(Bundle savedState) {
-        super.onCreate(savedState);
-        Timber.d("onCreate");
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        @TextSizeType
+        String value = getArguments().getString(EXTRA_TEXT_SIZE_TYPE);
+        mType = value;
+    }
+
+    @Override
+    protected void callInjection() {
         MyApplication.getAppComponent().inject(this);
     }
 
-    @NonNull
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Timber.d("onCreateDialog");
-        final MaterialDialog dialogTextSize;
+    public void setupDialog(Dialog dialog, int style) {
+        super.setupDialog(dialog, style);
 
-        MaterialDialog.Builder dialogTextSizeBuilder = new MaterialDialog.Builder(getActivity());
-        dialogTextSizeBuilder
-                .title(R.string.text_size_dialog_title)
-                .positiveText(R.string.close)
-                .customView(R.layout.dialog_text_size, true);
-
-        dialogTextSize = dialogTextSizeBuilder.build();
-
-        View customView = dialogTextSize.getCustomView();
-
-        if (customView == null) {
-            return dialogTextSize;
+        switch (mType) {
+            case TextSizeType.ARTICLE:
+                seekbarUI.setVisibility(View.GONE);
+                tvUi.setVisibility(View.GONE);
+                break;
+            case TextSizeType.UI:
+                seekbarArticle.setVisibility(View.GONE);
+                tvArticle.setVisibility(View.GONE);
+                break;
+            case TextSizeType.ALL:
+                //do nothing?
+                break;
+            default:
+                Timber.wtf("unexpected type!");
+                break;
         }
-        mUnbinder = ButterKnife.bind(this, customView);
 
         seekbarUI.setMax(150);
         float scaleUI = mMyPreferenceManager.getUiTextScale();
@@ -118,13 +135,18 @@ public class TextSizeDialogFragment extends DialogFragment {
                 mMyPreferenceManager.setArticleTextScale(size);
             }
         });
-        return dialogTextSize;
     }
 
     @Override
-    public void onDestroyView() {
-        Timber.d("onDestroyView");
-        super.onDestroyView();
-        mUnbinder.unbind();
+    protected int getLayoutResId() {
+        return R.layout.dialog_text_size;
+    }
+
+    @Retention(RetentionPolicy.SOURCE)
+    @StringDef({TextSizeType.UI, TextSizeType.ARTICLE, TextSizeType.ALL})
+    public @interface TextSizeType {
+        String UI = "UI";
+        String ARTICLE = "ARTICLE";
+        String ALL = "ALL";
     }
 }
