@@ -63,7 +63,7 @@ public class NewVersionDialogFragment extends DialogFragment {
         dialogTextSizeBuilder
                 .content(Html.fromHtml(newVersionFeatures, null, new MyHtmlTagHandler()))
                 .title(title)
-                .positiveText(R.string.hurray);
+                .positiveText(R.string.yes_sir);
 
         dialogTextSize = dialogTextSizeBuilder.build();
 

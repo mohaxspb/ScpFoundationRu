@@ -98,6 +98,7 @@
     <string name="ads_reward_ok">Всё понятно!</string>
     <string name="settings_design_list_type">Дизайн статьи в списке</string>
     <string name="rating">Рейтинг %d</string>
+    <string name="yes_sir">Так точно!</string>
 
     <string-array name="download_types">
         <item>Объекты I</item>
