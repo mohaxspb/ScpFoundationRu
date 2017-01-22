@@ -273,8 +273,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
         if (mInterstitialAd.isLoading()) {
             Timber.d("loading already in progress");
         } else {
-            AdRequest.Builder adRequest = new AdRequest.Builder()
-                    .addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
+            AdRequest.Builder adRequest = new AdRequest.Builder();
 
             if (BuildConfig.DEBUG) {
                 @SuppressLint("HardwareIds")
@@ -285,6 +284,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
                     deviceId = deviceId.toUpperCase();
                     adRequest.addTestDevice(deviceId);
                 }
+                adRequest.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
 //                boolean isTestDevice = adRequest.isTestDevice(this);
 //                Timber.v("is Admob Test Device ? %s, %s", deviceId, isTestDevice);
             }
