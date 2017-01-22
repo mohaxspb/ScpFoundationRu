@@ -106,6 +106,7 @@ public class Article extends RealmObject {
      * in format 01:06 01.07.2010
      */
     public String createdDate;
+
     /**
      * in format 01:06 01.07.2010
      */

@@ -25,6 +25,7 @@ import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
 import ru.dante.scpfoundation.util.AttributeGetter;
+import ru.dante.scpfoundation.util.DateUtils;
 
 /**
  * Created by Dante on 17.01.2016.
@@ -254,6 +255,7 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
                         .centerCrop()
                         .into(image);
             } else {
+                Glide.clear(image);
                 Glide.with(context)
                         .load(R.drawable.ic_default_image_big)
                         .placeholder(AttributeGetter.getDrawableId(context, R.attr.iconEmptyImage))
@@ -288,6 +290,8 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
     }
 
     class HolderMiddle extends HolderWithImage {
+        @BindView(R.id.rating)
+        TextView rating;
         @BindView(R.id.date)
         TextView date;
 
@@ -300,26 +304,8 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
             super.bind(article);
             Context context = itemView.getContext();
 
-            //set image
-            if (article.imagesUrls != null && !article.imagesUrls.isEmpty()) {
-                Glide.clear(image);
-                Glide.with(context)
-                        .load(article.imagesUrls.first().val)
-                        .placeholder(AttributeGetter.getDrawableId(context, R.attr.iconEmptyImage))
-                        .error(AttributeGetter.getDrawableId(context, R.attr.iconEmptyImage))
-                        .animate(android.R.anim.fade_in)
-                        .centerCrop()
-                        .into(image);
-            } else {
-                Glide.clear(image);
-                Glide.with(context)
-                        .load(R.drawable.ic_default_image_big)
-                        .placeholder(AttributeGetter.getDrawableId(context, R.attr.iconEmptyImage))
-                        .error(AttributeGetter.getDrawableId(context, R.attr.iconEmptyImage))
-                        .centerCrop()
-                        .animate(android.R.anim.fade_in)
-                        .into(image);
-            }
+            rating.setText(context.getString(R.string.rating, article.rating));
+            date.setText(DateUtils.getArticleDateShortFormat(article.updatedDate));
         }
     }
 
