@@ -17,6 +17,10 @@ public class RecyclerAdapterListArticlesWithSearch extends RecyclerAdapterListAr
     private List<Article> mSortedData = new ArrayList<>();
     private String mSearchQuery = "";
 
+    public List<Article> getSortedData() {
+        return mSortedData;
+    }
+
     public void sortArticles(String searchQuery) {
         mSearchQuery = searchQuery;
         if (mData == null) {

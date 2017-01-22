@@ -193,6 +193,8 @@ dependencies {
     compile 'com.yandex.android:mobmetricalib:2.60'
     //ratingBar
     compile 'com.github.techery:properratingbar:0.0.5'
+    //recyclerView fast scroller
+    compile 'xyz.danoz:recyclerviewfastscroller:0.1.3'
 }
 
 apply plugin: 'com.google.gms.google-services'

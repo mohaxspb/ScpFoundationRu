@@ -136,6 +136,7 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
 
         void bind(Article article) {
             Context context = itemView.getContext();
+
             float uiTextScale = mMyPreferenceManager.getUiTextScale();
             int textSizePrimary = context.getResources().getDimensionPixelSize(R.dimen.text_size_primary);
             int textSizeTertiary = context.getResources().getDimensionPixelSize(R.dimen.text_size_tertiary);
@@ -298,10 +299,8 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
                         .into(image);
             }
 
-            rating.setText(context.getString(R.string.rating, article.rating));
-            if (article.updatedDate != null) {
-                date.setText(DateUtils.getArticleDateShortFormat(article.updatedDate));
-            }
+            rating.setText(article.rating != 0 ? context.getString(R.string.rating, article.rating) : null);
+            date.setText(article.updatedDate != null ? DateUtils.getArticleDateShortFormat(article.updatedDate) : null);
         }
 
         protected void setTypesIcons(Article article) {
@@ -334,6 +333,16 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
         HolderMedium(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+        }
+
+        @Override
+        void bind(Article article) {
+            super.bind(article);
+
+            Context context = itemView.getContext();
+            float uiTextScale = mMyPreferenceManager.getUiTextScale();
+            int textSizeLarge = context.getResources().getDimensionPixelSize(R.dimen.text_size_large);
+            title.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * textSizeLarge);
         }
 
         protected void setTypesIcons(Article article) {
