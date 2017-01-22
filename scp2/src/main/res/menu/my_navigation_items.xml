@@ -13,6 +13,7 @@
             android:id="@+id/news"
             android:checked="true"
             android:title="@string/drawer_item_2"
+            android:icon="@drawable/ic_drawer_news"
             />
         <item
             android:id="@+id/mostRatedArticles"
