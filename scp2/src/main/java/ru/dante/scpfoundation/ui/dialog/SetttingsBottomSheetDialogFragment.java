@@ -1,8 +1,11 @@
 package ru.dante.scpfoundation.ui.dialog;
 
 import android.app.Dialog;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.StringDef;
 import android.support.design.widget.BottomSheetDialogFragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.SwitchCompat;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -18,6 +21,7 @@ import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.manager.MyNotificationManager;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
+import ru.dante.scpfoundation.util.AttributeGetter;
 import timber.log.Timber;
 
 /**
@@ -80,8 +84,15 @@ public class SetttingsBottomSheetDialogFragment
         String[] types = new String[]{ListItemType.MIN, ListItemType.MIDDLE, ListItemType.MAX};
 
         ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, types);
+                new ArrayAdapter<>(getActivity(), R.layout.design_list_spinner_item, types);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        Drawable.ConstantState spinnerDrawableConstantState = listItemSpinner.getBackground().getConstantState();
+        if (spinnerDrawableConstantState != null) {
+            Drawable spinnerDrawable = spinnerDrawableConstantState.newDrawable();
+            spinnerDrawable.setColorFilter(AttributeGetter.getColor(getActivity(), R.attr.newArticlesTextColor), PorterDuff.Mode.SRC_ATOP);
+            listItemSpinner.setBackground(spinnerDrawable);
+        }
 
         listItemSpinner.setAdapter(adapter);
         listItemSpinner.setSelection(0);

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v4.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -22,39 +23,50 @@
             android:textStyle="bold"
             />
 
-        <TextView
+        <LinearLayout
             android:id="@+id/listItemStyle"
-            android:background="?selectableItemBackground"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/settings_design_list_type"
-            />
+            android:orientation="horizontal"
+            android:background="?selectableItemBackground"
+            android:padding="@dimen/defaultMargin">
 
-        <Spinner
-            android:id="@+id/listItemSpinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/settings_design_list_type"
+                />
+
+            <Spinner
+                android:id="@+id/listItemSpinner"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:paddingLeft="@dimen/defaultMarginSmall"
+                tools:ignore="RtlHardcoded,RtlSymmetry"/>
+        </LinearLayout>
+
 
         <!--<LinearLayout-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:orientation="horizontal"-->
-            <!--android:padding="@dimen/defaultMargin"-->
-            <!--&gt;-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:orientation="horizontal"-->
+        <!--android:padding="@dimen/defaultMargin"-->
+        <!--&gt;-->
 
-            <!--<TextView-->
-                <!--android:layout_width="0dp"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_weight="1"-->
-                <!--android:text="@string/settings_design_list_type"-->
-                <!--/>-->
+        <!--<TextView-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_weight="1"-->
+        <!--android:text="@string/settings_design_list_type"-->
+        <!--/>-->
 
-            <!--<android.support.v7.widget.SwitchCompat-->
-                <!--android:id="@+id/designListNewIsOnSwitch"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--/>-->
+        <!--<android.support.v7.widget.SwitchCompat-->
+        <!--android:id="@+id/designListNewIsOnSwitch"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--/>-->
         <!--</LinearLayout>-->
 
         <TextView

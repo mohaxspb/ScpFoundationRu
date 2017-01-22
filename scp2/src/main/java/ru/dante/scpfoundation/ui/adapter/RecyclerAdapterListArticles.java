@@ -23,6 +23,7 @@ import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
+import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
 import ru.dante.scpfoundation.util.AttributeGetter;
 
 /**
@@ -31,6 +32,10 @@ import ru.dante.scpfoundation.util.AttributeGetter;
  * for scp_ru
  */
 public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAdapterListArticles.HolderSimple> {
+
+    private static final int TYPE_MIN = 0;
+    private static final int TYPE_MIDDLE = 1;
+    private static final int TYPE_MAX = 2;
 
     @Inject
     MyPreferenceManager mMyPreferenceManager;
@@ -52,19 +57,35 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
 
     @Override
     public int getItemViewType(int position) {
-        return 0;
+        switch (mMyPreferenceManager.getListDesignType()) {
+            case SetttingsBottomSheetDialogFragment.ListItemType.MIN:
+                return TYPE_MIN;
+            default:
+            case SetttingsBottomSheetDialogFragment.ListItemType.MIDDLE:
+                return TYPE_MIDDLE;
+            case SetttingsBottomSheetDialogFragment.ListItemType.MAX:
+                return TYPE_MAX;
+        }
     }
 
     @Override
     public HolderSimple onCreateViewHolder(ViewGroup parent, int viewType) {
         HolderSimple viewHolder;
         View view;
-        if (mMyPreferenceManager.isDesignListNewEnabled()) {
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_article, parent, false);
-            viewHolder = new HolderWithImage(view);
-        } else {
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_article_ugly_old_style, parent, false);
-            viewHolder = new HolderSimple(view);
+        switch (viewType) {
+            case TYPE_MIN:
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_article_ugly_old_style, parent, false);
+                viewHolder = new HolderSimple(view);
+                break;
+            default:
+            case TYPE_MIDDLE:
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_article_middle, parent, false);
+                viewHolder = new HolderMiddle(view);
+                break;
+            case TYPE_MAX:
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_article, parent, false);
+                viewHolder = new HolderWithImage(view);
+                break;
         }
 
         return viewHolder;
@@ -233,6 +254,64 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
                         .centerCrop()
                         .into(image);
             } else {
+                Glide.with(context)
+                        .load(R.drawable.ic_default_image_big)
+                        .placeholder(AttributeGetter.getDrawableId(context, R.attr.iconEmptyImage))
+                        .error(AttributeGetter.getDrawableId(context, R.attr.iconEmptyImage))
+                        .centerCrop()
+                        .animate(android.R.anim.fade_in)
+                        .into(image);
+            }
+
+            switch (article.type) {
+                default:
+                case Article.ObjectType.NONE:
+
+                    break;
+                case Article.ObjectType.NEUTRAL_OR_NOT_ADDED:
+
+                    break;
+                case Article.ObjectType.SAFE:
+
+                    break;
+                case Article.ObjectType.EUCLID:
+
+                    break;
+                case Article.ObjectType.KETER:
+
+                    break;
+                case Article.ObjectType.THAUMIEL:
+
+                    break;
+            }
+        }
+    }
+
+    class HolderMiddle extends HolderWithImage {
+        @BindView(R.id.date)
+        TextView date;
+
+        HolderMiddle(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
+
+        void bind(Article article) {
+            super.bind(article);
+            Context context = itemView.getContext();
+
+            //set image
+            if (article.imagesUrls != null && !article.imagesUrls.isEmpty()) {
+                Glide.clear(image);
+                Glide.with(context)
+                        .load(article.imagesUrls.first().val)
+                        .placeholder(AttributeGetter.getDrawableId(context, R.attr.iconEmptyImage))
+                        .error(AttributeGetter.getDrawableId(context, R.attr.iconEmptyImage))
+                        .animate(android.R.anim.fade_in)
+                        .centerCrop()
+                        .into(image);
+            } else {
+                Glide.clear(image);
                 Glide.with(context)
                         .load(R.drawable.ic_default_image_big)
                         .placeholder(AttributeGetter.getDrawableId(context, R.attr.iconEmptyImage))

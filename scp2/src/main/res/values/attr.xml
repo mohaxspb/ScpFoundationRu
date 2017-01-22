@@ -30,4 +30,6 @@
 
     <attr name="scrollbar" format="reference"/>
     <attr name="loadingIndicator" format="reference"/>
+
+    <attr name="spinnerStyle" format="reference"/>
 </resources>

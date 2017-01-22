@@ -194,7 +194,6 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
                     BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
                     subsDF.show(getSupportFragmentManager(), subsDF.getTag());
 
-
                     Bundle bundle = new Bundle();
                     bundle.putString(FirebaseAnalytics.Param.LOCATION, Constants.Analitics.StartScreen.SNACK_BAR);
                     bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Analitics.EventType.OPEN_SUBS_DIALOG);
