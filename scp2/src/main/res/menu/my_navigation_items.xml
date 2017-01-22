@@ -1,53 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu
     xmlns:android="http://schemas.android.com/apk/res/android">
-    <group android:checkableBehavior="single">
+    <group
+        android:checkableBehavior="single">
 
         <item
             android:id="@+id/about"
             android:checked="true"
-            android:title="@string/drawer_item_1"
             android:icon="@drawable/ic_drawer_about"
+            android:title="@string/drawer_item_1"
             />
         <item
             android:id="@+id/news"
             android:checked="true"
-            android:title="@string/drawer_item_2"
             android:icon="@drawable/ic_drawer_news"
+            android:title="@string/drawer_item_2"
             />
         <item
             android:id="@+id/mostRatedArticles"
             android:checked="true"
+            android:icon="@drawable/ic_drawer_rated"
             android:title="@string/drawer_item_3"
             />
         <item
             android:id="@+id/mostRecentArticles"
             android:checked="true"
+            android:icon="@drawable/ic_drawer_new"
             android:title="@string/drawer_item_4"
             />
         <item
             android:id="@+id/random_page"
             android:checked="true"
+            android:icon="@drawable/ic_drawer_random"
             android:title="@string/drawer_item_5"
             />
         <item
             android:id="@+id/objects_I"
             android:checked="true"
+            android:icon="@drawable/ic_drawer_object_1"
             android:title="@string/drawer_item_6"
             />
         <item
             android:id="@+id/objects_II"
             android:checked="true"
+            android:icon="@drawable/ic_drawer_object_2"
             android:title="@string/drawer_item_7"
             />
         <item
             android:id="@+id/objects_III"
             android:checked="true"
+            android:icon="@drawable/ic_drawer_object_3"
             android:title="@string/drawer_item_8"
             />
         <item
             android:id="@+id/objects_RU"
             android:checked="true"
+            android:icon="@drawable/ic_drawer_object_ru"
             android:title="@string/drawer_item_9"
             />
         <item
@@ -63,6 +71,7 @@
         <item
             android:id="@+id/favorite"
             android:checked="true"
+            android:icon="@drawable/ic_drawer_favorites"
             android:title="@string/drawer_item_12"
             />
         <item
@@ -78,6 +87,7 @@
             />
         <item
             android:id="@+id/siteSearch"
+            android:icon="@drawable/ic_drawer_search"
             android:checked="false"
             android:title="@string/drawer_item_15"
             />

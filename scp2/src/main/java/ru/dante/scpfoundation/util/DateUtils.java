@@ -13,6 +13,8 @@ import timber.log.Timber;
  */
 public class DateUtils {
 
+    //17 Jan 2017 21:16
+    public static final String SITE_DATE_FORMAT_0 = "dd MMM yyyy HH:mm";
     public static final String SITE_DATE_FORMAT = "HH:mm dd.MM.yyyy";
 
     public static final String SIMPLE_DATE_FORMAT = "dd.MM.yyyy";
@@ -25,8 +27,15 @@ public class DateUtils {
             SimpleDateFormat sdf = new SimpleDateFormat(SIMPLE_DATE_FORMAT, Locale.getDefault());
             return sdf.format(convertedDate);
         } catch (Exception e) {
-            Timber.e(e, "errro while parse date");
-            return rawDate;
+            try {
+                dateFormat = new SimpleDateFormat(SITE_DATE_FORMAT_0, Locale.getDefault());
+                convertedDate = dateFormat.parse(rawDate);
+                SimpleDateFormat sdf = new SimpleDateFormat(SIMPLE_DATE_FORMAT, Locale.getDefault());
+                return sdf.format(convertedDate);
+            } catch (Exception error) {
+                Timber.e(error, "error while parse date");
+                return rawDate;
+            }
         }
     }
 }

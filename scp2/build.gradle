@@ -85,7 +85,6 @@ android {
             buildConfigField('String', 'AD_UNIT_ID_REWARDED', 'null')
         }
 
-
         // Enabling multidex support.
         multiDexEnabled true
     }
@@ -118,12 +117,12 @@ android {
 
     productFlavors {
         prod {
-            manifestPlaceholders = [debuggable: false]
+            manifestPlaceholders = [myDebuggable: false]
             buildConfigField "boolean", "TIMBER_ENABLE", "false"
         }
 
         dev {
-            manifestPlaceholders = [debuggable: true]
+            manifestPlaceholders = [myDebuggable: true]
         }
     }
 

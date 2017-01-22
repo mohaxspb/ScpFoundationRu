@@ -5,14 +5,16 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.StringDef;
 import android.support.design.widget.BottomSheetDialogFragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.SwitchCompat;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -82,9 +84,11 @@ public class SetttingsBottomSheetDialogFragment
             listItemSpinner.performClick();
         });
         String[] types = new String[]{ListItemType.MIN, ListItemType.MIDDLE, ListItemType.MAX};
+        @ListItemType
+        List<String> typesList = Arrays.asList(types);
 
         ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(getActivity(), R.layout.design_list_spinner_item, types);
+                new ArrayAdapter<>(getActivity(), R.layout.design_list_spinner_item, typesList);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         Drawable.ConstantState spinnerDrawableConstantState = listItemSpinner.getBackground().getConstantState();
@@ -95,7 +99,19 @@ public class SetttingsBottomSheetDialogFragment
         }
 
         listItemSpinner.setAdapter(adapter);
-        listItemSpinner.setSelection(0);
+        listItemSpinner.setSelection(typesList.indexOf(mMyPreferenceManager.getListDesignType()));
+
+        listItemSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                mMyPreferenceManager.setListDesignType(types[i]);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
         //notif
         notifIsOnSwitch.setChecked(mMyPreferenceManager.isNotificationEnabled());

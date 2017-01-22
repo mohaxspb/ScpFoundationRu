@@ -104,11 +104,15 @@ public class Article extends RealmObject {
     public String authorUrl;
     /**
      * in format 01:06 01.07.2010
+     *
+     * or 17 Jan 2017 21:16
      */
     public String createdDate;
 
     /**
      * in format 01:06 01.07.2010
+     *
+     * or 17 Jan 2017 21:16
      */
     public String updatedDate;
 

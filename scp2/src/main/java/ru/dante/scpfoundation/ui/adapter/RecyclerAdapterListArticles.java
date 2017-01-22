@@ -80,7 +80,7 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
                 break;
             default:
             case TYPE_MIDDLE:
-                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_article_middle, parent, false);
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_article_medium, parent, false);
                 viewHolder = new HolderMiddle(view);
                 break;
             case TYPE_MAX:
@@ -110,7 +110,7 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
         shouldShowPopupOnFavoriteClick = show;
     }
 
-    public void setShouldShowpreview(boolean show) {
+    public void setShouldShowPreview(boolean show) {
         shouldShowPreview = show;
     }
 
@@ -125,6 +125,9 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
         TextView title;
         @BindView(R.id.preview)
         TextView preview;
+
+        @BindView(R.id.typeIcon)
+        ImageView typeIcon;
 
         HolderSimple(View itemView) {
             super(itemView);
@@ -224,6 +227,32 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
                     }
                 }
             });
+
+            setTypesIcons(article);
+        }
+
+        protected void setTypesIcons(Article article) {
+            switch (article.type) {
+                default:
+                case Article.ObjectType.NONE:
+                    typeIcon.setImageResource(R.drawable.ic_none_small);
+                    break;
+                case Article.ObjectType.NEUTRAL_OR_NOT_ADDED:
+                    typeIcon.setImageResource(R.drawable.ic_not_add_small);
+                    break;
+                case Article.ObjectType.SAFE:
+                    typeIcon.setImageResource(R.drawable.ic_safe_small);
+                    break;
+                case Article.ObjectType.EUCLID:
+                    typeIcon.setImageResource(R.drawable.ic_euclid_small);
+                    break;
+                case Article.ObjectType.KETER:
+                    typeIcon.setImageResource(R.drawable.ic_keter_small);
+                    break;
+                case Article.ObjectType.THAUMIEL:
+                    typeIcon.setImageResource(R.drawable.ic_thaumiel_small);
+                    break;
+            }
         }
     }
 
@@ -232,6 +261,10 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
         ImageView typeIcon;
         @BindView(R.id.image)
         ImageView image;
+        @BindView(R.id.rating)
+        TextView rating;
+        @BindView(R.id.date)
+        TextView date;
 
         HolderWithImage(View itemView) {
             super(itemView);
@@ -265,47 +298,66 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
                         .into(image);
             }
 
+            rating.setText(context.getString(R.string.rating, article.rating));
+            if (article.updatedDate != null) {
+                date.setText(DateUtils.getArticleDateShortFormat(article.updatedDate));
+            }
+        }
+
+        protected void setTypesIcons(Article article) {
             switch (article.type) {
                 default:
                 case Article.ObjectType.NONE:
-
+                    typeIcon.setImageResource(R.drawable.ic_none_big);
                     break;
                 case Article.ObjectType.NEUTRAL_OR_NOT_ADDED:
-
+                    typeIcon.setImageResource(R.drawable.ic_not_add_big);
                     break;
                 case Article.ObjectType.SAFE:
-
+                    typeIcon.setImageResource(R.drawable.ic_safe_big);
                     break;
                 case Article.ObjectType.EUCLID:
-
+                    typeIcon.setImageResource(R.drawable.ic_euclid_big);
                     break;
                 case Article.ObjectType.KETER:
-
+                    typeIcon.setImageResource(R.drawable.ic_keter_big);
                     break;
                 case Article.ObjectType.THAUMIEL:
-
+                    typeIcon.setImageResource(R.drawable.ic_thaumiel_big);
                     break;
             }
         }
     }
 
     class HolderMiddle extends HolderWithImage {
-        @BindView(R.id.rating)
-        TextView rating;
-        @BindView(R.id.date)
-        TextView date;
 
         HolderMiddle(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
 
-        void bind(Article article) {
-            super.bind(article);
-            Context context = itemView.getContext();
-
-            rating.setText(context.getString(R.string.rating, article.rating));
-            date.setText(DateUtils.getArticleDateShortFormat(article.updatedDate));
+        protected void setTypesIcons(Article article) {
+            switch (article.type) {
+                default:
+                case Article.ObjectType.NONE:
+                    typeIcon.setImageResource(R.drawable.ic_none_medium);
+                    break;
+                case Article.ObjectType.NEUTRAL_OR_NOT_ADDED:
+                    typeIcon.setImageResource(R.drawable.ic_not_add_medium);
+                    break;
+                case Article.ObjectType.SAFE:
+                    typeIcon.setImageResource(R.drawable.ic_safe_medium);
+                    break;
+                case Article.ObjectType.EUCLID:
+                    typeIcon.setImageResource(R.drawable.ic_euclid_medium);
+                    break;
+                case Article.ObjectType.KETER:
+                    typeIcon.setImageResource(R.drawable.ic_keter_medium);
+                    break;
+                case Article.ObjectType.THAUMIEL:
+                    typeIcon.setImageResource(R.drawable.ic_thaumiel_medium);
+                    break;
+            }
         }
     }
 
