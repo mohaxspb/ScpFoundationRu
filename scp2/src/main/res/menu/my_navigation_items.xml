@@ -86,6 +86,7 @@
             android:id="@+id/gallery"
             android:checkable="false"
             android:checked="false"
+            android:icon="@drawable/ic_drawer_gallery"
             android:title="@string/drawer_item_14"
             />
         <item
