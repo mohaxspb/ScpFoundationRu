@@ -25,7 +25,7 @@ public class MyPreferenceManager {
         String NIGHT_MODE = "NIGHT_MODE";
         String TEXT_SCALE_UI = "TEXT_SCALE_UI";
         String TEXT_SCALE_ARTICLE = "TEXT_SCALE_ARTICLE";
-        String DESIGN_LIST_NEW_IS_ON = "DESIGN_LIST_NEW_IS_ON";
+        String DESIGN_LIST_TYPE = "DESIGN_LIST_TYPE";
 
         String NOTIFICATION_IS_ON = "NOTIFICATION_IS_ON";
         String NOTIFICATION_PERIOD = "NOTIFICATION_PERIOD";
@@ -88,17 +88,17 @@ public class MyPreferenceManager {
 
     //design settings
     public boolean isDesignListNewEnabled() {
-        return !mPreferences.getString(Keys.DESIGN_LIST_NEW_IS_ON, SetttingsBottomSheetDialogFragment.ListItemType.MIDDLE).equals(SetttingsBottomSheetDialogFragment.ListItemType.MIN);
+        return !mPreferences.getString(Keys.DESIGN_LIST_TYPE, SetttingsBottomSheetDialogFragment.ListItemType.MIDDLE).equals(SetttingsBottomSheetDialogFragment.ListItemType.MIN);
     }
 
     public void setListDesignType(@SetttingsBottomSheetDialogFragment.ListItemType String type) {
-        mPreferences.edit().putString(Keys.DESIGN_LIST_NEW_IS_ON, type).apply();
+        mPreferences.edit().putString(Keys.DESIGN_LIST_TYPE, type).apply();
     }
 
     @SetttingsBottomSheetDialogFragment.ListItemType
     public String getListDesignType() {
         @SetttingsBottomSheetDialogFragment.ListItemType
-        String type = mPreferences.getString(Keys.DESIGN_LIST_NEW_IS_ON, SetttingsBottomSheetDialogFragment.ListItemType.MIDDLE);
+        String type = mPreferences.getString(Keys.DESIGN_LIST_TYPE, SetttingsBottomSheetDialogFragment.ListItemType.MIDDLE);
         return type;
     }
 
