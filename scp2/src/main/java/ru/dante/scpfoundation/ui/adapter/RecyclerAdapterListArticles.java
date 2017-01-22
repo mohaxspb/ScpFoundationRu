@@ -81,7 +81,7 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
             default:
             case TYPE_MIDDLE:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_article_medium, parent, false);
-                viewHolder = new HolderMiddle(view);
+                viewHolder = new HolderMedium(view);
                 break;
             case TYPE_MAX:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_article, parent, false);
@@ -329,9 +329,9 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
         }
     }
 
-    class HolderMiddle extends HolderWithImage {
+    class HolderMedium extends HolderWithImage {
 
-        HolderMiddle(View itemView) {
+        HolderMedium(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
