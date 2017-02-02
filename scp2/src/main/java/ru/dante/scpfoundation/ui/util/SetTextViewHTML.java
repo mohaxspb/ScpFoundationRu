@@ -1,5 +1,6 @@
 package ru.dante.scpfoundation.ui.util;
 
+import android.content.Context;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -13,7 +14,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import ru.dante.scpfoundation.BuildConfig;
-import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.util.AttributeGetter;
 import timber.log.Timber;
@@ -21,7 +21,6 @@ import timber.log.Timber;
 public class SetTextViewHTML {
 
     public static void setText(TextView textView, String html, TextItemsClickListener textItemsClickListener) {
-//        Timber.d("setText");
         URLImageParser imgGetter = new URLImageParser(textView);
         MyHtmlTagHandler myHtmlTagHandler = new MyHtmlTagHandler();
         CharSequence sequence = Html.fromHtml(html, imgGetter, myHtmlTagHandler);
@@ -34,7 +33,7 @@ public class SetTextViewHTML {
         for (ImageSpan span : imgs) {
             makeImgsClickable(strBuilder, span, textItemsClickListener);
         }
-        replaceQuoteSpans(strBuilder);
+        replaceQuoteSpans(textView.getContext(), strBuilder);
         textView.setText(strBuilder);
     }
 
@@ -43,7 +42,6 @@ public class SetTextViewHTML {
             final URLSpan span,
             TextItemsClickListener textItemsClickListener
     ) {
-//        Timber.d("makeLinkClickable: %s", span.getURL());
         int start = strBuilder.getSpanStart(span);
         int end = strBuilder.getSpanEnd(span);
         int flags = strBuilder.getSpanFlags(span);
@@ -130,9 +128,12 @@ public class SetTextViewHTML {
      *
      * @see <a href="http://stackoverflow.com/a/29114976/3212712">en-SO</a>
      */
-    private static void replaceQuoteSpans(Spannable spannable) {
-        int colorBackground = AttributeGetter.getColor(MyApplication.getAppInstance(), R.attr.windowBackgroundDark);
-        int colorStripe = AttributeGetter.getColor(MyApplication.getAppInstance(), R.attr.colorAccent);
+    private static void replaceQuoteSpans(Context context, Spannable spannable) {
+        Timber.d("replaceQuoteSpans");
+        int colorBackground = AttributeGetter.getColor(context, R.attr.quoteBackgroundColor);
+        int colorStripe = AttributeGetter.getColor(context, R.attr.colorAccent);
+
+//        colorBackground = ContextCompat.getColor(colorBackground);
 
         QuoteSpan[] quoteSpans = spannable.getSpans(0, spannable.length(), QuoteSpan.class);
 

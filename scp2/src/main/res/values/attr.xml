@@ -16,6 +16,7 @@
     <attr name="favoriteIconUnselected" format="reference"/>
     <attr name="readIconUnselected" format="reference"/>
     <attr name="windowBackgroundDark" format="color|reference"/>
+    <attr name="quoteBackgroundColor" format="color|reference"/>
     <attr name="spoilerColorTitle" format="color|reference"/>
     <!--icons-->
     <attr name="iconShare" format="reference"/>

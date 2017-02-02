@@ -47,6 +47,7 @@ import ru.dante.scpfoundation.manager.InAppBillingServiceConnectionObservable;
 import ru.dante.scpfoundation.manager.MyNotificationManager;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.monetization.model.Item;
+import ru.dante.scpfoundation.monetization.util.InappHelper;
 import ru.dante.scpfoundation.monetization.util.MyAdListener;
 import ru.dante.scpfoundation.mvp.base.AdsActions;
 import ru.dante.scpfoundation.mvp.base.BaseMvp;
@@ -224,7 +225,9 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
             @Override
             public void onRewardedVideoAdLoaded() {
                 Timber.d("onRewardedVideoAdLoaded");
-                mDialogRewardProgress.dismiss();
+                if (mDialogRewardProgress != null) {
+                    mDialogRewardProgress.dismiss();
+                }
                 showRewardedVideo();
             }
 
@@ -260,7 +263,11 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
             @Override
             public void onRewardedVideoAdFailedToLoad(int i) {
                 Timber.e("onRewardedVideoAdFailedToLoad: %s", i);
-                loadRewardedVideoAd();
+                if (mDialogRewardProgress != null) {
+                    mDialogRewardProgress.dismiss();
+                } else {
+                    Timber.e("mDialogRewardProgress is NULL!!");
+                }
 
                 Snackbar.make(mRoot, R.string.ads_reward_error_loading, Snackbar.LENGTH_SHORT).show();
             }
@@ -285,8 +292,6 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
                     adRequest.addTestDevice(deviceId);
                 }
                 adRequest.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
-//                boolean isTestDevice = adRequest.isTestDevice(this);
-//                Timber.v("is Admob Test Device ? %s, %s", deviceId, isTestDevice);
             }
 
             mInterstitialAd.loadAd(adRequest.build());
@@ -320,7 +325,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
 
     @Override
     public void updateOwnedMarketItems() {
-        SubscriptionsFragmentDialog.getOwnedInappsObserveble(this, mService)
+        InappHelper.getOwnedInappsObserveble(this, mService)
                 .subscribe(
                         items -> {
                             Timber.d("market items: %s", items);
@@ -473,5 +478,8 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
         PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
         mRewardedVideoAd.destroy(this);
         super.onDestroy();
+        if (mService != null) {
+            unbindService(mServiceConn);
+        }
     }
 }
