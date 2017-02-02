@@ -215,7 +215,9 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
 
     @Override
     public void initAds() {
+        //init frameworks
         MobileAds.initialize(getApplicationContext(), getString(R.string.ads_app_id));
+
         mInterstitialAd = new InterstitialAd(this);
         mInterstitialAd.setAdUnitId(getString(R.string.ad_unit_id_interstitial));
         mInterstitialAd.setAdListener(new MyAdListener());

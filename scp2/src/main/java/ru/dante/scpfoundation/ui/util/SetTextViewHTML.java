@@ -129,11 +129,8 @@ public class SetTextViewHTML {
      * @see <a href="http://stackoverflow.com/a/29114976/3212712">en-SO</a>
      */
     private static void replaceQuoteSpans(Context context, Spannable spannable) {
-        Timber.d("replaceQuoteSpans");
         int colorBackground = AttributeGetter.getColor(context, R.attr.quoteBackgroundColor);
         int colorStripe = AttributeGetter.getColor(context, R.attr.colorAccent);
-
-//        colorBackground = ContextCompat.getColor(colorBackground);
 
         QuoteSpan[] quoteSpans = spannable.getSpans(0, spannable.length(), QuoteSpan.class);
 
