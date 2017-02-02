@@ -22,12 +22,13 @@ import android.view.View;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.vending.billing.IInAppBillingService;
+import com.appodeal.ads.Appodeal;
+import com.appodeal.ads.NonSkippableVideoCallbacks;
+import com.appodeal.ads.RewardedVideoCallbacks;
+import com.appodeal.ads.utils.Log;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.reward.RewardItem;
-import com.google.android.gms.ads.reward.RewardedVideoAd;
-import com.google.android.gms.ads.reward.RewardedVideoAdListener;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.hannesdorfmann.mosby.mvp.MvpActivity;
 import com.yandex.metrica.YandexMetrica;
@@ -88,8 +89,8 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
     private IInAppBillingService mService;
     private List<Item> mOwnedMarketItems = new ArrayList<>();
     private InterstitialAd mInterstitialAd;
-    private RewardedVideoAd mRewardedVideoAd;
-    private MaterialDialog mDialogRewardProgress;
+//    private RewardedVideoAd mRewardedVideoAd;
+//    private MaterialDialog mDialogRewardProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,13 +131,13 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
     public void startRewardedVideoFlow() {
         if (mMyPreferenceManager.isRewardedDescriptionShown()) {
             //load ads
-            mDialogRewardProgress = new MaterialDialog.Builder(this)
-                    .progress(true, 0)
-                    .title(R.string.dialog_download)
-                    .content(R.string.wait)
-                    .build();
-            mDialogRewardProgress.show();
-            loadRewardedVideoAd();
+//            mDialogRewardProgress = new MaterialDialog.Builder(this)
+//                    .progress(true, 0)
+//                    .title(R.string.dialog_download)
+//                    .content(R.string.wait)
+//                    .build();
+//            mDialogRewardProgress.show();
+            showRewardedVideo();
         } else {
             new MaterialDialog.Builder(this)
                     .title(R.string.ads_reward_description_title)
@@ -152,21 +153,15 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
 
     @Override
     public void loadRewardedVideoAd() {
-        if (!mRewardedVideoAd.isLoaded()) {
-            AdRequest adRequest = new AdRequest.Builder()
-                    //do not use test device as test ads turns on in networks console
-//                    .addTestDevice("A22E60ED57ABD5DD2947708F10EB5342")
-                    .build();
-            mRewardedVideoAd.loadAd(BuildConfig.AD_UNIT_ID_REWARDED, adRequest);
-        }
+        //do nothing?.. Seems to be that appodeal make it for me
     }
 
     @Override
     public void showRewardedVideo() {
-        //TODO think if we need other networks from
-        //https://firebase.google.com/docs/admob/android/mediation-networks
-        if (mRewardedVideoAd.isLoaded()) {
-            mRewardedVideoAd.show();
+        if (Appodeal.isLoaded(Appodeal.REWARDED_VIDEO | Appodeal.NON_SKIPPABLE_VIDEO)) {
+            Appodeal.show(this, Appodeal.REWARDED_VIDEO | Appodeal.NON_SKIPPABLE_VIDEO);
+        } else {
+            Snackbar.make(mRoot, R.string.reward_not_loaded_yet, Snackbar.LENGTH_SHORT).show();
         }
     }
 
@@ -222,56 +217,66 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
         mInterstitialAd.setAdUnitId(getString(R.string.ad_unit_id_interstitial));
         mInterstitialAd.setAdListener(new MyAdListener());
 
-        mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
-        mRewardedVideoAd.setRewardedVideoAdListener(new RewardedVideoAdListener() {
+        //appodeal
+        String appKey = "96b84a34ca52ac1c82b8f3c61bfd0ade7abf5c2be24f2862";
+        Appodeal.disableLocationPermissionCheck();
+//        Appodeal.setTesting(true);
+        Appodeal.setLogLevel(Log.LogLevel.debug);
+        Appodeal.initialize(this, appKey, Appodeal.REWARDED_VIDEO | Appodeal.NON_SKIPPABLE_VIDEO);
+        Appodeal.setRewardedVideoCallbacks(new RewardedVideoCallbacks() {
             @Override
-            public void onRewardedVideoAdLoaded() {
-                Timber.d("onRewardedVideoAdLoaded");
-                if (mDialogRewardProgress != null) {
-                    mDialogRewardProgress.dismiss();
-                }
-                showRewardedVideo();
+            public void onRewardedVideoLoaded() {
+                Timber.d("onRewardedVideoLoaded");
             }
 
             @Override
-            public void onRewardedVideoAdOpened() {
-
+            public void onRewardedVideoFailedToLoad() {
+                Timber.d("onRewardedVideoFailedToLoad");
             }
 
             @Override
-            public void onRewardedVideoStarted() {
-
+            public void onRewardedVideoShown() {
+                Timber.d("onRewardedVideoShown");
             }
 
             @Override
-            public void onRewardedVideoAdClosed() {
-
-            }
-
-            @Override
-            public void onRewarded(RewardItem rewardItem) {
-                Timber.d("onRewarded type: %s, amount: %s", rewardItem.getType(), rewardItem.getAmount());
-
+            public void onRewardedVideoFinished(int amount, String name) {
+                Timber.d("onRewardedVideoFinished. Reward: %d %s", amount, name);
                 mMyPreferenceManager.applyRewardFromAds();
-
                 Snackbar.make(mRoot, R.string.ads_reward_gained, Snackbar.LENGTH_LONG).show();
             }
 
             @Override
-            public void onRewardedVideoAdLeftApplication() {
-
+            public void onRewardedVideoClosed(boolean finished) {
+                Timber.d("onRewardedVideoClosed,  finished: %s", finished);
+            }
+        });
+        Appodeal.setNonSkippableVideoCallbacks(new NonSkippableVideoCallbacks() {
+            @Override
+            public void onNonSkippableVideoLoaded() {
+                Timber.d("onNonSkippableVideoLoaded");
             }
 
             @Override
-            public void onRewardedVideoAdFailedToLoad(int i) {
-                Timber.e("onRewardedVideoAdFailedToLoad: %s", i);
-                if (mDialogRewardProgress != null) {
-                    mDialogRewardProgress.dismiss();
-                } else {
-                    Timber.e("mDialogRewardProgress is NULL!!");
-                }
+            public void onNonSkippableVideoFailedToLoad() {
+                Timber.d("onNonSkippableVideoFailedToLoad");
+            }
 
-                Snackbar.make(mRoot, R.string.ads_reward_error_loading, Snackbar.LENGTH_SHORT).show();
+            @Override
+            public void onNonSkippableVideoShown() {
+                Timber.d("onNonSkippableVideoShown");
+            }
+
+            @Override
+            public void onNonSkippableVideoFinished() {
+                Timber.d("onNonSkippableVideoFinished");
+                mMyPreferenceManager.applyRewardFromAds();
+                Snackbar.make(mRoot, R.string.ads_reward_gained, Snackbar.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onNonSkippableVideoClosed(boolean b) {
+                Timber.d("onNonSkippableVideoClosed");
             }
         });
     }
@@ -452,14 +457,11 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
         if (isTimeToShowAds() && !isAdsLoaded()) {
             requestNewInterstitial();
         }
-
-        mRewardedVideoAd.resume(this);
     }
 
     @Override
     public void onPause() {
         YandexMetrica.onPauseActivity(this);
-        mRewardedVideoAd.pause(this);
         super.onPause();
     }
 
@@ -478,7 +480,6 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
     @Override
     protected void onDestroy() {
         PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
-        mRewardedVideoAd.destroy(this);
         super.onDestroy();
         if (mService != null) {
             unbindService(mServiceConn);
