@@ -24,7 +24,6 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.vending.billing.IInAppBillingService;
 import com.appodeal.ads.Appodeal;
 import com.appodeal.ads.NonSkippableVideoCallbacks;
-import com.appodeal.ads.RewardedVideoCallbacks;
 import com.appodeal.ads.utils.Log;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
@@ -158,8 +157,8 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
 
     @Override
     public void showRewardedVideo() {
-        if (Appodeal.isLoaded(Appodeal.REWARDED_VIDEO | Appodeal.NON_SKIPPABLE_VIDEO)) {
-            Appodeal.show(this, Appodeal.REWARDED_VIDEO | Appodeal.NON_SKIPPABLE_VIDEO);
+        if (Appodeal.isLoaded(Appodeal.NON_SKIPPABLE_VIDEO)) {
+            Appodeal.show(this, Appodeal.NON_SKIPPABLE_VIDEO);
         } else {
             Snackbar.make(mRoot, R.string.reward_not_loaded_yet, Snackbar.LENGTH_SHORT).show();
         }
@@ -222,35 +221,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
         Appodeal.disableLocationPermissionCheck();
 //        Appodeal.setTesting(true);
         Appodeal.setLogLevel(Log.LogLevel.debug);
-        Appodeal.initialize(this, appKey, Appodeal.REWARDED_VIDEO | Appodeal.NON_SKIPPABLE_VIDEO);
-        Appodeal.setRewardedVideoCallbacks(new RewardedVideoCallbacks() {
-            @Override
-            public void onRewardedVideoLoaded() {
-                Timber.d("onRewardedVideoLoaded");
-            }
-
-            @Override
-            public void onRewardedVideoFailedToLoad() {
-                Timber.d("onRewardedVideoFailedToLoad");
-            }
-
-            @Override
-            public void onRewardedVideoShown() {
-                Timber.d("onRewardedVideoShown");
-            }
-
-            @Override
-            public void onRewardedVideoFinished(int amount, String name) {
-                Timber.d("onRewardedVideoFinished. Reward: %d %s", amount, name);
-                mMyPreferenceManager.applyRewardFromAds();
-                Snackbar.make(mRoot, R.string.ads_reward_gained, Snackbar.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onRewardedVideoClosed(boolean finished) {
-                Timber.d("onRewardedVideoClosed,  finished: %s", finished);
-            }
-        });
+        Appodeal.initialize(this, appKey, Appodeal.NON_SKIPPABLE_VIDEO);
         Appodeal.setNonSkippableVideoCallbacks(new NonSkippableVideoCallbacks() {
             @Override
             public void onNonSkippableVideoLoaded() {

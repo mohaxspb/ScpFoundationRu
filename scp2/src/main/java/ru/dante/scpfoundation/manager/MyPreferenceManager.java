@@ -17,7 +17,7 @@ public class MyPreferenceManager {
 //    private static final long PERIOD_BETWEEN_ADS = 20 * 1000;
 //    private static final long PERIOD_REWARDED_ADS_SHOWN = 60 * 1000;
     private static final long PERIOD_BETWEEN_ADS = 3 * 60 * 60 * 1000;
-    private static final long PERIOD_REWARDED_ADS_SHOWN = 24 * 60 * 60 * 1000;
+    private static final long PERIOD_REWARDED_ADS_SHOWN = 4 * 60 * 60 * 1000;
 
     public interface Keys {
         String SESSION_ID = "SESSION_ID";
