@@ -7,7 +7,7 @@ apply plugin: 'me.tatarka.retrolambda'
 //which must be in format major, minor, patch, where patch goes from 0 to 99
 apply from: '../versioning.gradle'
 
-ext.supportLibraryVersion = '25.1.0'
+ext.supportLibraryVersion = '25.1.1'
 
 android {
     compileSdkVersion 25
@@ -184,9 +184,11 @@ dependencies {
     //ads
     compile 'com.google.firebase:firebase-core:10.0.1'
     compile 'com.google.firebase:firebase-ads:10.0.1'
-    compile 'com.adcolony:sdk:3.0.7'
+    compile project(':cheetah-mobile-3.4.7')
     compile 'com.google.android.gms:play-services-ads:10.0.1'
-    compile 'com.android.support:support-annotations:25.1.0'
+    compile 'com.android.support:support-annotations:25.1.1'
+    //need for appodeal
+    compile 'com.google.android.gms:play-services-location:10.0.1'
     //crash
     compile 'com.google.firebase:firebase-crash:10.0.1'
     // AppMetrica

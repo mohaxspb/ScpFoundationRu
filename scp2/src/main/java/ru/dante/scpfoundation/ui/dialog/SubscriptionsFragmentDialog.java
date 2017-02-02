@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import com.android.vending.billing.IInAppBillingService;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,6 +22,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.manager.InAppBillingServiceConnectionObservable;

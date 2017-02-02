@@ -24,7 +24,8 @@ public interface Constants {
 
     interface Analitics {
         interface EventType {
-            String OPEN_SUBS_DIALOG = "OPEN_SUBS_DIALOG";
+            String REWARD_GAINED = "REWARD_GAINED";
+            String REWARD_REQUESTED = "REWARD_REQUESTED";
         }
 
         interface StartScreen {
