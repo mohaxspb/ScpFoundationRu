@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="fonts">
+        <item>fonts/Roboto-Regular.ttf</item>
+        <item>fonts/a_CampusCaps.ttf</item>
+        <item>fonts/a_CampusCaps_Bold.ttf</item>
+        <item>fonts/DS-Moster.ttf</item>
+        <item>fonts/DS-VTCorona-Cyr.ttf</item>
+        <item>fonts/Freeride.ttf</item>
+        <item>fonts/TrixieCyr-Plain.ttf</item>
+    </string-array>
+    <string-array name="fonts_names">
+        <item>Roboto-Regular</item>
+        <item>a_CampusCaps</item>
+        <item>a_CampusCaps_Bold</item>
+        <item>DS-Moster</item>
+        <item>DS-VTCorona-Cyr</item>
+        <item>Freeride</item>
+        <item>TrixieCyr-Plain</item>
+    </string-array>
+</resources>

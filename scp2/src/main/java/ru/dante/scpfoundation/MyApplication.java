@@ -14,8 +14,7 @@ import ru.dante.scpfoundation.di.module.PresentersModule;
 import ru.dante.scpfoundation.di.module.StorageModule;
 import ru.dante.scpfoundation.util.SystemUtils;
 import timber.log.Timber;
-
-import static com.vk.sdk.VKUIHelper.getApplicationContext;
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
 /**
  * Created by mohax on 01.01.2017.
@@ -38,7 +37,6 @@ public class MyApplication extends MultiDexApplication {
     @Override
     public void onCreate() {
         super.onCreate();
-
         // Инициализация AppMetrica SDK
         YandexMetrica.activate(getApplicationContext(), getString(R.string.yandex_metrica_api_key));
         // Отслеживание активности пользователей
@@ -69,6 +67,12 @@ public class MyApplication extends MultiDexApplication {
         SystemUtils.printCertificateFingerprints();
 
         Realm.init(this);
+
+//        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+//                .setDefaultFontPath("fonts/Roboto-Regular.ttf")
+//                .setFontAttrId(R.attr.fontPath)
+//                .build()
+//        );
 
         //print versionCode
         Timber.d("VERSION_CODE: %s", BuildConfig.VERSION_CODE);
