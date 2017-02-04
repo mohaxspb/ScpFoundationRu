@@ -264,7 +264,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
             Element imageTag = document.getElementsByTag("img").first();
             String imageUrl = imageTag == null ? null : imageTag.attr("src");
 
-//            Timber.d("image: %s", imageUrl);
+            CalligraphyUtils.applyFontToTextView(context, titleTextView, mMyPreferenceManager.getFontPath());
 
             Glide.with(context)
                     .load(imageUrl)
@@ -299,7 +299,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
 
             String title = document.getElementsByTag("span").text();
             //TODO add settings for it
-            titleTextView.setTextIsSelectable(true);
+//            titleTextView.setTextIsSelectable(true);
             titleTextView.setText(title);
         }
     }

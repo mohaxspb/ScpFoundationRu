@@ -108,7 +108,7 @@ public class MyPreferenceManager {
     }
 
     public String getFontPath() {
-        return mPreferences.getString(Keys.DESIGN_FONT_PATH, "fonts/a_CampusCaps.ttf");
+        return mPreferences.getString(Keys.DESIGN_FONT_PATH, "fonts/Roboto-Regular.ttf");
     }
 
     //new arts notifications

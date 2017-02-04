@@ -26,6 +26,7 @@ import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
 import ru.dante.scpfoundation.util.AttributeGetter;
 import ru.dante.scpfoundation.util.DateUtils;
+import uk.co.chrisjenx.calligraphy.CalligraphyUtils;
 
 /**
  * Created by Dante on 17.01.2016.
@@ -140,6 +141,9 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
             float uiTextScale = mMyPreferenceManager.getUiTextScale();
             int textSizePrimary = context.getResources().getDimensionPixelSize(R.dimen.text_size_primary);
             int textSizeTertiary = context.getResources().getDimensionPixelSize(R.dimen.text_size_tertiary);
+
+            CalligraphyUtils.applyFontToTextView(context, title, mMyPreferenceManager.getFontPath());
+            CalligraphyUtils.applyFontToTextView(context, preview, mMyPreferenceManager.getFontPath());
 
             itemView.setOnClickListener(v -> {
                 if (mArticleClickListener != null) {
@@ -269,15 +273,17 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
 
         HolderWithImage(View itemView) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
+//            ButterKnife.bind(this, itemView);
         }
 
         void bind(Article article) {
             super.bind(article);
             Context context = itemView.getContext();
 
+            CalligraphyUtils.applyFontToTextView(context, rating, mMyPreferenceManager.getFontPath());
+            CalligraphyUtils.applyFontToTextView(context, date, mMyPreferenceManager.getFontPath());
+
             //TODO show them in ViewPager
-            //FIXME - NONONONONONO no viewPager - it's laggy!!!!!!!!!!!!!!!!!!!!!111oneone
             //set image
             if (article.imagesUrls != null && !article.imagesUrls.isEmpty()) {
                 Glide.clear(image);
@@ -332,7 +338,7 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
 
         HolderMedium(View itemView) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
+//            ButterKnife.bind(this, itemView);
         }
 
         @Override

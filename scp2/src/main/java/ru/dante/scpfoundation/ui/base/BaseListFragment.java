@@ -135,6 +135,9 @@ public abstract class BaseListFragment<V extends BaseListMvp.View, P extends Bas
             case MyPreferenceManager.Keys.TEXT_SCALE_UI:
                 onTextSizeUiChanged();
                 break;
+            case MyPreferenceManager.Keys.DESIGN_FONT_PATH:
+                getAdapter().notifyDataSetChanged();
+                break;
             case MyPreferenceManager.Keys.DESIGN_LIST_TYPE:
                 if (!isAdded()) {
                     return;
