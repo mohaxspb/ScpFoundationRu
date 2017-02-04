@@ -20,7 +20,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -37,6 +36,7 @@ import ru.dante.scpfoundation.ui.util.SetTextViewHTML;
 import ru.dante.scpfoundation.util.AttributeGetter;
 import ru.dante.scpfoundation.util.DialogUtils;
 import ru.dante.scpfoundation.util.DimensionUtils;
+import uk.co.chrisjenx.calligraphy.CalligraphyUtils;
 
 /**
  * Created by Dante on 17.01.2016.
@@ -44,6 +44,7 @@ import ru.dante.scpfoundation.util.DimensionUtils;
  * for scp_ru
  */
 public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
     private static final int TYPE_TEXT = 0;
     private static final int TYPE_SPOILER = 1;
     private static final int TYPE_IMAGE = 2;
@@ -194,6 +195,8 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
             int textSizePrimary = context.getResources().getDimensionPixelSize(R.dimen.text_size_primary);
             float articleTextScale = mMyPreferenceManager.getArticleTextScale();
 
+            CalligraphyUtils.applyFontToTextView(context, textView, mMyPreferenceManager.getFontPath());
+
             textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, articleTextScale * textSizePrimary);
             textView.setLinksClickable(true);
             textView.setMovementMethod(LinkMovementMethod.getInstance());
@@ -220,7 +223,10 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
             float articleTextScale = mMyPreferenceManager.getArticleTextScale();
             title.setTextSize(TypedValue.COMPLEX_UNIT_PX, articleTextScale * textSizePrimary);
 
-            ArrayList<String> spoilerParts = ParseHtmlUtils.getSpoilerParts(textPart);
+            CalligraphyUtils.applyFontToTextView(context, title, mMyPreferenceManager.getFontPath());
+            CalligraphyUtils.applyFontToTextView(context, content, mMyPreferenceManager.getFontPath());
+
+            List<String> spoilerParts = ParseHtmlUtils.getSpoilerParts(textPart);
 
             title.setText(spoilerParts.get(0));
             //TODO add settings for it

@@ -47,27 +47,29 @@
                 tools:ignore="RtlHardcoded,RtlSymmetry"/>
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/fontPrefered"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="?selectableItemBackground"
+            android:padding="@dimen/defaultMargin">
 
-        <!--<LinearLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:orientation="horizontal"-->
-        <!--android:padding="@dimen/defaultMargin"-->
-        <!--&gt;-->
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/settings_design_font"
+                />
 
-        <!--<TextView-->
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_weight="1"-->
-        <!--android:text="@string/settings_design_list_type"-->
-        <!--/>-->
-
-        <!--<android.support.v7.widget.SwitchCompat-->
-        <!--android:id="@+id/designListNewIsOnSwitch"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--/>-->
-        <!--</LinearLayout>-->
+            <Spinner
+                android:id="@+id/fontPreferedSpinner"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:paddingLeft="@dimen/defaultMarginSmall"
+                tools:ignore="RtlHardcoded,RtlSymmetry"/>
+        </LinearLayout>
 
         <TextView
             android:layout_width="match_parent"

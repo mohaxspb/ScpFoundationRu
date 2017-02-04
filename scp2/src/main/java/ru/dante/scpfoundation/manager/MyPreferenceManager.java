@@ -38,6 +38,7 @@ public class MyPreferenceManager {
 
         String LICENCE_ACCEPTED = "LICENCE_ACCEPTED";
         String CUR_APP_VERSION = "CUR_APP_VERSION";
+        String DESIGN_FONT_PATH = "DESIGN_FONT_PATH";
     }
 
     private SharedPreferences mPreferences;
@@ -100,6 +101,14 @@ public class MyPreferenceManager {
         @SetttingsBottomSheetDialogFragment.ListItemType
         String type = mPreferences.getString(Keys.DESIGN_LIST_TYPE, SetttingsBottomSheetDialogFragment.ListItemType.MIDDLE);
         return type;
+    }
+
+    public void setFontPath(String type) {
+        mPreferences.edit().putString(Keys.DESIGN_FONT_PATH, type).apply();
+    }
+
+    public String getFontPath() {
+        return mPreferences.getString(Keys.DESIGN_FONT_PATH, "fonts/a_CampusCaps.ttf");
     }
 
     //new arts notifications

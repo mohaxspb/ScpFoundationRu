@@ -100,6 +100,7 @@
     <string name="rating">Рейтинг %d</string>
     <string name="yes_sir">Так точно!</string>
     <string name="reward_not_loaded_yet">Ещё не загружено. Попробуйте ещё раз</string>
+    <string name="settings_design_font">Шрифт</string>
 
     <string-array name="download_types">
         <item>Объекты I</item>
