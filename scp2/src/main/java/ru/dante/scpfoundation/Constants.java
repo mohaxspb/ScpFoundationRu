@@ -24,13 +24,15 @@ public interface Constants {
 
     interface Analitics {
         interface EventType {
-            String OPEN_SUBS_DIALOG = "OPEN_SUBS_DIALOG";
+            String REWARD_GAINED = "REWARD_GAINED";
+            String REWARD_REQUESTED = "REWARD_REQUESTED";
         }
 
         interface StartScreen {
             String MAIN_TO_ARTICLE_SNACK_BAR = "MAIN_TO_ARTICLE_SNACK_BAR";
             String SNACK_BAR = "SNACK_BAR";
             String MENU = "MENU";
+            String DRAWER_HEADER_LOGINED = "DRAWER_HEADER_LOGINED";
         }
     }
 

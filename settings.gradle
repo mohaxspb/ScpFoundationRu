@@ -1,1 +1,1 @@
-include ':app', ':scp2'
+include ':app', ':scp2', ':cheetah-mobile-3.4.7'

@@ -18,6 +18,7 @@
         <item name="android:windowBackground">@color/material_blue_gray_50</item>
         <item name="windowbackgroundOverrided">@color/material_blue_gray_50</item>
         <item name="windowBackgroundDark">@color/my_material_grey_300</item>
+        <item name="quoteBackgroundColor">@color/quote_bg_color_light</item>
         <item name="artListCardBackgroundColor">@color/my_material_grey_300</item>
 
         <item name="popupMenuStyle">@style/хуй_light</item>
@@ -92,6 +93,7 @@
         <item name="android:windowBackground">@color/material_blue_gray_800</item>
         <item name="windowbackgroundOverrided">@color/material_blue_gray_800</item>
         <item name="windowBackgroundDark">@color/my_material_grey_600</item>
+        <item name="quoteBackgroundColor">@color/quote_bg_color_dark</item>
         <item name="artListCardBackgroundColor">@color/my_material_grey_900</item>
 
         <!--<item name="popupMenuStyle">@style/OdnakoPopupMenuLight</item>-->

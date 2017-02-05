@@ -366,6 +366,9 @@ public class ArticleFragment
             case MyPreferenceManager.Keys.TEXT_SCALE_ARTICLE:
                 mAdapter.notifyDataSetChanged();
                 break;
+            case MyPreferenceManager.Keys.DESIGN_FONT_PATH:
+                mAdapter.notifyDataSetChanged();
+                break;
             default:
                 //do nothing
                 break;

@@ -3,6 +3,8 @@ package ru.dante.scpfoundation;
 import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 
+import com.vk.sdk.VKAccessToken;
+import com.vk.sdk.VKAccessTokenTracker;
 import com.vk.sdk.VKSdk;
 import com.yandex.metrica.YandexMetrica;
 
@@ -14,8 +16,6 @@ import ru.dante.scpfoundation.di.module.PresentersModule;
 import ru.dante.scpfoundation.di.module.StorageModule;
 import ru.dante.scpfoundation.util.SystemUtils;
 import timber.log.Timber;
-
-import static com.vk.sdk.VKUIHelper.getApplicationContext;
 
 /**
  * Created by mohax on 01.01.2017.
@@ -35,10 +35,19 @@ public class MyApplication extends MultiDexApplication {
         return sAppInstance;
     }
 
+    VKAccessTokenTracker vkAccessTokenTracker = new VKAccessTokenTracker() {
+        @Override
+        public void onVKAccessTokenChanged(VKAccessToken oldToken, VKAccessToken newToken) {
+            if (newToken == null) {
+                //VKAccessToken is invalid
+                //TODO
+            }
+        }
+    };
+
     @Override
     public void onCreate() {
         super.onCreate();
-
         // Инициализация AppMetrica SDK
         YandexMetrica.activate(getApplicationContext(), getString(R.string.yandex_metrica_api_key));
         // Отслеживание активности пользователей
@@ -65,7 +74,9 @@ public class MyApplication extends MultiDexApplication {
             });
         }
 
+        vkAccessTokenTracker.startTracking();
         VKSdk.initialize(this);
+
         SystemUtils.printCertificateFingerprints();
 
         Realm.init(this);

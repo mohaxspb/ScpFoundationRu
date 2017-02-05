@@ -184,39 +184,6 @@ public class MyHtmlTagHandler implements TagHandler {
         }
     }
 
-  /*  private void processCode(boolean opening, Editable output)
-    {
-        if (!opening)
-        {
-            output.append(" ");
-        }
-
-        int len = output.length();
-
-        int windowBackgroundDark = AttributeGetter.getColor(ctx, R.attr.windowBackgroundDark);
-        int colorRed = ContextCompat.getColor(ctx, R.color.material_red_500);
-
-        if (opening)
-        {
-            output.setSpan(new ForegroundColorSpan(colorRed), len, len, Spanned.SPAN_MARK_MARK);
-            output.setSpan(new BackgroundColorSpan(windowBackgroundDark), len, len, Spanned.SPAN_MARK_MARK);
-            output.append(" ", 0, 1);
-        }
-        else
-        {
-            Object obj = getLast(output, BackgroundColorSpan.class);
-            int where = output.getSpanStart(obj);
-
-            output.removeSpan(obj);
-
-            if (where != len)
-            {
-                output.setSpan(new ForegroundColorSpan(colorRed), where, len, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                output.setSpan(new BackgroundColorSpan(windowBackgroundDark), where, len, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            }
-        }
-    }*/
-
     private static class Ul {
     }
 

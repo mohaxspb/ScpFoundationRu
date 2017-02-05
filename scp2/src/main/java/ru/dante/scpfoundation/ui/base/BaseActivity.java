@@ -19,17 +19,29 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.vending.billing.IInAppBillingService;
+import com.appodeal.ads.Appodeal;
+import com.appodeal.ads.NonSkippableVideoCallbacks;
+import com.appodeal.ads.utils.Log;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.reward.RewardItem;
-import com.google.android.gms.ads.reward.RewardedVideoAd;
-import com.google.android.gms.ads.reward.RewardedVideoAdListener;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.hannesdorfmann.mosby.mvp.MvpActivity;
+import com.vk.sdk.VKAccessToken;
+import com.vk.sdk.VKCallback;
+import com.vk.sdk.VKSdk;
+import com.vk.sdk.api.VKApi;
+import com.vk.sdk.api.VKApiConst;
+import com.vk.sdk.api.VKError;
+import com.vk.sdk.api.VKParameters;
+import com.vk.sdk.api.VKRequest;
+import com.vk.sdk.api.VKResponse;
+import com.vk.sdk.api.model.VKApiUser;
+import com.vk.sdk.api.model.VKList;
 import com.yandex.metrica.YandexMetrica;
 
 import java.lang.reflect.Method;
@@ -43,10 +55,12 @@ import butterknife.ButterKnife;
 import ru.dante.scpfoundation.BuildConfig;
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.R;
+import ru.dante.scpfoundation.db.model.User;
 import ru.dante.scpfoundation.manager.InAppBillingServiceConnectionObservable;
 import ru.dante.scpfoundation.manager.MyNotificationManager;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.monetization.model.Item;
+import ru.dante.scpfoundation.monetization.util.InappHelper;
 import ru.dante.scpfoundation.monetization.util.MyAdListener;
 import ru.dante.scpfoundation.mvp.base.AdsActions;
 import ru.dante.scpfoundation.mvp.base.BaseMvp;
@@ -56,6 +70,7 @@ import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
 import ru.dante.scpfoundation.ui.dialog.TextSizeDialogFragment;
 import ru.dante.scpfoundation.util.SystemUtils;
 import timber.log.Timber;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 /**
  * Created by mohax on 31.12.2016.
@@ -87,8 +102,6 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
     private IInAppBillingService mService;
     private List<Item> mOwnedMarketItems = new ArrayList<>();
     private InterstitialAd mInterstitialAd;
-    private RewardedVideoAd mRewardedVideoAd;
-    private MaterialDialog mDialogRewardProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,15 +140,11 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
 
     @Override
     public void startRewardedVideoFlow() {
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Analitics.EventType.REWARD_REQUESTED);
+        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
         if (mMyPreferenceManager.isRewardedDescriptionShown()) {
-            //load ads
-            mDialogRewardProgress = new MaterialDialog.Builder(this)
-                    .progress(true, 0)
-                    .title(R.string.dialog_download)
-                    .content(R.string.wait)
-                    .build();
-            mDialogRewardProgress.show();
-            loadRewardedVideoAd();
+            showRewardedVideo();
         } else {
             new MaterialDialog.Builder(this)
                     .title(R.string.ads_reward_description_title)
@@ -151,21 +160,15 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
 
     @Override
     public void loadRewardedVideoAd() {
-        if (!mRewardedVideoAd.isLoaded()) {
-            AdRequest adRequest = new AdRequest.Builder()
-                    //do not use test device as test ads turns on in networks console
-//                    .addTestDevice("A22E60ED57ABD5DD2947708F10EB5342")
-                    .build();
-            mRewardedVideoAd.loadAd(BuildConfig.AD_UNIT_ID_REWARDED, adRequest);
-        }
+        //do nothing?.. Seems to be that appodeal make it for me
     }
 
     @Override
     public void showRewardedVideo() {
-        //TODO think if we need other networks from
-        //https://firebase.google.com/docs/admob/android/mediation-networks
-        if (mRewardedVideoAd.isLoaded()) {
-            mRewardedVideoAd.show();
+        if (Appodeal.isLoaded(Appodeal.NON_SKIPPABLE_VIDEO)) {
+            Appodeal.show(this, Appodeal.NON_SKIPPABLE_VIDEO);
+        } else {
+            Snackbar.make(mRoot, R.string.reward_not_loaded_yet, Snackbar.LENGTH_SHORT).show();
         }
     }
 
@@ -195,8 +198,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
                     subsDF.show(getSupportFragmentManager(), subsDF.getTag());
 
                     Bundle bundle = new Bundle();
-                    bundle.putString(FirebaseAnalytics.Param.LOCATION, Constants.Analitics.StartScreen.SNACK_BAR);
-                    bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Analitics.EventType.OPEN_SUBS_DIALOG);
+                    bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Analitics.StartScreen.SNACK_BAR);
                     mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
                 });
                 snackbar.setActionTextColor(ContextCompat.getColor(BaseActivity.this, R.color.material_amber_500));
@@ -214,55 +216,49 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
 
     @Override
     public void initAds() {
+        //init frameworks
         MobileAds.initialize(getApplicationContext(), getString(R.string.ads_app_id));
+
         mInterstitialAd = new InterstitialAd(this);
         mInterstitialAd.setAdUnitId(getString(R.string.ad_unit_id_interstitial));
         mInterstitialAd.setAdListener(new MyAdListener());
 
-        mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
-        mRewardedVideoAd.setRewardedVideoAdListener(new RewardedVideoAdListener() {
+        //appodeal
+        String appKey = "96b84a34ca52ac1c82b8f3c61bfd0ade7abf5c2be24f2862";
+        Appodeal.disableLocationPermissionCheck();
+//        Appodeal.setTesting(true);
+        Appodeal.setLogLevel(Log.LogLevel.debug);
+        Appodeal.initialize(this, appKey, Appodeal.NON_SKIPPABLE_VIDEO);
+        Appodeal.setNonSkippableVideoCallbacks(new NonSkippableVideoCallbacks() {
             @Override
-            public void onRewardedVideoAdLoaded() {
-                Timber.d("onRewardedVideoAdLoaded");
-                mDialogRewardProgress.dismiss();
-                showRewardedVideo();
+            public void onNonSkippableVideoLoaded() {
+                Timber.d("onNonSkippableVideoLoaded");
             }
 
             @Override
-            public void onRewardedVideoAdOpened() {
-
+            public void onNonSkippableVideoFailedToLoad() {
+                Timber.d("onNonSkippableVideoFailedToLoad");
             }
 
             @Override
-            public void onRewardedVideoStarted() {
-
+            public void onNonSkippableVideoShown() {
+                Timber.d("onNonSkippableVideoShown");
             }
 
             @Override
-            public void onRewardedVideoAdClosed() {
-
-            }
-
-            @Override
-            public void onRewarded(RewardItem rewardItem) {
-                Timber.d("onRewarded type: %s, amount: %s", rewardItem.getType(), rewardItem.getAmount());
-
+            public void onNonSkippableVideoFinished() {
+                Timber.d("onNonSkippableVideoFinished");
                 mMyPreferenceManager.applyRewardFromAds();
-
                 Snackbar.make(mRoot, R.string.ads_reward_gained, Snackbar.LENGTH_LONG).show();
+
+                Bundle bundle = new Bundle();
+                bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Analitics.EventType.REWARD_GAINED);
+                mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
             }
 
             @Override
-            public void onRewardedVideoAdLeftApplication() {
-
-            }
-
-            @Override
-            public void onRewardedVideoAdFailedToLoad(int i) {
-                Timber.e("onRewardedVideoAdFailedToLoad: %s", i);
-                loadRewardedVideoAd();
-
-                Snackbar.make(mRoot, R.string.ads_reward_error_loading, Snackbar.LENGTH_SHORT).show();
+            public void onNonSkippableVideoClosed(boolean b) {
+                Timber.d("onNonSkippableVideoClosed");
             }
         });
     }
@@ -285,8 +281,6 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
                     adRequest.addTestDevice(deviceId);
                 }
                 adRequest.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
-//                boolean isTestDevice = adRequest.isTestDevice(this);
-//                Timber.v("is Admob Test Device ? %s, %s", deviceId, isTestDevice);
             }
 
             mInterstitialAd.loadAd(adRequest.build());
@@ -320,7 +314,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
 
     @Override
     public void updateOwnedMarketItems() {
-        SubscriptionsFragmentDialog.getOwnedInappsObserveble(this, mService)
+        InappHelper.getOwnedInappsObserveble(this, mService)
                 .subscribe(
                         items -> {
                             Timber.d("market items: %s", items);
@@ -416,8 +410,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
                 subsDF.show(getSupportFragmentManager(), subsDF.getTag());
 
                 Bundle bundle = new Bundle();
-                bundle.putString(FirebaseAnalytics.Param.LOCATION, Constants.Analitics.StartScreen.MENU);
-                bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Analitics.EventType.OPEN_SUBS_DIALOG);
+                bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Analitics.StartScreen.MENU);
                 mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
                 return true;
             case R.id.night_mode_item:
@@ -445,14 +438,11 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
         if (isTimeToShowAds() && !isAdsLoaded()) {
             requestNewInterstitial();
         }
-
-        mRewardedVideoAd.resume(this);
     }
 
     @Override
     public void onPause() {
         YandexMetrica.onPauseActivity(this);
-        mRewardedVideoAd.pause(this);
         super.onPause();
     }
 
@@ -469,9 +459,63 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
     }
 
     @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
+
+    @Override
     protected void onDestroy() {
         PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
-        mRewardedVideoAd.destroy(this);
         super.onDestroy();
+        if (mService != null) {
+            unbindService(mServiceConn);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (!VKSdk.onActivityResult(requestCode, resultCode, data, new VKCallback<VKAccessToken>() {
+            @Override
+            public void onResult(VKAccessToken vkAccessToken) {
+                //Пользователь успешно авторизовался
+                Timber.d("Auth successfull: %s", vkAccessToken.email);
+                if (vkAccessToken.email != null) {
+                    VKApi.users().get(VKParameters.from(VKApiConst.FIELDS, "photo_200")).executeWithListener(new VKRequest.VKRequestListener() {
+                        @Override
+                        public void onComplete(VKResponse response) {
+                            VKApiUser vkApiUser = ((VKList<VKApiUser>) response.parsedModel).get(0);
+                            Timber.d("User name %s %s", vkApiUser.first_name, vkApiUser.last_name);
+
+                            User user = new User();
+                            user.network = User.NetworkType.VK;
+                            user.fullName = vkApiUser.first_name + " " + vkApiUser.last_name;
+                            user.firstName = vkApiUser.first_name;
+                            user.lastName = vkApiUser.last_name;
+                            user.avatar = vkApiUser.photo_200;
+
+                            mPresenter.onUserLogined(user);
+                        }
+
+                        @Override
+                        public void onError(VKError error) {
+                            super.onError(error);
+                            Toast.makeText(BaseActivity.this, error.errorMessage, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                } else {
+                    Toast.makeText(BaseActivity.this, R.string.error_login_no_email, Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onError(VKError error) {
+                // Произошла ошибка авторизации (например, пользователь запретил авторизацию)
+                Timber.e(error.errorMessage);
+                Toast.makeText(BaseActivity.this, error.errorMessage, Toast.LENGTH_SHORT).show();
+            }
+        })) {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 }

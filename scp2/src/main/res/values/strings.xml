@@ -88,17 +88,24 @@
     <string name="remove_ads">Отключить рекламу?</string>
     <string name="yes_bliad">Да!</string>
     <string name="app_info">О приложении</string>
-    <string name="remove_ads_one_day">Отключить рекламу на день бесплатно</string>
-    <string name="ads_reward_gained">Ура! Никакой рекламы на 24 часа!</string>
+    <string name="remove_ads_one_day">Отключить рекламу на 4 часа бесплатно</string>
+    <string name="ads_reward_gained">Ура! Никакой рекламы на 4 часа!</string>
     <string name="wait">Подождите…</string>
     <string name="dialog_download">Загрузка</string>
-    <string name="ads_reward_error_loading">Не удалось загрузить. Пробую ещё раз…</string>
+    <string name="ads_reward_error_loading">Не удалось загрузить. Пробуйте ещё раз…</string>
     <string name="ads_reward_description_title">Инструкция</string>
     <string name="ads_reward_description_content">Мы покажем вам видео и, после просмотра, отключим рекламу на сутки. Вы можете отключать её хоть каждый день!</string>
     <string name="ads_reward_ok">Всё понятно!</string>
     <string name="settings_design_list_type">Дизайн статьи в списке</string>
     <string name="rating">Рейтинг %d</string>
     <string name="yes_sir">Так точно!</string>
+    <string name="reward_not_loaded_yet">Ещё не загружено. Попробуйте ещё раз</string>
+    <string name="settings_design_font">Шрифт</string>
+    <string name="login_advantages">Внимание персонал! Авторизация не обязательна. Дальнейшие инструкции вы можете получить у руководителя зоны содержания.</string>
+    <string name="login_advantages_title">Зачем авторизация?</string>
+    <string name="login_greetings">Добро пожаловать, агент %s</string>
+    <string name="error_login_no_email">Невозможно авторизоваться без информации о e-mail</string>
+    <string name="access_level">3 уровень доступа (секретно)</string>
 
     <string-array name="download_types">
         <item>Объекты I</item>

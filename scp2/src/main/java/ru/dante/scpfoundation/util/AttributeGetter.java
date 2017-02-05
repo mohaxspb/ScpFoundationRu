@@ -1,8 +1,14 @@
 package ru.dante.scpfoundation.util;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.support.annotation.ColorRes;
+import android.util.TypedValue;
+
+import ru.dante.scpfoundation.R;
+import timber.log.Timber;
 
 /**
  * Created by Юрий on 28.09.2015 0:54.
@@ -18,7 +24,26 @@ public class AttributeGetter {
         int colorId;
         int[] attrs = new int[]{addressInRClass};
         TypedArray ta = ctx.obtainStyledAttributes(attrs);
-        colorId = ta.getColor(0, Color.GRAY);
+        colorId = ta.getColor(0, Color.RED);
+        ta.recycle();
+
+        return colorId;
+    }
+
+    public static int getAttrColor(Context context, int addressInRClass) {
+        TypedValue typedValue = new TypedValue();
+        Resources.Theme theme = context.getTheme();
+        theme.resolveAttribute(addressInRClass, typedValue, true);
+        Timber.d("typedValue.data: %s", typedValue.data);
+        return typedValue.data;
+    }
+
+    @ColorRes
+    public static int getColorResId(Context context, int addressInRClass) {
+        int colorId;
+        int[] attrs = new int[]{addressInRClass};
+        TypedArray ta = context.obtainStyledAttributes(attrs);
+        colorId = ta.getResourceId(0, R.color.colorPrimaryDark);
         ta.recycle();
 
         return colorId;
