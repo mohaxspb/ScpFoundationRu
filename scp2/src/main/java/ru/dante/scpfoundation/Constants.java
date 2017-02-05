@@ -32,6 +32,7 @@ public interface Constants {
             String MAIN_TO_ARTICLE_SNACK_BAR = "MAIN_TO_ARTICLE_SNACK_BAR";
             String SNACK_BAR = "SNACK_BAR";
             String MENU = "MENU";
+            String DRAWER_HEADER_LOGINED = "DRAWER_HEADER_LOGINED";
         }
     }
 

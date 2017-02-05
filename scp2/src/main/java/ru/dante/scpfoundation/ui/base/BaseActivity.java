@@ -19,6 +19,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.vending.billing.IInAppBillingService;
@@ -30,6 +31,17 @@ import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.hannesdorfmann.mosby.mvp.MvpActivity;
+import com.vk.sdk.VKAccessToken;
+import com.vk.sdk.VKCallback;
+import com.vk.sdk.VKSdk;
+import com.vk.sdk.api.VKApi;
+import com.vk.sdk.api.VKApiConst;
+import com.vk.sdk.api.VKError;
+import com.vk.sdk.api.VKParameters;
+import com.vk.sdk.api.VKRequest;
+import com.vk.sdk.api.VKResponse;
+import com.vk.sdk.api.model.VKApiUser;
+import com.vk.sdk.api.model.VKList;
 import com.yandex.metrica.YandexMetrica;
 
 import java.lang.reflect.Method;
@@ -43,6 +55,7 @@ import butterknife.ButterKnife;
 import ru.dante.scpfoundation.BuildConfig;
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.R;
+import ru.dante.scpfoundation.db.model.User;
 import ru.dante.scpfoundation.manager.InAppBillingServiceConnectionObservable;
 import ru.dante.scpfoundation.manager.MyNotificationManager;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
@@ -89,8 +102,6 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
     private IInAppBillingService mService;
     private List<Item> mOwnedMarketItems = new ArrayList<>();
     private InterstitialAd mInterstitialAd;
-//    private RewardedVideoAd mRewardedVideoAd;
-//    private MaterialDialog mDialogRewardProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,13 +144,6 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
         bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Analitics.EventType.REWARD_REQUESTED);
         mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
         if (mMyPreferenceManager.isRewardedDescriptionShown()) {
-            //load ads
-//            mDialogRewardProgress = new MaterialDialog.Builder(this)
-//                    .progress(true, 0)
-//                    .title(R.string.dialog_download)
-//                    .content(R.string.wait)
-//                    .build();
-//            mDialogRewardProgress.show();
             showRewardedVideo();
         } else {
             new MaterialDialog.Builder(this)
@@ -465,6 +469,53 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
         super.onDestroy();
         if (mService != null) {
             unbindService(mServiceConn);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (!VKSdk.onActivityResult(requestCode, resultCode, data, new VKCallback<VKAccessToken>() {
+            @Override
+            public void onResult(VKAccessToken vkAccessToken) {
+                //Пользователь успешно авторизовался
+                Timber.d("Auth successfull: %s", vkAccessToken.email);
+                if (vkAccessToken.email != null) {
+                    VKApi.users().get(VKParameters.from(VKApiConst.FIELDS, "photo_200")).executeWithListener(new VKRequest.VKRequestListener() {
+                        @Override
+                        public void onComplete(VKResponse response) {
+                            VKApiUser vkApiUser = ((VKList<VKApiUser>) response.parsedModel).get(0);
+                            Timber.d("User name %s %s", vkApiUser.first_name, vkApiUser.last_name);
+
+                            User user = new User();
+                            user.network = User.NetworkType.VK;
+                            user.fullName = vkApiUser.first_name + " " + vkApiUser.last_name;
+                            user.firstName = vkApiUser.first_name;
+                            user.lastName = vkApiUser.last_name;
+                            user.avatar = vkApiUser.photo_200;
+
+                            mPresenter.onUserLogined(user);
+                        }
+
+                        @Override
+                        public void onError(VKError error) {
+                            super.onError(error);
+                            Toast.makeText(BaseActivity.this, error.errorMessage, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                } else {
+                    Toast.makeText(BaseActivity.this, R.string.error_login_no_email, Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onError(VKError error) {
+                // Произошла ошибка авторизации (например, пользователь запретил авторизацию)
+                Timber.e(error.errorMessage);
+                Toast.makeText(BaseActivity.this, error.errorMessage, Toast.LENGTH_SHORT).show();
+            }
+        })) {
+            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 }

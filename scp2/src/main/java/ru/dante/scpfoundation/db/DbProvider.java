@@ -13,6 +13,7 @@ import io.realm.Sort;
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.db.error.ScpNoArticleForIdError;
 import ru.dante.scpfoundation.db.model.Article;
+import ru.dante.scpfoundation.db.model.User;
 import rx.Observable;
 import timber.log.Timber;
 
@@ -487,5 +488,46 @@ public class DbProvider {
 
     public int getCountOfRecentArticles() {
         return (int) mRealm.where(Article.class).notEqualTo(Article.FIELD_IS_IN_RECENT, Article.ORDER_NONE).count();
+    }
+
+    public Observable<User> getUserAsync() {
+        return mRealm.where(User.class)
+                .findAllAsync()
+                .asObservable()
+                .filter(RealmResults::isLoaded)
+                .filter(RealmResults::isValid)
+                .flatMap(users -> Observable.just(users.isEmpty() ? null : users.first()));
+    }
+
+    public Observable<Void> saveUser(User user) {
+        return Observable.create(subscriber -> {
+            mRealm.executeTransactionAsync(
+                    realm -> realm.insertOrUpdate(user),
+                    () -> {
+                        subscriber.onNext(null);
+                        subscriber.onCompleted();
+                        mRealm.close();
+                    },
+                    error -> {
+                        subscriber.onError(error);
+                        mRealm.close();
+                    });
+        });
+    }
+
+    public Observable<Void> deleteUser() {
+        return Observable.create(subscriber -> {
+            mRealm.executeTransactionAsync(
+                    realm -> realm.delete(User.class),
+                    () -> {
+                        subscriber.onNext(null);
+                        subscriber.onCompleted();
+                        mRealm.close();
+                    },
+                    error -> {
+                        subscriber.onError(error);
+                        mRealm.close();
+                    });
+        });
     }
 }
