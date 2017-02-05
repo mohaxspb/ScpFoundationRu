@@ -71,6 +71,9 @@ android {
 
             resValue('string', 'ad_unit_id_rewarded', apiKeysProperties.get("adsBannerIdRewarded"))
             buildConfigField('String', 'AD_UNIT_ID_REWARDED', "\"" + apiKeysProperties.get("adsBannerIdRewarded") + "\"")
+
+            resValue('integer', 'com_vk_sdk_AppId', apiKeysProperties.get("vkSdkAppId"))
+            buildConfigField('int', 'VK_SDK_APP_ID', apiKeysProperties.get("vkSdkAppId"))
         } else {
             resValue('string', 'yandex_metrica_api_key', 'null')
             buildConfigField('String', 'YANDEX_METRICA_API_KEY', 'null')

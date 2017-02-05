@@ -58,4 +58,10 @@ public class ArticleScreenPresenter
                         Timber::e
                 );
     }
+
+    @Override
+    protected void onReceiveUserFromDb() {
+        super.onReceiveUserFromDb();
+        getView().onGetUserFromDB(mUser);
+    }
 }

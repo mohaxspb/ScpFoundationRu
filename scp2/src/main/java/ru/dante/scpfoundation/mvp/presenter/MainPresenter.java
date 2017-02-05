@@ -3,7 +3,6 @@ package ru.dante.scpfoundation.mvp.presenter;
 import ru.dante.scpfoundation.api.ApiClient;
 import ru.dante.scpfoundation.db.DbProviderFactory;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
-import ru.dante.scpfoundation.mvp.base.BasePresenter;
 import ru.dante.scpfoundation.mvp.contract.MainMvp;
 import timber.log.Timber;
 
@@ -34,5 +33,11 @@ public class MainPresenter
     @Override
     public void onNavigationItemClicked(int id) {
         //nothing to do
+    }
+
+    @Override
+    protected void onReceiveUserFromDb() {
+        super.onReceiveUserFromDb();
+        getView().onGetUserFromDB(mUser);
     }
 }

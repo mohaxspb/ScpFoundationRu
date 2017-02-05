@@ -3,6 +3,8 @@ package ru.dante.scpfoundation;
 import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 
+import com.vk.sdk.VKAccessToken;
+import com.vk.sdk.VKAccessTokenTracker;
 import com.vk.sdk.VKSdk;
 import com.yandex.metrica.YandexMetrica;
 
@@ -14,7 +16,6 @@ import ru.dante.scpfoundation.di.module.PresentersModule;
 import ru.dante.scpfoundation.di.module.StorageModule;
 import ru.dante.scpfoundation.util.SystemUtils;
 import timber.log.Timber;
-import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
 /**
  * Created by mohax on 01.01.2017.
@@ -33,6 +34,16 @@ public class MyApplication extends MultiDexApplication {
     public static MyApplication getAppInstance() {
         return sAppInstance;
     }
+
+    VKAccessTokenTracker vkAccessTokenTracker = new VKAccessTokenTracker() {
+        @Override
+        public void onVKAccessTokenChanged(VKAccessToken oldToken, VKAccessToken newToken) {
+            if (newToken == null) {
+                //VKAccessToken is invalid
+                //TODO
+            }
+        }
+    };
 
     @Override
     public void onCreate() {
@@ -63,16 +74,12 @@ public class MyApplication extends MultiDexApplication {
             });
         }
 
+        vkAccessTokenTracker.startTracking();
         VKSdk.initialize(this);
+
         SystemUtils.printCertificateFingerprints();
 
         Realm.init(this);
-
-//        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-//                .setDefaultFontPath("fonts/Roboto-Regular.ttf")
-//                .setFontAttrId(R.attr.fontPath)
-//                .build()
-//        );
 
         //print versionCode
         Timber.d("VERSION_CODE: %s", BuildConfig.VERSION_CODE);

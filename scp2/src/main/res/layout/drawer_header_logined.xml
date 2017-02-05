@@ -2,8 +2,9 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="164dp"
-    android:background="?toolbarBackgroundGradient">
+    android:layout_height="@dimen/drawerHeaderHeight"
+    android:background="?toolbarBackgroundGradient"
+    >
 
     <TextView
         android:id="@+id/level"
@@ -11,52 +12,60 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_marginBottom="8dp"
-        android:layout_marginLeft="16dp"
-        android:text="3-й Уровень допуска (секретно)"
+        android:layout_marginBottom="@dimen/defaultMarginSmall"
+        android:layout_marginLeft="@dimen/defaultMargin"
+        android:text="@string/access_level"
         android:textColor="@color/material_blue_gray_50"
-        android:textSize="17sp"/>
+        android:textSize="17sp"
+        />
 
     <TextView
-        android:id="@+id/vk_name"
+        android:id="@+id/name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@id/level"
         android:layout_gravity="bottom|start"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="@dimen/defaultMarginSmall"
         android:layout_marginLeft="@dimen/defaultMargin"
         android:textColor="@color/material_blue_gray_50"
-        android:textSize="19sp"/>
+        android:textSize="19sp"
+        />
 
     <ImageView
-        android:id="@+id/vk_avatar"
+        android:id="@+id/avatar"
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:layout_above="@id/vk_name"
-        android:layout_marginBottom="16dp"
-        android:layout_marginLeft="16dp"
+        android:layout_above="@id/name"
+        android:layout_marginBottom="@dimen/defaultMargin"
+        android:layout_marginLeft="@dimen/defaultMargin"
         android:contentDescription="@string/app_name"
-        android:src="@drawable/scplogo"/>
+        android:src="@drawable/scplogo"
+        />
 
     <ImageView
         android:id="@+id/logout"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:layout_alignBottom="@id/vk_avatar"
+        android:layout_alignBottom="@id/avatar"
         android:layout_alignParentRight="true"
         android:layout_marginBottom="13dp"
-        android:layout_marginRight="16dp"
+        android:layout_marginRight="@dimen/defaultMargin"
+        android:background="?selectableItemBackgroundBorderless"
         android:contentDescription="@string/app_name"
-        android:src="@drawable/ic_exit_to_app_white_48dp"/>
+        android:src="@drawable/ic_exit_to_app_white_48dp"
+        />
 
     <ImageView
         android:id="@+id/donate"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_alignBottom="@id/vk_avatar"
+        android:layout_alignBottom="@id/avatar"
         android:layout_marginLeft="40dp"
-        android:layout_marginRight="16dp"
-        android:layout_toRightOf="@+id/vk_avatar"
+        android:layout_marginRight="@dimen/defaultMargin"
+        android:layout_toRightOf="@id/avatar"
+        android:background="?selectableItemBackgroundBorderless"
         android:contentDescription="@string/app_name"
-        android:src="@drawable/ic_monetization_on_white_24dp"/>
+        android:src="@drawable/ic_monetization_on_white_24dp"
+        />
+
 </RelativeLayout>

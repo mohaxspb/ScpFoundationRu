@@ -28,24 +28,19 @@ import ru.dante.scpfoundation.fragments.FragmentDialogShowSubscription;
 /**
  * Created for My Application by Dante on 28.02.2016  21:14.
  */
-public class VKUtils
-{
-    public static void showLoginDialog(final Context ctx, String messege)
-    {
+public class VKUtils {
+    public static void showLoginDialog(final Context ctx, String messege) {
         MaterialDialog.Builder builder = new MaterialDialog.Builder(ctx)
                 .customView(R.layout.unloged_dialog, true)
                 .title(R.string.unloged_dialog_title)
                 .positiveText("Закрыть");
         final MaterialDialog dialog = builder.build();
 
-        if (dialog.getCustomView() != null)
-        {
+        if (dialog.getCustomView() != null) {
             View login = dialog.getCustomView().findViewById(R.id.login);
-            login.setOnClickListener(new View.OnClickListener()
-            {
+            login.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v)
-                {
+                public void onClick(View v) {
                     dialog.dismiss();
                     VKSdk.login((AppCompatActivity) ctx);
                 }
@@ -57,45 +52,30 @@ public class VKUtils
         dialog.show();
     }
 
-    public static void checkVKAuth(final AppCompatActivity activity, final NavigationView navigationView)
-    {
-
-        if (VKSdk.isLoggedIn())
-        {
-            /*Удаление банера*/
-           /* if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP)
-            {
-                View banner = activity.findViewById(R.id.adView);
-                LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) banner.getLayoutParams();
-                params.height = 0;
-                banner.setLayoutParams(params);
-            }*/
-            for (int i = 0; i < navigationView.getHeaderCount(); i++)
-            {
+    public static void checkVKAuth(final AppCompatActivity activity, final NavigationView navigationView) {
+        if (VKSdk.isLoggedIn()) {
+            for (int i = 0; i < navigationView.getHeaderCount(); i++) {
                 navigationView.removeHeaderView(navigationView.getHeaderView(i));
             }
             View headerlogined = LayoutInflater.from(activity).inflate(R.layout.drawer_header_logined, navigationView, false);
             navigationView.addHeaderView(headerlogined);
             final TextView name = (TextView) headerlogined.findViewById(R.id.vk_name);
             final ImageView avatar = (ImageView) headerlogined.findViewById(R.id.vk_avatar);
-            VKApi.users().get(VKParameters.from(VKApiConst.FIELDS, "photo_200")).executeWithListener(new VKRequest.VKRequestListener()
-            {
+            VKApi.users().get(VKParameters.from(VKApiConst.FIELDS, "photo_200")).executeWithListener(new VKRequest.VKRequestListener() {
                 @Override
-                public void onComplete(VKResponse response)
-                {
+                public void onComplete(VKResponse response) {
                     VKApiUser user = ((VKList<VKApiUser>) response.parsedModel).get(0);
                     Log.d("User name", user.first_name + " " + user.last_name);
                     name.setText(user.first_name + " " + user.last_name);
                     MyUIL.get(activity).displayImage(user.photo_200, avatar, MyUIL.getRoundVKAvatarOptions(activity));
                     SharedPreferences prefVK = activity.getSharedPreferences(activity.getString(R.string.pref_vk), Context.MODE_PRIVATE);
-                    prefVK.edit().putString(activity.getString(R.string.pref_vk_name), user.first_name).commit();
-                    prefVK.edit().putString(activity.getString(R.string.pref_vk_surname), user.last_name).commit();
-                    prefVK.edit().putString(activity.getString(R.string.pref_vk_avatar), user.photo_200).commit();
+                    prefVK.edit().putString(activity.getString(R.string.pref_vk_name), user.first_name).apply();
+                    prefVK.edit().putString(activity.getString(R.string.pref_vk_surname), user.last_name).apply();
+                    prefVK.edit().putString(activity.getString(R.string.pref_vk_avatar), user.photo_200).apply();
                 }
 
                 @Override
-                public void onError(VKError error)
-                {
+                public void onError(VKError error) {
                     super.onError(error);
                     SharedPreferences prefVK = activity.getSharedPreferences(activity.getString(R.string.pref_vk), Context.MODE_PRIVATE);
                     String first_name = prefVK.getString(activity.getString(R.string.pref_vk_name), "");
@@ -107,46 +87,34 @@ public class VKUtils
             });
 
             ImageView logout = (ImageView) headerlogined.findViewById(R.id.logout);
-            logout.setOnClickListener(new View.OnClickListener()
-            {
+            logout.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v)
-                {
+                public void onClick(View v) {
                     VKSdk.logout();
                     checkVKAuth(activity, navigationView);
                 }
             });
-        } else
-        {
-            /*View banner = activity.findViewById(R.id.adView);
-            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) banner.getLayoutParams();
-            params.height = LinearLayout.LayoutParams.WRAP_CONTENT;*/
-            for (int i = 0; i < navigationView.getHeaderCount(); i++)
-            {
+        } else {
+            for (int i = 0; i < navigationView.getHeaderCount(); i++) {
                 navigationView.removeHeaderView(navigationView.getHeaderView(i));
             }
             View headerUnlogined = LayoutInflater.from(activity).inflate(R.layout.drawer_header_unlogined, navigationView, false);
             navigationView.addHeaderView(headerUnlogined);
             TextView login = (TextView) headerUnlogined.findViewById(R.id.login);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 login.setText("Log in?");
             }
-            login.setOnClickListener(new View.OnClickListener()
-            {
+            login.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v)
-                {
+                public void onClick(View v) {
                     VKSdk.login(activity);
                 }
             });
             ImageView info = (ImageView) headerUnlogined.findViewById(R.id.info);
-            info.setOnClickListener(new View.OnClickListener()
-            {
+            info.setOnClickListener(new View.OnClickListener() {
 
                 @Override
-                public void onClick(View v)
-                {
+                public void onClick(View v) {
                     new MaterialDialog.Builder(activity)
                             .content(R.string.login_advantages)
                             .title("Преимущества авторизации")
@@ -156,11 +124,9 @@ public class VKUtils
             });
         }
         ImageView donate = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.donate);
-        donate.setOnClickListener(new View.OnClickListener()
-        {
+        donate.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 FragmentDialogShowSubscription fragmentDialogShowSubscription = FragmentDialogShowSubscription.newInstance();
                 fragmentDialogShowSubscription.show(activity.getFragmentManager(), FragmentDialogShowSubscription.LOG);
 

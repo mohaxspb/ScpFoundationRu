@@ -11,4 +11,6 @@
     <dimen name="text_size_secondary">19sp</dimen>
     <dimen name="text_size_tertiary">17sp</dimen>
     <dimen name="defaultMarginBig">24dp</dimen>
+
+    <dimen name="drawerHeaderHeight">164dp</dimen>
 </resources>
