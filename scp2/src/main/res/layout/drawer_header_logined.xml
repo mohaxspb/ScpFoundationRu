@@ -3,6 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/drawerHeaderHeight"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="?toolbarBackgroundGradient"
     >
 
@@ -31,15 +32,17 @@
         android:textSize="19sp"
         />
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/avatar"
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_above="@id/name"
-        android:layout_marginBottom="@dimen/defaultMargin"
+        android:layout_marginBottom="@dimen/defaultMarginSmall"
         android:layout_marginLeft="@dimen/defaultMargin"
-        android:contentDescription="@string/app_name"
+        android:background="?selectableItemBackgroundBorderless"
         android:src="@drawable/scplogo"
+        app:civ_border_color="#FF000000"
+        app:civ_border_width="2dp"
         />
 
     <ImageView
