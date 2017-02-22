@@ -15,18 +15,6 @@
         android:src="@drawable/ic_launcher"
         />
 
-    <!--<ImageView-->
-    <!--android:id="@+id/donate"-->
-    <!--android:layout_width="50dp"-->
-    <!--android:layout_height="50dp"-->
-    <!--android:layout_alignParentTop="true"-->
-    <!--android:layout_centerInParent="true"-->
-    <!--android:layout_marginTop="30dp"-->
-    <!--android:background="?selectableItemBackgroundBorderless"-->
-    <!--android:contentDescription="@string/app_name"-->
-    <!--android:src="@drawable/ic_monetization_on_white_24dp"-->
-    <!--/>-->
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

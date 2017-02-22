@@ -140,9 +140,11 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
 
     @Override
     public void startRewardedVideoFlow() {
+        //analitics
         Bundle bundle = new Bundle();
         bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Analitics.EventType.REWARD_REQUESTED);
         mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+
         if (mMyPreferenceManager.isRewardedDescriptionShown()) {
             showRewardedVideo();
         } else {
@@ -156,11 +158,6 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
                     })
                     .show();
         }
-    }
-
-    @Override
-    public void loadRewardedVideoAd() {
-        //do nothing?.. Seems to be that appodeal make it for me
     }
 
     @Override
@@ -226,8 +223,10 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
         //appodeal
         String appKey = "96b84a34ca52ac1c82b8f3c61bfd0ade7abf5c2be24f2862";
         Appodeal.disableLocationPermissionCheck();
-//        Appodeal.setTesting(true);
-        Appodeal.setLogLevel(Log.LogLevel.debug);
+        if (BuildConfig.DEBUG) {
+            Appodeal.setTesting(true);
+            Appodeal.setLogLevel(Log.LogLevel.debug);
+        }
         Appodeal.initialize(this, appKey, Appodeal.NON_SKIPPABLE_VIDEO);
         Appodeal.setNonSkippableVideoCallbacks(new NonSkippableVideoCallbacks() {
             @Override
@@ -433,7 +432,9 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
     @Override
     public void onResume() {
         super.onResume();
-        YandexMetrica.onResumeActivity(this);
+        if (!BuildConfig.DEBUG) {
+            YandexMetrica.onResumeActivity(this);
+        }
 
         if (isTimeToShowAds() && !isAdsLoaded()) {
             requestNewInterstitial();
@@ -442,7 +443,9 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
 
     @Override
     public void onPause() {
-        YandexMetrica.onPauseActivity(this);
+        if (!BuildConfig.DEBUG) {
+            YandexMetrica.onPauseActivity(this);
+        }
         super.onPause();
     }
 

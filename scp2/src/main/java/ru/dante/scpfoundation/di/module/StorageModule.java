@@ -20,6 +20,7 @@ import ru.dante.scpfoundation.manager.MyPreferenceManager;
  */
 @Module
 public class StorageModule {
+
     @Provides
     @NonNull
     @Singleton

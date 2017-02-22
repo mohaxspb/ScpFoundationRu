@@ -39,7 +39,7 @@ public abstract class BasePresenter<V extends BaseMvp.View>
     }
 
     /**
-     * override it to do something on gettting user from DB
+     * override it to do something on getting user from DB
      * i.e. update drawers header via calling View methods
      */
     protected void onReceiveUserFromDb() {

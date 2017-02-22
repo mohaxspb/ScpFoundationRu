@@ -23,8 +23,6 @@ public interface AdsActions {
 
     void updateOwnedMarketItems();
 
-    void loadRewardedVideoAd();
-
     void showRewardedVideo();
 
     void startRewardedVideoFlow();
