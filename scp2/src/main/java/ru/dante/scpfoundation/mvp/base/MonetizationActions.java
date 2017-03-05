@@ -7,7 +7,7 @@ import ru.dante.scpfoundation.monetization.util.MyAdListener;
  * <p>
  * for scp_ru
  */
-public interface AdsActions {
+public interface MonetizationActions {
 
     void initAds();
 

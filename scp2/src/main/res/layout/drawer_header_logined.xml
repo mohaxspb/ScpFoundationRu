@@ -59,7 +59,7 @@
         />
 
     <ImageView
-        android:id="@+id/donate"
+        android:id="@+id/inapp"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_alignBottom="@id/avatar"

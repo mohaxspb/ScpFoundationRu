@@ -19,6 +19,7 @@ import butterknife.BindView;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
+import ru.dante.scpfoundation.ui.base.BaseBottomSheetDialogFragment;
 import timber.log.Timber;
 
 

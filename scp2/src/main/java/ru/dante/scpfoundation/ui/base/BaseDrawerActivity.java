@@ -181,7 +181,7 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
                 mPresenter.onUserLogined(null);
             });
 
-            headerViewHolder.donate.setOnClickListener(view -> {
+            headerViewHolder.inapp.setOnClickListener(view -> {
                 BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
                 subsDF.show(getSupportFragmentManager(), subsDF.getTag());
 
@@ -236,8 +236,8 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
         ImageView avatar;
         @BindView(R.id.logout)
         View logout;
-        @BindView(R.id.donate)
-        View donate;
+        @BindView(R.id.inapp)
+        View inapp;
 
         HeaderViewHolderLogined(View view) {
             ButterKnife.bind(this, view);

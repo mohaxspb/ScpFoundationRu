@@ -62,7 +62,7 @@ import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.monetization.model.Item;
 import ru.dante.scpfoundation.monetization.util.InappHelper;
 import ru.dante.scpfoundation.monetization.util.MyAdListener;
-import ru.dante.scpfoundation.mvp.base.AdsActions;
+import ru.dante.scpfoundation.mvp.base.MonetizationActions;
 import ru.dante.scpfoundation.mvp.base.BaseMvp;
 import ru.dante.scpfoundation.ui.dialog.NewVersionDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
@@ -79,7 +79,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
  */
 public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Presenter<V>>
         extends MvpActivity<V, P>
-        implements BaseMvp.View, AdsActions, SharedPreferences.OnSharedPreferenceChangeListener {
+        implements BaseMvp.View, MonetizationActions, SharedPreferences.OnSharedPreferenceChangeListener {
 
     @BindView(R.id.root)
     protected View mRoot;
