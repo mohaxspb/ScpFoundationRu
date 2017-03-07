@@ -17,31 +17,27 @@ import ru.dante.scpfoundation.Const;
 
 /**
  * Created by Dante on 09.01.2016.
+ * <p>
+ * for scp_ru
  */
-public class DownloadProtocols extends AsyncTask<Void, Void, ArrayList<String>>
-{
+public class DownloadProtocols extends AsyncTask<Void, Void, ArrayList<String>> {
+    private static final String LOG = DownloadProtocols.class.getSimpleName();
     private String url;
 
-    public interface UpdateProtocol
-    {
+    public interface UpdateProtocol {
         void update(ArrayList<String> protocols);
     }
 
-    private static final String LOG = DownloadProtocols.class.getSimpleName();
-    //    RecyclerView recyclerView;
-    UpdateProtocol updateProtocol;
+    private UpdateProtocol updateProtocol;
 
 
-    public DownloadProtocols(String url/*, RecyclerView recyclerView*/, UpdateProtocol updateProtocol)
-    {
+    public DownloadProtocols(String url, UpdateProtocol updateProtocol) {
         this.url = url;
-//        this.recyclerView = recyclerView;
         this.updateProtocol = updateProtocol;
     }
 
     @Override
-    protected ArrayList<String> doInBackground(Void... params)
-    {
+    protected ArrayList<String> doInBackground(Void... params) {
         Log.d(LOG, "doInBackground started");
         ArrayList<String> articles = new ArrayList<>();
 
@@ -51,28 +47,22 @@ public class DownloadProtocols extends AsyncTask<Void, Void, ArrayList<String>>
                 .url(url)
                 .build();
 
-
-        try
-        {
+        try {
             Response response;
             response = client.newCall(request).execute();
 //            System.out.println(response.body().string());
             Document doc = Jsoup.parse(response.body().string());
             Element pageContent = doc.getElementById("page-content");
-            if (pageContent == null)
-            {
+            if (pageContent == null) {
                 return null;
             }
 
             ArrayList<Element> listOfElements = pageContent.getElementsByTag("ul");
-            for (int i = 0; i < listOfElements.size(); i++)
-            {
+            for (int i = 0; i < listOfElements.size(); i++) {
                 ArrayList<Element> listOfLi = listOfElements.get(i).getElementsByTag("li");
-                for (int u = 0; u < listOfLi.size(); u++)
-                {
+                for (int u = 0; u < listOfLi.size(); u++) {
                     String url = listOfLi.get(u).getElementsByTag("a").first().attr("href");
-                    if (!url.startsWith("http"))
-                    {
+                    if (!url.startsWith("http")) {
                         url = Const.DOMAIN_NAME + url;
                     }
                     String text = listOfLi.get(u).text();
@@ -80,38 +70,16 @@ public class DownloadProtocols extends AsyncTask<Void, Void, ArrayList<String>>
                 }
             }
             return articles;
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
-
         return null;
     }
 
     @Override
-    protected void onPostExecute(final ArrayList<String> result)
-    {
+    protected void onPostExecute(final ArrayList<String> result) {
         super.onPostExecute(result);
 
-//        if (result == null)
-//        {
-////            Log.e(LOG, "Connection lost");
-////            Snackbar.make(recyclerView, "Connection lost", Snackbar.LENGTH_LONG).show();
-//            updateProtocol.update(null);
-//        } else
-//        {
-//
-////            ArrayList<String> urls = new ArrayList<>();
-////            ArrayList<String> titles = new ArrayList<>();
-////            for (String resultItem : result)
-////            {
-////                String[] urlAndTitle = resultItem.split("BBPE");
-////                urls.add(urlAndTitle[0]);
-////                titles.add(urlAndTitle[1]);
-////            }
-////            recyclerView.setAdapter(new RecyclerAdapterProtocols(result));
-//            updateProtocol.update(result);
-//        }
         updateProtocol.update(result);
     }
 }

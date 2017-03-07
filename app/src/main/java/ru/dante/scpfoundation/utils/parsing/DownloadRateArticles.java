@@ -23,10 +23,10 @@ import ru.dante.scpfoundation.Article;
  */
 public class DownloadRateArticles extends AsyncTask<Void, Void, ArrayList<Article>> {
     private static final String LOG = DownloadRateArticles.class.getSimpleName();
-    int pageNumber;
+    private int pageNumber;
     public static final String DOMAIN_NAME = "http://scpfoundation.ru";
-    DownloadNewArticles.UpdateArticlesList updateArticlesList;
-    Context ctx;
+    private DownloadNewArticles.UpdateArticlesList updateArticlesList;
+    private Context ctx;
 
 
     public DownloadRateArticles(int pageNumber, DownloadNewArticles.UpdateArticlesList updateArticlesList, Context ctx) {

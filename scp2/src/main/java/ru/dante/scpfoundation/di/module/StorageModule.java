@@ -15,8 +15,8 @@ import ru.dante.scpfoundation.manager.MyPreferenceManager;
 
 /**
  * Created by y.kuchanov on 22.12.16.
- * <p>
- * for TappAwards
+ *
+ * for scp_ru
  */
 @Module
 public class StorageModule {

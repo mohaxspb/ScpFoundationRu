@@ -18,56 +18,47 @@ import ru.dante.scpfoundation.Const;
 
 /**
  * Created by Dante on 09.01.2016.
+ *
+ * for scp_ru
  */
-public class DownloadImg extends AsyncTask<Void, Void, ArrayList<String>>
-{
+public class DownloadImg extends AsyncTask<Void, Void, ArrayList<String>> {
     private SetImagInfo setImagInfo;
 
-    public interface SetImagInfo
-    {
-        public void setImgInfo(ArrayList<String> description);
+    public interface SetImagInfo {
+        void setImgInfo(ArrayList<String> description);
     }
 
     private static final String LOG = DownloadImg.class.getSimpleName();
-    private Context ctx;
 
     public static final String DOMAIN_NAME = "http://artscp.com";
-    String urlCalendar = "http://artscp.com/en/calendar";
-    String urlArt = "http://artscp.com/en/artbook";
+    private String urlCalendar = "http://artscp.com/en/calendar";
+    private String urlArt = "http://artscp.com/en/artbook";
 
-    public DownloadImg(SetImagInfo imgInfo, Context ctx)
-    {
+    public DownloadImg(SetImagInfo imgInfo, Context ctx) {
         this.setImagInfo = imgInfo;
-        this.ctx = ctx;
     }
 
     @Override
-    protected ArrayList<String> doInBackground(Void... params)
-    {
-
+    protected ArrayList<String> doInBackground(Void... params) {
         Log.d(LOG, "doInBackground started: ");
         ArrayList<String> imgs = new ArrayList<>();
 
-
-        try
-        {
+        try {
             final OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder()
                     .url(urlCalendar)
                     .build();
 
-            Response response = null;
+            Response response;
             response = client.newCall(request).execute();
             Document doc = Jsoup.parse(response.body().string());
             Element gallery = doc.getElementById("sigProId5e2e1e130d");
-            for (Element li : gallery.children())
-            {
+            for (Element li : gallery.children()) {
                 Element a = li.getElementsByTag("a").first();
-                if (a == null)
-                {
-                   continue;
+                if (a == null) {
+                    continue;
                 }
-                if (a.attr("title").isEmpty()){
+                if (a.attr("title").isEmpty()) {
                     continue;
                 }
                 String imgUrl = DOMAIN_NAME + a.attr("href");
@@ -81,14 +72,12 @@ public class DownloadImg extends AsyncTask<Void, Void, ArrayList<String>>
             response = client.newCall(request).execute();
             doc = Jsoup.parse(response.body().string());
             gallery = doc.getElementById("sigProIdff703f164a");
-            for (Element li : gallery.children())
-            {
+            for (Element li : gallery.children()) {
                 Element a = li.getElementsByTag("a").first();
-                if (a == null)
-                {
-                   continue;
+                if (a == null) {
+                    continue;
                 }
-                if (a.attr("title").isEmpty()){
+                if (a.attr("title").isEmpty()) {
                     continue;
                 }
                 String imgUrl = DOMAIN_NAME + a.attr("href");
@@ -96,25 +85,20 @@ public class DownloadImg extends AsyncTask<Void, Void, ArrayList<String>>
                 imgs.add(imgUrl + Const.DIVIDER + description);
             }
             return imgs;
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
-
     }
 
     @Override
-    protected void onPostExecute(final ArrayList<String> result)
-    {
+    protected void onPostExecute(final ArrayList<String> result) {
         super.onPostExecute(result);
 
-        if (result == null)
-        {
+        if (result == null) {
             Log.e(LOG, "Connection lost");
 
-        } else
-        {
+        } else {
             setImagInfo.setImgInfo(result);
         }
     }

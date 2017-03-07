@@ -18,14 +18,16 @@ import ru.dante.scpfoundation.utils.SetTextViewHTML;
 
 /**
  * Created by Dante on 09.01.2016.
+ * <p>
+ * for scp_ru
  */
 public class Download extends AsyncTask<Void, Void, String> {
-    private static final String LOG=Download.class.getSimpleName();
+    private static final String LOG = Download.class.getSimpleName();
 
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
+    private TextView textView;
 
+    public Download(TextView textView) {
+        this.textView = textView;
     }
 
     @Override
@@ -46,7 +48,7 @@ public class Download extends AsyncTask<Void, Void, String> {
 //            System.out.println(response.body().string());
             Document doc = Jsoup.parse(response.body().string());
             org.jsoup.nodes.Element pageContent = doc.getElementById("page-content");
-            if (pageContent==null){
+            if (pageContent == null) {
                 return null;
             }
             String cuttedPageContent = pageContent.toString();
@@ -58,29 +60,20 @@ public class Download extends AsyncTask<Void, Void, String> {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         return null;
-    }
-
-    TextView textView;
-
-    public Download(TextView textView) {
-        this.textView = textView;
     }
 
     @Override
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
 
-        if(result==null){
-            Snackbar.make(textView,"Connection lost", Snackbar.LENGTH_LONG).show();
-        }else {
+        if (result == null) {
+            Snackbar.make(textView, "Connection lost", Snackbar.LENGTH_LONG).show();
+        } else {
             textView.setLinksClickable(true);
             textView.setMovementMethod(LinkMovementMethod.getInstance());
-//            textView.setText(Html.fromHtml(result,new UILImageGetter(textView,textView.getContext()),null));
             new SetTextViewHTML(textView.getContext()).setText(textView, result);
 
         }
-
     }
 }

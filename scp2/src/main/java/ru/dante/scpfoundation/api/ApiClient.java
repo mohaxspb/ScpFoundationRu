@@ -60,7 +60,6 @@ public class ApiClient {
 
     public Observable<String> getRandomUrl() {
         return bindWithUtils(Observable.create(subscriber -> {
-
             Request.Builder request = new Request.Builder();
             request.url(Constants.Api.RANDOM_PAGE_SCRIPT_URL);
             request.addHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
