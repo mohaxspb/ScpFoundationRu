@@ -13,9 +13,11 @@ import ru.dante.scpfoundation.mvp.contract.ArticleMvp;
 import ru.dante.scpfoundation.mvp.contract.ArticleScreenMvp;
 import ru.dante.scpfoundation.mvp.contract.FavoriteArticlesMvp;
 import ru.dante.scpfoundation.mvp.contract.MainMvp;
+import ru.dante.scpfoundation.mvp.contract.MaterialsArchiveMvp;
 import ru.dante.scpfoundation.mvp.contract.MaterialsExperimentsMvp;
 import ru.dante.scpfoundation.mvp.contract.MaterialsIncidentsMvp;
 import ru.dante.scpfoundation.mvp.contract.MaterialsInterviewsMvp;
+import ru.dante.scpfoundation.mvp.contract.MaterialsJokesMvp;
 import ru.dante.scpfoundation.mvp.contract.MaterialsOtherMvp;
 import ru.dante.scpfoundation.mvp.contract.MaterialsScreenMvp;
 import ru.dante.scpfoundation.mvp.contract.Objects1Articles;
@@ -30,9 +32,11 @@ import ru.dante.scpfoundation.mvp.presenter.ArticlePresenter;
 import ru.dante.scpfoundation.mvp.presenter.ArticleScreenPresenter;
 import ru.dante.scpfoundation.mvp.presenter.FavoriteArticlesPresenter;
 import ru.dante.scpfoundation.mvp.presenter.MainPresenter;
+import ru.dante.scpfoundation.mvp.presenter.MaterialsArchivePresenter;
 import ru.dante.scpfoundation.mvp.presenter.MaterialsExperimentsPresenter;
 import ru.dante.scpfoundation.mvp.presenter.MaterialsIncidentsPresenter;
 import ru.dante.scpfoundation.mvp.presenter.MaterialsInterviewPresenter;
+import ru.dante.scpfoundation.mvp.presenter.MaterialsJokesPresenter;
 import ru.dante.scpfoundation.mvp.presenter.MaterialsOtherPresenter;
 import ru.dante.scpfoundation.mvp.presenter.MaterialsScreenPresenter;
 import ru.dante.scpfoundation.mvp.presenter.MostRatedArticlesPresenter;
@@ -235,5 +239,27 @@ public class PresentersModule {
             @NonNull ApiClient apiClient
     ) {
         return new MaterialsOtherPresenter(myPreferencesManager, dbProviderFactory, apiClient);
+    }
+
+    @Provides
+    @Singleton
+    @NonNull
+    MaterialsArchiveMvp.Presenter providesMaterialsArchivePresenter(
+            @NonNull MyPreferenceManager myPreferencesManager,
+            @NonNull DbProviderFactory dbProviderFactory,
+            @NonNull ApiClient apiClient
+    ) {
+        return new MaterialsArchivePresenter(myPreferencesManager, dbProviderFactory, apiClient);
+    }
+
+    @Provides
+    @Singleton
+    @NonNull
+    MaterialsJokesMvp.Presenter providesMaterialsJokesPresenter(
+            @NonNull MyPreferenceManager myPreferencesManager,
+            @NonNull DbProviderFactory dbProviderFactory,
+            @NonNull ApiClient apiClient
+    ) {
+        return new MaterialsJokesPresenter(myPreferencesManager, dbProviderFactory, apiClient);
     }
 }

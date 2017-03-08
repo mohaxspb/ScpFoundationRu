@@ -25,36 +25,31 @@ import ru.dante.scpfoundation.fragments.FragmentJoke;
 /**
  * Created for MyApplication by Dante on 11.04.2016  22:54.
  */
-public class DownloadArchive extends AsyncTaskLoader<ArrayList<Article>>
-{
+public class DownloadArchive extends AsyncTaskLoader<ArrayList<Article>> {
     private static final String LOG = DownloadArchive.class.getSimpleName();
     private String url;
 
-    public DownloadArchive(Context context, Bundle args)
-    {
+    public DownloadArchive(Context context, Bundle args) {
         super(context);
         this.url = args.getString(FragmentJoke.KEY_URL);
         onContentChanged();
     }
 
     @Override
-    protected void onReset()
-    {
+    protected void onReset() {
         super.onReset();
-        if (takeContentChanged())forceLoad();
+        if (takeContentChanged()) forceLoad();
     }
 
     @Override
-    protected void onStartLoading()
-    {
-        Log.i(LOG,"onStartLoading called");
+    protected void onStartLoading() {
+        Log.i(LOG, "onStartLoading called");
         super.onStartLoading();
-        if (takeContentChanged())forceLoad();
+        if (takeContentChanged()) forceLoad();
     }
 
     @Override
-    public ArrayList<Article> loadInBackground()
-    {
+    public ArrayList<Article> loadInBackground() {
         Log.d(LOG, "doInBackground started");
         ArrayList<Article> articles = new ArrayList<>();
 
@@ -64,22 +59,20 @@ public class DownloadArchive extends AsyncTaskLoader<ArrayList<Article>>
                 .url(url)
                 .build();
 
-        Response response = null;
-        try
-        {
+        Response response;
+        try {
             response = client.newCall(request).execute();
 
             Document doc = Jsoup.parse(response.body().string());
             Element pageContent = doc.getElementById("page-content");
-            if (pageContent == null)
-            {
+            if (pageContent == null) {
                 return null;
             }
             //now we will remove all html code before tag h2,with id toc1
             String allHtml = pageContent.html();
             int indexOfh2WithIdToc1 = allHtml.indexOf("<h2 id=\"toc1\">");
             int indexOfh2WithIdToc5 = allHtml.indexOf("<h2 id=\"toc5\">");
-            allHtml = allHtml.substring(indexOfh2WithIdToc1,indexOfh2WithIdToc5);
+            allHtml = allHtml.substring(indexOfh2WithIdToc1, indexOfh2WithIdToc5);
 
             doc = Jsoup.parse(allHtml);
 
@@ -88,22 +81,18 @@ public class DownloadArchive extends AsyncTaskLoader<ArrayList<Article>>
             h2withIdToc1.remove();
 
             Elements allh2Tags = doc.getElementsByTag("h2");
-            for (Element h2Tag : allh2Tags)
-            {
+            for (Element h2Tag : allh2Tags) {
                 Element brTag = new Element(Tag.valueOf("br"), "");
                 h2Tag.replaceWith(brTag);
             }
-            Elements allP=doc.getElementsByTag("p");
+            Elements allP = doc.getElementsByTag("p");
             allP.remove();
-            Elements allUl=doc.getElementsByTag("ul");
+            Elements allUl = doc.getElementsByTag("ul");
             allUl.remove();
 
             String allArticles = doc.getElementsByTag("body").first().html();
             String[] arrayOfArticles = allArticles.split("<br>");
-            for (int i = 0; i < arrayOfArticles.length; i++)
-            {
-//                Log.d(LOG,arrayOfArticles[i]);
-                String arrayItem = arrayOfArticles[i];
+            for (String arrayItem : arrayOfArticles) {
                 doc = Jsoup.parse(arrayItem);
                 String imageURL = doc.getElementsByTag("img").first().attr("src");
                 String url = Const.DOMAIN_NAME + doc.getElementsByTag("a").first().attr("href");
@@ -114,10 +103,8 @@ public class DownloadArchive extends AsyncTaskLoader<ArrayList<Article>>
                 article.setTitle(title);
                 articles.add(article);
             }
-
             return articles;
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 

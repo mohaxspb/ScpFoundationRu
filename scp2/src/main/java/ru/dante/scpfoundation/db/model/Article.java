@@ -38,6 +38,8 @@ public class Article extends RealmObject {
     public static final String FIELD_IS_IN_OTHER = "isInOther";
     public static final String FIELD_IS_IN_INCIDENTS = "isInIncidents";
     public static final String FIELD_IS_IN_INTERVIEWS = "isInInterviews";
+    public static final String FIELD_IS_IN_ARCHIVE = "isInArchive";
+    public static final String FIELD_IS_IN_JOKES = "isInJokes";
 
     public static final String FIELD_URL = "url";
     public static final String FIELD_LOCAL_UPDATE_TIME_STAMP = "localUpdateTimeStamp";
@@ -78,6 +80,8 @@ public class Article extends RealmObject {
     public long isInOther = ORDER_NONE;
     public long isInIncidents = ORDER_NONE;
     public long isInInterviews = ORDER_NONE;
+    public long isInArchive = ORDER_NONE;
+    public long isInJokes = ORDER_NONE;
 
     public long localUpdateTimeStamp;
 

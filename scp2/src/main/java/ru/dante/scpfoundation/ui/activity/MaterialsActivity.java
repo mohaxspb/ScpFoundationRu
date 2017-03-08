@@ -26,9 +26,11 @@ import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
 import ru.dante.scpfoundation.ui.dialog.TextSizeDialogFragment;
 import ru.dante.scpfoundation.ui.fragment.ArticleFragment;
 import ru.dante.scpfoundation.ui.fragment.FragmentMaterialsAll;
+import ru.dante.scpfoundation.ui.fragment.MaterialsArchiveFragment;
 import ru.dante.scpfoundation.ui.fragment.MaterialsExperimentsFragment;
 import ru.dante.scpfoundation.ui.fragment.MaterialsIncidentsFragment;
 import ru.dante.scpfoundation.ui.fragment.MaterialsInterviewsFragment;
+import ru.dante.scpfoundation.ui.fragment.MaterialsJokesFragment;
 import ru.dante.scpfoundation.ui.fragment.MaterialsOtherFragment;
 import timber.log.Timber;
 
@@ -215,7 +217,6 @@ public class MaterialsActivity
     public void onMaterialsListItemClicked(int position) {
         List<String> materials = Arrays.asList(getResources().getStringArray(R.array.materials_titles));
         Timber.d("onMaterialsListItemClicked: %s", materials.get(position));
-        //TODO
 
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         Fragment fragment;
@@ -239,18 +240,16 @@ public class MaterialsActivity
                 fragmentTransaction.commit();
                 break;
             case 3:
-                //TODO
-//                fragment = FragmentJoke.newInstanse("http://scpfoundation.ru/scp-list-j");
-//                fragmentTransaction.replace(R.id.content, fragment);
-//                fragmentTransaction.addToBackStack(null);
-//                fragmentTransaction.commit();
+                fragment = MaterialsJokesFragment.newInstance();
+                fragmentTransaction.replace(R.id.content, fragment);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
                 break;
             case 4:
-                //TODO
-//                fragment = FragmentArchive.newInstanse("http://scpfoundation.ru/archive");
-//                fragmentTransaction.replace(R.id.content, fragment);
-//                fragmentTransaction.addToBackStack(null);
-//                fragmentTransaction.commit();
+                fragment = MaterialsArchiveFragment.newInstance();
+                fragmentTransaction.replace(R.id.content, fragment);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
                 break;
             case 5:
                 fragment = MaterialsOtherFragment.newInstance();

@@ -24,10 +24,12 @@ import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
 import ru.dante.scpfoundation.ui.dialog.TextSizeDialogFragment;
 import ru.dante.scpfoundation.ui.fragment.ArticleFragment;
 import ru.dante.scpfoundation.ui.activity.MainActivity;
+import ru.dante.scpfoundation.ui.fragment.MaterialsArchiveFragment;
 import ru.dante.scpfoundation.ui.fragment.MaterialsExperimentsFragment;
 import ru.dante.scpfoundation.ui.fragment.FavoriteArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.MaterialsIncidentsFragment;
 import ru.dante.scpfoundation.ui.fragment.MaterialsInterviewsFragment;
+import ru.dante.scpfoundation.ui.fragment.MaterialsJokesFragment;
 import ru.dante.scpfoundation.ui.fragment.MaterialsOtherFragment;
 import ru.dante.scpfoundation.ui.fragment.Objects1ArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.Objects2ArticlesFragment;
@@ -87,6 +89,10 @@ public interface AppComponent {
     void inject(MaterialsIncidentsFragment fragment);
 
     void inject(MaterialsOtherFragment fragment);
+
+    void inject(MaterialsArchiveFragment fragment);
+
+    void inject(MaterialsJokesFragment fragment);
 
     void inject(TextSizeDialogFragment dialogFragment);
 

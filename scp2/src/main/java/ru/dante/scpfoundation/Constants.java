@@ -60,5 +60,7 @@ public interface Constants {
         String FAVORITES = "FAVORITES";
         String OFFLINE = "OFFLINE";
         String MATERIALS_ALL = "MATERIALS_ALL";
+        String ARCHIVE = "http://scpfoundation.ru/archive";
+        String JOKES = "http://scpfoundation.ru/scp-list-j";
     }
 }
