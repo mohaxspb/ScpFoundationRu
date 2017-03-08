@@ -25,36 +25,31 @@ import ru.dante.scpfoundation.fragments.FragmentJoke;
 /**
  * Created for MyApplication by Dante on 11.04.2016  22:54.
  */
-public class DownloadJoke extends AsyncTaskLoader<ArrayList<Article>>
-{
+public class DownloadJoke extends AsyncTaskLoader<ArrayList<Article>> {
     private static final String LOG = DownloadJoke.class.getSimpleName();
     private String url;
 
-    public DownloadJoke(Context context, Bundle args)
-    {
+    public DownloadJoke(Context context, Bundle args) {
         super(context);
         this.url = args.getString(FragmentJoke.KEY_URL);
         onContentChanged();
     }
 
     @Override
-    protected void onReset()
-    {
+    protected void onReset() {
         super.onReset();
-        if (takeContentChanged())forceLoad();
+        if (takeContentChanged()) forceLoad();
     }
 
     @Override
-    protected void onStartLoading()
-    {
-        Log.i(LOG,"onStartLoading called");
+    protected void onStartLoading() {
+        Log.i(LOG, "onStartLoading called");
         super.onStartLoading();
-        if (takeContentChanged())forceLoad();
+        if (takeContentChanged()) forceLoad();
     }
 
     @Override
-    public ArrayList<Article> loadInBackground()
-    {
+    public ArrayList<Article> loadInBackground() {
         Log.d(LOG, "doInBackground started");
         ArrayList<Article> articles = new ArrayList<>();
 
@@ -64,15 +59,13 @@ public class DownloadJoke extends AsyncTaskLoader<ArrayList<Article>>
                 .url(url)
                 .build();
 
-        Response response = null;
-        try
-        {
+        Response response;
+        try {
             response = client.newCall(request).execute();
 
             Document doc = Jsoup.parse(response.body().string());
             Element pageContent = doc.getElementById("page-content");
-            if (pageContent == null)
-            {
+            if (pageContent == null) {
                 return null;
             }
             //now we will remove all html code before tag h2,with id toc1
@@ -87,16 +80,14 @@ public class DownloadJoke extends AsyncTaskLoader<ArrayList<Article>>
             h2withIdToc1.remove();
 
             Elements allh2Tags = doc.getElementsByTag("h2");
-            for (Element h2Tag : allh2Tags)
-            {
+            for (Element h2Tag : allh2Tags) {
                 Element brTag = new Element(Tag.valueOf("br"), "");
                 h2Tag.replaceWith(brTag);
             }
 
             String allArticles = doc.getElementsByTag("body").first().html();
             String[] arrayOfArticles = allArticles.split("<br>");
-            for (int i = 0; i < arrayOfArticles.length; i++)
-            {
+            for (int i = 0; i < arrayOfArticles.length; i++) {
 //                Log.d(LOG,arrayOfArticles[i]);
                 String arrayItem = arrayOfArticles[i];
                 doc = Jsoup.parse(arrayItem);
@@ -111,8 +102,7 @@ public class DownloadJoke extends AsyncTaskLoader<ArrayList<Article>>
             }
 
             return articles;
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 

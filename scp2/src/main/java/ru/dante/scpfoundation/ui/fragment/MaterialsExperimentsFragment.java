@@ -2,21 +2,21 @@ package ru.dante.scpfoundation.ui.fragment;
 
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
-import ru.dante.scpfoundation.mvp.contract.ExperimentsArticles;
+import ru.dante.scpfoundation.mvp.contract.MaterialsExperimentsMvp;
 
 /**
  * Created by mohax on 03.01.2017.
  * <p>
  * for scp_ru
  */
-public class ExperimentsArticlesFragment
-        extends BaseListArticlesWithSearchFragment<ExperimentsArticles.View, ExperimentsArticles.Presenter>
-        implements ExperimentsArticles.View {
+public class MaterialsExperimentsFragment
+        extends BaseListArticlesWithSearchFragment<MaterialsExperimentsMvp.View, MaterialsExperimentsMvp.Presenter>
+        implements MaterialsExperimentsMvp.View {
 
-    public static final String TAG = ExperimentsArticlesFragment.class.getSimpleName();
+    public static final String TAG = MaterialsExperimentsFragment.class.getSimpleName();
 
-    public static ExperimentsArticlesFragment newInstance() {
-        return new ExperimentsArticlesFragment();
+    public static MaterialsExperimentsFragment newInstance() {
+        return new MaterialsExperimentsFragment();
     }
 
     @Override

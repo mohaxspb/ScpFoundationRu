@@ -7,7 +7,8 @@ import ru.dante.scpfoundation.api.ApiClient;
 import ru.dante.scpfoundation.db.DbProviderFactory;
 import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
-import ru.dante.scpfoundation.mvp.contract.ExperimentsArticles;
+import ru.dante.scpfoundation.mvp.contract.MaterialsIncidentsMvp;
+import ru.dante.scpfoundation.mvp.contract.MaterialsOtherMvp;
 import rx.Observable;
 
 /**
@@ -15,22 +16,22 @@ import rx.Observable;
  * <p>
  * for TappAwards
  */
-public class ExperimentsArticlesPresenter
-        extends BaseObjectsArticlesPresenter<ExperimentsArticles.View>
-        implements ExperimentsArticles.Presenter {
+public class MaterialsIncidentsPresenter
+        extends BaseObjectsArticlesPresenter<MaterialsIncidentsMvp.View>
+        implements MaterialsIncidentsMvp.Presenter {
 
-    public ExperimentsArticlesPresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
+    public MaterialsIncidentsPresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
         super(myPreferencesManager, dbProviderFactory, apiClient);
     }
 
     @Override
     protected String getObjectsInDbFieldName() {
-        return Article.FIELD_IS_IN_EXPERIMETS;
+        return Article.FIELD_IS_IN_INCIDENTS;
     }
 
     @Override
     protected String getObjectsLink() {
-        return Constants.Urls.PROTOCOLS;
+        return Constants.Urls.INCEDENTS;
     }
 
     @Override

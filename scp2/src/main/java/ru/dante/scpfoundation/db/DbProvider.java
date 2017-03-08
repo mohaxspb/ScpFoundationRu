@@ -249,6 +249,15 @@ public class DbProvider {
                                 case Article.FIELD_IS_IN_EXPERIMETS:
                                     application.isInExperiments = Article.ORDER_NONE;
                                     break;
+                                case Article.FIELD_IS_IN_INCIDENTS:
+                                    application.isInIncidents = Article.ORDER_NONE;
+                                    break;
+                                case Article.FIELD_IS_IN_INTERVIEWS:
+                                    application.isInInterviews =  Article.ORDER_NONE;
+                                    break;
+                                case Article.FIELD_IS_IN_OTHER:
+                                    application.isInOther =  Article.ORDER_NONE;
+                                    break;
                                 default:
                                     Timber.e("unexpected inDbField id");
                                     break;
@@ -277,6 +286,15 @@ public class DbProvider {
                                     case Article.FIELD_IS_IN_EXPERIMETS:
                                         applicationInDb.isInExperiments = i;
                                         break;
+                                    case Article.FIELD_IS_IN_INCIDENTS:
+                                        applicationInDb.isInIncidents = i;
+                                        break;
+                                    case Article.FIELD_IS_IN_INTERVIEWS:
+                                        applicationInDb.isInInterviews = i;
+                                        break;
+                                    case Article.FIELD_IS_IN_OTHER:
+                                        applicationInDb.isInOther = i;
+                                        break;
                                     default:
                                         Timber.e("unexpected inDbField id");
                                         break;
@@ -301,6 +319,15 @@ public class DbProvider {
                                         break;
                                     case Article.FIELD_IS_IN_EXPERIMETS:
                                         applicationToWrite.isInExperiments = i;
+                                        break;
+                                    case Article.FIELD_IS_IN_INCIDENTS:
+                                        applicationToWrite.isInIncidents = i;
+                                        break;
+                                    case Article.FIELD_IS_IN_INTERVIEWS:
+                                        applicationToWrite.isInInterviews = i;
+                                        break;
+                                    case Article.FIELD_IS_IN_OTHER:
+                                        applicationToWrite.isInOther = i;
                                         break;
                                     default:
                                         Timber.e("unexpected inDbField id");

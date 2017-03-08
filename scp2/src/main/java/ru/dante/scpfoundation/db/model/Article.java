@@ -35,6 +35,9 @@ public class Article extends RealmObject {
     public static final String FIELD_IS_IN_OBJECTS_RU = "isInObjectsRu";
 
     public static final String FIELD_IS_IN_EXPERIMETS = "isInExperiments";
+    public static final String FIELD_IS_IN_OTHER = "isInOther";
+    public static final String FIELD_IS_IN_INCIDENTS = "isInIncidents";
+    public static final String FIELD_IS_IN_INTERVIEWS = "isInInterviews";
 
     public static final String FIELD_URL = "url";
     public static final String FIELD_LOCAL_UPDATE_TIME_STAMP = "localUpdateTimeStamp";
@@ -72,6 +75,9 @@ public class Article extends RealmObject {
     public long isInObjectsRu = ORDER_NONE;
 
     public long isInExperiments = ORDER_NONE;
+    public long isInOther = ORDER_NONE;
+    public long isInIncidents = ORDER_NONE;
+    public long isInInterviews = ORDER_NONE;
 
     public long localUpdateTimeStamp;
 

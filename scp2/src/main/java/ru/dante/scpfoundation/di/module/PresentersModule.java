@@ -11,9 +11,12 @@ import ru.dante.scpfoundation.db.DbProviderFactory;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.mvp.contract.ArticleMvp;
 import ru.dante.scpfoundation.mvp.contract.ArticleScreenMvp;
-import ru.dante.scpfoundation.mvp.contract.ExperimentsArticles;
 import ru.dante.scpfoundation.mvp.contract.FavoriteArticlesMvp;
 import ru.dante.scpfoundation.mvp.contract.MainMvp;
+import ru.dante.scpfoundation.mvp.contract.MaterialsExperimentsMvp;
+import ru.dante.scpfoundation.mvp.contract.MaterialsIncidentsMvp;
+import ru.dante.scpfoundation.mvp.contract.MaterialsInterviewsMvp;
+import ru.dante.scpfoundation.mvp.contract.MaterialsOtherMvp;
 import ru.dante.scpfoundation.mvp.contract.MaterialsScreenMvp;
 import ru.dante.scpfoundation.mvp.contract.Objects1Articles;
 import ru.dante.scpfoundation.mvp.contract.Objects2Articles;
@@ -25,9 +28,12 @@ import ru.dante.scpfoundation.mvp.contract.RecentArticlesMvp;
 import ru.dante.scpfoundation.mvp.contract.SiteSearchArticlesMvp;
 import ru.dante.scpfoundation.mvp.presenter.ArticlePresenter;
 import ru.dante.scpfoundation.mvp.presenter.ArticleScreenPresenter;
-import ru.dante.scpfoundation.mvp.presenter.ExperimentsArticlesPresenter;
 import ru.dante.scpfoundation.mvp.presenter.FavoriteArticlesPresenter;
 import ru.dante.scpfoundation.mvp.presenter.MainPresenter;
+import ru.dante.scpfoundation.mvp.presenter.MaterialsExperimentsPresenter;
+import ru.dante.scpfoundation.mvp.presenter.MaterialsIncidentsPresenter;
+import ru.dante.scpfoundation.mvp.presenter.MaterialsInterviewPresenter;
+import ru.dante.scpfoundation.mvp.presenter.MaterialsOtherPresenter;
 import ru.dante.scpfoundation.mvp.presenter.MaterialsScreenPresenter;
 import ru.dante.scpfoundation.mvp.presenter.MostRatedArticlesPresenter;
 import ru.dante.scpfoundation.mvp.presenter.MostRecentArticlesPresenter;
@@ -190,11 +196,44 @@ public class PresentersModule {
     @Provides
     @Singleton
     @NonNull
-    ExperimentsArticles.Presenter providesExperimentsArticlesPresenter(
+    MaterialsExperimentsMvp.Presenter providesMaterialsExperimentsPresenter(
             @NonNull MyPreferenceManager myPreferencesManager,
             @NonNull DbProviderFactory dbProviderFactory,
             @NonNull ApiClient apiClient
     ) {
-        return new ExperimentsArticlesPresenter(myPreferencesManager, dbProviderFactory, apiClient);
+        return new MaterialsExperimentsPresenter(myPreferencesManager, dbProviderFactory, apiClient);
+    }
+
+    @Provides
+    @Singleton
+    @NonNull
+    MaterialsInterviewsMvp.Presenter providesMaterialsInterviewsPresenter(
+            @NonNull MyPreferenceManager myPreferencesManager,
+            @NonNull DbProviderFactory dbProviderFactory,
+            @NonNull ApiClient apiClient
+    ) {
+        return new MaterialsInterviewPresenter(myPreferencesManager, dbProviderFactory, apiClient);
+    }
+
+    @Provides
+    @Singleton
+    @NonNull
+    MaterialsIncidentsMvp.Presenter providesMaterialsIncidentsPresenter(
+            @NonNull MyPreferenceManager myPreferencesManager,
+            @NonNull DbProviderFactory dbProviderFactory,
+            @NonNull ApiClient apiClient
+    ) {
+        return new MaterialsIncidentsPresenter(myPreferencesManager, dbProviderFactory, apiClient);
+    }
+
+    @Provides
+    @Singleton
+    @NonNull
+    MaterialsOtherMvp.Presenter providesMaterialsOtherPresenter(
+            @NonNull MyPreferenceManager myPreferencesManager,
+            @NonNull DbProviderFactory dbProviderFactory,
+            @NonNull ApiClient apiClient
+    ) {
+        return new MaterialsOtherPresenter(myPreferencesManager, dbProviderFactory, apiClient);
     }
 }

@@ -25,8 +25,11 @@ import ru.dante.scpfoundation.ui.base.BaseDrawerActivity;
 import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
 import ru.dante.scpfoundation.ui.dialog.TextSizeDialogFragment;
 import ru.dante.scpfoundation.ui.fragment.ArticleFragment;
-import ru.dante.scpfoundation.ui.fragment.ExperimentsArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.FragmentMaterialsAll;
+import ru.dante.scpfoundation.ui.fragment.MaterialsExperimentsFragment;
+import ru.dante.scpfoundation.ui.fragment.MaterialsIncidentsFragment;
+import ru.dante.scpfoundation.ui.fragment.MaterialsInterviewsFragment;
+import ru.dante.scpfoundation.ui.fragment.MaterialsOtherFragment;
 import timber.log.Timber;
 
 public class MaterialsActivity
@@ -218,43 +221,45 @@ public class MaterialsActivity
         Fragment fragment;
         switch (position) {
             case 0:
-                fragment = ExperimentsArticlesFragment.newInstance();
+                fragment = MaterialsExperimentsFragment.newInstance();
                 fragmentTransaction.replace(R.id.content, fragment);
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
                 break;
             case 1:
-//                fragment = FragmentMaterials.createFragment("http://scpfoundation.ru/incident-reports");
-//                fragmentTransaction.replace(R.id.content, fragment);
-//                fragmentTransaction.addToBackStack(null);
-//                fragmentTransaction.commit();
+                fragment = MaterialsIncidentsFragment.newInstance();
+                fragmentTransaction.replace(R.id.content, fragment);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
                 break;
             case 2:
-//                fragment = FragmentMaterials.createFragment("http://scpfoundation.ru/eye-witness-interviews");
-//                fragmentTransaction.replace(R.id.content, fragment);
-//                fragmentTransaction.addToBackStack(null);
-//                fragmentTransaction.commit();
+                fragment = MaterialsInterviewsFragment.newInstance();
+                fragmentTransaction.replace(R.id.content, fragment);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
                 break;
             case 3:
+                //TODO
 //                fragment = FragmentJoke.newInstanse("http://scpfoundation.ru/scp-list-j");
 //                fragmentTransaction.replace(R.id.content, fragment);
 //                fragmentTransaction.addToBackStack(null);
 //                fragmentTransaction.commit();
                 break;
             case 4:
+                //TODO
 //                fragment = FragmentArchive.newInstanse("http://scpfoundation.ru/archive");
 //                fragmentTransaction.replace(R.id.content, fragment);
 //                fragmentTransaction.addToBackStack(null);
 //                fragmentTransaction.commit();
                 break;
             case 5:
-//                fragment = FragmentMaterials.createFragment("http://scpfoundation.ru/other");
-//                fragmentTransaction.replace(R.id.content, fragment);
-//                fragmentTransaction.addToBackStack(null);
-//                fragmentTransaction.commit();
+                fragment = MaterialsOtherFragment.newInstance();
+                fragmentTransaction.replace(R.id.content, fragment);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
                 break;
             case 6:
-                ArticleActivity.startActivity(this, "http://scpfoundation.ru/the-leak");
+                ArticleActivity.startActivity(this, Constants.Urls.LEAKS);
                 break;
             default:
                 throw new RuntimeException("unexpected position in materials list");
@@ -263,7 +268,7 @@ public class MaterialsActivity
 
     @Override
     public void onBackPressed() {
-        if(getSupportFragmentManager().getBackStackEntryCount()==1){
+        if (getSupportFragmentManager().getBackStackEntryCount() == 1) {
             finish();
         } else {
             super.onBackPressed();

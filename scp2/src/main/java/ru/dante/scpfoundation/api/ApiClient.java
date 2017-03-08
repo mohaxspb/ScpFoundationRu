@@ -613,13 +613,10 @@ public class ApiClient {
                 subscriber.onError(e);
             }
         }))
-                .onErrorResumeNext(throwable -> {
-                    return Observable.error(new ScpException(throwable, url));
-                });
+                .onErrorResumeNext(throwable -> Observable.error(new ScpException(throwable, url)));
     }
 
     public Observable<List<Article>> getMaterialsArticles(String objectsLink) {
-        //TODO
         return bindWithUtils(Observable.<List<Article>>create(subscriber -> {
             Request request = new Request.Builder()
                     .url(objectsLink)

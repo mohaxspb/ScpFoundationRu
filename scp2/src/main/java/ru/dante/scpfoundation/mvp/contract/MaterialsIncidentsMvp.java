@@ -7,7 +7,7 @@ import ru.dante.scpfoundation.mvp.base.BaseArticlesListMvp;
  * <p>
  * for scp_ru
  */
-public interface ExperimentsArticles {
+public interface MaterialsIncidentsMvp {
     interface View extends BaseArticlesListMvp.View {
     }
 
