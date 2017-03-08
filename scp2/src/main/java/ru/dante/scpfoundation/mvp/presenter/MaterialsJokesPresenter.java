@@ -1,11 +1,14 @@
 package ru.dante.scpfoundation.mvp.presenter;
 
+import java.util.List;
+
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.api.ApiClient;
 import ru.dante.scpfoundation.db.DbProviderFactory;
 import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.mvp.contract.MaterialsJokesMvp;
+import rx.Observable;
 
 /**
  * Created by y.kuchanov on 21.12.16.
@@ -30,8 +33,8 @@ public class MaterialsJokesPresenter
         return Constants.Urls.JOKES;
     }
 
-//    @Override
-//    protected Observable<List<Article>> getApiObservable(int offset) {
-//        return mApiClient.getMaterialsArticles(getObjectsLink());
-//    }
+    @Override
+    protected Observable<List<Article>> getApiObservable(int offset) {
+        return mApiClient.getMaterialsJokesArticles();
+    }
 }

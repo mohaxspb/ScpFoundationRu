@@ -14,6 +14,7 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -25,7 +26,7 @@ import ru.dante.scpfoundation.fragments.FragmentJoke;
 /**
  * Created for MyApplication by Dante on 11.04.2016  22:54.
  */
-public class DownloadJoke extends AsyncTaskLoader<ArrayList<Article>> {
+public class DownloadJoke extends AsyncTaskLoader<List<Article>> {
     private static final String LOG = DownloadJoke.class.getSimpleName();
     private String url;
 
@@ -49,9 +50,9 @@ public class DownloadJoke extends AsyncTaskLoader<ArrayList<Article>> {
     }
 
     @Override
-    public ArrayList<Article> loadInBackground() {
+    public List<Article> loadInBackground() {
         Log.d(LOG, "doInBackground started");
-        ArrayList<Article> articles = new ArrayList<>();
+        List<Article> articles = new ArrayList<>();
 
         final OkHttpClient client = new OkHttpClient();
 
@@ -75,7 +76,6 @@ public class DownloadJoke extends AsyncTaskLoader<ArrayList<Article>> {
 
             doc = Jsoup.parse(allHtml);
 
-//            Log.d(LOG, doc.toString());
             Element h2withIdToc1 = doc.getElementById("toc1");
             h2withIdToc1.remove();
 
@@ -87,9 +87,7 @@ public class DownloadJoke extends AsyncTaskLoader<ArrayList<Article>> {
 
             String allArticles = doc.getElementsByTag("body").first().html();
             String[] arrayOfArticles = allArticles.split("<br>");
-            for (int i = 0; i < arrayOfArticles.length; i++) {
-//                Log.d(LOG,arrayOfArticles[i]);
-                String arrayItem = arrayOfArticles[i];
+            for (String arrayItem : arrayOfArticles) {
                 doc = Jsoup.parse(arrayItem);
                 String imageURL = doc.getElementsByTag("img").first().attr("src");
                 String url = Const.DOMAIN_NAME + doc.getElementsByTag("a").first().attr("href");

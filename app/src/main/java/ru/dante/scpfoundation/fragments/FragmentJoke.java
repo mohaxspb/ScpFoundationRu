@@ -3,6 +3,7 @@ package ru.dante.scpfoundation.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -19,6 +20,7 @@ import android.view.ViewGroup;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import ru.dante.scpfoundation.Article;
 import ru.dante.scpfoundation.R;
@@ -31,14 +33,14 @@ import ru.dante.scpfoundation.utils.parsing.DownloadJoke;
 /**
  * Created for MyApplication by Dante on 11.04.2016  22:53.
  */
-public class FragmentJoke extends Fragment implements LoaderManager.LoaderCallbacks<ArrayList<Article>> {
+public class FragmentJoke extends Fragment implements LoaderManager.LoaderCallbacks<List<Article>> {
     public static final String KEY_URL = "KEY_URL";
     private static final String LOG = FragmentJoke.class.getSimpleName();
     private Context ctx;
     private String url;
     private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView recyclerView;
-    private ArrayList<Article> articles = new ArrayList<>();
+    private List<Article> articles = new ArrayList<>();
 
     @Override
     public void onResume() {
@@ -58,12 +60,12 @@ public class FragmentJoke extends Fragment implements LoaderManager.LoaderCallba
         }
     }
 
-    private Loader<ArrayList<Article>> loader;
+    private Loader<List<Article>> loader;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList(Article.KEY_ARTICLE, articles);
+        outState.putParcelableArrayList(Article.KEY_ARTICLE, (ArrayList<? extends Parcelable>) articles);
     }
 
     @Nullable
@@ -126,12 +128,12 @@ public class FragmentJoke extends Fragment implements LoaderManager.LoaderCallba
     }
 
     @Override
-    public Loader<ArrayList<Article>> onCreateLoader(int id, Bundle args) {
+    public Loader<List<Article>> onCreateLoader(int id, Bundle args) {
         return new DownloadJoke(ctx, args);
     }
 
     @Override
-    public void onLoadFinished(Loader<ArrayList<Article>> loader, ArrayList<Article> data) {
+    public void onLoadFinished(Loader<List<Article>> loader, List<Article> data) {
         //workaround from
         //http://stackoverflow.com/a/26910973/3212712
         swipeRefreshLayout.post(new Runnable() {
@@ -152,7 +154,7 @@ public class FragmentJoke extends Fragment implements LoaderManager.LoaderCallba
     }
 
     @Override
-    public void onLoaderReset(Loader<ArrayList<Article>> loader) {
+    public void onLoaderReset(Loader<List<Article>> loader) {
 
     }
 
