@@ -517,43 +517,6 @@ public class ApiClient {
                 }
 
                 //type TODO fucking unformatted info!
-//                @Article.ObjectType
-//                String type;
-//                switch (imageURL) {
-//                    case "http://scp-ru.wdfiles.com/local--files/scp-list-3/na.png":
-//                    case "http://scp-ru.wdfiles.com/local--files/scp-list-2/na(1).png":
-//                    case "http://scp-ru.wdfiles.com/local--files/scp-list-ru/na(1).png":
-//                    case "http://scp-ru.wdfiles.com/local--files/scp-list/na.png":
-//                        type = Article.ObjectType.NEUTRAL_OR_NOT_ADDED;
-//                        break;
-//                    case "http://scp-ru.wdfiles.com/local--files/scp-list-3/safe.png":
-//                    case "http://scp-ru.wdfiles.com/local--files/scp-list-2/safe(1).png":
-//                    case "http://scp-ru.wdfiles.com/local--files/scp-list-ru/safe(1).png":
-//                    case "http://scp-ru.wdfiles.com/local--files/scp-list/safe.png":
-//                        type = Article.ObjectType.SAFE;
-//                        break;
-//                    case "http://scp-ru.wdfiles.com/local--files/scp-list-3/euclid.png":
-//                    case "http://scp-ru.wdfiles.com/local--files/scp-list-2/euclid(1).png":
-//                    case "http://scp-ru.wdfiles.com/local--files/scp-list-ru/euclid(1).png":
-//                    case "http://scp-ru.wdfiles.com/local--files/scp-list/euclid.png":
-//                        type = Article.ObjectType.EUCLID;
-//                        break;
-//                    case "http://scp-ru.wdfiles.com/local--files/scp-list-3/keter.png":
-//                    case "http://scp-ru.wdfiles.com/local--files/scp-list-2/keter(1).png":
-//                    case "http://scp-ru.wdfiles.com/local--files/scp-list-ru/keter(1).png":
-//                    case "http://scp-ru.wdfiles.com/local--files/scp-list/keter.png":
-//                        type = Article.ObjectType.KETER;
-//                        break;
-//                    case "http://scp-ru.wdfiles.com/local--files/scp-list-3/thaumiel.png":
-//                    case "http://scp-ru.wdfiles.com/local--files/scp-list-2/thaumiel(1).png":
-//                    case "http://scp-ru.wdfiles.com/local--files/scp-list-ru/thaumiel(1).png":
-//                    case "http://scp-ru.wdfiles.com/local--files/scp-list/thaumiel.png":
-//                        type = Article.ObjectType.THAUMIEL;
-//                        break;
-//                    default:
-//                        type = Article.ObjectType.NONE;
-//                        break;
-//                }
 
                 //finally fill article info
                 Article article = new Article();
@@ -745,7 +708,7 @@ public class ApiClient {
                 String allArticles = doc.getElementsByTag("body").first().html();
                 String[] arrayOfArticles = allArticles.split("<br>");
                 for (String arrayItem : arrayOfArticles) {
-                    Timber.d("arrayItem: %s", arrayItem);
+//                    Timber.d("arrayItem: %s", arrayItem);
                     doc = Jsoup.parse(arrayItem);
                     String imageURL = doc.getElementsByTag("img").first().attr("src");
                     String url = BuildConfig.BASE_API_URL + doc.getElementsByTag("a").first().attr("href");
@@ -781,7 +744,7 @@ public class ApiClient {
             case "http://scp-ru.wdfiles.com/local--files/scp-list-ru/na(1).png":
             case "http://scp-ru.wdfiles.com/local--files/scp-list/na.png":
             case "http://scp-ru.wdfiles.com/local--files/archive/na.png":
-            case "http://scp-ru.wdfiles.com/local--files/scp-list-j/na.png":
+            case "http://scp-ru.wdfiles.com/local--files/scp-list-j/na(1).png":
                 type = Article.ObjectType.NEUTRAL_OR_NOT_ADDED;
                 break;
             case "http://scp-ru.wdfiles.com/local--files/scp-list-3/safe.png":
@@ -789,7 +752,7 @@ public class ApiClient {
             case "http://scp-ru.wdfiles.com/local--files/scp-list-ru/safe(1).png":
             case "http://scp-ru.wdfiles.com/local--files/scp-list/safe.png":
             case "http://scp-ru.wdfiles.com/local--files/archive/safe.png":
-            case "http://scp-ru.wdfiles.com/local--files/scp-list-j/safe.png":
+            case "http://scp-ru.wdfiles.com/local--files/scp-list-j/safe(1).png":
                 type = Article.ObjectType.SAFE;
                 break;
             case "http://scp-ru.wdfiles.com/local--files/scp-list-3/euclid.png":
@@ -797,7 +760,7 @@ public class ApiClient {
             case "http://scp-ru.wdfiles.com/local--files/scp-list-ru/euclid(1).png":
             case "http://scp-ru.wdfiles.com/local--files/scp-list/euclid.png":
             case "http://scp-ru.wdfiles.com/local--files/archive/euclid.png":
-            case "http://scp-ru.wdfiles.com/local--files/scp-list-j/euclid.png":
+            case "http://scp-ru.wdfiles.com/local--files/scp-list-j/euclid(1).png":
                 type = Article.ObjectType.EUCLID;
                 break;
             case "http://scp-ru.wdfiles.com/local--files/scp-list-3/keter.png":
@@ -805,7 +768,7 @@ public class ApiClient {
             case "http://scp-ru.wdfiles.com/local--files/scp-list-ru/keter(1).png":
             case "http://scp-ru.wdfiles.com/local--files/scp-list/keter.png":
             case "http://scp-ru.wdfiles.com/local--files/archive/keter.png":
-            case "http://scp-ru.wdfiles.com/local--files/scp-list-j/keter.png":
+            case "http://scp-ru.wdfiles.com/local--files/scp-list-j/keter(1).png":
                 type = Article.ObjectType.KETER;
                 break;
             case "http://scp-ru.wdfiles.com/local--files/scp-list-3/thaumiel.png":
@@ -813,7 +776,7 @@ public class ApiClient {
             case "http://scp-ru.wdfiles.com/local--files/scp-list-ru/thaumiel(1).png":
             case "http://scp-ru.wdfiles.com/local--files/scp-list/thaumiel.png":
             case "http://scp-ru.wdfiles.com/local--files/archive/thaumiel.png":
-            case "http://scp-ru.wdfiles.com/local--files/scp-list-j/thaumiel.png":
+            case "http://scp-ru.wdfiles.com/local--files/scp-list-j/thaumiel(1).png":
                 type = Article.ObjectType.THAUMIEL;
                 break;
             default:
