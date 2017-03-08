@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import com.android.vending.billing.IInAppBillingService;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -179,6 +180,10 @@ public class SubscriptionsFragmentDialog
                     JSONObject jo = new JSONObject(purchaseData);
                     String sku = jo.getString("productId");
                     Timber.d("You have bought the %s", sku);
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, sku);
+                    FirebaseAnalytics.getInstance(getActivity()).logEvent(FirebaseAnalytics.Event.ECOMMERCE_PURCHASE, bundle);
                 } catch (JSONException e) {
                     Timber.e(e, "Failed to parse purchase data.");
                 }

@@ -27,14 +27,17 @@
             android:id="@+id/listItemStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:background="?selectableItemBackground"
-            android:padding="@dimen/defaultMargin">
+            android:orientation="horizontal"
+            android:paddingRight="@dimen/defaultMargin"
+            android:paddingLeft="@dimen/defaultMargin"
+            >
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:gravity="center_vertical"
                 android:text="@string/settings_design_list_type"
                 />
 
@@ -44,20 +47,26 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:paddingLeft="@dimen/defaultMarginSmall"
-                tools:ignore="RtlHardcoded,RtlSymmetry"/>
+                tools:ignore="RtlHardcoded,RtlSymmetry"
+                />
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/fontPrefered"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:background="?selectableItemBackground"
-            android:padding="@dimen/defaultMargin">
+            android:orientation="horizontal"
+            android:paddingTop="@dimen/defaultMarginSmall"
+            android:paddingBottom="@dimen/defaultMarginSmall"
+            android:paddingRight="@dimen/defaultMargin"
+            android:paddingLeft="@dimen/defaultMargin"
+            >
 
             <TextView
                 android:id="@+id/fontPreferedTitle"
                 android:layout_width="0dp"
+                android:gravity="center_vertical"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="@string/settings_design_font"
@@ -67,9 +76,10 @@
                 android:id="@+id/fontPreferedSpinner"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
+                android:layout_weight="2"
                 android:paddingLeft="@dimen/defaultMarginSmall"
-                tools:ignore="RtlHardcoded,RtlSymmetry"/>
+                tools:ignore="RtlHardcoded,RtlSymmetry"
+                />
         </LinearLayout>
 
         <TextView

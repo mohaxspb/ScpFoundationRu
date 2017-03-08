@@ -2,13 +2,18 @@ package ru.dante.scpfoundation.ui.dialog;
 
 import android.app.Dialog;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringDef;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v7.widget.SwitchCompat;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
@@ -28,6 +33,7 @@ import ru.dante.scpfoundation.manager.MyNotificationManager;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.ui.base.BaseBottomSheetDialogFragment;
 import ru.dante.scpfoundation.util.AttributeGetter;
+import ru.dante.scpfoundation.util.DimensionUtils;
 import timber.log.Timber;
 import uk.co.chrisjenx.calligraphy.CalligraphyUtils;
 
@@ -84,7 +90,7 @@ public class SetttingsBottomSheetDialogFragment
 
     @Override
     protected int getLayoutResId() {
-        return R.layout.fragment_bottom_sheet_notif_settings;
+        return R.layout.fragment_bottom_sheet_settings;
     }
 
     @Override
@@ -98,9 +104,7 @@ public class SetttingsBottomSheetDialogFragment
 
         //design
         //card style
-        listItemStyle.setOnClickListener(view -> {
-            listItemSpinner.performClick();
-        });
+        listItemStyle.setOnClickListener(view -> listItemSpinner.performClick());
         String[] types = new String[]{ListItemType.MIN, ListItemType.MIDDLE, ListItemType.MAX};
         @ListItemType
         List<String> typesList = Arrays.asList(types);
@@ -117,52 +121,115 @@ public class SetttingsBottomSheetDialogFragment
         }
 
         listItemSpinner.setAdapter(adapterCard);
-        listItemSpinner.setSelection(typesList.indexOf(mMyPreferenceManager.getListDesignType()));
 
-        listItemSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                mMyPreferenceManager.setListDesignType(types[i]);
-            }
+        listItemSpinner.post(() -> {
+            listItemSpinner.setSelection(typesList.indexOf(mMyPreferenceManager.getListDesignType()));
+            listItemSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    mMyPreferenceManager.setListDesignType(types[i]);
+                }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
 
-            }
+                }
+            });
         });
         //font
         CalligraphyUtils.applyFontToTextView(getActivity(), fontPreferedTitle, mMyPreferenceManager.getFontPath());
-        fontPrefered.setOnClickListener(view -> {
-            fontPreferedSpinner.performClick();
-        });
-        String[] fonts = getResources().getStringArray(R.array.fonts);
+        fontPrefered.setOnClickListener(view -> fontPreferedSpinner.performClick());
+
+        List<String> fontsPathsList = Arrays.asList(getResources().getStringArray(R.array.fonts));
         @ListItemType
         List<String> fontsList = Arrays.asList(getResources().getStringArray(R.array.fonts_names));
 
         ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(getActivity(), R.layout.design_list_spinner_item, fontsList);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                new ArrayAdapter<String>(getActivity(), R.layout.design_list_spinner_item_font, fontsList) {
+                    @Override
+                    public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                        View v = convertView;
 
-        Drawable.ConstantState fontsSpinnerDrawableConstantState = listItemSpinner.getBackground().getConstantState();
+                        if (v == null) {
+                            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+                            v = inflater.inflate(R.layout.design_list_spinner_item_font, parent, false);
+                        }
+
+                        String fontPath = fontsPathsList.get(position);
+                        TextView textView = (TextView) v;
+                        textView.setText(fontsList.get(position));
+                        int padding = DimensionUtils.getDefaultMargin();
+                        textView.setPadding(padding, padding, padding, padding);
+                        CalligraphyUtils.applyFontToTextView(parent.getContext(), textView, fontPath);
+
+                        boolean isNightMode = mMyPreferenceManager.isNightMode();
+                        int backgroundColorSelected = isNightMode ? Color.parseColor("#33ECEFF1") : Color.parseColor("#33724646");
+//                        int backgroundColorUnselected = AttributeGetter.getColor(parent.getContext(), R.attr.windowbackgroundOverrided);
+                        int backgroundColorUnselected = isNightMode ? Color.parseColor("#3337474F") : Color.parseColor("#33ECEFF1");
+
+                        boolean isSelected = position == fontsPathsList.indexOf(mMyPreferenceManager.getFontPath());
+//                        Timber.d("isSelected: %s", isSelected);
+
+                        v.setBackgroundColor(isSelected ? backgroundColorSelected : backgroundColorUnselected);
+
+                        return v;
+                    }
+
+                    @NonNull
+                    @Override
+                    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                        View v = convertView;
+
+                        if (v == null) {
+                            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+                            v = inflater.inflate(R.layout.design_list_spinner_item_font, parent, false);
+                        }
+
+                        String fontPath = fontsPathsList.get(position);
+                        TextView textView = (TextView) v;
+                        textView.setText(fontsList.get(position));
+                        int padding = DimensionUtils.getDefaultMarginSmall();
+                        textView.setPadding(padding, padding, padding, padding);
+                        CalligraphyUtils.applyFontToTextView(parent.getContext(), textView, fontPath);
+
+                        boolean isNightMode = mMyPreferenceManager.isNightMode();
+                        int backgroundColorSelected = isNightMode ? Color.parseColor("#ECEFF1") : Color.parseColor("#724646");
+                        int backgroundColorUnselected = AttributeGetter.getColor(parent.getContext(), R.attr.windowbackgroundOverrided);
+
+                        boolean isSelected = position == fontPath.indexOf(mMyPreferenceManager.getFontPath());
+
+                        v.setBackgroundColor(isSelected ? backgroundColorSelected : backgroundColorUnselected);
+
+                        return v;
+                    }
+                };
+
+        Drawable.ConstantState fontsSpinnerDrawableConstantState = fontPreferedSpinner.getBackground().getConstantState();
         if (fontsSpinnerDrawableConstantState != null) {
             Drawable spinnerDrawable = fontsSpinnerDrawableConstantState.newDrawable();
             spinnerDrawable.setColorFilter(AttributeGetter.getColor(getActivity(), R.attr.newArticlesTextColor), PorterDuff.Mode.SRC_ATOP);
-            listItemSpinner.setBackground(spinnerDrawable);
+            fontPreferedSpinner.setBackground(spinnerDrawable);
         }
 
         fontPreferedSpinner.setAdapter(adapter);
-        fontPreferedSpinner.setSelection(fontsList.indexOf(mMyPreferenceManager.getFontPath()));
 
-        fontPreferedSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                mMyPreferenceManager.setFontPath(fonts[i]);
-            }
+        fontPreferedSpinner.setSelection(fontsPathsList.indexOf(mMyPreferenceManager.getFontPath()));
 
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
+        fontPreferedSpinner.post(() -> {
+            fontPreferedSpinner.setSelection(fontsList.indexOf(mMyPreferenceManager.getFontPath()));
+            fontPreferedSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+                    Timber.d("onItemSelected position: %s, font: %s", position, fontsList.get(position));
+                    mMyPreferenceManager.setFontPath(fontsPathsList.get(position));
+                    //TODO close some for unsubscribed
+                }
 
-            }
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+
+                }
+            });
         });
 
         //notif
