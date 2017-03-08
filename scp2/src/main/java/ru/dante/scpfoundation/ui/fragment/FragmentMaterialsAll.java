@@ -42,6 +42,13 @@ public class FragmentMaterialsAll extends Fragment {
             MaterialsScreenMvp.View materialsScreenView = (MaterialsScreenMvp.View) getActivity();
             materialsScreenView.onMaterialsListItemClicked(position);
         });
+
+        if (getUserVisibleHint()) {
+            if (getActivity() instanceof ArticleFragment.ToolbarStateSetter) {
+                ((ArticleFragment.ToolbarStateSetter) getActivity()).setTitle(getString(R.string.materials));
+            }
+        }
+
         return v;
     }
 

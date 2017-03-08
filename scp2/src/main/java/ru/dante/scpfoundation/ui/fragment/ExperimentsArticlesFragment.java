@@ -1,6 +1,7 @@
 package ru.dante.scpfoundation.ui.fragment;
 
 import ru.dante.scpfoundation.MyApplication;
+import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.mvp.contract.ExperimentsArticles;
 
 /**
@@ -21,6 +22,17 @@ public class ExperimentsArticlesFragment
     @Override
     protected void callInjections() {
         MyApplication.getAppComponent().inject(this);
+    }
+
+    @Override
+    protected void initViews() {
+        super.initViews();
+
+        if (getUserVisibleHint()) {
+            if (getActivity() instanceof ArticleFragment.ToolbarStateSetter) {
+                ((ArticleFragment.ToolbarStateSetter) getActivity()).setTitle(getString(R.string.materials_experiments));
+            }
+        }
     }
 
     @Override

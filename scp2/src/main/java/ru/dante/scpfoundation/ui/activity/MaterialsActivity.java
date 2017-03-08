@@ -6,14 +6,12 @@ import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.view.MenuItem;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -152,8 +150,7 @@ public class MaterialsActivity
                 link = Constants.Urls.OBJECTS_RU;
                 break;
             case R.id.files:
-                //we are already here
-                //todo maybe check and replace with materials list fragment if it's not it
+                getSupportFragmentManager().popBackStackImmediate(FragmentMaterialsAll.TAG, 0);
                 return false;
             case R.id.stories:
                 link = Constants.Urls.STORIES;
@@ -260,7 +257,16 @@ public class MaterialsActivity
                 ArticleActivity.startActivity(this, "http://scpfoundation.ru/the-leak");
                 break;
             default:
-                throw new RuntimeException("unexpected position in materilas list");
+                throw new RuntimeException("unexpected position in materials list");
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(getSupportFragmentManager().getBackStackEntryCount()==1){
+            finish();
+        } else {
+            super.onBackPressed();
         }
     }
 }
