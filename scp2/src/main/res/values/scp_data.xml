@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string-array name="materials_titles">
         <item>Протоколы экспериментов</item>
         <item>Отчёты об инцидентах</item>
@@ -7,26 +8,15 @@
         <item>Шуточные SCP</item>
         <item>Архивные SCP</item>
         <item>Прочие материалы</item>
-        <!--<item>Рассказы</item>-->
-        <!--<item>Канон-хаб</item>-->
-        <!--<item>Материалы Связанных Организаций</item>-->
-        <!--<item>Работы SunnyClockwork</item>-->
         <item>За кадром</item>
     </string-array>
-    <!--for VK-->
-    <string name="pref_vk_authorized">pref_vk_authorized</string>
-    <string name="pref_vk">pref_vk</string>
-    <string name="pref_vk_name">pref_vk_name</string>
-    <string name="pref_vk_surname">pref_vk_surname</string>
-    <string name="pref_vk_avatar">pref_vk_avatar</string>
 
-    <!--table style-->
-    <!--<string name="table_html"><!DOCTYPE html>-->
-            <!--<html>-->
-              <!--<head>-->
-                  <!--<meta charset="utf-8">-->
-                    <!--<style>table.wiki-content-table{border-collapse:collapse;border-spacing:0;margin:.5em auto}table.wiki-content-table td{border:1px solid #888;padding:.3em .7em}table.wiki-content-table th{border:1px solid #888;padding:.3em .7em;background-color:#eee}</style>-->
-              <!--</head>-->
-                <!--<body>%s</body>-->
-            <!--</html></string>-->
+    <string name="materials_experiments">Протоколы экспериментов</string>
+    <string name="materials_incidents">Отчёты об инцидентах</string>
+    <string name="materials_interview">Интервью с очевидцами</string>
+    <string name="materials_jokes">Шуточные SCP</string>
+    <string name="materials_archive">Архивные SCP</string>
+    <string name="materials_others">Прочие материалы</string>
+    <string name="materials_kadr">За кадром</string>
+
 </resources>

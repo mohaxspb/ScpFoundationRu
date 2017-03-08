@@ -72,7 +72,7 @@ public abstract class BaseListFragment<V extends BaseListMvp.View, P extends Bas
         if (!mSwipeRefreshLayout.isRefreshing() && !show) {
             return;
         }
-        mSwipeRefreshLayout.setProgressViewEndTarget(false, getActionBarHeight());
+        mSwipeRefreshLayout.setProgressViewEndTarget(false, DimensionUtils.getActionBarHeight(getActivity()));
         mSwipeRefreshLayout.setRefreshing(show);
     }
 
@@ -101,7 +101,7 @@ public abstract class BaseListFragment<V extends BaseListMvp.View, P extends Bas
 
         if (show) {
             int screenHeight = DimensionUtils.getScreenHeight();
-            mSwipeRefreshLayout.setProgressViewEndTarget(false, screenHeight - getActionBarHeight() * 2);
+            mSwipeRefreshLayout.setProgressViewEndTarget(false, screenHeight - DimensionUtils.getActionBarHeight(getActivity()) * 2);
         }
 
         mSwipeRefreshLayout.setRefreshing(show);
@@ -130,8 +130,8 @@ public abstract class BaseListFragment<V extends BaseListMvp.View, P extends Bas
     }
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
-        switch (s) {
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        switch (key) {
             case MyPreferenceManager.Keys.TEXT_SCALE_UI:
                 onTextSizeUiChanged();
                 break;
@@ -149,7 +149,6 @@ public abstract class BaseListFragment<V extends BaseListMvp.View, P extends Bas
                 }
                 mRecyclerView.setAdapter(null);
                 mRecyclerView.setAdapter(getAdapter());
-//                getAdapter().notifyDataSetChanged();
                 break;
             default:
                 //do nothing

@@ -1,4 +1,4 @@
-package ru.dante.scpfoundation.ui.dialog;
+package ru.dante.scpfoundation.ui.base;
 
 import android.app.Dialog;
 import android.os.Bundle;

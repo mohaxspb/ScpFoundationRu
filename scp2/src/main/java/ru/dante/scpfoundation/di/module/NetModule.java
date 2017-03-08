@@ -42,8 +42,8 @@ import timber.log.Timber;
 
 /**
  * Created by y.kuchanov on 22.12.16.
- * <p>
- * for TappAwards
+ *
+ * for scp_ru
  */
 @Module
 public class NetModule {

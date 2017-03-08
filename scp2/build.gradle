@@ -7,11 +7,12 @@ apply plugin: 'me.tatarka.retrolambda'
 //which must be in format major, minor, patch, where patch goes from 0 to 99
 apply from: '../versioning.gradle'
 
-ext.supportLibraryVersion = '25.1.1'
+ext.supportLibraryVersion = '25.2.0'
+ext.googleLibraryVersion = '10.2.0'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "24.0.3"
+    buildToolsVersion '25.0.2'
 
     sourceSets {
         main {
@@ -28,15 +29,15 @@ android {
 
         manifestPlaceholders = [debuggable: true]
         buildConfigField "boolean", "TIMBER_ENABLE", "true"
-        buildConfigField('String', 'BASE_API_URL', '\"http://scpfoundation.ru\"')
+        buildConfigField('String', 'BASE_API_URL', '"http://scpfoundation.ru"')
         buildConfigField('int', 'TIMEOUT_SECONDS_CONNECT', '60')
         buildConfigField('int', 'TIMEOUT_SECONDS_READ', '60')
         buildConfigField('int', 'TIMEOUT_SECONDS_WRITE', '60')
 
         //play market refuses not hardcoded strings as intent filter
-        resValue('string', 'receiver_action_timer', '\"ru.dante.scpfoundation.receivers.ReceiverTimer\"')
+        resValue('string', 'receiver_action_timer', '"ru.dante.scpfoundation.receivers.ReceiverTimer"')
 //        manifestPlaceholders = [receiver_action_timer: "ru.dante.scpfoundation.receivers.ReceiverTimer"]
-        resValue('string', 'receiver_action_boot', '\"android.intent.action.BOOT_COMPLETED\"')
+        resValue('string', 'receiver_action_boot', '"android.intent.action.BOOT_COMPLETED"')
 //        manifestPlaceholders = [receiver_action_boot: "android.intent.action.BOOT_COMPLETED"]
 
         //add market skus to buildConfig
@@ -51,8 +52,8 @@ android {
             buildConfigField('String[]', 'OLD_SKUS', marketSkusProperties.get("marketSkusOld"))
             buildConfigField('String[]', 'VER_2_SKUS', marketSkusProperties.get("marketSkusVer2"))
         } else {
-            buildConfigField('String[]', 'OLD_SKUS', "{\"\",\"\",\"\"}")
-            buildConfigField('String[]', 'VER_2_SKUS', "{\"\",\"\",\"\"}")
+            buildConfigField('String[]', 'OLD_SKUS', '{"","",""}')
+            buildConfigField('String[]', 'VER_2_SKUS', '{"","",""}')
         }
         //set API keys from secret file or with default values
         if (rootProject.file('apiKeys.properties').exists()) {
@@ -61,16 +62,16 @@ android {
             apiKeysProperties.load(new FileInputStream(apiKeysPropertiesFile))
 
             resValue('string', 'yandex_metrica_api_key', apiKeysProperties.get("yandexMetricaApiKey"))
-            buildConfigField('String', 'YANDEX_METRICA_API_KEY', "\"" + apiKeysProperties.get("yandexMetricaApiKey") + "\"")
+            buildConfigField('String', 'YANDEX_METRICA_API_KEY', '"' + apiKeysProperties.get("yandexMetricaApiKey") + '"')
 
             resValue('string', 'ads_app_id', apiKeysProperties.get("adMobAppId"))
-            buildConfigField('String', 'ADS_APP_ID', "\"" + apiKeysProperties.get("adMobAppId") + "\"")
+            buildConfigField('String', 'ADS_APP_ID', '"' + apiKeysProperties.get("adMobAppId") + '"')
 
             resValue('string', 'ad_unit_id_interstitial', apiKeysProperties.get("adsBannerIdInterstitial"))
-            buildConfigField('String', 'AD_UNIT_ID_INTERSTITIAL', "\"" + apiKeysProperties.get("adsBannerIdInterstitial") + "\"")
+            buildConfigField('String', 'AD_UNIT_ID_INTERSTITIAL', '"' + apiKeysProperties.get("adsBannerIdInterstitial") + '"')
 
             resValue('string', 'ad_unit_id_rewarded', apiKeysProperties.get("adsBannerIdRewarded"))
-            buildConfigField('String', 'AD_UNIT_ID_REWARDED', "\"" + apiKeysProperties.get("adsBannerIdRewarded") + "\"")
+            buildConfigField('String', 'AD_UNIT_ID_REWARDED', '"' + apiKeysProperties.get("adsBannerIdRewarded") + '"')
 
             resValue('integer', 'com_vk_sdk_AppId', apiKeysProperties.get("vkSdkAppId"))
             buildConfigField('int', 'VK_SDK_APP_ID', apiKeysProperties.get("vkSdkAppId"))
@@ -86,6 +87,9 @@ android {
 
             resValue('string', 'ad_unit_id_rewarded', 'null')
             buildConfigField('String', 'AD_UNIT_ID_REWARDED', 'null')
+
+            resValue('integer', 'com_vk_sdk_AppId', 'null')
+            buildConfigField('int', 'VK_SDK_APP_ID', 'null')
         }
 
         // Enabling multidex support.
@@ -147,6 +151,7 @@ dependencies {
     compile "com.android.support:recyclerview-v7:$supportLibraryVersion"
     compile "com.android.support:design:$supportLibraryVersion"
     compile "com.android.support:cardview-v7:$supportLibraryVersion"
+    compile "com.android.support:support-annotations:$supportLibraryVersion"
     //multidex to support more than 65K methods
     compile 'com.android.support:multidex:1.0.1'
     //rx
@@ -186,15 +191,15 @@ dependencies {
     //fonts
     compile 'uk.co.chrisjenx:calligraphy:2.2.0'
     //ads
-    compile 'com.google.firebase:firebase-core:10.0.1'
-    compile 'com.google.firebase:firebase-ads:10.0.1'
+    compile "com.google.firebase:firebase-core:$googleLibraryVersion"
+    compile "com.google.firebase:firebase-analytics:$googleLibraryVersion"
+    compile "com.google.firebase:firebase-ads:$googleLibraryVersion"
     compile project(':cheetah-mobile-3.4.7')
-    compile 'com.google.android.gms:play-services-ads:10.0.1'
-    compile 'com.android.support:support-annotations:25.1.1'
+    compile "com.google.android.gms:play-services-ads:$googleLibraryVersion"
     //need for appodeal
-    compile 'com.google.android.gms:play-services-location:10.0.1'
+    compile "com.google.android.gms:play-services-location:$googleLibraryVersion"
     //crash
-    compile 'com.google.firebase:firebase-crash:10.0.1'
+    compile "com.google.firebase:firebase-crash:$googleLibraryVersion"
     // AppMetrica
     compile 'com.yandex.android:mobmetricalib:2.60'
     //ratingBar

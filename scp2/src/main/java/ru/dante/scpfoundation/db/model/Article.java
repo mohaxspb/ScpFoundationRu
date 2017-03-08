@@ -34,6 +34,13 @@ public class Article extends RealmObject {
     public static final String FIELD_IS_IN_OBJECTS_3 = "isInObjects3";
     public static final String FIELD_IS_IN_OBJECTS_RU = "isInObjectsRu";
 
+    public static final String FIELD_IS_IN_EXPERIMETS = "isInExperiments";
+    public static final String FIELD_IS_IN_OTHER = "isInOther";
+    public static final String FIELD_IS_IN_INCIDENTS = "isInIncidents";
+    public static final String FIELD_IS_IN_INTERVIEWS = "isInInterviews";
+    public static final String FIELD_IS_IN_ARCHIVE = "isInArchive";
+    public static final String FIELD_IS_IN_JOKES = "isInJokes";
+
     public static final String FIELD_URL = "url";
     public static final String FIELD_LOCAL_UPDATE_TIME_STAMP = "localUpdateTimeStamp";
     public static final String FIELD_TEXT = "text";
@@ -68,6 +75,13 @@ public class Article extends RealmObject {
     public long isInObjects2 = ORDER_NONE;
     public long isInObjects3 = ORDER_NONE;
     public long isInObjectsRu = ORDER_NONE;
+
+    public long isInExperiments = ORDER_NONE;
+    public long isInOther = ORDER_NONE;
+    public long isInIncidents = ORDER_NONE;
+    public long isInInterviews = ORDER_NONE;
+    public long isInArchive = ORDER_NONE;
+    public long isInJokes = ORDER_NONE;
 
     public long localUpdateTimeStamp;
 
@@ -104,14 +118,14 @@ public class Article extends RealmObject {
     public String authorUrl;
     /**
      * in format 01:06 01.07.2010
-     *
+     * <p>
      * or 17 Jan 2017 21:16
      */
     public String createdDate;
 
     /**
      * in format 01:06 01.07.2010
-     *
+     * <p>
      * or 17 Jan 2017 21:16
      */
     public String updatedDate;

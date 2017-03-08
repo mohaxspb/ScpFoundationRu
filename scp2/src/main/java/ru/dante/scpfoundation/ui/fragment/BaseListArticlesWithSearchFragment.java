@@ -175,7 +175,7 @@ public abstract class BaseListArticlesWithSearchFragment
     }
 
     /**
-     * (Грязный хак исправления цвета текста)
+     * Грязный хак исправления цвета текста
      */
     private void changeSearchViewTextColor(View view) {
         if (view != null) {

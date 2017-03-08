@@ -47,22 +47,6 @@ public class MyPreferenceManager {
         mPreferences = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
-    public void setSessionId(String sessionId) {
-        mPreferences.edit().putString(Keys.SESSION_ID, sessionId).apply();
-    }
-
-    public String getSessionId() {
-        return mPreferences.getString(Keys.SESSION_ID, "");
-    }
-
-    public void setUserId(String userId) {
-        mPreferences.edit().putString(Keys.USER_ID, userId).apply();
-    }
-
-    public String getUserId() {
-        return mPreferences.getString(Keys.USER_ID, "");
-    }
-
     public void setIsNightMode(boolean isInNightMode) {
         mPreferences.edit().putBoolean(Keys.NIGHT_MODE, isInNightMode).apply();
     }

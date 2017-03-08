@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.Snackbar;
@@ -62,8 +63,9 @@ import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.monetization.model.Item;
 import ru.dante.scpfoundation.monetization.util.InappHelper;
 import ru.dante.scpfoundation.monetization.util.MyAdListener;
-import ru.dante.scpfoundation.mvp.base.AdsActions;
+import ru.dante.scpfoundation.mvp.base.MonetizationActions;
 import ru.dante.scpfoundation.mvp.base.BaseMvp;
+import ru.dante.scpfoundation.mvp.contract.MaterialsScreenMvp;
 import ru.dante.scpfoundation.ui.dialog.NewVersionDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
@@ -79,7 +81,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
  */
 public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Presenter<V>>
         extends MvpActivity<V, P>
-        implements BaseMvp.View, AdsActions, SharedPreferences.OnSharedPreferenceChangeListener {
+        implements BaseMvp.View, MonetizationActions, SharedPreferences.OnSharedPreferenceChangeListener {
 
     @BindView(R.id.root)
     protected View mRoot;
@@ -102,6 +104,12 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
     private IInAppBillingService mService;
     private List<Item> mOwnedMarketItems = new ArrayList<>();
     private InterstitialAd mInterstitialAd;
+
+    @NonNull
+    @Override
+    public P createPresenter() {
+        return mPresenter;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,9 +148,11 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
 
     @Override
     public void startRewardedVideoFlow() {
+        //analitics
         Bundle bundle = new Bundle();
         bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Analitics.EventType.REWARD_REQUESTED);
         mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+
         if (mMyPreferenceManager.isRewardedDescriptionShown()) {
             showRewardedVideo();
         } else {
@@ -156,11 +166,6 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
                     })
                     .show();
         }
-    }
-
-    @Override
-    public void loadRewardedVideoAd() {
-        //do nothing?.. Seems to be that appodeal make it for me
     }
 
     @Override
@@ -226,8 +231,10 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
         //appodeal
         String appKey = "96b84a34ca52ac1c82b8f3c61bfd0ade7abf5c2be24f2862";
         Appodeal.disableLocationPermissionCheck();
-//        Appodeal.setTesting(true);
-        Appodeal.setLogLevel(Log.LogLevel.debug);
+        if (BuildConfig.DEBUG) {
+            Appodeal.setTesting(true);
+            Appodeal.setLogLevel(Log.LogLevel.debug);
+        }
         Appodeal.initialize(this, appKey, Appodeal.NON_SKIPPABLE_VIDEO);
         Appodeal.setNonSkippableVideoCallbacks(new NonSkippableVideoCallbacks() {
             @Override
@@ -433,7 +440,9 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
     @Override
     public void onResume() {
         super.onResume();
-        YandexMetrica.onResumeActivity(this);
+        if (!BuildConfig.DEBUG) {
+            YandexMetrica.onResumeActivity(this);
+        }
 
         if (isTimeToShowAds() && !isAdsLoaded()) {
             requestNewInterstitial();
@@ -442,7 +451,9 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
 
     @Override
     public void onPause() {
-        YandexMetrica.onPauseActivity(this);
+        if (!BuildConfig.DEBUG) {
+            YandexMetrica.onPauseActivity(this);
+        }
         super.onPause();
     }
 

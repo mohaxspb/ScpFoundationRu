@@ -32,7 +32,6 @@ public class DownloadSearch extends AsyncTask<Void, Void, List<Article>> {
     private UpdateArticlesList updateArticlesList;
     private int page = 1;
 
-
     public DownloadSearch(String searchQuery, Context ctx, UpdateArticlesList updateArticlesList, int page) {
         this.ctx = ctx;
         this.page = page;
