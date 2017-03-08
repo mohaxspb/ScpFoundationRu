@@ -14,6 +14,7 @@ import ru.dante.scpfoundation.receivers.ReceiverTimer;
 import ru.dante.scpfoundation.service.DownloadAllService;
 import ru.dante.scpfoundation.ui.activity.ArticleActivity;
 import ru.dante.scpfoundation.ui.activity.LicenceActivity;
+import ru.dante.scpfoundation.ui.activity.MaterialsActivity;
 import ru.dante.scpfoundation.ui.adapter.RecyclerAdapterArticle;
 import ru.dante.scpfoundation.ui.adapter.RecyclerAdapterListArticles;
 import ru.dante.scpfoundation.ui.adapter.RecyclerAdapterSubscriptions;
@@ -23,6 +24,7 @@ import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
 import ru.dante.scpfoundation.ui.dialog.TextSizeDialogFragment;
 import ru.dante.scpfoundation.ui.fragment.ArticleFragment;
 import ru.dante.scpfoundation.ui.activity.MainActivity;
+import ru.dante.scpfoundation.ui.fragment.ExperimentsArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.FavoriteArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.Objects1ArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.Objects2ArticlesFragment;
@@ -53,6 +55,8 @@ public interface AppComponent {
 
     void inject(LicenceActivity activity);
 
+    void inject(MaterialsActivity activity);
+
     void inject(ArticleFragment fragment);
 
     void inject(RecentArticlesFragment fragment);
@@ -73,25 +77,27 @@ public interface AppComponent {
 
     void inject(SiteSearchArticlesFragment fragment);
 
+    void inject(ExperimentsArticlesFragment fragment);
+
     void inject(TextSizeDialogFragment dialogFragment);
+
+    void inject(NewVersionDialogFragment dialogFragment);
+
+    void inject(SubscriptionsFragmentDialog dialogFragment);
+
+    void inject(SetttingsBottomSheetDialogFragment bottomSheetDialogFragment);
 
     void inject(RecyclerAdapterListArticles adapterNewArticles);
 
     void inject(RecyclerAdapterArticle adapterNewArticles);
+
+    void inject(RecyclerAdapterSubscriptions adapterSubscriptions);
 
     void inject(DownloadAllService service);
 
     void inject(ReceiverTimer receiverTimer);
 
     void inject(ReceiverBoot receiverBoot);
-
-    void inject(NewVersionDialogFragment dialogFragment);
-
-    void inject(SetttingsBottomSheetDialogFragment bottomSheetDialogFragment);
-
-    void inject(SubscriptionsFragmentDialog fragmentDialog);
-
-    void inject(RecyclerAdapterSubscriptions recyclerAdapterSubscriptions);
 
     void inject(MyAdListener adListener);
 }

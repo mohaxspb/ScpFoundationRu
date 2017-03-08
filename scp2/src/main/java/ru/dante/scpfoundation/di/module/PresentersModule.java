@@ -11,8 +11,10 @@ import ru.dante.scpfoundation.db.DbProviderFactory;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.mvp.contract.ArticleMvp;
 import ru.dante.scpfoundation.mvp.contract.ArticleScreenMvp;
+import ru.dante.scpfoundation.mvp.contract.ExperimentsArticles;
 import ru.dante.scpfoundation.mvp.contract.FavoriteArticlesMvp;
 import ru.dante.scpfoundation.mvp.contract.MainMvp;
+import ru.dante.scpfoundation.mvp.contract.MaterialsScreenMvp;
 import ru.dante.scpfoundation.mvp.contract.Objects1Articles;
 import ru.dante.scpfoundation.mvp.contract.Objects2Articles;
 import ru.dante.scpfoundation.mvp.contract.Objects3Articles;
@@ -23,8 +25,10 @@ import ru.dante.scpfoundation.mvp.contract.RecentArticlesMvp;
 import ru.dante.scpfoundation.mvp.contract.SiteSearchArticlesMvp;
 import ru.dante.scpfoundation.mvp.presenter.ArticlePresenter;
 import ru.dante.scpfoundation.mvp.presenter.ArticleScreenPresenter;
+import ru.dante.scpfoundation.mvp.presenter.ExperimentsArticlesPresenter;
 import ru.dante.scpfoundation.mvp.presenter.FavoriteArticlesPresenter;
 import ru.dante.scpfoundation.mvp.presenter.MainPresenter;
+import ru.dante.scpfoundation.mvp.presenter.MaterialsScreenPresenter;
 import ru.dante.scpfoundation.mvp.presenter.MostRatedArticlesPresenter;
 import ru.dante.scpfoundation.mvp.presenter.MostRecentArticlesPresenter;
 import ru.dante.scpfoundation.mvp.presenter.Objects1ArticlesPresenter;
@@ -61,6 +65,16 @@ public class PresentersModule {
             @NonNull ApiClient apiClient
     ) {
         return new ArticleScreenPresenter(myPreferencesManager, dbProviderFactory, apiClient);
+    }
+
+    @Provides
+    @NonNull
+    MaterialsScreenMvp.Presenter providesMaterialsScreenPresenter(
+            @NonNull MyPreferenceManager myPreferencesManager,
+            @NonNull DbProviderFactory dbProviderFactory,
+            @NonNull ApiClient apiClient
+    ) {
+        return new MaterialsScreenPresenter(myPreferencesManager, dbProviderFactory, apiClient);
     }
 
     @Provides
@@ -171,5 +185,16 @@ public class PresentersModule {
             @NonNull ApiClient apiClient
     ) {
         return new ObjectsRuArticlesPresenter(myPreferencesManager, dbProviderFactory, apiClient);
+    }
+
+    @Provides
+    @Singleton
+    @NonNull
+    ExperimentsArticles.Presenter providesExperimentsArticlesPresenter(
+            @NonNull MyPreferenceManager myPreferencesManager,
+            @NonNull DbProviderFactory dbProviderFactory,
+            @NonNull ApiClient apiClient
+    ) {
+        return new ExperimentsArticlesPresenter(myPreferencesManager, dbProviderFactory, apiClient);
     }
 }

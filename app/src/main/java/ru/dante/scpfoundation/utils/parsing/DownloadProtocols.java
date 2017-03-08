@@ -9,6 +9,7 @@ import org.jsoup.nodes.Element;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -29,7 +30,6 @@ public class DownloadProtocols extends AsyncTask<Void, Void, ArrayList<String>> 
     }
 
     private UpdateProtocol updateProtocol;
-
 
     public DownloadProtocols(String url, UpdateProtocol updateProtocol) {
         this.url = url;
@@ -57,7 +57,7 @@ public class DownloadProtocols extends AsyncTask<Void, Void, ArrayList<String>> 
                 return null;
             }
 
-            ArrayList<Element> listOfElements = pageContent.getElementsByTag("ul");
+            List<Element> listOfElements = pageContent.getElementsByTag("ul");
             for (int i = 0; i < listOfElements.size(); i++) {
                 ArrayList<Element> listOfLi = listOfElements.get(i).getElementsByTag("li");
                 for (int u = 0; u < listOfLi.size(); u++) {

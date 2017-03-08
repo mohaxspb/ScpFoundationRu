@@ -106,6 +106,7 @@
     <string name="login_greetings">Добро пожаловать, агент %s</string>
     <string name="error_login_no_email">Невозможно авторизоваться без информации о e-mail</string>
     <string name="access_level">3 уровень доступа (секретно)</string>
+    <string name="materials">Материалы</string>
 
     <string-array name="download_types">
         <item>Объекты I</item>

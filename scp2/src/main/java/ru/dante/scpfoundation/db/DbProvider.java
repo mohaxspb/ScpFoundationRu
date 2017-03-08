@@ -246,6 +246,9 @@ public class DbProvider {
                                 case Article.FIELD_IS_IN_OBJECTS_RU:
                                     application.isInObjectsRu = Article.ORDER_NONE;
                                     break;
+                                case Article.FIELD_IS_IN_EXPERIMETS:
+                                    application.isInExperiments = Article.ORDER_NONE;
+                                    break;
                                 default:
                                     Timber.e("unexpected inDbField id");
                                     break;
@@ -271,6 +274,9 @@ public class DbProvider {
                                     case Article.FIELD_IS_IN_OBJECTS_RU:
                                         applicationInDb.isInObjectsRu = i;
                                         break;
+                                    case Article.FIELD_IS_IN_EXPERIMETS:
+                                        applicationInDb.isInExperiments = i;
+                                        break;
                                     default:
                                         Timber.e("unexpected inDbField id");
                                         break;
@@ -292,6 +298,9 @@ public class DbProvider {
                                         break;
                                     case Article.FIELD_IS_IN_OBJECTS_RU:
                                         applicationToWrite.isInObjectsRu = i;
+                                        break;
+                                    case Article.FIELD_IS_IN_EXPERIMETS:
+                                        applicationToWrite.isInExperiments = i;
                                         break;
                                     default:
                                         Timber.e("unexpected inDbField id");

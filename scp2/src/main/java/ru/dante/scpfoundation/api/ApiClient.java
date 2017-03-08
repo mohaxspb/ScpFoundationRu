@@ -617,4 +617,54 @@ public class ApiClient {
                     return Observable.error(new ScpException(throwable, url));
                 });
     }
+
+    public Observable<List<Article>> getMaterialsArticles(String objectsLink) {
+        //TODO
+        return bindWithUtils(Observable.<List<Article>>create(subscriber -> {
+            Request request = new Request.Builder()
+                    .url(objectsLink)
+                    .build();
+
+            String responseBody = null;
+            try {
+                Response response = mOkHttpClient.newCall(request).execute();
+                responseBody = response.body().string();
+            } catch (IOException e) {
+                subscriber.onError(new IOException(MyApplication.getAppInstance().getString(R.string.error_connection)));
+                return;
+            }
+            try {
+                Document doc = Jsoup.parse(responseBody);
+                Element pageContent = doc.getElementById("page-content");
+                if (pageContent == null) {
+                    subscriber.onError(new ScpParseException(MyApplication.getAppInstance().getString(R.string.error_parse)));
+                    return;
+                }
+
+                List<Article> articles = new ArrayList<>();
+                //parse
+                List<Element> listOfElements = pageContent.getElementsByTag("ul");
+                for (int i = 0; i < listOfElements.size(); i++) {
+                    ArrayList<Element> listOfLi = listOfElements.get(i).getElementsByTag("li");
+                    for (int u = 0; u < listOfLi.size(); u++) {
+                        String url = listOfLi.get(u).getElementsByTag("a").first().attr("href");
+                        if (!url.startsWith("http")) {
+                            url = BuildConfig.BASE_API_URL + url;
+                        }
+                        String text = listOfLi.get(u).text();
+                        Article article = new Article();
+                        article.title = text;
+                        article.url = url;
+                        articles.add(article);
+                    }
+                }
+                //parse end
+                subscriber.onNext(articles);
+                subscriber.onCompleted();
+            } catch (Exception e) {
+                Timber.e(e, "error while get arts list");
+                subscriber.onError(e);
+            }
+        }));
+    }
 }
