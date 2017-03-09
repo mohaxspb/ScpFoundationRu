@@ -63,9 +63,8 @@ import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.monetization.model.Item;
 import ru.dante.scpfoundation.monetization.util.InappHelper;
 import ru.dante.scpfoundation.monetization.util.MyAdListener;
-import ru.dante.scpfoundation.mvp.base.MonetizationActions;
 import ru.dante.scpfoundation.mvp.base.BaseMvp;
-import ru.dante.scpfoundation.mvp.contract.MaterialsScreenMvp;
+import ru.dante.scpfoundation.mvp.base.MonetizationActions;
 import ru.dante.scpfoundation.ui.dialog.NewVersionDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
@@ -331,6 +330,11 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
                         error -> {
                             Timber.e(error, "errror while getting owned items");
                         });
+    }
+
+    @Override
+    public List<Item> getOwnedItems() {
+        return mOwnedMarketItems;
     }
 
     /**

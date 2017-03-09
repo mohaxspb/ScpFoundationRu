@@ -5,11 +5,13 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringDef;
 import android.support.design.widget.BottomSheetDialogFragment;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +21,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
@@ -27,6 +31,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import butterknife.BindView;
+import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.manager.MyNotificationManager;
@@ -221,8 +226,25 @@ public class SetttingsBottomSheetDialogFragment
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
                     Timber.d("onItemSelected position: %s, font: %s", position, fontsList.get(position));
-                    mMyPreferenceManager.setFontPath(fontsPathsList.get(position));
-                    //TODO close some for unsubscribed
+                    //TODO close all except 2 for unsubscribed
+                    if (position > 1 && getBaseActivity().getOwnedItems().isEmpty()) {
+                        Timber.d("show subs dialog");
+
+                        fontPreferedSpinner.setSelection(fontsPathsList.indexOf(mMyPreferenceManager.getFontPath()));
+
+                        Snackbar.make(fontPrefered, R.string.only_premium, Snackbar.LENGTH_LONG)
+                                .setAction(R.string.activate, action -> {
+                                    BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
+                                    subsDF.show(getChildFragmentManager(), subsDF.getTag());
+
+                                    Bundle bundle = new Bundle();
+                                    bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Analitics.StartScreen.FONT);
+                                    FirebaseAnalytics.getInstance(getActivity()).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+                                })
+                                .show();
+                    } else {
+                        mMyPreferenceManager.setFontPath(fontsPathsList.get(position));
+                    }
                 }
 
                 @Override

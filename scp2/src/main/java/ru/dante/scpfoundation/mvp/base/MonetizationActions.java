@@ -1,5 +1,8 @@
 package ru.dante.scpfoundation.mvp.base;
 
+import java.util.List;
+
+import ru.dante.scpfoundation.monetization.model.Item;
 import ru.dante.scpfoundation.monetization.util.MyAdListener;
 
 /**
@@ -26,4 +29,6 @@ public interface MonetizationActions {
     void showRewardedVideo();
 
     void startRewardedVideoFlow();
+
+    List<Item> getOwnedItems();
 }
