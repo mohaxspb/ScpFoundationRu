@@ -99,6 +99,7 @@ public class SubscriptionsFragmentDialog
         info.setOnClickListener(view -> new MaterialDialog.Builder(getActivity())
                 .title(R.string.info)
                 .content(R.string.subs_info)
+                .positiveText(android.R.string.ok)
                 .show());
     }
 

@@ -72,7 +72,7 @@
     <string name="settings_notif_vibrate_on">Вибрация</string>
     <string name="settings_notif_sound_on">Звук уведомления</string>
     <string name="settings_notification">Настройки уведомлений</string>
-    <string name="dialog_title_subscriptions">Отключение рекламы</string>
+    <string name="dialog_title_subscriptions">Отключение рекламы и дополнительный функционал</string>
     <string name="current_subscription">Ваша текущая подписка</string>
     <string name="no_subscriptions">Пусто</string>
     <string name="refresh">Обновить</string>
