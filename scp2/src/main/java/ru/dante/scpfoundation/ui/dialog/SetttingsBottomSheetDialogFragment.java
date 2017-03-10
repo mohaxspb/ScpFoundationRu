@@ -10,14 +10,18 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringDef;
+import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -226,13 +230,13 @@ public class SetttingsBottomSheetDialogFragment
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
                     Timber.d("onItemSelected position: %s, font: %s", position, fontsList.get(position));
-                    //TODO close all except 2 for unsubscribed
+                    //close all except 2 for unsubscribed
                     if (position > 1 && getBaseActivity().getOwnedItems().isEmpty()) {
                         Timber.d("show subs dialog");
 
                         fontPreferedSpinner.setSelection(fontsPathsList.indexOf(mMyPreferenceManager.getFontPath()));
 
-                        Snackbar.make(fontPrefered, R.string.only_premium, Snackbar.LENGTH_LONG)
+                        Snackbar.make(mRoot, R.string.only_premium, Snackbar.LENGTH_LONG)
                                 .setAction(R.string.activate, action -> {
                                     BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
                                     subsDF.show(getChildFragmentManager(), subsDF.getTag());
@@ -241,6 +245,7 @@ public class SetttingsBottomSheetDialogFragment
                                     bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Analitics.StartScreen.FONT);
                                     FirebaseAnalytics.getInstance(getActivity()).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
                                 })
+                                .setActionTextColor(ContextCompat.getColor(getActivity(), R.color.material_green_500))
                                 .show();
                     } else {
                         mMyPreferenceManager.setFontPath(fontsPathsList.get(position));
@@ -283,6 +288,24 @@ public class SetttingsBottomSheetDialogFragment
             mMyPreferenceManager.setNotificationVibrationEnabled(checked);
             mMyNotificationManager.checkAlarm();
         });
+    }
+
+    @NonNull @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+        BottomSheetDialog dialog = (BottomSheetDialog) super.onCreateDialog(savedInstanceState);
+
+        dialog.setOnShowListener(dialog1 -> {
+            BottomSheetDialog d = (BottomSheetDialog) dialog1;
+
+            FrameLayout bottomSheet = (FrameLayout) d.findViewById(android.support.design.R.id.design_bottom_sheet);
+            if (bottomSheet != null) {
+                BottomSheetBehavior.from(bottomSheet).setState(BottomSheetBehavior.STATE_EXPANDED);
+            }
+        });
+
+        // Do something with your dialog like setContentView() or whatever
+        return dialog;
     }
 
     @Override

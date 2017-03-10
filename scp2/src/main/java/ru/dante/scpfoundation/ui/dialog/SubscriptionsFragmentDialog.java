@@ -4,14 +4,22 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Pair;
 import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.vending.billing.IInAppBillingService;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
@@ -49,6 +57,8 @@ public class SubscriptionsFragmentDialog
     View infoContainer;
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
+    @BindView(R.id.info)
+    ImageView info;
 
     @Inject
     MyPreferenceManager mMyPreferenceManager;
@@ -82,6 +92,14 @@ public class SubscriptionsFragmentDialog
                 });
 
         getMarketData();
+
+        boolean isNightMode = mMyPreferenceManager.isNightMode();
+        int tint = isNightMode ? Color.WHITE : ContextCompat.getColor(getActivity(), R.color.zbs_color_red);
+        info.setColorFilter(tint);
+        info.setOnClickListener(view -> new MaterialDialog.Builder(getActivity())
+                .title(R.string.info)
+                .content(R.string.subs_info)
+                .show());
     }
 
     @OnClick(R.id.removeAdsOneDay)
@@ -141,7 +159,7 @@ public class SubscriptionsFragmentDialog
                             Timber.e(error, "error getting cur subs");
                             isDataLoaded = false;
 
-                            Snackbar.make(root, error.getMessage(), Snackbar.LENGTH_SHORT).show();
+                            Snackbar.make(mRoot, error.getMessage(), Snackbar.LENGTH_SHORT).show();
                             progressCenter.setVisibility(View.GONE);
                             refresh.setVisibility(View.VISIBLE);
                         }
@@ -163,8 +181,27 @@ public class SubscriptionsFragmentDialog
             }
         } catch (Exception e) {
             Timber.e(e, "error ");
-            Snackbar.make(root, e.getMessage(), Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(mRoot, e.getMessage(), Snackbar.LENGTH_SHORT).show();
         }
+    }
+
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+        BottomSheetDialog dialog = (BottomSheetDialog) super.onCreateDialog(savedInstanceState);
+
+        dialog.setOnShowListener(dialog1 -> {
+            BottomSheetDialog d = (BottomSheetDialog) dialog1;
+
+            FrameLayout bottomSheet = (FrameLayout) d.findViewById(android.support.design.R.id.design_bottom_sheet);
+            if (bottomSheet != null) {
+                BottomSheetBehavior.from(bottomSheet).setState(BottomSheetBehavior.STATE_EXPANDED);
+            }
+        });
+
+        // Do something with your dialog like setContentView() or whatever
+        return dialog;
     }
 
     @Override

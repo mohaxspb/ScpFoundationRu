@@ -26,6 +26,7 @@
     <attr name="iconOfflineAdd" format="reference"/>
     <attr name="iconOfflineRemove" format="reference"/>
     <attr name="iconEmptyImage" format="reference"/>
+    <!---->
     <attr name="windowbackgroundOverrided" format="color|reference"/>
     <attr name="artListCardBackgroundColor" format="color|reference"/>
 
