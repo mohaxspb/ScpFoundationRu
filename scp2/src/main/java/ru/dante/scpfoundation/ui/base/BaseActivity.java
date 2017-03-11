@@ -31,6 +31,8 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.hannesdorfmann.mosby.mvp.MvpActivity;
 import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKCallback;
@@ -532,5 +534,47 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
         })) {
             super.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    private void initAndUpdateRemoteConfig(){
+        //remote config
+        FirebaseRemoteConfig mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
+
+        // Create Remote Config Setting to enable developer mode.
+        // Fetching configs from the server is normally limited to 5 requests per hour.
+        // Enabling developer mode allows many more requests to be made per hour, so developers
+        // can test different config values during development.
+        FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
+                .setDeveloperModeEnabled(BuildConfig.DEBUG)
+                .build();
+        mFirebaseRemoteConfig.setConfigSettings(configSettings);
+
+        // Set default Remote Config values. In general you should have in app defaults for all
+        // values that you may configure using Remote Config later on. The idea is that you
+        // use the in app defaults and when you need to adjust those defaults, you set an updated
+        // value in the App Manager console. Then the next time you application fetches from the
+        // server, the updated value will be used. You can set defaults via an xml file like done
+        // here or you can set defaults inline by using one of the other setDefaults methods.S
+        // [START set_default_values]
+        mFirebaseRemoteConfig.setDefaults(R.xml.remote_config_defaults);
+
+        // cacheExpirationSeconds is set to cacheExpiration here, indicating that any previously
+        // fetched and cached config would be considered expired because it would have been fetched
+        // more than cacheExpiration seconds ago. Thus the next fetch would go to the server unless
+        // throttling is in progress. The default expiration duration is 43200 (12 hours).
+        long cacheExpiration = 20000; //default 43200
+        if (mFirebaseRemoteConfig.getInfo().getConfigSettings().isDeveloperModeEnabled()) {
+            cacheExpiration = 0;
+        }
+        mFirebaseRemoteConfig.fetch(cacheExpiration).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Timber.d("Fetch Succeeded");
+                // Once the config is successfully fetched it must be activated before newly fetched
+                // values are returned.
+                mFirebaseRemoteConfig.activateFetched();
+            } else {
+                Timber.d("Fetch Failed");
+            }
+        });
     }
 }

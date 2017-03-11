@@ -190,7 +190,9 @@ dependencies {
     compile 'com.afollestad.material-dialogs:core:0.9.1.0'
     //fonts
     compile 'uk.co.chrisjenx:calligraphy:2.2.0'
-    //ads
+    //firebase
+    compile "com.google.firebase:firebase-config:$googleLibraryVersion"
+    compile "com.google.firebase:firebase-crash:$googleLibraryVersion"
     compile "com.google.firebase:firebase-core:$googleLibraryVersion"
     compile "com.google.firebase:firebase-analytics:$googleLibraryVersion"
     compile "com.google.firebase:firebase-ads:$googleLibraryVersion"
@@ -199,8 +201,6 @@ dependencies {
     compile "com.google.android.gms:play-services-ads:$googleLibraryVersion"
     //need for appodeal
     compile "com.google.android.gms:play-services-location:$googleLibraryVersion"
-    //crash
-    compile "com.google.firebase:firebase-crash:$googleLibraryVersion"
     // AppMetrica
     compile 'com.yandex.android:mobmetricalib:2.60'
     //ratingBar
