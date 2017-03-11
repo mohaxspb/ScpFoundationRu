@@ -184,22 +184,23 @@ dependencies {
     compile 'de.hdodenhof:circleimageview:2.1.0'
     //mvp
     compile 'com.hannesdorfmann.mosby:mvp:2.0.1'
-    // Vk
+    //vk
     compile 'com.vk:androidsdk:1.6.7'
     //dialogs
     compile 'com.afollestad.material-dialogs:core:0.9.1.0'
     //fonts
     compile 'uk.co.chrisjenx:calligraphy:2.2.0'
-    //ads
+    //firebase
+    compile "com.google.firebase:firebase-config:$googleLibraryVersion"
+    compile "com.google.firebase:firebase-crash:$googleLibraryVersion"
     compile "com.google.firebase:firebase-core:$googleLibraryVersion"
     compile "com.google.firebase:firebase-analytics:$googleLibraryVersion"
     compile "com.google.firebase:firebase-ads:$googleLibraryVersion"
+    //appodeal
     compile project(':cheetah-mobile-3.4.7')
     compile "com.google.android.gms:play-services-ads:$googleLibraryVersion"
     //need for appodeal
     compile "com.google.android.gms:play-services-location:$googleLibraryVersion"
-    //crash
-    compile "com.google.firebase:firebase-crash:$googleLibraryVersion"
     // AppMetrica
     compile 'com.yandex.android:mobmetricalib:2.60'
     //ratingBar

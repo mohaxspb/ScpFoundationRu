@@ -242,7 +242,7 @@ public class SetttingsBottomSheetDialogFragment
                                     subsDF.show(getChildFragmentManager(), subsDF.getTag());
 
                                     Bundle bundle = new Bundle();
-                                    bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Analitics.StartScreen.FONT);
+                                    bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.FONT);
                                     FirebaseAnalytics.getInstance(getActivity()).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
                                 })
                                 .setActionTextColor(ContextCompat.getColor(getActivity(), R.color.material_green_500))
@@ -292,7 +292,6 @@ public class SetttingsBottomSheetDialogFragment
 
     @NonNull @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-
         BottomSheetDialog dialog = (BottomSheetDialog) super.onCreateDialog(savedInstanceState);
 
         dialog.setOnShowListener(dialog1 -> {

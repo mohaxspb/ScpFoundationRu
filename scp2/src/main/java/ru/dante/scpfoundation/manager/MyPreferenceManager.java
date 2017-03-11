@@ -4,6 +4,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+
+import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
 
 /**
@@ -13,15 +16,7 @@ import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
  */
 public class MyPreferenceManager {
 
-    //test values
-//    private static final long PERIOD_BETWEEN_ADS = 20 * 1000;
-//    private static final long PERIOD_REWARDED_ADS_SHOWN = 60 * 1000;
-    private static final long PERIOD_BETWEEN_ADS = 3 * 60 * 60 * 1000;
-    private static final long PERIOD_REWARDED_ADS_SHOWN = 4 * 60 * 60 * 1000;
-
     public interface Keys {
-        String SESSION_ID = "SESSION_ID";
-        String USER_ID = "USER_ID";
         String NIGHT_MODE = "NIGHT_MODE";
         String TEXT_SCALE_UI = "TEXT_SCALE_UI";
         String TEXT_SCALE_ARTICLE = "TEXT_SCALE_ARTICLE";
@@ -35,6 +30,7 @@ public class MyPreferenceManager {
 
         String ADS_LAST_TIME_SHOWS = "ADS_LAST_TIME_SHOWS";
         String ADS_REWARDED_DESCRIPTION_IS_SHOWN = "ADS_REWARDED_DESCRIPTION_IS_SHOWN";
+        String ADS_NUM_OF_INTERSTITIALS_SHOWN = "ADS_NUM_OF_INTERSTITIALS_SHOWN";
 
         String LICENCE_ACCEPTED = "LICENCE_ACCEPTED";
         String CUR_APP_VERSION = "CUR_APP_VERSION";
@@ -138,11 +134,13 @@ public class MyPreferenceManager {
 
     //ads
     public boolean isTimeToShowAds() {
-        return System.currentTimeMillis() - getLastTimeAdsShows() >= PERIOD_BETWEEN_ADS;
+        return System.currentTimeMillis() - getLastTimeAdsShows() >=
+                FirebaseRemoteConfig.getInstance().getLong(Constants.Firebase.RemoteConfigKeys.PERIOD_BETWEEN_INTERSTITIAL_IN_MILLIS);
     }
 
     public void applyRewardFromAds() {
-        setLastTimeAdsShows(System.currentTimeMillis() + PERIOD_REWARDED_ADS_SHOWN);
+        setLastTimeAdsShows(System.currentTimeMillis() +
+                FirebaseRemoteConfig.getInstance().getLong(Constants.Firebase.RemoteConfigKeys.REWARDED_VIDEO_COOLDOWN_IN_MILLIS));
     }
 
     public boolean isRewardedDescriptionShown() {
@@ -163,6 +161,19 @@ public class MyPreferenceManager {
             setLastTimeAdsShows(System.currentTimeMillis());
         }
         return timeFromLastShow;
+    }
+
+    public void setNumOfInterstitialsShown(int numOfInterstitialsShown) {
+        mPreferences.edit().putInt(Keys.ADS_NUM_OF_INTERSTITIALS_SHOWN, numOfInterstitialsShown).apply();
+    }
+
+    public int getNumOfInterstitialsShown() {
+        return mPreferences.getInt(Keys.ADS_NUM_OF_INTERSTITIALS_SHOWN, 0);
+    }
+
+    public boolean isTimeToShowRewardedInsteadOfInterstitial() {
+        return getNumOfInterstitialsShown() >=
+                FirebaseRemoteConfig.getInstance().getLong(Constants.Firebase.RemoteConfigKeys.NUM_OF_INTERSITIAL_BETWEEN_REWARDED);
     }
 
     //utils
