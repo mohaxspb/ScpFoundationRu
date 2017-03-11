@@ -189,7 +189,6 @@ public class SubscriptionsFragmentDialog
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-
         BottomSheetDialog dialog = (BottomSheetDialog) super.onCreateDialog(savedInstanceState);
 
         dialog.setOnShowListener(dialog1 -> {

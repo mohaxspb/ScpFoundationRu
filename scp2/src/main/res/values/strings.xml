@@ -94,7 +94,7 @@
     <string name="dialog_download">Загрузка</string>
     <string name="ads_reward_error_loading">Не удалось загрузить. Пробуйте ещё раз…</string>
     <string name="ads_reward_description_title">Инструкция</string>
-    <string name="ads_reward_description_content">Мы покажем вам видео и, после просмотра, отключим рекламу на сутки. Вы можете отключать её хоть каждый день!</string>
+    <string name="ads_reward_description_content">Мы покажем вам видео и, после просмотра, временно отключим рекламу. Вы можете отключать её сколько угодно раз!</string>
     <string name="ads_reward_ok">Всё понятно!</string>
     <string name="settings_design_list_type">Дизайн статьи в списке</string>
     <string name="rating">Рейтинг %d</string>
