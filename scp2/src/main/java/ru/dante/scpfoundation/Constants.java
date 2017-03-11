@@ -31,6 +31,7 @@ public interface Constants {
             String FREE_REWARDED_VIDEO_ENABLED = "free_rewarded_video_enabled";
             String PERIOD_BETWEEN_INTERSTITIAL_IN_MILLIS = "period_between_interstitial_in_millis";
             String REWARDED_VIDEO_COOLDOWN_IN_MILLIS = "rewarded_video_cooldown_in_millis";
+            String NUM_OF_INTERSITIAL_BETWEEN_REWARDED = "num_of_intersitial_between_rewarded";
         }
 
         interface Analitics {

@@ -30,6 +30,7 @@ public class MyPreferenceManager {
 
         String ADS_LAST_TIME_SHOWS = "ADS_LAST_TIME_SHOWS";
         String ADS_REWARDED_DESCRIPTION_IS_SHOWN = "ADS_REWARDED_DESCRIPTION_IS_SHOWN";
+        String ADS_NUM_OF_INTERSTITIALS_SHOWN = "ADS_NUM_OF_INTERSTITIALS_SHOWN";
 
         String LICENCE_ACCEPTED = "LICENCE_ACCEPTED";
         String CUR_APP_VERSION = "CUR_APP_VERSION";
@@ -160,6 +161,19 @@ public class MyPreferenceManager {
             setLastTimeAdsShows(System.currentTimeMillis());
         }
         return timeFromLastShow;
+    }
+
+    public void setNumOfInterstitialsShown(int numOfInterstitialsShown) {
+        mPreferences.edit().putInt(Keys.ADS_NUM_OF_INTERSTITIALS_SHOWN, numOfInterstitialsShown).apply();
+    }
+
+    public int getNumOfInterstitialsShown() {
+        return mPreferences.getInt(Keys.ADS_NUM_OF_INTERSTITIALS_SHOWN, 0);
+    }
+
+    public boolean isTimeToShowRewardedInsteadOfInterstitial() {
+        return getNumOfInterstitialsShown() >=
+                FirebaseRemoteConfig.getInstance().getLong(Constants.Firebase.RemoteConfigKeys.NUM_OF_INTERSITIAL_BETWEEN_REWARDED);
     }
 
     //utils

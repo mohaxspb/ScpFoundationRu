@@ -54,4 +54,8 @@
         <key>rewarded_video_cooldown_in_millis</key>
         <value>7200000</value>
     </entry>
+    <entry>
+        <key>num_of_intersitial_between_rewarded</key>
+        <value>5</value>
+    </entry>
 </defaultsMap>

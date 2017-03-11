@@ -25,7 +25,6 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.vending.billing.IInAppBillingService;
 import com.appodeal.ads.Appodeal;
-import com.appodeal.ads.NonSkippableVideoCallbacks;
 import com.appodeal.ads.utils.Log;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
@@ -65,6 +64,7 @@ import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.monetization.model.Item;
 import ru.dante.scpfoundation.monetization.util.InappHelper;
 import ru.dante.scpfoundation.monetization.util.MyAdListener;
+import ru.dante.scpfoundation.monetization.util.MyNonSkippableVideoCallbacks;
 import ru.dante.scpfoundation.mvp.base.BaseMvp;
 import ru.dante.scpfoundation.mvp.base.MonetizationActions;
 import ru.dante.scpfoundation.ui.dialog.NewVersionDialogFragment;
@@ -143,8 +143,45 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
         initAds();
         //analitics
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        //remote config
+        initAndUpdateRemoteConfig();
 
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void initAds() {
+        //init frameworks
+        MobileAds.initialize(getApplicationContext(), getString(R.string.ads_app_id));
+
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId(getString(R.string.ad_unit_id_interstitial));
+        mInterstitialAd.setAdListener(new MyAdListener());
+
+        //appodeal
+        String appKey = "96b84a34ca52ac1c82b8f3c61bfd0ade7abf5c2be24f2862";
+        Appodeal.disableLocationPermissionCheck();
+        if (BuildConfig.DEBUG) {
+            Appodeal.setTesting(true);
+            Appodeal.setLogLevel(Log.LogLevel.debug);
+        }
+        Appodeal.initialize(this, appKey, Appodeal.NON_SKIPPABLE_VIDEO);
+        Appodeal.setNonSkippableVideoCallbacks(new MyNonSkippableVideoCallbacks() {
+
+            @Override
+            public void onNonSkippableVideoFinished() {
+                super.onNonSkippableVideoFinished();
+                mMyPreferenceManager.applyRewardFromAds();
+                long numOfMillis = FirebaseRemoteConfig.getInstance()
+                        .getLong(Constants.Firebase.RemoteConfigKeys.REWARDED_VIDEO_COOLDOWN_IN_MILLIS);
+                long hours = numOfMillis / 1000 / 60 / 60;
+                Snackbar.make(mRoot, getString(R.string.ads_reward_gained, hours), Snackbar.LENGTH_LONG).show();
+
+                Bundle bundle = new Bundle();
+                bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.EventType.REWARD_GAINED);
+                mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+            }
+        });
     }
 
     @Override
@@ -191,9 +228,12 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
         return mInterstitialAd.isLoaded();
     }
 
+    /**
+     * ads adsListener with showing SnackBar after ads closing and calles {@link #showInterstitial(MyAdListener)}
+     */
     @Override
     public void showInterstitial() {
-        mInterstitialAd.setAdListener(new MyAdListener() {
+        MyAdListener adListener = new MyAdListener() {
             @Override
             public void onAdClosed() {
                 super.onAdClosed();
@@ -210,65 +250,45 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
                 snackbar.setActionTextColor(ContextCompat.getColor(BaseActivity.this, R.color.material_green_500));
                 snackbar.show();
             }
-        });
-        mInterstitialAd.show();
+        };
+        showInterstitial(adListener);
     }
 
+    /**
+     * checks if it's time to show rewarded instead of simple interstitial
+     * and it's ready and shows rewarded video or interstitial
+     */
     @Override
     public void showInterstitial(MyAdListener adListener) {
-        mInterstitialAd.setAdListener(adListener);
-        mInterstitialAd.show();
-    }
+        if (mMyPreferenceManager.isTimeToShowRewardedInsteadOfInterstitial() && Appodeal.isLoaded(Appodeal.NON_SKIPPABLE_VIDEO)) {
+            Appodeal.setNonSkippableVideoCallbacks(new MyNonSkippableVideoCallbacks() {
+                @Override
+                public void onNonSkippableVideoFinished() {
+                    super.onNonSkippableVideoFinished();
+                    mMyPreferenceManager.setNumOfInterstitialsShown(0);
 
-    @Override
-    public void initAds() {
-        //init frameworks
-        MobileAds.initialize(getApplicationContext(), getString(R.string.ads_app_id));
+                    Appodeal.setNonSkippableVideoCallbacks(new MyNonSkippableVideoCallbacks() {
+                        @Override
+                        public void onNonSkippableVideoFinished() {
+                            super.onNonSkippableVideoFinished();
+                            mMyPreferenceManager.applyRewardFromAds();
+                            long numOfMillis = FirebaseRemoteConfig.getInstance()
+                                    .getLong(Constants.Firebase.RemoteConfigKeys.REWARDED_VIDEO_COOLDOWN_IN_MILLIS);
+                            int hours = (int) (numOfMillis / 1000 / 60 / 60);
+                            Snackbar.make(mRoot, getString(R.string.ads_reward_gained, hours), Snackbar.LENGTH_LONG).show();
 
-        mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId(getString(R.string.ad_unit_id_interstitial));
-        mInterstitialAd.setAdListener(new MyAdListener());
-
-        //appodeal
-        String appKey = "96b84a34ca52ac1c82b8f3c61bfd0ade7abf5c2be24f2862";
-        Appodeal.disableLocationPermissionCheck();
-        if (BuildConfig.DEBUG) {
-            Appodeal.setTesting(true);
-            Appodeal.setLogLevel(Log.LogLevel.debug);
+                            Bundle bundle = new Bundle();
+                            bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.EventType.REWARD_GAINED);
+                            mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+                        }
+                    });
+                }
+            });
+            Appodeal.show(this, Appodeal.NON_SKIPPABLE_VIDEO);
+        } else {
+            mInterstitialAd.setAdListener(adListener);
+            mInterstitialAd.show();
         }
-        Appodeal.initialize(this, appKey, Appodeal.NON_SKIPPABLE_VIDEO);
-        Appodeal.setNonSkippableVideoCallbacks(new NonSkippableVideoCallbacks() {
-            @Override
-            public void onNonSkippableVideoLoaded() {
-                Timber.d("onNonSkippableVideoLoaded");
-            }
-
-            @Override
-            public void onNonSkippableVideoFailedToLoad() {
-                Timber.d("onNonSkippableVideoFailedToLoad");
-            }
-
-            @Override
-            public void onNonSkippableVideoShown() {
-                Timber.d("onNonSkippableVideoShown");
-            }
-
-            @Override
-            public void onNonSkippableVideoFinished() {
-                Timber.d("onNonSkippableVideoFinished");
-                mMyPreferenceManager.applyRewardFromAds();
-                Snackbar.make(mRoot, R.string.ads_reward_gained, Snackbar.LENGTH_LONG).show();
-
-                Bundle bundle = new Bundle();
-                bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.EventType.REWARD_GAINED);
-                mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
-            }
-
-            @Override
-            public void onNonSkippableVideoClosed(boolean b) {
-                Timber.d("onNonSkippableVideoClosed");
-            }
-        });
     }
 
     @Override
@@ -329,9 +349,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
                             mOwnedMarketItems = items;
                             supportInvalidateOptionsMenu();
                         },
-                        error -> {
-                            Timber.e(error, "errror while getting owned items");
-                        });
+                        error -> Timber.e(error, "errror while getting owned items"));
     }
 
     @Override
@@ -500,6 +518,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
                     VKApi.users().get(VKParameters.from(VKApiConst.FIELDS, "photo_200")).executeWithListener(new VKRequest.VKRequestListener() {
                         @Override
                         public void onComplete(VKResponse response) {
+                            //noinspection unchecked
                             VKApiUser vkApiUser = ((VKList<VKApiUser>) response.parsedModel).get(0);
                             Timber.d("User name %s %s", vkApiUser.first_name, vkApiUser.last_name);
 
@@ -536,7 +555,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
         }
     }
 
-    private void initAndUpdateRemoteConfig(){
+    private void initAndUpdateRemoteConfig() {
         //remote config
         FirebaseRemoteConfig mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
 

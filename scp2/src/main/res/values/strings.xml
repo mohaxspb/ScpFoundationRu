@@ -89,7 +89,7 @@
     <string name="yes_bliad">Да!</string>
     <string name="app_info">О приложении</string>
     <string name="remove_ads_one_day">Отключить рекламу на 4 часа бесплатно</string>
-    <string name="ads_reward_gained">Ура! Никакой рекламы на 4 часа!</string>
+    <string name="ads_reward_gained">Ура! Никакой рекламы на %d часа!</string>
     <string name="wait">Подождите…</string>
     <string name="dialog_download">Загрузка</string>
     <string name="ads_reward_error_loading">Не удалось загрузить. Пробуйте ещё раз…</string>
