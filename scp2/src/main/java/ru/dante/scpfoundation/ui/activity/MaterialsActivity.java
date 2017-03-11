@@ -82,7 +82,7 @@ public class MaterialsActivity
                 subsDF.show(getSupportFragmentManager(), subsDF.getTag());
 
                 Bundle bundle = new Bundle();
-                bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Analitics.StartScreen.MAIN_TO_ARTICLE_SNACK_BAR);
+                bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.MAIN_TO_ARTICLE_SNACK_BAR);
                 mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
             });
             snackbar.setActionTextColor(ContextCompat.getColor(this, R.color.material_amber_500));

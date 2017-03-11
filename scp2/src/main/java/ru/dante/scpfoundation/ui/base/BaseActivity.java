@@ -151,7 +151,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
     public void startRewardedVideoFlow() {
         //analitics
         Bundle bundle = new Bundle();
-        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Analitics.EventType.REWARD_REQUESTED);
+        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.EventType.REWARD_REQUESTED);
         mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
 
         if (mMyPreferenceManager.isRewardedDescriptionShown()) {
@@ -204,7 +204,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
                     subsDF.show(getSupportFragmentManager(), subsDF.getTag());
 
                     Bundle bundle = new Bundle();
-                    bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Analitics.StartScreen.SNACK_BAR);
+                    bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.SNACK_BAR);
                     mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
                 });
                 snackbar.setActionTextColor(ContextCompat.getColor(BaseActivity.this, R.color.material_green_500));
@@ -260,7 +260,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
                 Snackbar.make(mRoot, R.string.ads_reward_gained, Snackbar.LENGTH_LONG).show();
 
                 Bundle bundle = new Bundle();
-                bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Analitics.EventType.REWARD_GAINED);
+                bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.EventType.REWARD_GAINED);
                 mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
             }
 
@@ -423,7 +423,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
                 subsDF.show(getSupportFragmentManager(), subsDF.getTag());
 
                 Bundle bundle = new Bundle();
-                bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Analitics.StartScreen.MENU);
+                bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.MENU);
                 mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
                 return true;
             case R.id.night_mode_item:

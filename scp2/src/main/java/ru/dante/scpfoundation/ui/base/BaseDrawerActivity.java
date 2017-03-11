@@ -186,7 +186,7 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
                 subsDF.show(getSupportFragmentManager(), subsDF.getTag());
 
                 Bundle bundle = new Bundle();
-                bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Analitics.StartScreen.DRAWER_HEADER_LOGINED);
+                bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.DRAWER_HEADER_LOGINED);
                 mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
             });
 

@@ -46,4 +46,12 @@
         <!--todo-->
         <value></value>
     </entry>
+    <entry>
+        <key>period_between_interstitial_in_millis</key>
+        <value>3600000</value>
+    </entry>
+    <entry>
+        <key>rewarded_video_cooldown_in_millis</key>
+        <value>7200000</value>
+    </entry>
 </defaultsMap>

@@ -22,18 +22,33 @@ public interface Constants {
         int NUM_OF_ARTICLES_ON_SEARCH_PAGE = 10;
     }
 
-    interface Analitics {
-        interface EventType {
-            String REWARD_GAINED = "REWARD_GAINED";
-            String REWARD_REQUESTED = "REWARD_REQUESTED";
+    interface Firebase {
+
+        interface RemoteConfigKeys {
+            String APPS_TO_INSTALL_JSON = "apps_to_install_json";
+            String FREE_INVITES_ENABLED = "free_invites_enabled";
+            String FREE_APPS_INSTALL_ENABLED = "free_apps_install_enabled";
+            String FREE_REWARDED_VIDEO_ENABLED = "free_rewarded_video_enabled";
+            String PERIOD_BETWEEN_INTERSTITIAL_IN_MILLIS = "period_between_interstitial_in_millis";
+            String REWARDED_VIDEO_COOLDOWN_IN_MILLIS = "rewarded_video_cooldown_in_millis";
         }
 
-        interface StartScreen {
-            String MAIN_TO_ARTICLE_SNACK_BAR = "MAIN_TO_ARTICLE_SNACK_BAR";
-            String SNACK_BAR = "SNACK_BAR";
-            String MENU = "MENU";
-            String DRAWER_HEADER_LOGINED = "DRAWER_HEADER_LOGINED";
-            String FONT = "FONT";
+        interface Analitics {
+            interface EventType {
+                String REWARD_GAINED = "REWARD_GAINED";
+                String REWARD_REQUESTED = "REWARD_REQUESTED";
+            }
+
+            interface StartScreen {
+                String MAIN_TO_ARTICLE_SNACK_BAR = "MAIN_TO_ARTICLE_SNACK_BAR";
+                String SNACK_BAR = "SNACK_BAR";
+                String MENU = "MENU";
+                String DRAWER_HEADER_LOGINED = "DRAWER_HEADER_LOGINED";
+                String FONT = "FONT";
+            }
+
+            String INVITED_FIVE_FRIENDS = "INVITED_FIVE_FRIENDS";
+            String APP_CRACKED = "APP_CRACKED";
         }
     }
 
