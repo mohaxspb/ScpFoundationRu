@@ -125,7 +125,7 @@ public class ArticleActivity
                 bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Analitics.StartScreen.MAIN_TO_ARTICLE_SNACK_BAR);
                 mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
             });
-            snackbar.setActionTextColor(ContextCompat.getColor(this, R.color.material_amber_500));
+            snackbar.setActionTextColor(ContextCompat.getColor(this, R.color.material_green_500));
             snackbar.show();
         }
     }

@@ -210,31 +210,4 @@
         <item name="android:textColor">@color/material_blue_gray_50</item>
     </style>
 
-    <!--<style name="ColoredSpinners.Light" parent="@android:style/Theme.NoTitleBar">-->
-        <!--<item name="android:spinnerItemStyle">@style/SpinnerItem.Light</item>-->
-        <!--<item name="spinnerDropDownItemStyle">@style/SpinnerItem.DropDownItem.Light</item>-->
-    <!--</style>-->
-
-    <!--<style name="SpinnerItem.Light" parent="@android:style/Widget.TextView.SpinnerItem">-->
-        <!--<item name="android:textColor">#00FF00</item>-->
-    <!--</style>-->
-
-    <!--<style name="SpinnerItem.DropDownItem.Light" parent="@android:style/Widget.DropDownItem.Spinner">-->
-        <!--<item name="android:textColor">#FF0000</item>-->
-    <!--</style>-->
-
-    <!--<style name="ColoredSpinners.Dark" parent="@android:style/Theme.NoTitleBar">-->
-        <!--<item name="android:spinnerItemStyle">@style/SpinnerItem.Dark</item>-->
-        <!--<item name="spinnerDropDownItemStyle">@style/SpinnerItem.DropDownItem.Dark</item>-->
-    <!--</style>-->
-
-    <!--<style name="SpinnerItem.Dark" parent="@android:style/Widget.TextView.SpinnerItem">-->
-        <!--<item name="android:textColor">#FF0000</item>-->
-    <!--</style>-->
-
-    <!--<style name="SpinnerItem.DropDownItem.Dark" parent="@android:style/Widget.DropDownItem.Spinner">-->
-        <!--<item name="android:textColor">#00FF00</item>-->
-    <!--</style>-->
-
-
 </resources>

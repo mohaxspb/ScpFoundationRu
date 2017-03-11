@@ -26,6 +26,10 @@ public class DimensionUtils {
         return MyApplication.getAppInstance().getResources().getDimensionPixelSize(R.dimen.defaultMargin);
     }
 
+    public static int getDefaultMarginSmall() {
+        return MyApplication.getAppInstance().getResources().getDimensionPixelSize(R.dimen.defaultMarginSmall);
+    }
+
     public static boolean isLandscapeMode() {
         return DimensionUtils.getScreenWidth() > DimensionUtils.getScreenHeight();
     }
