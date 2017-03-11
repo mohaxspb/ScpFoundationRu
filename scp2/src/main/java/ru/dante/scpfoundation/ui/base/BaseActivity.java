@@ -205,7 +205,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
                     bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Analitics.StartScreen.SNACK_BAR);
                     mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
                 });
-                snackbar.setActionTextColor(ContextCompat.getColor(BaseActivity.this, R.color.material_amber_500));
+                snackbar.setActionTextColor(ContextCompat.getColor(BaseActivity.this, R.color.material_green_500));
                 snackbar.show();
             }
         });
