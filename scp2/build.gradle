@@ -195,6 +195,7 @@ dependencies {
     compile "com.google.firebase:firebase-crash:$googleLibraryVersion"
     compile "com.google.firebase:firebase-core:$googleLibraryVersion"
     compile "com.google.firebase:firebase-analytics:$googleLibraryVersion"
+    compile "com.google.firebase:firebase-invites:$googleLibraryVersion"
     compile "com.google.firebase:firebase-ads:$googleLibraryVersion"
     //appodeal
     compile project(':cheetah-mobile-3.4.7')

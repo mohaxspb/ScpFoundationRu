@@ -58,4 +58,8 @@
         <key>num_of_intersitial_between_rewarded</key>
         <value>5</value>
     </entry>
+    <entry>
+        <key>app_install_reward_in_millis</key>
+        <value>86400000</value>
+    </entry>
 </defaultsMap>

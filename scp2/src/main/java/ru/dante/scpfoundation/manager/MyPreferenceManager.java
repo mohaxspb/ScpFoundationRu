@@ -35,6 +35,7 @@ public class MyPreferenceManager {
         String LICENCE_ACCEPTED = "LICENCE_ACCEPTED";
         String CUR_APP_VERSION = "CUR_APP_VERSION";
         String DESIGN_FONT_PATH = "DESIGN_FONT_PATH";
+        String PACKAGE_INSTALLED = "PACKAGE_INSTALLED";
     }
 
     private SharedPreferences mPreferences;
@@ -174,6 +175,20 @@ public class MyPreferenceManager {
     public boolean isTimeToShowRewardedInsteadOfInterstitial() {
         return getNumOfInterstitialsShown() >=
                 FirebaseRemoteConfig.getInstance().getLong(Constants.Firebase.RemoteConfigKeys.NUM_OF_INTERSITIAL_BETWEEN_REWARDED);
+    }
+
+    //app installs
+    public boolean isAppInstalledForPackage(String packageName) {
+        return mPreferences.getBoolean(Keys.PACKAGE_INSTALLED + packageName, false);
+    }
+
+    public void setAppInstalledForPackage(String packageName) {
+        mPreferences.edit().putBoolean(Keys.PACKAGE_INSTALLED + packageName, true).apply();
+    }
+
+    public void applyAwardForAppInstall() {
+        setLastTimeAdsShows((System.currentTimeMillis() +
+                FirebaseRemoteConfig.getInstance().getLong(Constants.Firebase.RemoteConfigKeys.APP_INSTALL_REWARD_IN_MILLIS)));
     }
 
     //utils

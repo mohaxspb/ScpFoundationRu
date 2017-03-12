@@ -24,6 +24,8 @@ public interface Constants {
 
     interface Firebase {
 
+        int REQUEST_INVITE = 1024;
+
         interface RemoteConfigKeys {
             String APPS_TO_INSTALL_JSON = "apps_to_install_json";
             String FREE_INVITES_ENABLED = "free_invites_enabled";
@@ -32,6 +34,7 @@ public interface Constants {
             String PERIOD_BETWEEN_INTERSTITIAL_IN_MILLIS = "period_between_interstitial_in_millis";
             String REWARDED_VIDEO_COOLDOWN_IN_MILLIS = "rewarded_video_cooldown_in_millis";
             String NUM_OF_INTERSITIAL_BETWEEN_REWARDED = "num_of_intersitial_between_rewarded";
+            String APP_INSTALL_REWARD_IN_MILLIS = "app_install_reward_in_millis";
         }
 
         interface Analitics {

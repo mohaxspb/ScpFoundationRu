@@ -187,4 +187,12 @@ public class NetModule {
             }
         };
     }
+
+    @Provides
+    @NonNull
+    @Singleton
+    Gson providesGson() {
+        return new GsonBuilder()
+                .create();
+    }
 }

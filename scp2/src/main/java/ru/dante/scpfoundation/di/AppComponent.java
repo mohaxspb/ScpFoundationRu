@@ -9,6 +9,7 @@ import ru.dante.scpfoundation.di.module.NotificationModule;
 import ru.dante.scpfoundation.di.module.PresentersModule;
 import ru.dante.scpfoundation.di.module.StorageModule;
 import ru.dante.scpfoundation.monetization.util.MyAdListener;
+import ru.dante.scpfoundation.receivers.AppInstallReceiver;
 import ru.dante.scpfoundation.receivers.ReceiverBoot;
 import ru.dante.scpfoundation.receivers.ReceiverTimer;
 import ru.dante.scpfoundation.service.DownloadAllService;
@@ -19,6 +20,7 @@ import ru.dante.scpfoundation.ui.activity.MaterialsActivity;
 import ru.dante.scpfoundation.ui.adapter.RecyclerAdapterArticle;
 import ru.dante.scpfoundation.ui.adapter.RecyclerAdapterListArticles;
 import ru.dante.scpfoundation.ui.adapter.RecyclerAdapterSubscriptions;
+import ru.dante.scpfoundation.ui.dialog.FreeAdsDisablingDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.NewVersionDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
@@ -39,6 +41,7 @@ import ru.dante.scpfoundation.ui.fragment.OfflineArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.RatedArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.RecentArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.SiteSearchArticlesFragment;
+import ru.dante.scpfoundation.ui.holder.OurApplicationHolder;
 
 /**
  * Created by y.kuchanov on 21.12.16.
@@ -100,6 +103,8 @@ public interface AppComponent {
 
     void inject(SubscriptionsFragmentDialog dialogFragment);
 
+    void inject(FreeAdsDisablingDialogFragment dialogFragment);
+
     void inject(SetttingsBottomSheetDialogFragment bottomSheetDialogFragment);
 
     void inject(RecyclerAdapterListArticles adapterNewArticles);
@@ -110,9 +115,13 @@ public interface AppComponent {
 
     void inject(DownloadAllService service);
 
-    void inject(ReceiverTimer receiverTimer);
+    void inject(ReceiverTimer receiver);
 
-    void inject(ReceiverBoot receiverBoot);
+    void inject(ReceiverBoot receiver);
+
+    void inject(AppInstallReceiver receiver);
 
     void inject(MyAdListener adListener);
+
+    void inject(OurApplicationHolder holder);
 }

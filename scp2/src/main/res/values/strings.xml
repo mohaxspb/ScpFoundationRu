@@ -119,4 +119,14 @@
         <item>Объекты RU</item>
         <item>Все</item>
     </string-array>
+
+    <string name="market_url" translatable="false">market://details?id=%s</string>
+    <string name="free">Бесплатно</string>
+    <string name="dialog_free_ads_disable_title">Отлючение рекламы</string>
+    <string name="start_market_error">Не удалось запустить PlayMarket</string>
+    <string name="thanks_for_supporting_us">Разработчики благодарны за вашу поддержку!</string>
+    <string name="invitation_message">Смотри какое крутое приложение я нашёл!</string>
+    <string name="invitation_cta">Прочти секретные документы!</string>
+    <string name="invitation_title">Секретные материалы фонда SCP!</string>
+    <string name="invite_friends">Пригласи 5 друзей в приложение!</string>
 </resources>
