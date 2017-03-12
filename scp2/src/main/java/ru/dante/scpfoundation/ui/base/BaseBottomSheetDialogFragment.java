@@ -1,4 +1,4 @@
-package ru.dante.scpfoundation.ui.dialog;
+package ru.dante.scpfoundation.ui.base;
 
 import android.app.Dialog;
 import android.os.Bundle;
@@ -23,7 +23,7 @@ import ru.dante.scpfoundation.ui.base.BaseActivity;
 public abstract class BaseBottomSheetDialogFragment extends BottomSheetDialogFragment {
 
     @BindView(R.id.root)
-    protected View root;
+    protected View mRoot;
 
     private Unbinder unbinder;
 

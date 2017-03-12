@@ -15,7 +15,9 @@ import timber.log.Timber;
  * <p>
  * for TappAwards
  */
-public class ArticlePresenter extends BasePresenter<ArticleMvp.View> implements ArticleMvp.Presenter {
+public class ArticlePresenter
+        extends BasePresenter<ArticleMvp.View>
+        implements ArticleMvp.Presenter {
 
     /**
      * used as Article obj id

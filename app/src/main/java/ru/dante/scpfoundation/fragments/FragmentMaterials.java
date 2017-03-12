@@ -31,8 +31,7 @@ import ru.dante.scpfoundation.utils.parsing.DownloadProtocols;
 /**
  * Created for MyApplication by Dante on 16.01.2016  22:31.
  */
-public class FragmentMaterials extends Fragment implements DownloadProtocols.UpdateProtocol, SharedPreferences.OnSharedPreferenceChangeListener
-{
+public class FragmentMaterials extends Fragment implements DownloadProtocols.UpdateProtocol, SharedPreferences.OnSharedPreferenceChangeListener {
     private ImageView loadingIndicator;
     private RecyclerView recyclerView;
     private static final String LOG = FragmentMaterials.class.getSimpleName();
@@ -41,26 +40,21 @@ public class FragmentMaterials extends Fragment implements DownloadProtocols.Upd
     private String url;
 
     @Override
-    public void onStart()
-    {
+    public void onStart() {
         super.onStart();
         BusProvider.getInstance().register(this);
     }
 
     @Override
-    public void onStop()
-    {
+    public void onStop() {
         super.onStop();
         BusProvider.getInstance().unregister(this);
     }
 
     @Subscribe
-    public void onArticleDownloaded(EventArticleDownloaded eventArticleDownloaded)
-    {
-        for (int i = 0; i < listOfProtocols.size(); i++)
-        {
-            if (listOfProtocols.get(i).contains(eventArticleDownloaded.getLink()))
-            {
+    public void onArticleDownloaded(EventArticleDownloaded eventArticleDownloaded) {
+        for (int i = 0; i < listOfProtocols.size(); i++) {
+            if (listOfProtocols.get(i).contains(eventArticleDownloaded.getLink())) {
                 recyclerView.getAdapter().notifyItemChanged(i);
                 break;
             }
@@ -68,23 +62,18 @@ public class FragmentMaterials extends Fragment implements DownloadProtocols.Upd
     }
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
-    {
-        if (!isAdded())
-        {
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (!isAdded()) {
             return;
         }
-        if (key.equals(getString(R.string.pref_design_key_text_size_ui)))
-        {
-            if (recyclerView.getAdapter() != null)
-            {
+        if (key.equals(getString(R.string.pref_design_key_text_size_ui))) {
+            if (recyclerView.getAdapter() != null) {
                 recyclerView.getAdapter().notifyDataSetChanged();
             }
         }
     }
 
-    public static Fragment createFragment(String url)
-    {
+    public static Fragment createFragment(String url) {
         Fragment fragment = new FragmentMaterials();
         Bundle bundle = new Bundle();
         bundle.putString("url", url);
@@ -94,11 +83,10 @@ public class FragmentMaterials extends Fragment implements DownloadProtocols.Upd
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-    {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(LOG, "on create view called");
         View v = inflater.inflate(R.layout.fragment_article, container, false);
-        loadingIndicator=(ImageView) v.findViewById(R.id.loading_indicator);
+        loadingIndicator = (ImageView) v.findViewById(R.id.loading_indicator);
         recyclerView = (RecyclerView) v.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
@@ -106,18 +94,15 @@ public class FragmentMaterials extends Fragment implements DownloadProtocols.Upd
         Bundle arguments = this.getArguments();
         url = arguments.getString("url");
 
-        if (savedInstanceState != null)
-        {
+        if (savedInstanceState != null) {
             listOfProtocols = savedInstanceState.getStringArrayList(KEY_PROTOCOLS);
-            if(listOfProtocols==null)
-            {
-                listOfProtocols =new ArrayList<>();
+            if (listOfProtocols == null) {
+                listOfProtocols = new ArrayList<>();
             }
             url = savedInstanceState.getString("url");
         }
 
-        if (listOfProtocols.size() == 0)
-        {
+        if (listOfProtocols.size() == 0) {
             DownloadProtocols downloadProtocols = new DownloadProtocols(url, this);
             downloadProtocols.execute();
             loadingIndicator.setVisibility(View.VISIBLE);
@@ -138,27 +123,22 @@ public class FragmentMaterials extends Fragment implements DownloadProtocols.Upd
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
     @Override
-    public void update(ArrayList<String> articles)
-    {
+    public void update(ArrayList<String> articles) {
 //        this.listOfProtocols.addAll(articles);
-        if (!isAdded())
-        {
+        if (!isAdded()) {
             return;
         }
         loadingIndicator.animate().cancel();
         loadingIndicator.setVisibility(View.GONE);
-        if (articles == null)
-        {
+        if (articles == null) {
             Log.e(LOG, "Connection lost");
             Snackbar.make(recyclerView, "Connection lost", Snackbar.LENGTH_LONG).show();
-        } else
-        {
+        } else {
             listOfProtocols.clear();
             this.listOfProtocols.addAll(articles);
             recyclerView.setAdapter(new RecyclerAdapterProtocols(listOfProtocols));
@@ -166,8 +146,7 @@ public class FragmentMaterials extends Fragment implements DownloadProtocols.Upd
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState)
-    {
+    public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putStringArrayList(KEY_PROTOCOLS, listOfProtocols);
         outState.putString("url", url);

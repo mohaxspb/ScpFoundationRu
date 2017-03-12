@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -114,15 +113,6 @@ public abstract class BaseFragment<V extends BaseMvp.View, P extends BaseMvp.Pre
         Timber.d("onDestroyView");
         super.onDestroyView();
         mUnbinder.unbind();
-    }
-
-    protected int getActionBarHeight() {
-        TypedValue tv = new TypedValue();
-        if (getActivity().getTheme().resolveAttribute(R.attr.actionBarSize, tv, true)) {
-            return TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
-        } else {
-            return 0;
-        }
     }
 
     @Override

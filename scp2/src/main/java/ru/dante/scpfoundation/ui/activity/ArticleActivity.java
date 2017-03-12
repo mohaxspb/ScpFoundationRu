@@ -3,7 +3,6 @@ package ru.dante.scpfoundation.ui.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
@@ -20,7 +19,7 @@ import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.monetization.util.MyAdListener;
-import ru.dante.scpfoundation.mvp.base.AdsActions;
+import ru.dante.scpfoundation.mvp.base.MonetizationActions;
 import ru.dante.scpfoundation.mvp.contract.ArticleScreenMvp;
 import ru.dante.scpfoundation.ui.adapter.ArticlesPagerAdapter;
 import ru.dante.scpfoundation.ui.base.BaseDrawerActivity;
@@ -47,11 +46,11 @@ public class ArticleActivity
 
     public static void startActivity(Context context, ArrayList<String> urls, int position) {
         Timber.d("startActivity: urls.size() %s, position: %s", urls.size(), position);
-        if (context instanceof AdsActions) {
-            AdsActions adsActions = (AdsActions) context;
-            if (adsActions.isTimeToShowAds()) {
-                if (adsActions.isAdsLoaded()) {
-                    adsActions.showInterstitial(new MyAdListener() {
+        if (context instanceof MonetizationActions) {
+            MonetizationActions monetizationActions = (MonetizationActions) context;
+            if (monetizationActions.isTimeToShowAds()) {
+                if (monetizationActions.isAdsLoaded()) {
+                    monetizationActions.showInterstitial(new MyAdListener() {
                         @Override
                         public void onAdClosed() {
                             super.onAdClosed();
@@ -70,7 +69,7 @@ public class ArticleActivity
                 Timber.d("it's not time to showInterstitial ads");
             }
         } else {
-            Timber.wtf("context IS NOT instanceof AdsActions");
+            Timber.wtf("context IS NOT instanceof MonetizationActions");
         }
         Intent intent = new Intent(context, ArticleActivity.class);
         intent.putExtra(EXTRA_ARTICLES_URLS_LIST, urls);
@@ -123,10 +122,10 @@ public class ArticleActivity
                 subsDF.show(getSupportFragmentManager(), subsDF.getTag());
 
                 Bundle bundle = new Bundle();
-                bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Analitics.StartScreen.MAIN_TO_ARTICLE_SNACK_BAR);
+                bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.MAIN_TO_ARTICLE_SNACK_BAR);
                 mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
             });
-            snackbar.setActionTextColor(ContextCompat.getColor(this, R.color.material_amber_500));
+            snackbar.setActionTextColor(ContextCompat.getColor(this, R.color.material_green_500));
             snackbar.show();
         }
     }
@@ -154,12 +153,6 @@ public class ArticleActivity
     @Override
     protected int getMenuResId() {
         return R.menu.menu_article;
-    }
-
-    @NonNull
-    @Override
-    public ArticleScreenMvp.Presenter createPresenter() {
-        return mPresenter;
     }
 
     @Override
@@ -195,8 +188,7 @@ public class ArticleActivity
                 link = Constants.Urls.OBJECTS_RU;
                 break;
             case R.id.files:
-                //TODO launch new activity
-                Snackbar.make(mRoot, R.string.in_progress, Snackbar.LENGTH_SHORT).show();
+                MaterialsActivity.startActivity(this);
                 break;
             case R.id.stories:
                 link = Constants.Urls.STORIES;

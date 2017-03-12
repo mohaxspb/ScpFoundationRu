@@ -1,5 +1,8 @@
 package ru.dante.scpfoundation.mvp.base;
 
+import java.util.List;
+
+import ru.dante.scpfoundation.monetization.model.Item;
 import ru.dante.scpfoundation.monetization.util.MyAdListener;
 
 /**
@@ -7,7 +10,7 @@ import ru.dante.scpfoundation.monetization.util.MyAdListener;
  * <p>
  * for scp_ru
  */
-public interface AdsActions {
+public interface MonetizationActions {
 
     void initAds();
 
@@ -23,9 +26,9 @@ public interface AdsActions {
 
     void updateOwnedMarketItems();
 
-    void loadRewardedVideoAd();
-
     void showRewardedVideo();
 
     void startRewardedVideoFlow();
+
+    List<Item> getOwnedItems();
 }

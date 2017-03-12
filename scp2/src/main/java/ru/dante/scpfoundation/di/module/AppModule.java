@@ -11,8 +11,8 @@ import dagger.Provides;
 
 /**
  * Created by y.kuchanov on 21.12.16.
- * <p>
- * for TappAwards
+ *
+ * for scp_ru
  */
 @Module
 public class AppModule {

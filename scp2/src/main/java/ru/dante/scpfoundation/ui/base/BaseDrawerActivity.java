@@ -181,12 +181,12 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
                 mPresenter.onUserLogined(null);
             });
 
-            headerViewHolder.donate.setOnClickListener(view -> {
+            headerViewHolder.inapp.setOnClickListener(view -> {
                 BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
                 subsDF.show(getSupportFragmentManager(), subsDF.getTag());
 
                 Bundle bundle = new Bundle();
-                bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Analitics.StartScreen.DRAWER_HEADER_LOGINED);
+                bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.DRAWER_HEADER_LOGINED);
                 mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
             });
 
@@ -203,7 +203,7 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
 
             HeaderViewHolderUnlogined headerViewHolder = new HeaderViewHolderUnlogined(headerUnlogined);
 
-            headerViewHolder.mLogin.setOnClickListener(view -> VKSdk.login(this, VKScope.EMAIL));
+            headerViewHolder.mLogin.setOnClickListener(view -> VKSdk.login(this, VKScope.EMAIL, VKScope.GROUPS));
 
             headerViewHolder.mLoginInfo.setOnClickListener(view -> new MaterialDialog.Builder(this)
                     .content(R.string.login_advantages)
@@ -236,8 +236,8 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
         ImageView avatar;
         @BindView(R.id.logout)
         View logout;
-        @BindView(R.id.donate)
-        View donate;
+        @BindView(R.id.inapp)
+        View inapp;
 
         HeaderViewHolderLogined(View view) {
             ButterKnife.bind(this, view);

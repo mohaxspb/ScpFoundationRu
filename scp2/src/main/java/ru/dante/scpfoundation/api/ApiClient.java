@@ -2,6 +2,15 @@ package ru.dante.scpfoundation.api;
 
 import android.text.TextUtils;
 
+import com.google.gson.Gson;
+import com.vk.sdk.VKAccessToken;
+import com.vk.sdk.api.VKApi;
+import com.vk.sdk.api.VKApiConst;
+import com.vk.sdk.api.VKError;
+import com.vk.sdk.api.VKParameters;
+import com.vk.sdk.api.VKRequest;
+import com.vk.sdk.api.VKResponse;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -25,6 +34,7 @@ import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.api.error.ScpException;
 import ru.dante.scpfoundation.api.error.ScpNoSearchResultsException;
 import ru.dante.scpfoundation.api.error.ScpParseException;
+import ru.dante.scpfoundation.api.model.response.VkGroupJoinResponse;
 import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.db.model.RealmString;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
@@ -39,10 +49,12 @@ import timber.log.Timber;
 public class ApiClient {
     private final MyPreferenceManager mPreferencesManager;
     private final OkHttpClient mOkHttpClient;
+    private Gson mGson;
 
-    public ApiClient(OkHttpClient okHttpClient, Retrofit retrofit, MyPreferenceManager preferencesManager) {
+    public ApiClient(OkHttpClient okHttpClient, Retrofit retrofit, MyPreferenceManager preferencesManager, Gson gson) {
         mPreferencesManager = preferencesManager;
         mOkHttpClient = okHttpClient;
+        mGson = gson;
     }
 
     private <T> Observable<T> bindWithUtils(Observable<T> observable) {
@@ -60,7 +72,6 @@ public class ApiClient {
 
     public Observable<String> getRandomUrl() {
         return bindWithUtils(Observable.create(subscriber -> {
-
             Request.Builder request = new Request.Builder();
             request.url(Constants.Api.RANDOM_PAGE_SCRIPT_URL);
             request.addHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
@@ -359,42 +370,7 @@ public class ApiClient {
                     //type of object
                     String imageURL = doc.getElementsByTag("img").first().attr("src");
                     @Article.ObjectType
-                    String type;
-                    switch (imageURL) {
-                        case "http://scp-ru.wdfiles.com/local--files/scp-list-3/na.png":
-                        case "http://scp-ru.wdfiles.com/local--files/scp-list-2/na(1).png":
-                        case "http://scp-ru.wdfiles.com/local--files/scp-list-ru/na(1).png":
-                        case "http://scp-ru.wdfiles.com/local--files/scp-list/na.png":
-                            type = Article.ObjectType.NEUTRAL_OR_NOT_ADDED;
-                            break;
-                        case "http://scp-ru.wdfiles.com/local--files/scp-list-3/safe.png":
-                        case "http://scp-ru.wdfiles.com/local--files/scp-list-2/safe(1).png":
-                        case "http://scp-ru.wdfiles.com/local--files/scp-list-ru/safe(1).png":
-                        case "http://scp-ru.wdfiles.com/local--files/scp-list/safe.png":
-                            type = Article.ObjectType.SAFE;
-                            break;
-                        case "http://scp-ru.wdfiles.com/local--files/scp-list-3/euclid.png":
-                        case "http://scp-ru.wdfiles.com/local--files/scp-list-2/euclid(1).png":
-                        case "http://scp-ru.wdfiles.com/local--files/scp-list-ru/euclid(1).png":
-                        case "http://scp-ru.wdfiles.com/local--files/scp-list/euclid.png":
-                            type = Article.ObjectType.EUCLID;
-                            break;
-                        case "http://scp-ru.wdfiles.com/local--files/scp-list-3/keter.png":
-                        case "http://scp-ru.wdfiles.com/local--files/scp-list-2/keter(1).png":
-                        case "http://scp-ru.wdfiles.com/local--files/scp-list-ru/keter(1).png":
-                        case "http://scp-ru.wdfiles.com/local--files/scp-list/keter.png":
-                            type = Article.ObjectType.KETER;
-                            break;
-                        case "http://scp-ru.wdfiles.com/local--files/scp-list-3/thaumiel.png":
-                        case "http://scp-ru.wdfiles.com/local--files/scp-list-2/thaumiel(1).png":
-                        case "http://scp-ru.wdfiles.com/local--files/scp-list-ru/thaumiel(1).png":
-                        case "http://scp-ru.wdfiles.com/local--files/scp-list/thaumiel.png":
-                            type = Article.ObjectType.THAUMIEL;
-                            break;
-                        default:
-                            type = Article.ObjectType.NONE;
-                            break;
-                    }
+                    String type = getObjectTypeByImageUrl(imageURL);
 
                     String url = BuildConfig.BASE_API_URL + doc.getElementsByTag("a").first().attr("href");
                     String title = doc.text();
@@ -552,44 +528,7 @@ public class ApiClient {
                     }
                 }
 
-                //type TODO fucking unfornated info!
-//                @Article.ObjectType
-//                String type;
-//                switch (imageURL) {
-//                    case "http://scp-ru.wdfiles.com/local--files/scp-list-3/na.png":
-//                    case "http://scp-ru.wdfiles.com/local--files/scp-list-2/na(1).png":
-//                    case "http://scp-ru.wdfiles.com/local--files/scp-list-ru/na(1).png":
-//                    case "http://scp-ru.wdfiles.com/local--files/scp-list/na.png":
-//                        type = Article.ObjectType.NEUTRAL_OR_NOT_ADDED;
-//                        break;
-//                    case "http://scp-ru.wdfiles.com/local--files/scp-list-3/safe.png":
-//                    case "http://scp-ru.wdfiles.com/local--files/scp-list-2/safe(1).png":
-//                    case "http://scp-ru.wdfiles.com/local--files/scp-list-ru/safe(1).png":
-//                    case "http://scp-ru.wdfiles.com/local--files/scp-list/safe.png":
-//                        type = Article.ObjectType.SAFE;
-//                        break;
-//                    case "http://scp-ru.wdfiles.com/local--files/scp-list-3/euclid.png":
-//                    case "http://scp-ru.wdfiles.com/local--files/scp-list-2/euclid(1).png":
-//                    case "http://scp-ru.wdfiles.com/local--files/scp-list-ru/euclid(1).png":
-//                    case "http://scp-ru.wdfiles.com/local--files/scp-list/euclid.png":
-//                        type = Article.ObjectType.EUCLID;
-//                        break;
-//                    case "http://scp-ru.wdfiles.com/local--files/scp-list-3/keter.png":
-//                    case "http://scp-ru.wdfiles.com/local--files/scp-list-2/keter(1).png":
-//                    case "http://scp-ru.wdfiles.com/local--files/scp-list-ru/keter(1).png":
-//                    case "http://scp-ru.wdfiles.com/local--files/scp-list/keter.png":
-//                        type = Article.ObjectType.KETER;
-//                        break;
-//                    case "http://scp-ru.wdfiles.com/local--files/scp-list-3/thaumiel.png":
-//                    case "http://scp-ru.wdfiles.com/local--files/scp-list-2/thaumiel(1).png":
-//                    case "http://scp-ru.wdfiles.com/local--files/scp-list-ru/thaumiel(1).png":
-//                    case "http://scp-ru.wdfiles.com/local--files/scp-list/thaumiel.png":
-//                        type = Article.ObjectType.THAUMIEL;
-//                        break;
-//                    default:
-//                        type = Article.ObjectType.NONE;
-//                        break;
-//                }
+                //type TODO fucking unformatted info!
 
                 //finally fill article info
                 Article article = new Article();
@@ -614,8 +553,279 @@ public class ApiClient {
                 subscriber.onError(e);
             }
         }))
-                .onErrorResumeNext(throwable -> {
-                    return Observable.error(new ScpException(throwable, url));
-                });
+                .onErrorResumeNext(throwable -> Observable.error(new ScpException(throwable, url)));
+    }
+
+    public Observable<List<Article>> getMaterialsArticles(String objectsLink) {
+        return bindWithUtils(Observable.<List<Article>>create(subscriber -> {
+            Request request = new Request.Builder()
+                    .url(objectsLink)
+                    .build();
+
+            String responseBody = null;
+            try {
+                Response response = mOkHttpClient.newCall(request).execute();
+                responseBody = response.body().string();
+            } catch (IOException e) {
+                subscriber.onError(new IOException(MyApplication.getAppInstance().getString(R.string.error_connection)));
+                return;
+            }
+            try {
+                Document doc = Jsoup.parse(responseBody);
+                Element pageContent = doc.getElementById("page-content");
+                if (pageContent == null) {
+                    subscriber.onError(new ScpParseException(MyApplication.getAppInstance().getString(R.string.error_parse)));
+                    return;
+                }
+
+                List<Article> articles = new ArrayList<>();
+                //parse
+                List<Element> listOfElements = pageContent.getElementsByTag("ul");
+                for (int i = 0; i < listOfElements.size(); i++) {
+                    ArrayList<Element> listOfLi = listOfElements.get(i).getElementsByTag("li");
+                    for (int u = 0; u < listOfLi.size(); u++) {
+                        String url = listOfLi.get(u).getElementsByTag("a").first().attr("href");
+                        if (!url.startsWith("http")) {
+                            url = BuildConfig.BASE_API_URL + url;
+                        }
+                        String text = listOfLi.get(u).text();
+                        Article article = new Article();
+                        article.title = text;
+                        article.url = url;
+                        articles.add(article);
+                    }
+                }
+                //parse end
+                subscriber.onNext(articles);
+                subscriber.onCompleted();
+            } catch (Exception e) {
+                Timber.e(e, "error while get arts list");
+                subscriber.onError(e);
+            }
+        }));
+    }
+
+    public Observable<List<Article>> getMaterialsArchiveArticles() {
+        return bindWithUtils(Observable.<List<Article>>create(subscriber -> {
+            Request request = new Request.Builder()
+                    .url(Constants.Urls.ARCHIVE)
+                    .build();
+
+            String responseBody = null;
+            try {
+                Response response = mOkHttpClient.newCall(request).execute();
+                responseBody = response.body().string();
+            } catch (IOException e) {
+                subscriber.onError(new IOException(MyApplication.getAppInstance().getString(R.string.error_connection)));
+                return;
+            }
+            try {
+                Document doc = Jsoup.parse(responseBody);
+                Element pageContent = doc.getElementById("page-content");
+                if (pageContent == null) {
+                    subscriber.onError(new ScpParseException(MyApplication.getAppInstance().getString(R.string.error_parse)));
+                    return;
+                }
+
+                //now we will remove all html code before tag h2,with id toc1
+                String allHtml = pageContent.html();
+                int indexOfh2WithIdToc1 = allHtml.indexOf("<h2 id=\"toc1\">");
+                int indexOfh2WithIdToc5 = allHtml.indexOf("<h2 id=\"toc5\">");
+                allHtml = allHtml.substring(indexOfh2WithIdToc1, indexOfh2WithIdToc5);
+
+                doc = Jsoup.parse(allHtml);
+
+                Element h2withIdToc1 = doc.getElementById("toc1");
+                h2withIdToc1.remove();
+
+                Elements allh2Tags = doc.getElementsByTag("h2");
+                for (Element h2Tag : allh2Tags) {
+                    Element brTag = new Element(Tag.valueOf("br"), "");
+                    h2Tag.replaceWith(brTag);
+                }
+                Elements allP = doc.getElementsByTag("p");
+                allP.remove();
+                Elements allUl = doc.getElementsByTag("ul");
+                allUl.remove();
+
+                List<Article> articles = new ArrayList<>();
+
+                String allArticles = doc.getElementsByTag("body").first().html();
+                String[] arrayOfArticles = allArticles.split("<br>");
+                for (String arrayItem : arrayOfArticles) {
+                    doc = Jsoup.parse(arrayItem);
+                    String imageURL = doc.getElementsByTag("img").first().attr("src");
+                    String url = BuildConfig.BASE_API_URL + doc.getElementsByTag("a").first().attr("href");
+                    String title = doc.text();
+
+                    @Article.ObjectType
+                    String type = getObjectTypeByImageUrl(imageURL);
+
+                    Article article = new Article();
+                    article.url = url;
+                    article.type = type;
+                    article.title = title;
+                    articles.add(article);
+                }
+                //parse end
+                subscriber.onNext(articles);
+                subscriber.onCompleted();
+            } catch (Exception e) {
+                Timber.e(e, "error while get arts list");
+                subscriber.onError(e);
+            }
+        }));
+    }
+
+    public Observable<List<Article>> getMaterialsJokesArticles() {
+        return bindWithUtils(Observable.<List<Article>>create(subscriber -> {
+            Request request = new Request.Builder()
+                    .url(Constants.Urls.JOKES)
+                    .build();
+
+            String responseBody = null;
+            try {
+                Response response = mOkHttpClient.newCall(request).execute();
+                responseBody = response.body().string();
+            } catch (IOException e) {
+                subscriber.onError(new IOException(MyApplication.getAppInstance().getString(R.string.error_connection)));
+                return;
+            }
+            try {
+                Document doc = Jsoup.parse(responseBody);
+                Element pageContent = doc.getElementById("page-content");
+                if (pageContent == null) {
+                    subscriber.onError(new ScpParseException(MyApplication.getAppInstance().getString(R.string.error_parse)));
+                    return;
+                }
+
+                //now we will remove all html code before tag h2,with id toc1
+                String allHtml = pageContent.html();
+                int indexOfh2WithIdToc1 = allHtml.indexOf("<h2 id=\"toc1\">");
+                allHtml = allHtml.substring(indexOfh2WithIdToc1);
+
+                doc = Jsoup.parse(allHtml);
+
+                Element h2withIdToc1 = doc.getElementById("toc1");
+                h2withIdToc1.remove();
+
+                Elements allh2Tags = doc.getElementsByTag("h2");
+                for (Element h2Tag : allh2Tags) {
+                    Element brTag = new Element(Tag.valueOf("br"), "");
+                    h2Tag.replaceWith(brTag);
+                }
+
+                List<Article> articles = new ArrayList<>();
+
+                String allArticles = doc.getElementsByTag("body").first().html();
+                String[] arrayOfArticles = allArticles.split("<br>");
+                for (String arrayItem : arrayOfArticles) {
+//                    Timber.d("arrayItem: %s", arrayItem);
+                    doc = Jsoup.parse(arrayItem);
+                    String imageURL = doc.getElementsByTag("img").first().attr("src");
+                    String url = BuildConfig.BASE_API_URL + doc.getElementsByTag("a").first().attr("href");
+                    String title = doc.text();
+
+                    @Article.ObjectType
+                    String type = getObjectTypeByImageUrl(imageURL);
+
+                    Article article = new Article();
+                    article.url = url;
+                    article.type = type;
+                    article.title = title;
+                    articles.add(article);
+                }
+                //parse end
+                subscriber.onNext(articles);
+                subscriber.onCompleted();
+            } catch (Exception e) {
+                Timber.e(e, "error while get arts list");
+                subscriber.onError(e);
+            }
+        }));
+    }
+
+    public Observable<Boolean> joinVkGroup(String groupId) {
+        Timber.d("joinVkGroup with groupId: %s", groupId);
+        return bindWithUtils(Observable.<Boolean>create(subscriber -> {
+                    VKParameters parameters = VKParameters.from(
+                            VKApiConst.GROUP_ID, groupId,
+                            VKApiConst.ACCESS_TOKEN, VKAccessToken.currentToken(),
+                            VKApiConst.VERSION, BuildConfig.VK_API_VERSION
+                    );
+
+                    VKRequest vkRequest = VKApi.groups().join(parameters);
+                    vkRequest.executeWithListener(new VKRequest.VKRequestListener() {
+                        @Override
+                        public void onComplete(VKResponse response) {
+                            Timber.d("onComplete: %s", response.responseString);
+                            VkGroupJoinResponse vkGroupJoinResponse = mGson
+                                    .fromJson(response.responseString, VkGroupJoinResponse.class);
+                            Timber.d("vkGroupJoinResponse: %s", vkGroupJoinResponse);
+                            subscriber.onNext(vkGroupJoinResponse.response == 1);
+                            subscriber.onCompleted();
+                        }
+
+                        @Override
+                        public void onError(VKError error) {
+                            Timber.d("onError: %s", error);
+                            subscriber.onError(new Throwable(error.toString()));
+                        }
+                    });
+                })
+        );
+    }
+
+    @Article.ObjectType
+    private String getObjectTypeByImageUrl(String imageURL) {
+        @Article.ObjectType
+        String type;
+
+        switch (imageURL) {
+            case "http://scp-ru.wdfiles.com/local--files/scp-list-3/na.png":
+            case "http://scp-ru.wdfiles.com/local--files/scp-list-2/na(1).png":
+            case "http://scp-ru.wdfiles.com/local--files/scp-list-ru/na(1).png":
+            case "http://scp-ru.wdfiles.com/local--files/scp-list/na.png":
+            case "http://scp-ru.wdfiles.com/local--files/archive/na.png":
+            case "http://scp-ru.wdfiles.com/local--files/scp-list-j/na(1).png":
+                type = Article.ObjectType.NEUTRAL_OR_NOT_ADDED;
+                break;
+            case "http://scp-ru.wdfiles.com/local--files/scp-list-3/safe.png":
+            case "http://scp-ru.wdfiles.com/local--files/scp-list-2/safe(1).png":
+            case "http://scp-ru.wdfiles.com/local--files/scp-list-ru/safe(1).png":
+            case "http://scp-ru.wdfiles.com/local--files/scp-list/safe.png":
+            case "http://scp-ru.wdfiles.com/local--files/archive/safe.png":
+            case "http://scp-ru.wdfiles.com/local--files/scp-list-j/safe(1).png":
+                type = Article.ObjectType.SAFE;
+                break;
+            case "http://scp-ru.wdfiles.com/local--files/scp-list-3/euclid.png":
+            case "http://scp-ru.wdfiles.com/local--files/scp-list-2/euclid(1).png":
+            case "http://scp-ru.wdfiles.com/local--files/scp-list-ru/euclid(1).png":
+            case "http://scp-ru.wdfiles.com/local--files/scp-list/euclid.png":
+            case "http://scp-ru.wdfiles.com/local--files/archive/euclid.png":
+            case "http://scp-ru.wdfiles.com/local--files/scp-list-j/euclid(1).png":
+                type = Article.ObjectType.EUCLID;
+                break;
+            case "http://scp-ru.wdfiles.com/local--files/scp-list-3/keter.png":
+            case "http://scp-ru.wdfiles.com/local--files/scp-list-2/keter(1).png":
+            case "http://scp-ru.wdfiles.com/local--files/scp-list-ru/keter(1).png":
+            case "http://scp-ru.wdfiles.com/local--files/scp-list/keter.png":
+            case "http://scp-ru.wdfiles.com/local--files/archive/keter.png":
+            case "http://scp-ru.wdfiles.com/local--files/scp-list-j/keter(1).png":
+                type = Article.ObjectType.KETER;
+                break;
+            case "http://scp-ru.wdfiles.com/local--files/scp-list-3/thaumiel.png":
+            case "http://scp-ru.wdfiles.com/local--files/scp-list-2/thaumiel(1).png":
+            case "http://scp-ru.wdfiles.com/local--files/scp-list-ru/thaumiel(1).png":
+            case "http://scp-ru.wdfiles.com/local--files/scp-list/thaumiel.png":
+            case "http://scp-ru.wdfiles.com/local--files/archive/thaumiel.png":
+            case "http://scp-ru.wdfiles.com/local--files/scp-list-j/thaumiel(1).png":
+                type = Article.ObjectType.THAUMIEL;
+                break;
+            default:
+                type = Article.ObjectType.NONE;
+                break;
+        }
+        return type;
     }
 }

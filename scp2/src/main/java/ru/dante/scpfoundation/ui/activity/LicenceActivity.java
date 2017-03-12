@@ -36,7 +36,7 @@ public class LicenceActivity extends AppCompatActivity {
     @BindView(R.id.text)
     TextView text;
     @BindView(R.id.root)
-    View root;
+    View mRoot;
 
     @Inject
     MyPreferenceManager mMyPreferenceManager;
@@ -64,7 +64,7 @@ public class LicenceActivity extends AppCompatActivity {
             text.setText(Html.fromHtml(licence));
         } catch (IOException e) {
             Timber.e(e, "error while read licence from file");
-            Snackbar.make(root, R.string.error_read_licence, Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(mRoot, R.string.error_read_licence, Snackbar.LENGTH_SHORT).show();
         }
     }
 

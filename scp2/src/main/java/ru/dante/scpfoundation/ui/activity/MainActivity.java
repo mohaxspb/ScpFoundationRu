@@ -4,7 +4,6 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -157,12 +156,6 @@ public class MainActivity
         return R.menu.menu_main;
     }
 
-    @NonNull
-    @Override
-    public MainMvp.Presenter createPresenter() {
-        return mPresenter;
-    }
-
     @Override
     public boolean onNavigationItemClicked(int id) {
         Timber.d("onNavigationItemClicked with id: %s", id);
@@ -205,8 +198,7 @@ public class MainActivity
                 showFragment(ObjectsRuArticlesFragment.newInstance(), ObjectsRuArticlesFragment.TAG);
                 return true;
             case R.id.files:
-                //TODO launch new activity
-                Snackbar.make(mRoot, R.string.in_progress, Snackbar.LENGTH_SHORT).show();
+                MaterialsActivity.startActivity(this);
                 return false;
             case R.id.stories:
                 mCurrentSelectedDrawerItemId = id;

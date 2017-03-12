@@ -72,7 +72,7 @@
     <string name="settings_notif_vibrate_on">Вибрация</string>
     <string name="settings_notif_sound_on">Звук уведомления</string>
     <string name="settings_notification">Настройки уведомлений</string>
-    <string name="dialog_title_subscriptions">Отключение рекламы</string>
+    <string name="dialog_title_subscriptions">Отключение рекламы и дополнительный функционал</string>
     <string name="current_subscription">Ваша текущая подписка</string>
     <string name="no_subscriptions">Пусто</string>
     <string name="refresh">Обновить</string>
@@ -88,13 +88,13 @@
     <string name="remove_ads">Отключить рекламу?</string>
     <string name="yes_bliad">Да!</string>
     <string name="app_info">О приложении</string>
-    <string name="remove_ads_one_day">Отключить рекламу на 4 часа бесплатно</string>
-    <string name="ads_reward_gained">Ура! Никакой рекламы на 4 часа!</string>
+    <string name="remove_ads_for_free">Отключить рекламу бесплатно!</string>
+    <string name="ads_reward_gained">Ура! Никакой рекламы на %d часа!</string>
     <string name="wait">Подождите…</string>
     <string name="dialog_download">Загрузка</string>
     <string name="ads_reward_error_loading">Не удалось загрузить. Пробуйте ещё раз…</string>
     <string name="ads_reward_description_title">Инструкция</string>
-    <string name="ads_reward_description_content">Мы покажем вам видео и, после просмотра, отключим рекламу на сутки. Вы можете отключать её хоть каждый день!</string>
+    <string name="ads_reward_description_content">Мы покажем вам видео и, после просмотра, временно отключим рекламу. Вы можете отключать её сколько угодно раз!</string>
     <string name="ads_reward_ok">Всё понятно!</string>
     <string name="settings_design_list_type">Дизайн статьи в списке</string>
     <string name="rating">Рейтинг %d</string>
@@ -106,6 +106,11 @@
     <string name="login_greetings">Добро пожаловать, агент %s</string>
     <string name="error_login_no_email">Невозможно авторизоваться без информации о e-mail</string>
     <string name="access_level">3 уровень доступа (секретно)</string>
+    <string name="materials">Материалы</string>
+    <string name="only_premium">Только для подписавшихся</string>
+    <string name="activate">Активировать</string>
+    <string name="info">Информация</string>
+    <string name="subs_info">В дополнительный функционал входит отключение рекламы, все шрифты без ограничения и в будущем много чего ещё, например облачная синхронизация избранного и прочитанного. Также, подписавшись, вы сильно промотивируете разработчиков всё быстрее и быстрее добавлять фичи и фиксить баги!</string>
 
     <string-array name="download_types">
         <item>Объекты I</item>
@@ -114,4 +119,18 @@
         <item>Объекты RU</item>
         <item>Все</item>
     </string-array>
+
+    <string name="market_url" translatable="false">market://details?id=%s</string>
+    <string name="free">Бесплатно</string>
+    <string name="dialog_free_ads_disable_title">Отлючение рекламы</string>
+    <string name="start_market_error">Не удалось запустить PlayMarket</string>
+    <string name="thanks_for_supporting_us">Разработчики благодарны за вашу поддержку!</string>
+    <string name="invitation_message">Смотри какое крутое приложение я нашёл!</string>
+    <string name="invitation_cta">Прочти секретные документы!</string>
+    <string name="invitation_title">Секретные материалы фонда SCP!</string>
+    <string name="invite_friends">Пригласи 5 друзей в приложение!</string>
+    <string name="watch_video_to_disable_ads">Посмотри видео для отключения рекламы на %d часа</string>
+    <string name="app_install_ads_disable_title">Установи другие наши приложения для отключения рекламы на %d часа!</string>
+    <string name="vk_group_join_ads_disable_title">Вступи в группу ВК для отключения рекламы на %d часа!</string>
+    <string name="need_vk_group_access">Требуется разрешение на доступ к группам. Авторизуйтесь заново.</string>
 </resources>
