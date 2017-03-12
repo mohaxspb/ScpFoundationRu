@@ -16,6 +16,7 @@ import ru.dante.scpfoundation.ui.holder.AppInviteHolder;
 import ru.dante.scpfoundation.ui.holder.BaseHolder;
 import ru.dante.scpfoundation.ui.holder.OurApplicationHolder;
 import ru.dante.scpfoundation.ui.holder.RewardedVideoHolder;
+import ru.dante.scpfoundation.ui.holder.VkGroupToJoinHolder;
 import timber.log.Timber;
 
 /**
@@ -61,7 +62,7 @@ public class FreeAdsDisableRecyclerAdapter extends BaseRecyclerAdapter<
                 return new AppInstallHeaderHolder(itemView);
             case TYPE_VK_GROUP_TO_JOIN:
                 itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_recycler_title_content_image, parent, false);
-                return new OurApplicationHolder(itemView);
+                return new VkGroupToJoinHolder(itemView);
             default:
                 throw new RuntimeException(String.format("unexpected type: %s", viewType));
         }

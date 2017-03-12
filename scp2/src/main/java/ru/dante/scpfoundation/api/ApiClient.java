@@ -2,6 +2,15 @@ package ru.dante.scpfoundation.api;
 
 import android.text.TextUtils;
 
+import com.google.gson.Gson;
+import com.vk.sdk.VKAccessToken;
+import com.vk.sdk.api.VKApi;
+import com.vk.sdk.api.VKApiConst;
+import com.vk.sdk.api.VKError;
+import com.vk.sdk.api.VKParameters;
+import com.vk.sdk.api.VKRequest;
+import com.vk.sdk.api.VKResponse;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -25,6 +34,7 @@ import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.api.error.ScpException;
 import ru.dante.scpfoundation.api.error.ScpNoSearchResultsException;
 import ru.dante.scpfoundation.api.error.ScpParseException;
+import ru.dante.scpfoundation.api.model.response.VkGroupJoinResponse;
 import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.db.model.RealmString;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
@@ -39,10 +49,12 @@ import timber.log.Timber;
 public class ApiClient {
     private final MyPreferenceManager mPreferencesManager;
     private final OkHttpClient mOkHttpClient;
+    private Gson mGson;
 
-    public ApiClient(OkHttpClient okHttpClient, Retrofit retrofit, MyPreferenceManager preferencesManager) {
+    public ApiClient(OkHttpClient okHttpClient, Retrofit retrofit, MyPreferenceManager preferencesManager, Gson gson) {
         mPreferencesManager = preferencesManager;
         mOkHttpClient = okHttpClient;
+        mGson = gson;
     }
 
     private <T> Observable<T> bindWithUtils(Observable<T> observable) {
@@ -731,6 +743,37 @@ public class ApiClient {
                 subscriber.onError(e);
             }
         }));
+    }
+
+    public Observable<Boolean> joinVkGroup(String groupId) {
+        Timber.d("joinVkGroup with groupId: %s", groupId);
+        return bindWithUtils(Observable.<Boolean>create(subscriber -> {
+                    VKParameters parameters = VKParameters.from(
+                            VKApiConst.GROUP_ID, groupId,
+                            VKApiConst.ACCESS_TOKEN, VKAccessToken.currentToken(),
+                            VKApiConst.VERSION, BuildConfig.VK_API_VERSION
+                    );
+
+                    VKRequest vkRequest = VKApi.groups().join(parameters);
+                    vkRequest.executeWithListener(new VKRequest.VKRequestListener() {
+                        @Override
+                        public void onComplete(VKResponse response) {
+                            Timber.d("onComplete: %s", response.responseString);
+                            VkGroupJoinResponse vkGroupJoinResponse = mGson
+                                    .fromJson(response.responseString, VkGroupJoinResponse.class);
+                            Timber.d("vkGroupJoinResponse: %s", vkGroupJoinResponse);
+                            subscriber.onNext(vkGroupJoinResponse.response == 1);
+                            subscriber.onCompleted();
+                        }
+
+                        @Override
+                        public void onError(VKError error) {
+                            Timber.d("onError: %s", error);
+                            subscriber.onError(new Throwable(error.toString()));
+                        }
+                    });
+                })
+        );
     }
 
     @Article.ObjectType

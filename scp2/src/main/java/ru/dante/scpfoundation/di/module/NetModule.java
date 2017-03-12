@@ -152,8 +152,11 @@ public class NetModule {
     @Provides
     @NonNull
     @Singleton
-    ApiClient providerApiClient(@NonNull OkHttpClient okHttpClient, @NonNull Retrofit retrofit, @NonNull MyPreferenceManager preferencesManager) {
-        return new ApiClient(okHttpClient, retrofit, preferencesManager);
+    ApiClient providerApiClient(@NonNull OkHttpClient okHttpClient,
+                                @NonNull Retrofit retrofit,
+                                @NonNull MyPreferenceManager preferencesManager,
+                                @NonNull Gson gson) {
+        return new ApiClient(okHttpClient, retrofit, preferencesManager, gson);
     }
 
     @Provides

@@ -30,6 +30,9 @@ android {
         manifestPlaceholders = [debuggable: true]
         buildConfigField "boolean", "TIMBER_ENABLE", "true"
         buildConfigField('String', 'BASE_API_URL', '"http://scpfoundation.ru"')
+
+        buildConfigField "String", "VK_API_VERSION", '"5.62"'
+
         buildConfigField('int', 'TIMEOUT_SECONDS_CONNECT', '60')
         buildConfigField('int', 'TIMEOUT_SECONDS_READ', '60')
         buildConfigField('int', 'TIMEOUT_SECONDS_WRITE', '60')

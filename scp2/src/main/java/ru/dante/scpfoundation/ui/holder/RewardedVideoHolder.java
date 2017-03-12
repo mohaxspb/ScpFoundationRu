@@ -32,7 +32,7 @@ public class RewardedVideoHolder extends BaseHolder<BaseModel, BaseAdapterClickL
         title.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.material_green_500));
 
         title.setCompoundDrawablePadding(DimensionUtils.getDefaultMargin());
-        title.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_video_library, 0, 0, R.drawable.ic_video_library);
+        title.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_video_library, 0, 0, 0);
 
         itemView.setOnClickListener(view -> mAdapterClickListener.onItemClick(data));
     }

@@ -541,6 +541,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
 
                 } else {
                     Toast.makeText(BaseActivity.this, R.string.error_login_no_email, Toast.LENGTH_SHORT).show();
+                    VKSdk.logout();
                 }
             }
 

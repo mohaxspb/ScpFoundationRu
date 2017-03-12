@@ -42,6 +42,7 @@ import ru.dante.scpfoundation.ui.fragment.RatedArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.RecentArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.SiteSearchArticlesFragment;
 import ru.dante.scpfoundation.ui.holder.OurApplicationHolder;
+import ru.dante.scpfoundation.ui.holder.VkGroupToJoinHolder;
 
 /**
  * Created by y.kuchanov on 21.12.16.
@@ -124,4 +125,6 @@ public interface AppComponent {
     void inject(MyAdListener adListener);
 
     void inject(OurApplicationHolder holder);
+
+    void inject(VkGroupToJoinHolder holder);
 }
