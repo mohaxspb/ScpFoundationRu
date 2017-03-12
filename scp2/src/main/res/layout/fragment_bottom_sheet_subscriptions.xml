@@ -57,7 +57,7 @@
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:padding="@dimen/defaultMargin"
-            android:text="@string/remove_ads_one_day"
+            android:text="@string/remove_ads_for_free"
             android:textColor="@color/material_green_500"
             android:textSize="17sp"
             />

@@ -35,7 +35,7 @@
     </entry>
     <entry>
         <key>free_rewarded_video_enabled</key>
-        <value>false</value>
+        <value>true</value>
     </entry>
     <entry>
         <key>free_vk_groups_enabled</key>

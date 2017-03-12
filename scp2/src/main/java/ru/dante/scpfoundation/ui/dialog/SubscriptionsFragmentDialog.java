@@ -106,11 +106,7 @@ public class SubscriptionsFragmentDialog
 
     @OnClick(R.id.removeAdsOneDay)
     void onRemoveAdsOneDayClicked() {
-        Timber.d("onRemoveAdsOneDayClicked");
-//        dismiss();
-//        getBaseActivity().startRewardedVideoFlow();
-
-
+        Timber.d("onRemoveAdsFree");
         DialogFragment dialogFragment = FreeAdsDisablingDialogFragment.newInstance();
         dialogFragment.show(getChildFragmentManager(), FreeAdsDisablingDialogFragment.TAG);
     }

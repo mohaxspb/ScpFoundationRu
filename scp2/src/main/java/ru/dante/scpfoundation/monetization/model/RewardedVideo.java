@@ -5,9 +5,9 @@ package ru.dante.scpfoundation.monetization.model;
  * <p>
  * for Vjux
  */
-public class AppInviteModel extends BaseModel {
+public class RewardedVideo extends BaseModel {
 
-    public AppInviteModel(String title) {
+    public RewardedVideo(String title) {
         super(title);
     }
 }

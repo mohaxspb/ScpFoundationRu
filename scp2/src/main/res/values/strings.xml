@@ -88,7 +88,7 @@
     <string name="remove_ads">Отключить рекламу?</string>
     <string name="yes_bliad">Да!</string>
     <string name="app_info">О приложении</string>
-    <string name="remove_ads_one_day">Отключить рекламу на 4 часа бесплатно</string>
+    <string name="remove_ads_for_free">Отключить рекламу бесплатно!</string>
     <string name="ads_reward_gained">Ура! Никакой рекламы на %d часа!</string>
     <string name="wait">Подождите…</string>
     <string name="dialog_download">Загрузка</string>
@@ -129,4 +129,6 @@
     <string name="invitation_cta">Прочти секретные документы!</string>
     <string name="invitation_title">Секретные материалы фонда SCP!</string>
     <string name="invite_friends">Пригласи 5 друзей в приложение!</string>
+    <string name="watch_video_to_disable_ads">Посмотри видео для отключения рекламы на %d часа</string>
+    <string name="app_install_ads_disable_title">Установи другие наши приложения для отключения рекламы на %d часа!</string>
 </resources>
