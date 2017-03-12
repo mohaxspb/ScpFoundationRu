@@ -26,6 +26,8 @@ import ru.dante.scpfoundation.monetization.model.BaseModel;
 import ru.dante.scpfoundation.monetization.model.OurApplication;
 import ru.dante.scpfoundation.monetization.model.OurApplicationsResponse;
 import ru.dante.scpfoundation.monetization.model.RewardedVideo;
+import ru.dante.scpfoundation.monetization.model.VkGroupToJoin;
+import ru.dante.scpfoundation.monetization.model.VkGroupsToJoinResponse;
 import ru.dante.scpfoundation.ui.adapter.FreeAdsDisableRecyclerAdapter;
 import ru.dante.scpfoundation.ui.base.BaseActivity;
 import ru.dante.scpfoundation.util.IntentUtils;
@@ -77,25 +79,58 @@ public class FreeAdsDisablingDialogFragment extends DialogFragment {
         if (config.getBoolean(Constants.Firebase.RemoteConfigKeys.FREE_APPS_INSTALL_ENABLED)) {
             String jsonString = config.getString(Constants.Firebase.RemoteConfigKeys.APPS_TO_INSTALL_JSON);
 
-            List<OurApplication> applications = mGson.fromJson(jsonString, OurApplicationsResponse.class).items;
-            List<OurApplication> availableAppsToInstall = new ArrayList<>();
-//            Timber.d("applications: %s", applications);
-            for (OurApplication application : applications) {
-                if (mMyPreferenceManager.isAppInstalledForPackage(application.id)) {
-                    continue;
-                }
-                if (IntentUtils.isPackageInstalled(getActivity(), application.id)) {
-                    continue;
-                }
-                availableAppsToInstall.add(application);
+            List<OurApplication> applications = null;
+            try {
+                applications = mGson.fromJson(jsonString, OurApplicationsResponse.class).items;
+            } catch (Exception e) {
+                Timber.e(e);
             }
-            if (!availableAppsToInstall.isEmpty()) {
-                //add row with description
-                long numOfMillis = FirebaseRemoteConfig.getInstance()
-                        .getLong(Constants.Firebase.RemoteConfigKeys.APP_INSTALL_REWARD_IN_MILLIS);
-                long hours = numOfMillis / 1000 / 60 / 60;
-                data.add(new AppInstallHeader(getString(R.string.app_install_ads_disable_title, hours)));
-                data.addAll(availableAppsToInstall);
+            if (applications != null) {
+                List<OurApplication> availableAppsToInstall = new ArrayList<>();
+                for (OurApplication application : applications) {
+                    if (mMyPreferenceManager.isAppInstalledForPackage(application.id)) {
+                        continue;
+                    }
+                    if (IntentUtils.isPackageInstalled(getActivity(), application.id)) {
+                        continue;
+                    }
+                    availableAppsToInstall.add(application);
+                }
+                if (!availableAppsToInstall.isEmpty()) {
+                    //add row with description
+                    long numOfMillis = FirebaseRemoteConfig.getInstance()
+                            .getLong(Constants.Firebase.RemoteConfigKeys.APP_INSTALL_REWARD_IN_MILLIS);
+                    long hours = numOfMillis / 1000 / 60 / 60;
+                    data.add(new AppInstallHeader(getString(R.string.app_install_ads_disable_title, hours)));
+                    data.addAll(availableAppsToInstall);
+                }
+            }
+        }
+        if (config.getBoolean(Constants.Firebase.RemoteConfigKeys.FREE_VK_GROUPS_ENABLED)) {
+            String jsonString = config.getString(Constants.Firebase.RemoteConfigKeys.VK_GROUPS_TO_JOIN_JSON);
+
+            List<VkGroupToJoin> items = null;
+            try {
+                items = mGson.fromJson(jsonString, VkGroupsToJoinResponse.class).items;
+            } catch (Exception e) {
+                Timber.e(e);
+            }
+            if (items != null) {
+                List<VkGroupToJoin> availableItems = new ArrayList<>();
+                for (VkGroupToJoin item : items) {
+                    if (mMyPreferenceManager.isVkGroupJoined(item.id)) {
+                        continue;
+                    }
+                    availableItems.add(item);
+                }
+                if (!availableItems.isEmpty()) {
+                    //add row with description
+                    long numOfMillis = FirebaseRemoteConfig.getInstance()
+                            .getLong(Constants.Firebase.RemoteConfigKeys.FREE_VK_GROUPS_JOIN_REWARD);
+                    long hours = numOfMillis / 1000 / 60 / 60;
+                    data.add(new AppInstallHeader(getString(R.string.vk_group_join_ads_disable_title, hours)));
+                    data.addAll(availableItems);
+                }
             }
         }
         //TODO add more options

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <defaultsMap>
+    <!--app installs-->
     <entry>
         <key>free_apps_install_enabled</key>
         <value>true</value>
@@ -30,21 +31,40 @@
             }</value>
     </entry>
     <entry>
+        <key>app_install_reward_in_millis</key>
+        <value>86400000</value>
+    </entry>
+    <!--invites-->
+    <entry>
         <key>free_invites_enabled</key>
         <value>false</value>
     </entry>
-    <entry>
-        <key>free_rewarded_video_enabled</key>
-        <value>true</value>
-    </entry>
+    <!--vk groups-->
     <entry>
         <key>free_vk_groups_enabled</key>
         <value>true</value>
     </entry>
     <entry>
         <key>vk_groups_to_join_json</key>
-        <!--todo-->
-        <value></value>
+        <value>{
+            "items": [
+            {
+            "id": "599638",
+            "name": "SCP Foundation RU/ENG. Приложение для Android",
+            "description": "Официальная группа приложения в ВК. Тут вы найдёте самые последние новости о развитии приложения, а также разный контент по вселенной SCP",
+            "imageUrl": "https://pp.userapi.com/c604519/v604519296/46aa/i9Y7zDF_J5M.jpg"
+            }
+            ]
+            }</value>
+    </entry>
+    <entry>
+        <key>free_vk_groups_join_reward</key>
+        <value>86400000</value>
+    </entry>
+    <!--ads-->
+    <entry>
+        <key>free_rewarded_video_enabled</key>
+        <value>true</value>
     </entry>
     <entry>
         <key>period_between_interstitial_in_millis</key>
@@ -57,9 +77,5 @@
     <entry>
         <key>num_of_intersitial_between_rewarded</key>
         <value>5</value>
-    </entry>
-    <entry>
-        <key>app_install_reward_in_millis</key>
-        <value>86400000</value>
     </entry>
 </defaultsMap>

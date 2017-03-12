@@ -10,6 +10,7 @@ import ru.dante.scpfoundation.monetization.model.AppInviteModel;
 import ru.dante.scpfoundation.monetization.model.BaseModel;
 import ru.dante.scpfoundation.monetization.model.OurApplication;
 import ru.dante.scpfoundation.monetization.model.RewardedVideo;
+import ru.dante.scpfoundation.monetization.model.VkGroupToJoin;
 import ru.dante.scpfoundation.ui.holder.AppInstallHeaderHolder;
 import ru.dante.scpfoundation.ui.holder.AppInviteHolder;
 import ru.dante.scpfoundation.ui.holder.BaseHolder;
@@ -32,6 +33,8 @@ public class FreeAdsDisableRecyclerAdapter extends BaseRecyclerAdapter<
     private static final int TYPE_APP_TO_INSTALL = 1;
     private static final int TYPE_APP_TO_INSTALL_HEADER = 2;
     private static final int TYPE_REWARDED_VIDEO = 3;
+    private static final int TYPE_VK_GROUP_TO_JOIN_HEADER = 4;
+    private static final int TYPE_VK_GROUP_TO_JOIN = 5;
 
     public FreeAdsDisableRecyclerAdapter() {
         Timber.d("FreeAdsDisableRecyclerAdapter constructor");
@@ -53,6 +56,12 @@ public class FreeAdsDisableRecyclerAdapter extends BaseRecyclerAdapter<
             case TYPE_APP_TO_INSTALL_HEADER:
                 itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_recycler_title_non_clickable, parent, false);
                 return new AppInstallHeaderHolder(itemView);
+            case TYPE_VK_GROUP_TO_JOIN_HEADER:
+                itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_recycler_title_non_clickable, parent, false);
+                return new AppInstallHeaderHolder(itemView);
+            case TYPE_VK_GROUP_TO_JOIN:
+                itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_recycler_title_content_image, parent, false);
+                return new OurApplicationHolder(itemView);
             default:
                 throw new RuntimeException(String.format("unexpected type: %s", viewType));
         }
@@ -69,6 +78,8 @@ public class FreeAdsDisableRecyclerAdapter extends BaseRecyclerAdapter<
             return TYPE_REWARDED_VIDEO;
         } else if (baseModel instanceof AppInstallHeader) {
             return TYPE_APP_TO_INSTALL_HEADER;
+        } else if (baseModel instanceof VkGroupToJoin) {
+            return TYPE_VK_GROUP_TO_JOIN;
         } else {
             throw new RuntimeException(String.format("unexpected type for position: %s", position));
         }

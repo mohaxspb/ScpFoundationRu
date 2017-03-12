@@ -35,6 +35,9 @@ public interface Constants {
             String REWARDED_VIDEO_COOLDOWN_IN_MILLIS = "rewarded_video_cooldown_in_millis";
             String NUM_OF_INTERSITIAL_BETWEEN_REWARDED = "num_of_intersitial_between_rewarded";
             String APP_INSTALL_REWARD_IN_MILLIS = "app_install_reward_in_millis";
+            String FREE_VK_GROUPS_ENABLED = "free_vk_groups_enabled";
+            String FREE_VK_GROUPS_JOIN_REWARD = "free_vk_groups_join_reward";
+            String VK_GROUPS_TO_JOIN_JSON = "vk_groups_to_join_json";
         }
 
         interface Analitics {
