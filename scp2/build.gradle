@@ -30,6 +30,9 @@ android {
         manifestPlaceholders = [debuggable: true]
         buildConfigField "boolean", "TIMBER_ENABLE", "true"
         buildConfigField('String', 'BASE_API_URL', '"http://scpfoundation.ru"')
+
+        buildConfigField "String", "VK_API_VERSION", '"5.62"'
+
         buildConfigField('int', 'TIMEOUT_SECONDS_CONNECT', '60')
         buildConfigField('int', 'TIMEOUT_SECONDS_READ', '60')
         buildConfigField('int', 'TIMEOUT_SECONDS_WRITE', '60')
@@ -195,6 +198,7 @@ dependencies {
     compile "com.google.firebase:firebase-crash:$googleLibraryVersion"
     compile "com.google.firebase:firebase-core:$googleLibraryVersion"
     compile "com.google.firebase:firebase-analytics:$googleLibraryVersion"
+    compile "com.google.firebase:firebase-invites:$googleLibraryVersion"
     compile "com.google.firebase:firebase-ads:$googleLibraryVersion"
     //appodeal
     compile project(':cheetah-mobile-3.4.7')

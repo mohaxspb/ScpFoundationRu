@@ -2,6 +2,7 @@ package ru.dante.scpfoundation.util;
 
 import android.content.res.Resources;
 import android.support.v4.app.FragmentActivity;
+import android.util.DisplayMetrics;
 import android.util.TypedValue;
 
 import ru.dante.scpfoundation.MyApplication;
@@ -32,6 +33,11 @@ public class DimensionUtils {
 
     public static boolean isLandscapeMode() {
         return DimensionUtils.getScreenWidth() > DimensionUtils.getScreenHeight();
+    }
+
+    public static int dpToPx(int dp) {
+        DisplayMetrics displayMetrics = MyApplication.getAppInstance().getResources().getDisplayMetrics();
+        return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
 
     public static int getActionBarHeight(FragmentActivity activity) {

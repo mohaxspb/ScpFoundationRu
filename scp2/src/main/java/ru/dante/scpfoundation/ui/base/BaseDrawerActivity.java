@@ -203,7 +203,7 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
 
             HeaderViewHolderUnlogined headerViewHolder = new HeaderViewHolderUnlogined(headerUnlogined);
 
-            headerViewHolder.mLogin.setOnClickListener(view -> VKSdk.login(this, VKScope.EMAIL));
+            headerViewHolder.mLogin.setOnClickListener(view -> VKSdk.login(this, VKScope.EMAIL, VKScope.GROUPS));
 
             headerViewHolder.mLoginInfo.setOnClickListener(view -> new MaterialDialog.Builder(this)
                     .content(R.string.login_advantages)
