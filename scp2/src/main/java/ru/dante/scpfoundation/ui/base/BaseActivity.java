@@ -25,6 +25,7 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.vending.billing.IInAppBillingService;
 import com.appodeal.ads.Appodeal;
+import com.appodeal.ads.SkippableVideoCallbacks;
 import com.appodeal.ads.utils.Log;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
@@ -161,11 +162,12 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
         //appodeal
         String appKey = "96b84a34ca52ac1c82b8f3c61bfd0ade7abf5c2be24f2862";
         Appodeal.disableLocationPermissionCheck();
+        Appodeal.confirm(Appodeal.SKIPPABLE_VIDEO);
         if (BuildConfig.DEBUG) {
             Appodeal.setTesting(true);
             Appodeal.setLogLevel(Log.LogLevel.debug);
         }
-        Appodeal.initialize(this, appKey, Appodeal.NON_SKIPPABLE_VIDEO);
+        Appodeal.initialize(this, appKey, Appodeal.NON_SKIPPABLE_VIDEO | Appodeal.SKIPPABLE_VIDEO);
         Appodeal.setNonSkippableVideoCallbacks(new MyNonSkippableVideoCallbacks() {
 
             @Override
@@ -260,11 +262,25 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
      */
     @Override
     public void showInterstitial(MyAdListener adListener) {
-        if (mMyPreferenceManager.isTimeToShowRewardedInsteadOfInterstitial() && Appodeal.isLoaded(Appodeal.NON_SKIPPABLE_VIDEO)) {
-            Appodeal.setNonSkippableVideoCallbacks(new MyNonSkippableVideoCallbacks() {
+        if (mMyPreferenceManager.isTimeToShowVideoInsteadOfInterstitial() && Appodeal.isLoaded(Appodeal.SKIPPABLE_VIDEO)) {
+            Appodeal.setSkippableVideoCallbacks(new SkippableVideoCallbacks() {
                 @Override
-                public void onNonSkippableVideoFinished() {
-                    super.onNonSkippableVideoFinished();
+                public void onSkippableVideoLoaded() {
+
+                }
+
+                @Override
+                public void onSkippableVideoFailedToLoad() {
+
+                }
+
+                @Override
+                public void onSkippableVideoShown() {
+
+                }
+
+                @Override
+                public void onSkippableVideoFinished() {
                     mMyPreferenceManager.setNumOfInterstitialsShown(0);
 
                     Appodeal.setNonSkippableVideoCallbacks(new MyNonSkippableVideoCallbacks() {
@@ -282,6 +298,11 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
                             mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
                         }
                     });
+                }
+
+                @Override
+                public void onSkippableVideoClosed(boolean b) {
+
                 }
             });
             Appodeal.show(this, Appodeal.NON_SKIPPABLE_VIDEO);

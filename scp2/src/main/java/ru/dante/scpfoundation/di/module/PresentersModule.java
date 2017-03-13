@@ -12,6 +12,7 @@ import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.mvp.contract.ArticleMvp;
 import ru.dante.scpfoundation.mvp.contract.ArticleScreenMvp;
 import ru.dante.scpfoundation.mvp.contract.FavoriteArticlesMvp;
+import ru.dante.scpfoundation.mvp.contract.GalleryScreenMvp;
 import ru.dante.scpfoundation.mvp.contract.MainMvp;
 import ru.dante.scpfoundation.mvp.contract.MaterialsArchiveMvp;
 import ru.dante.scpfoundation.mvp.contract.MaterialsExperimentsMvp;
@@ -31,6 +32,7 @@ import ru.dante.scpfoundation.mvp.contract.SiteSearchArticlesMvp;
 import ru.dante.scpfoundation.mvp.presenter.ArticlePresenter;
 import ru.dante.scpfoundation.mvp.presenter.ArticleScreenPresenter;
 import ru.dante.scpfoundation.mvp.presenter.FavoriteArticlesPresenter;
+import ru.dante.scpfoundation.mvp.presenter.GalleryScreenPresenter;
 import ru.dante.scpfoundation.mvp.presenter.MainPresenter;
 import ru.dante.scpfoundation.mvp.presenter.MaterialsArchivePresenter;
 import ru.dante.scpfoundation.mvp.presenter.MaterialsExperimentsPresenter;
@@ -85,6 +87,16 @@ public class PresentersModule {
             @NonNull ApiClient apiClient
     ) {
         return new MaterialsScreenPresenter(myPreferencesManager, dbProviderFactory, apiClient);
+    }
+
+    @Provides
+    @NonNull
+    GalleryScreenMvp.Presenter providesGalleryScreenPresenter(
+            @NonNull MyPreferenceManager myPreferencesManager,
+            @NonNull DbProviderFactory dbProviderFactory,
+            @NonNull ApiClient apiClient
+    ) {
+        return new GalleryScreenPresenter(myPreferencesManager, dbProviderFactory, apiClient);
     }
 
     @Provides

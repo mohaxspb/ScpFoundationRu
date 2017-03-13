@@ -14,6 +14,7 @@ import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.db.error.ScpNoArticleForIdError;
 import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.db.model.User;
+import ru.dante.scpfoundation.db.model.VkImage;
 import rx.Observable;
 import timber.log.Timber;
 
@@ -554,34 +555,57 @@ public class DbProvider {
     }
 
     public Observable<Void> saveUser(User user) {
-        return Observable.create(subscriber -> {
-            mRealm.executeTransactionAsync(
-                    realm -> realm.insertOrUpdate(user),
-                    () -> {
-                        subscriber.onNext(null);
-                        subscriber.onCompleted();
-                        mRealm.close();
-                    },
-                    error -> {
-                        subscriber.onError(error);
-                        mRealm.close();
-                    });
-        });
+        return Observable.create(subscriber -> mRealm.executeTransactionAsync(
+                realm -> realm.insertOrUpdate(user),
+                () -> {
+                    subscriber.onNext(null);
+                    subscriber.onCompleted();
+                    mRealm.close();
+                },
+                error -> {
+                    subscriber.onError(error);
+                    mRealm.close();
+                }));
     }
 
     public Observable<Void> deleteUser() {
-        return Observable.create(subscriber -> {
-            mRealm.executeTransactionAsync(
-                    realm -> realm.delete(User.class),
-                    () -> {
-                        subscriber.onNext(null);
-                        subscriber.onCompleted();
-                        mRealm.close();
-                    },
-                    error -> {
-                        subscriber.onError(error);
-                        mRealm.close();
-                    });
-        });
+        return Observable.create(subscriber -> mRealm.executeTransactionAsync(
+                realm -> realm.delete(User.class),
+                () -> {
+                    subscriber.onNext(null);
+                    subscriber.onCompleted();
+                    mRealm.close();
+                },
+                error -> {
+                    subscriber.onError(error);
+                    mRealm.close();
+                }));
+    }
+
+    public Observable<Void> saveImages(List<VkImage> vkImages) {
+        return Observable.create(subscriber -> mRealm.executeTransactionAsync(
+                realm -> {
+                    //clear
+                    realm.delete(VkImage.class);
+                    realm.insertOrUpdate(vkImages);
+                },
+                () -> {
+                    subscriber.onNext(null);
+                    subscriber.onCompleted();
+                    mRealm.close();
+                },
+                error -> {
+                    subscriber.onError(error);
+                    mRealm.close();
+                }));
+    }
+
+    public Observable<List<VkImage>> getGalleryImages() {
+        return mRealm.where(VkImage.class)
+                .findAllAsync()
+                .asObservable()
+                .filter(RealmResults::isLoaded)
+                .filter(RealmResults::isValid)
+                .flatMap(realmResults -> Observable.just(mRealm.copyFromRealm(realmResults)));
     }
 }

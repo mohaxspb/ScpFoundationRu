@@ -10,6 +10,8 @@ import com.vk.sdk.api.VKError;
 import com.vk.sdk.api.VKParameters;
 import com.vk.sdk.api.VKRequest;
 import com.vk.sdk.api.VKResponse;
+import com.vk.sdk.api.model.VKApiPhoto;
+import com.vk.sdk.api.model.VKAttachments;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -34,9 +36,11 @@ import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.api.error.ScpException;
 import ru.dante.scpfoundation.api.error.ScpNoSearchResultsException;
 import ru.dante.scpfoundation.api.error.ScpParseException;
+import ru.dante.scpfoundation.api.model.response.VkGalleryResponse;
 import ru.dante.scpfoundation.api.model.response.VkGroupJoinResponse;
 import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.db.model.RealmString;
+import ru.dante.scpfoundation.db.model.VkImage;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import rx.Observable;
 import timber.log.Timber;
@@ -827,5 +831,86 @@ public class ApiClient {
                 break;
         }
         return type;
+    }
+
+    public Observable<List<VkImage>> getGallery() {
+        Timber.d("getGallery");
+        return bindWithUtils(Observable.create(subscriber -> {
+                    VKParameters parameters = VKParameters.from(
+                            VKApiConst.OWNER_ID, Constants.Api.GALLERY_VK_GROUP_ID,
+                            VKApiConst.ALBUM_ID, Constants.Api.GALLERY_VK_ALBUM_ID,
+                            VKApiConst.VERSION, BuildConfig.VK_API_VERSION
+                    );
+
+                    VKRequest vkRequest = new VKRequest("photos.get", parameters);
+                    vkRequest.executeWithListener(new VKRequest.VKRequestListener() {
+                        @Override
+                        public void onComplete(VKResponse response) {
+                            Timber.d("onComplete");
+//                            Timber.d("onComplete: %s", response.responseString);
+                            VkGalleryResponse attachments = mGson
+                                    .fromJson(response.responseString, VkGalleryResponse.class);
+//                            Timber.d("attachments: %s", attachments);
+                            List<VkImage> images = convertAttachmentsToImage(attachments.response.items);
+                            subscriber.onNext(images);
+                            subscriber.onCompleted();
+                        }
+
+                        @Override
+                        public void onError(VKError error) {
+                            Timber.d("onError: %s", error);
+                            subscriber.onError(new Throwable(error.toString()));
+                        }
+                    });
+                })
+        );
+    }
+
+    private List<VkImage> convertAttachmentsToImage(List<VKApiPhoto> attachments) {
+        List<VkImage> images = new ArrayList<>();
+        for (VKAttachments.VKApiAttachment attachment : attachments) {
+            VKApiPhoto vkApiPhoto = (VKApiPhoto) attachment;
+
+            VkImage image = new VkImage();
+            image.id = vkApiPhoto.id;
+            image.ownerId = vkApiPhoto.owner_id;
+            image.date = vkApiPhoto.date;
+            //size
+            image.width = vkApiPhoto.width;
+            image.height = vkApiPhoto.height;
+            //urls
+            image.photo75 = vkApiPhoto.photo_75;
+            image.photo130 = vkApiPhoto.photo_130;
+            image.photo604 = vkApiPhoto.photo_604;
+            image.photo807 = vkApiPhoto.photo_807;
+            image.photo1280 = vkApiPhoto.photo_1280;
+            image.photo2560 = vkApiPhoto.photo_2560;
+
+            image.allUrls = new RealmList<>();
+
+            if (image.photo75 != null) {
+                image.allUrls.add(new RealmString(image.photo75));
+            }
+            if (image.photo130 != null) {
+                image.allUrls.add(new RealmString(image.photo130));
+            }
+            if (image.photo604 != null) {
+                image.allUrls.add(new RealmString(image.photo604));
+            }
+            if (image.photo807 != null) {
+                image.allUrls.add(new RealmString(image.photo807));
+            }
+            if (image.photo1280 != null) {
+                image.allUrls.add(new RealmString(image.photo1280));
+            }
+            if (image.photo2560 != null) {
+                image.allUrls.add(new RealmString(image.photo2560));
+            }
+
+            image.description = vkApiPhoto.text;
+
+            images.add(image);
+        }
+        return images;
     }
 }
