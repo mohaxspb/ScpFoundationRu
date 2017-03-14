@@ -9,6 +9,7 @@ import ru.dante.scpfoundation.di.module.NotificationModule;
 import ru.dante.scpfoundation.di.module.PresentersModule;
 import ru.dante.scpfoundation.di.module.StorageModule;
 import ru.dante.scpfoundation.monetization.util.MyAdListener;
+import ru.dante.scpfoundation.monetization.util.MySkippableVideoCallbacks;
 import ru.dante.scpfoundation.receivers.AppInstallReceiver;
 import ru.dante.scpfoundation.receivers.ReceiverBoot;
 import ru.dante.scpfoundation.receivers.ReceiverTimer;
@@ -126,6 +127,8 @@ public interface AppComponent {
     void inject(AppInstallReceiver receiver);
 
     void inject(MyAdListener adListener);
+
+    void inject(MySkippableVideoCallbacks callbacks);
 
     void inject(OurApplicationHolder holder);
 

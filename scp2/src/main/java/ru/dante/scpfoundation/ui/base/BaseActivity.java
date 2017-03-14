@@ -184,26 +184,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
                 mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
             }
         });
-        Appodeal.setSkippableVideoCallbacks(new MySkippableVideoCallbacks() {
-
-            @Override
-            public void onSkippableVideoShown() {
-                super.onSkippableVideoShown();
-                mMyPreferenceManager.setNumOfInterstitialsShown(0);
-            }
-
-            @Override
-            public void onSkippableVideoClosed(boolean finished) {
-                super.onSkippableVideoClosed(finished);
-                mMyPreferenceManager.setNumOfInterstitialsShown(0);
-            }
-
-            @Override
-            public void onSkippableVideoFinished() {
-                super.onSkippableVideoFinished();
-                mMyPreferenceManager.setNumOfInterstitialsShown(0);
-            }
-        });
+        Appodeal.setSkippableVideoCallbacks(new MySkippableVideoCallbacks());
     }
 
     @Override
@@ -283,7 +264,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
     @Override
     public void showInterstitial(MyAdListener adListener) {
         if (mMyPreferenceManager.isTimeToShowVideoInsteadOfInterstitial() && Appodeal.isLoaded(Appodeal.SKIPPABLE_VIDEO)) {
-            Appodeal.show(this, Appodeal.NON_SKIPPABLE_VIDEO);
+            Appodeal.show(this, Appodeal.SKIPPABLE_VIDEO);
         } else {
             mInterstitialAd.setAdListener(adListener);
             mInterstitialAd.show();
