@@ -25,7 +25,6 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.vending.billing.IInAppBillingService;
 import com.appodeal.ads.Appodeal;
-import com.appodeal.ads.SkippableVideoCallbacks;
 import com.appodeal.ads.utils.Log;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
@@ -66,6 +65,7 @@ import ru.dante.scpfoundation.monetization.model.Item;
 import ru.dante.scpfoundation.monetization.util.InappHelper;
 import ru.dante.scpfoundation.monetization.util.MyAdListener;
 import ru.dante.scpfoundation.monetization.util.MyNonSkippableVideoCallbacks;
+import ru.dante.scpfoundation.monetization.util.MySkippableVideoCallbacks;
 import ru.dante.scpfoundation.mvp.base.BaseMvp;
 import ru.dante.scpfoundation.mvp.base.MonetizationActions;
 import ru.dante.scpfoundation.ui.dialog.NewVersionDialogFragment;
@@ -184,6 +184,26 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
                 mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
             }
         });
+        Appodeal.setSkippableVideoCallbacks(new MySkippableVideoCallbacks() {
+
+            @Override
+            public void onSkippableVideoShown() {
+                super.onSkippableVideoShown();
+                mMyPreferenceManager.setNumOfInterstitialsShown(0);
+            }
+
+            @Override
+            public void onSkippableVideoClosed(boolean finished) {
+                super.onSkippableVideoClosed(finished);
+                mMyPreferenceManager.setNumOfInterstitialsShown(0);
+            }
+
+            @Override
+            public void onSkippableVideoFinished() {
+                super.onSkippableVideoFinished();
+                mMyPreferenceManager.setNumOfInterstitialsShown(0);
+            }
+        });
     }
 
     @Override
@@ -263,48 +283,6 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
     @Override
     public void showInterstitial(MyAdListener adListener) {
         if (mMyPreferenceManager.isTimeToShowVideoInsteadOfInterstitial() && Appodeal.isLoaded(Appodeal.SKIPPABLE_VIDEO)) {
-            Appodeal.setSkippableVideoCallbacks(new SkippableVideoCallbacks() {
-                @Override
-                public void onSkippableVideoLoaded() {
-
-                }
-
-                @Override
-                public void onSkippableVideoFailedToLoad() {
-
-                }
-
-                @Override
-                public void onSkippableVideoShown() {
-
-                }
-
-                @Override
-                public void onSkippableVideoFinished() {
-                    mMyPreferenceManager.setNumOfInterstitialsShown(0);
-
-                    Appodeal.setNonSkippableVideoCallbacks(new MyNonSkippableVideoCallbacks() {
-                        @Override
-                        public void onNonSkippableVideoFinished() {
-                            super.onNonSkippableVideoFinished();
-                            mMyPreferenceManager.applyRewardFromAds();
-                            long numOfMillis = FirebaseRemoteConfig.getInstance()
-                                    .getLong(Constants.Firebase.RemoteConfigKeys.REWARDED_VIDEO_COOLDOWN_IN_MILLIS);
-                            int hours = (int) (numOfMillis / 1000 / 60 / 60);
-                            Snackbar.make(mRoot, getString(R.string.ads_reward_gained, hours), Snackbar.LENGTH_LONG).show();
-
-                            Bundle bundle = new Bundle();
-                            bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.EventType.REWARD_GAINED);
-                            mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
-                        }
-                    });
-                }
-
-                @Override
-                public void onSkippableVideoClosed(boolean b) {
-
-                }
-            });
             Appodeal.show(this, Appodeal.NON_SKIPPABLE_VIDEO);
         } else {
             mInterstitialAd.setAdListener(adListener);
