@@ -8,44 +8,49 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
+import ru.dante.scpfoundation.db.model.RealmString;
+import ru.dante.scpfoundation.db.model.VkImage;
 import ru.dante.scpfoundation.monetization.util.MyAdListener;
 import ru.dante.scpfoundation.mvp.base.MonetizationActions;
-import ru.dante.scpfoundation.mvp.contract.ArticleScreenMvp;
-import ru.dante.scpfoundation.ui.adapter.ArticlesPagerAdapter;
+import ru.dante.scpfoundation.mvp.contract.GalleryScreenMvp;
+import ru.dante.scpfoundation.ui.adapter.ImagesPagerAdapter;
 import ru.dante.scpfoundation.ui.base.BaseDrawerActivity;
 import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
-import ru.dante.scpfoundation.ui.dialog.TextSizeDialogFragment;
-import ru.dante.scpfoundation.ui.fragment.ArticleFragment;
+import ru.dante.scpfoundation.ui.fragment.FragmentMaterialsAll;
 import ru.dante.scpfoundation.util.IntentUtils;
 import timber.log.Timber;
 
-public class ArticleActivity
-        extends BaseDrawerActivity<ArticleScreenMvp.View, ArticleScreenMvp.Presenter>
-        implements ArticleScreenMvp.View, ArticleFragment.ToolbarStateSetter {
-
-    public static final String EXTRA_ARTICLES_URLS_LIST = "EXTRA_ARTICLES_URLS_LIST";
-    public static final String EXTRA_POSITION = "EXTRA_POSITION";
+public class GalleryActivity
+        extends BaseDrawerActivity<GalleryScreenMvp.View, GalleryScreenMvp.Presenter>
+        implements GalleryScreenMvp.View {
 
     public static final String EXTRA_SHOW_DISABLE_ADS = "EXTRA_SHOW_DISABLE_ADS";
 
-    @BindView(R.id.content)
+    @BindView(R.id.viewPager)
     ViewPager mViewPager;
+    @BindView(R.id.progressCenter)
+    View mProgressContainer;
+    @BindView(R.id.placeHolder)
+    View mPlaceHolder;
+    @BindView(R.id.refresh)
+    Button mRefresh;
 
-    private int mCurPosition;
-    private List<String> mUrls;
+    private ImagesPagerAdapter mAdapter;
 
-    public static void startActivity(Context context, ArrayList<String> urls, int position) {
-        Timber.d("startActivity: urls.size() %s, position: %s", urls.size(), position);
+    public static void startActivity(Context context) {
+        Timber.d("startActivity");
         if (context instanceof MonetizationActions) {
             MonetizationActions monetizationActions = (MonetizationActions) context;
             if (monetizationActions.isTimeToShowAds()) {
@@ -54,9 +59,7 @@ public class ArticleActivity
                         @Override
                         public void onAdClosed() {
                             super.onAdClosed();
-                            Intent intent = new Intent(context, ArticleActivity.class);
-                            intent.putExtra(EXTRA_ARTICLES_URLS_LIST, urls);
-                            intent.putExtra(EXTRA_POSITION, position);
+                            Intent intent = new Intent(context, GalleryActivity.class);
                             intent.putExtra(EXTRA_SHOW_DISABLE_ADS, true);
                             context.startActivity(intent);
                         }
@@ -71,48 +74,14 @@ public class ArticleActivity
         } else {
             Timber.wtf("context IS NOT instanceof MonetizationActions");
         }
-        Intent intent = new Intent(context, ArticleActivity.class);
-        intent.putExtra(EXTRA_ARTICLES_URLS_LIST, urls);
-        intent.putExtra(EXTRA_POSITION, position);
+        Intent intent = new Intent(context, GalleryActivity.class);
         context.startActivity(intent);
-    }
-
-    public static void startActivity(Context context, String url) {
-        Timber.d("startActivity: %s", url);
-        startActivity(context, new ArrayList<String>() {{
-            add(url);
-        }}, 0);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Timber.d("onCreate");
         super.onCreate(savedInstanceState);
-
-        if (getIntent().hasExtra(EXTRA_ARTICLES_URLS_LIST)) {
-            mUrls = getIntent().getStringArrayListExtra(EXTRA_ARTICLES_URLS_LIST);
-            mPresenter.setArticlesUrls(mUrls);
-            mCurPosition = getIntent().getIntExtra(EXTRA_POSITION, 0);
-        }
-        ArticlesPagerAdapter adapter = new ArticlesPagerAdapter(getSupportFragmentManager());
-        adapter.setData(getIntent().getStringArrayListExtra(EXTRA_ARTICLES_URLS_LIST));
-        mViewPager.setAdapter(adapter);
-
-        mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            @Override
-            public void onPageSelected(int position) {
-                mCurPosition = position;
-                if (isTimeToShowAds()) {
-                    if (isAdsLoaded()) {
-                        showInterstitial();
-                    } else {
-                        requestNewInterstitial();
-                    }
-                }
-            }
-        });
-
-        mViewPager.setCurrentItem(mCurPosition);
 
         if (getIntent().hasExtra(EXTRA_SHOW_DISABLE_ADS)) {
             Snackbar snackbar = Snackbar.make(mRoot, R.string.remove_ads, Snackbar.LENGTH_LONG);
@@ -125,8 +94,27 @@ public class ArticleActivity
                 bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.MAIN_TO_ARTICLE_SNACK_BAR);
                 mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
             });
-            snackbar.setActionTextColor(ContextCompat.getColor(this, R.color.material_green_500));
+            snackbar.setActionTextColor(ContextCompat.getColor(this, R.color.material_amber_500));
             snackbar.show();
+        }
+
+        if (mToolbar != null) {
+            mToolbar.setTitle(R.string.gallery);
+        }
+        mAdapter = new ImagesPagerAdapter();
+        mViewPager.setAdapter(mAdapter);
+//        mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
+//            @Override
+//            public void onPageSelected(int position) {
+//                mCurPos
+//            }
+//        });
+
+        if (mPresenter.getData() != null) {
+            mAdapter.setData(mPresenter.getData());
+        } else {
+            mPresenter.getDataFromDb();
+            mPresenter.updateData();
         }
     }
 
@@ -142,7 +130,7 @@ public class ArticleActivity
 
     @Override
     protected int getLayoutResId() {
-        return R.layout.activity_article;
+        return R.layout.activity_gallery;
     }
 
     @Override
@@ -152,7 +140,7 @@ public class ArticleActivity
 
     @Override
     protected int getMenuResId() {
-        return R.menu.menu_article;
+        return R.menu.menu_gallery;
     }
 
     @Override
@@ -188,8 +176,8 @@ public class ArticleActivity
                 link = Constants.Urls.OBJECTS_RU;
                 break;
             case R.id.files:
-                MaterialsActivity.startActivity(this);
-                break;
+                getSupportFragmentManager().popBackStackImmediate(FragmentMaterialsAll.TAG, 0);
+                return false;
             case R.id.stories:
                 link = Constants.Urls.STORIES;
                 break;
@@ -200,7 +188,7 @@ public class ArticleActivity
                 link = Constants.Urls.OFFLINE;
                 break;
             case R.id.gallery:
-                GalleryActivity.startActivity(this);
+                //nothing to do
                 break;
             case R.id.siteSearch:
                 link = Constants.Urls.SEARCH;
@@ -219,19 +207,9 @@ public class ArticleActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         Timber.d("onOptionsItemSelected with id: %s", item);
         switch (item.getItemId()) {
-            case R.id.menuItemShare:
-                IntentUtils.shareUrl(mUrls.get(mCurPosition));
-                return true;
-            case R.id.menuItemBrowser:
-                IntentUtils.openUrl(mUrls.get(mCurPosition));
-                return true;
-            case R.id.menuItemFavorite:
-                mPresenter.toggleFavorite(mUrls.get(mCurPosition));
-                return true;
-            case R.id.text_size:
-                BottomSheetDialogFragment fragmentDialogTextAppearance =
-                        TextSizeDialogFragment.newInstance(TextSizeDialogFragment.TextSizeType.ARTICLE);
-                fragmentDialogTextAppearance.show(getSupportFragmentManager(), TextSizeDialogFragment.TAG);
+            case R.id.share:
+                List<RealmString> allUrls = mAdapter.getData().get(mViewPager.getCurrentItem()).allUrls;
+                IntentUtils.shareUrl(allUrls.get(allUrls.size() - 1).getVal());
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -239,21 +217,28 @@ public class ArticleActivity
     }
 
     @Override
-    public void setTitle(String title) {
-        if (mToolbar != null) {
-            mToolbar.setTitle(title);
-        }
+    public void showData(List<VkImage> data) {
+        Timber.d("showData: %s", data.size());
+        mAdapter.setData(data);
     }
 
     @Override
-    public void setFavoriteState(boolean isInFavorite) {
-        Timber.d("setFavoriteState: %s", isInFavorite);
-        if (mToolbar != null && mToolbar.getMenu() != null) {
-            MenuItem item = mToolbar.getMenu().findItem(R.id.menuItemFavorite);
-            if (item != null) {
-                item.setIcon(isInFavorite ? R.drawable.ic_favorite_white_24dp : R.drawable.ic_favorite_border_white_24dp);
-                item.setTitle(isInFavorite ? R.string.favorites_remove : R.string.favorites_add);
-            }
-        }
+    public void showCenterProgress(boolean show) {
+        Timber.d("showCenterProgress: %s", show);
+        mProgressContainer.setVisibility(show ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public void showEmptyPlaceholder(boolean show) {
+        Timber.d("showEmptyPlaceholder: %s", show);
+        mPlaceHolder.setVisibility(show ? View.VISIBLE : View.GONE);
+    }
+
+    @OnClick(R.id.refresh)
+    public void onRefreshClicked() {
+        Timber.d("onRefreshClicked");
+//        showEmptyPlaceholder(false);
+//        showCenterProgress(true);
+        mPresenter.updateData();
     }
 }

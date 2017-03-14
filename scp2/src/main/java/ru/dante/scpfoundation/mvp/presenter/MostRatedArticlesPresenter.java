@@ -26,7 +26,7 @@ public class MostRatedArticlesPresenter extends BaseListArticlesPresenter<RatedA
 
     @Override
     protected Observable<RealmResults<Article>> getDbObservable() {
-        return mDbProviderFactory.getDbProvider().getRatedArticlesSortedAsync(Article.FIELD_IS_IN_MOST_RATED, Sort.ASCENDING);
+        return mDbProviderFactory.getDbProvider().getArticlesSortedAsync(Article.FIELD_IS_IN_MOST_RATED, Sort.ASCENDING);
     }
 
     @Override

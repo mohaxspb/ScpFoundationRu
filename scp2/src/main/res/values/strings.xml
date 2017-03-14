@@ -133,4 +133,5 @@
     <string name="app_install_ads_disable_title">Установи другие наши приложения для отключения рекламы на %d часа!</string>
     <string name="vk_group_join_ads_disable_title">Вступи в группу ВК для отключения рекламы на %d часа!</string>
     <string name="need_vk_group_access">Требуется разрешение на доступ к группам. Авторизуйтесь заново.</string>
+    <string name="gallery">Галерея</string>
 </resources>

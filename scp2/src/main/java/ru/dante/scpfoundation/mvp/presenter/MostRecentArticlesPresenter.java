@@ -26,7 +26,7 @@ public class MostRecentArticlesPresenter extends BaseListArticlesPresenter<Recen
 
     @Override
     protected Observable<RealmResults<Article>> getDbObservable() {
-        return mDbProviderFactory.getDbProvider().getRecentArticlesSortedAsync(Article.FIELD_IS_IN_RECENT, Sort.ASCENDING);
+        return mDbProviderFactory.getDbProvider().getArticlesSortedAsync(Article.FIELD_IS_IN_RECENT, Sort.ASCENDING);
     }
 
     @Override

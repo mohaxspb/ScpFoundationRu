@@ -85,6 +85,27 @@ public class IntentUtils {
         }
     }
 
+    public static void shareBitmapWithText(AppCompatActivity activity, String text, Bitmap bitmap) {
+        int permissionCheck = ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+            String pathofBmp = MediaStore.Images.Media.insertImage(activity.getContentResolver(), bitmap, "Вжух и " + text, null);
+            Uri bmpUri = Uri.parse(pathofBmp);
+            final Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
+            shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            shareIntent.putExtra(Intent.EXTRA_STREAM, bmpUri);
+            String appPackageName = activity.getPackageName();
+            shareIntent.putExtra(Intent.EXTRA_TEXT,
+                    "Отправлено из приложения \"Вжух!\"\n"
+                            + "https://play.google.com/store/apps/details?id=" + appPackageName);
+            shareIntent.setType("image/png");
+
+            activity.startActivity(shareIntent);
+        } else {
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+        }
+    }
+
     public static void firebaseInvite(FragmentActivity activity) {
         Intent intent = new AppInviteInvitation.IntentBuilder(activity.getString(R.string.invitation_title))
                 .setMessage(activity.getString(R.string.invitation_message))

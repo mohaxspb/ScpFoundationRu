@@ -173,7 +173,7 @@ public class MyPreferenceManager {
         return mPreferences.getInt(Keys.ADS_NUM_OF_INTERSTITIALS_SHOWN, 0);
     }
 
-    public boolean isTimeToShowRewardedInsteadOfInterstitial() {
+    public boolean isTimeToShowVideoInsteadOfInterstitial() {
         return getNumOfInterstitialsShown() >=
                 FirebaseRemoteConfig.getInstance().getLong(Constants.Firebase.RemoteConfigKeys.NUM_OF_INTERSITIAL_BETWEEN_REWARDED);
     }

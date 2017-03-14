@@ -20,6 +20,8 @@ public interface Constants {
         int NUM_OF_ARTICLES_ON_RATED_PAGE = 20;
         int ZERO_OFFSET = 0;
         int NUM_OF_ARTICLES_ON_SEARCH_PAGE = 10;
+        int GALLERY_VK_GROUP_ID = -98801766;
+        int GALLERY_VK_ALBUM_ID = 219430203;
     }
 
     interface Firebase {
@@ -41,6 +43,7 @@ public interface Constants {
         }
 
         interface Analitics {
+
             interface EventType {
                 String REWARD_GAINED = "REWARD_GAINED";
                 String REWARD_REQUESTED = "REWARD_REQUESTED";

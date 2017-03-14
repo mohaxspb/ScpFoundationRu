@@ -14,6 +14,7 @@ import ru.dante.scpfoundation.receivers.ReceiverBoot;
 import ru.dante.scpfoundation.receivers.ReceiverTimer;
 import ru.dante.scpfoundation.service.DownloadAllService;
 import ru.dante.scpfoundation.ui.activity.ArticleActivity;
+import ru.dante.scpfoundation.ui.activity.GalleryActivity;
 import ru.dante.scpfoundation.ui.activity.LicenceActivity;
 import ru.dante.scpfoundation.ui.activity.MainActivity;
 import ru.dante.scpfoundation.ui.activity.MaterialsActivity;
@@ -65,6 +66,8 @@ public interface AppComponent {
     void inject(LicenceActivity activity);
 
     void inject(MaterialsActivity activity);
+
+    void inject(GalleryActivity activity);
 
     void inject(ArticleFragment fragment);
 
