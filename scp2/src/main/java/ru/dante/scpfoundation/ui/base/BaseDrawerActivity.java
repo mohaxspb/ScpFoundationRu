@@ -133,10 +133,13 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Timber.d("onOptionsItemSelected with id: %s", item);
-
         switch (item.getItemId()) {
             case android.R.id.home:
-                mDrawerLayout.openDrawer(GravityCompat.START);
+                if(isDrawerIndicatorEnabled()) {
+                    mDrawerLayout.openDrawer(GravityCompat.START);
+                } else {
+                    finish();
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

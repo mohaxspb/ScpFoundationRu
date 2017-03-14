@@ -214,8 +214,7 @@ public class MainActivity
                 showFragment(OfflineArticlesFragment.newInstance(), OfflineArticlesFragment.TAG);
                 return true;
             case R.id.gallery:
-                //TODO
-                Snackbar.make(mRoot, R.string.in_progress, Snackbar.LENGTH_SHORT).show();
+                GalleryActivity.startActivity(this);
                 return false;
             case R.id.siteSearch:
                 mCurrentSelectedDrawerItemId = id;

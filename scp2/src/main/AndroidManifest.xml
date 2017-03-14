@@ -36,9 +36,11 @@
 
         <activity android:name=".ui.activity.MainActivity"/>
 
+        <activity android:name=".ui.activity.ArticleActivity"/>
+
         <activity android:name=".ui.activity.MaterialsActivity"/>
 
-        <activity android:name=".ui.activity.ArticleActivity"/>
+        <activity android:name=".ui.activity.GalleryActivity"/>
 
         <activity
             android:name=".ui.activity.LicenceActivity">

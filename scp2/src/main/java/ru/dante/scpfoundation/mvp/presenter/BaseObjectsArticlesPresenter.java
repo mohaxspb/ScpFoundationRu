@@ -37,7 +37,7 @@ public abstract class BaseObjectsArticlesPresenter<V extends BaseArticlesListMvp
     @Override
     protected Observable<RealmResults<Article>> getDbObservable() {
         return mDbProviderFactory.getDbProvider()
-                .getObjectsArticlesSortedAsync(getObjectsInDbFieldName(), Sort.ASCENDING)
+                .getArticlesSortedAsync(getObjectsInDbFieldName(), Sort.ASCENDING)
                 //onNext check if data is empty and we do not tried to update it
                 .doOnNext(data -> {
                     if (!isAlreadyTriedToLoadInitialData && data.isEmpty()) {
