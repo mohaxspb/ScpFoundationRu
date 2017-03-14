@@ -219,10 +219,6 @@ public class ArticleActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         Timber.d("onOptionsItemSelected with id: %s", item);
         switch (item.getItemId()) {
-            case android.R.id.home:
-                //TODO move to abstract
-                onBackPressed();
-                return true;
             case R.id.menuItemShare:
                 IntentUtils.shareUrl(mUrls.get(mCurPosition));
                 return true;

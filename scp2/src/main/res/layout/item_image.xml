@@ -26,6 +26,9 @@
     <android.support.v7.widget.CardView
         android:id="@+id/descriptionContainer"
         android:layout_width="wrap_content"
+        android:minWidth="200dp"
+        android:visibility="gone"
+        android:layout_margin="@dimen/defaultMargin"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
         app:cardBackgroundColor="?windowBackgroundDark"
@@ -33,31 +36,15 @@
         app:cardElevation="@dimen/cardview_default_elevation"
         >
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            tools:ignore="UseCompoundDrawables"
-            >
-
-            <TextView
-                android:id="@+id/description"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="16sp"
-                android:textColor="?newArticlesTextColor"
-                />
-
-            <ImageView
-                android:id="@+id/share"
-                android:src="?iconShare"
-                android:padding="@dimen/defaultMargin"
-                android:background="?selectableItemBackgroundBorderless"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/app_name"
-                />
-        </LinearLayout>
+            android:padding="@dimen/defaultMargin"
+            tools:text="test test test test test test test test test test test test test test test test"
+            android:textColor="?newArticlesTextColor"
+            android:textSize="16sp"
+            />
     </android.support.v7.widget.CardView>
 
 </FrameLayout>

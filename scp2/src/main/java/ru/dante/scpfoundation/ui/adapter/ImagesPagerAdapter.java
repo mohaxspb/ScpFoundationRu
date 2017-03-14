@@ -24,8 +24,8 @@ import java.util.List;
 import butterknife.ButterKnife;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.db.model.VkImage;
-import ru.dante.scpfoundation.util.IntentUtils;
 import timber.log.Timber;
+import uk.co.senab.photoview.PhotoViewAttacher;
 
 /**
  * Created by mohax on 14.03.2017.
@@ -34,15 +34,7 @@ import timber.log.Timber;
  */
 public class ImagesPagerAdapter extends PagerAdapter {
 
-    public interface GalleryClickListener {
-        void onItemClicked(VkImage vkImage);
-
-        void onShareClicked(VkImage vkImage);
-    }
-
     private LayoutInflater mLayoutInflater;
-
-    private GalleryClickListener mAdapterClickListener;
 
     private List<VkImage> mData = new ArrayList<>();
 
@@ -53,10 +45,6 @@ public class ImagesPagerAdapter extends PagerAdapter {
     public void setData(List<VkImage> urls) {
         mData = urls;
         notifyDataSetChanged();
-    }
-
-    public void setAdapterClickListener(GalleryClickListener adapterClickListener) {
-        mAdapterClickListener = adapterClickListener;
     }
 
     @Override
@@ -71,7 +59,6 @@ public class ImagesPagerAdapter extends PagerAdapter {
         ImageView imageView;
         ProgressBar progressBar;
         CardView cardView;
-        ImageView share;
         TextView description;
 
         itemView = LayoutInflater.from(container.getContext()).inflate(getLayoutRes(), container, false);
@@ -84,20 +71,20 @@ public class ImagesPagerAdapter extends PagerAdapter {
         progressBar.setAlpha(1f);
 
         cardView = ButterKnife.findById(itemView, R.id.descriptionContainer);
-        share = ButterKnife.findById(itemView, R.id.share);
         description = ButterKnife.findById(itemView, R.id.description);
-
-        share.setOnClickListener(view -> {
-            mAdapterClickListener.onShareClicked(mData.get(position));
-        });
 
         description.setText(mData.get(position).description);
 
-        imageView.setOnClickListener(view -> {
-            if (mAdapterClickListener != null) {
-                mAdapterClickListener.onItemClicked(mData.get(position));
-
+        PhotoViewAttacher attacher = new PhotoViewAttacher(imageView);
+        attacher.setOnPhotoTapListener(new PhotoViewAttacher.OnPhotoTapListener() {
+            @Override
+            public void onPhotoTap(View view, float x, float y) {
                 cardView.setVisibility(cardView.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
+            }
+
+            @Override
+            public void onOutsidePhotoTap() {
+
             }
         });
 

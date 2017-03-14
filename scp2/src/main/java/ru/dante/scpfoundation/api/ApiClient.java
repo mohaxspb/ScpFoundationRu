@@ -869,6 +869,9 @@ public class ApiClient {
     private List<VkImage> convertAttachmentsToImage(List<VKApiPhoto> attachments) {
         List<VkImage> images = new ArrayList<>();
         for (VKAttachments.VKApiAttachment attachment : attachments) {
+            if (attachment.getId() == 456239049) {
+                continue;
+            }
             VKApiPhoto vkApiPhoto = (VKApiPhoto) attachment;
 
             VkImage image = new VkImage();

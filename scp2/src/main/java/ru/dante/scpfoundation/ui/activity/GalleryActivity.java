@@ -10,7 +10,6 @@ import android.support.v4.view.ViewPager;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ProgressBar;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 
@@ -21,6 +20,7 @@ import butterknife.OnClick;
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
+import ru.dante.scpfoundation.db.model.RealmString;
 import ru.dante.scpfoundation.db.model.VkImage;
 import ru.dante.scpfoundation.monetization.util.MyAdListener;
 import ru.dante.scpfoundation.mvp.base.MonetizationActions;
@@ -28,7 +28,6 @@ import ru.dante.scpfoundation.mvp.contract.GalleryScreenMvp;
 import ru.dante.scpfoundation.ui.adapter.ImagesPagerAdapter;
 import ru.dante.scpfoundation.ui.base.BaseDrawerActivity;
 import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
-import ru.dante.scpfoundation.ui.dialog.TextSizeDialogFragment;
 import ru.dante.scpfoundation.ui.fragment.FragmentMaterialsAll;
 import ru.dante.scpfoundation.util.IntentUtils;
 import timber.log.Timber;
@@ -99,22 +98,17 @@ public class GalleryActivity
             snackbar.show();
         }
 
+        if (mToolbar != null) {
+            mToolbar.setTitle(R.string.gallery);
+        }
         mAdapter = new ImagesPagerAdapter();
-        mAdapter.setAdapterClickListener(new ImagesPagerAdapter.GalleryClickListener() {
-            @Override
-            public void onItemClicked(VkImage vkImage) {
-                Timber.d("onItemClicked: %s", vkImage);
-                //TODO
-            }
-
-            @Override
-            public void onShareClicked(VkImage vkImage) {
-                Timber.d("onShareClicked: %s", vkImage);
-                //TODO
-//                IntentUtils.shareBitmapWithText(this, vkImage.description, );
-            }
-        });
         mViewPager.setAdapter(mAdapter);
+//        mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
+//            @Override
+//            public void onPageSelected(int position) {
+//                mCurPos
+//            }
+//        });
 
         if (mPresenter.getData() != null) {
             mAdapter.setData(mPresenter.getData());
@@ -146,7 +140,7 @@ public class GalleryActivity
 
     @Override
     protected int getMenuResId() {
-        return R.menu.menu_main;
+        return R.menu.menu_gallery;
     }
 
     @Override
@@ -213,14 +207,9 @@ public class GalleryActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         Timber.d("onOptionsItemSelected with id: %s", item);
         switch (item.getItemId()) {
-            case android.R.id.home:
-                //TODO move to abstract
-                onBackPressed();
-                return true;
-            case R.id.text_size:
-                BottomSheetDialogFragment fragmentDialogTextAppearance =
-                        TextSizeDialogFragment.newInstance(TextSizeDialogFragment.TextSizeType.ALL);
-                fragmentDialogTextAppearance.show(getSupportFragmentManager(), TextSizeDialogFragment.TAG);
+            case R.id.share:
+                List<RealmString> allUrls = mAdapter.getData().get(mViewPager.getCurrentItem()).allUrls;
+                IntentUtils.shareUrl(allUrls.get(allUrls.size() - 1).getVal());
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
