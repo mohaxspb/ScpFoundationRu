@@ -4,11 +4,21 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.MenuItem;
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.vk.sdk.VKAccessToken;
+import com.vk.sdk.VKSdk;
 
 import java.util.List;
 
@@ -129,6 +139,20 @@ public class MainActivity
             DialogFragment dialogFragment = NewVersionDialogFragment.newInstance(getString(R.string.new_version_features));
             dialogFragment.show(getFragmentManager(), NewVersionDialogFragment.TAG);
         }
+
+        //FIXME test
+        mAuth = FirebaseAuth.getInstance();
+        mAuthListener = firebaseAuth -> {
+            FirebaseUser user = firebaseAuth.getCurrentUser();
+            if (user != null) {
+                // User is signed in
+                Timber.d("onAuthStateChanged:signed_in: %s", user.getUid());
+            } else {
+                // User is signed out
+                Timber.d("onAuthStateChanged:signed_out");
+            }
+            // ...
+        };
     }
 
     @Override
@@ -214,7 +238,9 @@ public class MainActivity
                 showFragment(OfflineArticlesFragment.newInstance(), OfflineArticlesFragment.TAG);
                 return true;
             case R.id.gallery:
-                GalleryActivity.startActivity(this);
+//                GalleryActivity.startActivity(this);
+                //FIXME test
+                authWithCustomToken();
                 return false;
             case R.id.siteSearch:
                 mCurrentSelectedDrawerItemId = id;
@@ -224,6 +250,42 @@ public class MainActivity
                 Timber.e("unexpected item ID");
                 return true;
         }
+    }
+
+    //FIXME test
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+
+    private void authWithCustomToken() {
+        mAuth.signInWithCustomToken(VKAccessToken.currentToken().accessToken)
+                .addOnCompleteListener(this, task -> {
+                    Timber.d("signInWithCustomToken:onComplete: %s", task.isSuccessful());
+
+                    // If sign in fails, display a message to the user. If sign in succeeds
+                    // the auth state listener will be notified and logic to handle the
+                    // signed in user can be handled in the listener.
+                    if (!task.isSuccessful()) {
+                        Timber.e(task.getException(), "signInWithCustomToken");
+                        Toast.makeText(MainActivity.this, "Authentication failed.",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthListener);
+        // ...
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
+        // ...
     }
 
     private void showFragment(Fragment fragmentToShow, String tag) {

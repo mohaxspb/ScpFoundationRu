@@ -7,7 +7,7 @@ apply plugin: 'me.tatarka.retrolambda'
 //which must be in format major, minor, patch, where patch goes from 0 to 99
 apply from: '../versioning.gradle'
 
-ext.supportLibraryVersion = '25.2.0'
+ext.supportLibraryVersion = '25.3.0'
 ext.googleLibraryVersion = '10.2.0'
 
 android {
@@ -78,6 +78,9 @@ android {
 
             resValue('integer', 'com_vk_sdk_AppId', apiKeysProperties.get("vkSdkAppId"))
             buildConfigField('int', 'VK_SDK_APP_ID', apiKeysProperties.get("vkSdkAppId"))
+
+            resValue('string', 'firebase_db_url', apiKeysProperties.get("firebaseUri"))
+            buildConfigField('String', 'FIREBASE_DB_URL', '"' + apiKeysProperties.get("firebaseUri") + '"')
         } else {
             resValue('string', 'yandex_metrica_api_key', 'null')
             buildConfigField('String', 'YANDEX_METRICA_API_KEY', 'null')
@@ -93,6 +96,9 @@ android {
 
             resValue('integer', 'com_vk_sdk_AppId', 'null')
             buildConfigField('int', 'VK_SDK_APP_ID', 'null')
+
+            resValue('string', 'firebase_db_url', 'null')
+            buildConfigField('String', 'FIREBASE_DB_URL', 'null')
         }
 
         // Enabling multidex support.
@@ -155,6 +161,8 @@ dependencies {
     compile "com.android.support:design:$supportLibraryVersion"
     compile "com.android.support:cardview-v7:$supportLibraryVersion"
     compile "com.android.support:support-annotations:$supportLibraryVersion"
+    compile "com.android.support:animated-vector-drawable:$supportLibraryVersion"
+    compile "com.android.support:support-v13:$supportLibraryVersion"
     //multidex to support more than 65K methods
     compile 'com.android.support:multidex:1.0.1'
     //rx
@@ -200,6 +208,8 @@ dependencies {
     compile "com.google.firebase:firebase-analytics:$googleLibraryVersion"
     compile "com.google.firebase:firebase-invites:$googleLibraryVersion"
     compile "com.google.firebase:firebase-ads:$googleLibraryVersion"
+    compile "com.google.firebase:firebase-database:$googleLibraryVersion"
+    compile "com.google.firebase:firebase-auth:$googleLibraryVersion"
     //appodeal
     compile project(':cheetah-mobile-3.4.7')
     compile "com.google.android.gms:play-services-ads:$googleLibraryVersion"
