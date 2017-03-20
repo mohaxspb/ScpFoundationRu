@@ -217,7 +217,7 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
 //                    Toast.makeText(BaseActivity.this, getString(R.string.login_greetings), Toast.LENGTH_SHORT).show();
     }
 
-    protected static class HeaderViewHolderUnlogined {
+    static class HeaderViewHolderUnlogined {
 
         @BindView(R.id.login)
         View mLogin;
@@ -229,7 +229,7 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
         }
     }
 
-    protected static class HeaderViewHolderLogined {
+    static class HeaderViewHolderLogined {
 
         @BindView(R.id.level)
         TextView level;

@@ -916,4 +916,36 @@ public class ApiClient {
         }
         return images;
     }
+
+    //fixme test
+//    public void test(){
+//        OkHttpClient okHttpClient = new OkHttpClient();
+//        Retrofit retrofit =  new Retrofit.Builder()
+//                .addConverterFactory(GsonConverterFactory.create())
+//                .client(okHttpClient)
+//                .build();
+//
+//        test test = retrofit.create(test.class);
+//        test.test().enqueue(new Callback<retrofit2.Response<ResponseBody>>() {
+//            @Override
+//            public void onResponse(Call<retrofit2.Response<ResponseBody>> call, retrofit2.Response<retrofit2.Response<ResponseBody>> response) {
+//                Timber.d("onResponse response.body(): %s", response.body());
+//                try {
+//                    Timber.e("onResponse response.errorBody(): %s", response.errorBody().string());
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<retrofit2.Response<ResponseBody>> call, Throwable t) {
+//                Timber.e("onFailure: %s", call);
+//            }
+//        });
+//    }
+//
+//    interface test{
+//        @POST("http://hoff.ru/api/v1/login?email=zayn1991%40gmail.com&password=4848848&device_id=5f45bee5151ac032&city=711%27")
+//        Call<retrofit2.Response<ResponseBody>> test();
+//    }
 }

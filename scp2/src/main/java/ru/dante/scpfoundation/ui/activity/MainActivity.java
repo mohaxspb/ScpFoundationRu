@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.text.TextUtils;
 import android.view.MenuItem;
 
 import com.google.firebase.auth.AuthResult;
@@ -17,6 +18,10 @@ import com.vk.sdk.VKAccessToken;
 import java.io.IOException;
 import java.util.List;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
+import rx.android.schedulers.AndroidSchedulers;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import ru.dante.scpfoundation.BuildConfig;
@@ -39,7 +44,6 @@ import ru.dante.scpfoundation.ui.fragment.RecentArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.SiteSearchArticlesFragment;
 import ru.dante.scpfoundation.util.prerate.PreRate;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -257,68 +261,57 @@ public class MainActivity
     private FirebaseAuth.AuthStateListener mAuthListener;
 
     private void authWithCustomToken() {
-        Observable.fromCallable(() -> {
+        Observable.<String>create(subscriber -> {
             OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder()
-                    .url("http://37.143.14.68:8080/scp-ru-1/MyServlet?provider=vk&token=" + VKAccessToken.currentToken().accessToken)
-//                    .url("http://192.168.0.93:8080/scp-ru/MyServlet?provider=vk&token=" + VKAccessToken.currentToken().accessToken)
+//                    .url("http://37.143.14.68:8080/scp-ru-1/MyServlet?provider=vk&token=" + VKAccessToken.currentToken().accessToken)
+                    .url("http://192.168.0.93:8080/scp-ru/MyServlet?provider=vk&token=" + VKAccessToken.currentToken().accessToken)
                     .build();
-            return client.newCall(request).execute();
-        })
-                .<AuthResult>flatMap(response -> {
-                    Timber.d("response: %s", response);
-                    if (response.isSuccessful()) {
-                        return Observable.create(subscriber -> {
-                            String customToken;
-                            try {
-                                customToken = response.body().string();
-                                Timber.d("signin with customToken: %s", customToken);
-                            } catch (IOException e) {
-                                subscriber.onError(e);
-                                return;
-                            }
-                            mAuth.signInWithCustomToken(customToken).addOnCompleteListener(this, task -> {
-                                Timber.d("signInWithCustomToken:onComplete: %s", task.isSuccessful());
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    subscriber.onError(e);
+                }
 
-                                // If sign in fails, display a message to the user. If sign in succeeds
-                                // the auth state listener will be notified and logic to handle the
-                                // signed in user can be handled in the listener.
-                                if (!task.isSuccessful()) {
-                                    Timber.e(task.getException(), "signInWithCustomToken");
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    subscriber.onNext(response.body().string());
+                    subscriber.onCompleted();
+                }
+            });
+        })
+                .flatMap(response -> TextUtils.isEmpty(response) ? Observable.error(new IllegalArgumentException("empty token")) : Observable.just(response))
+                .<AuthResult>flatMap(token -> Observable.create(subscriber -> {
+                    Timber.d("token: %s", token);
+                    mAuth.signInWithCustomToken(token).addOnCompleteListener(this, task -> {
+                        Timber.d("signInWithCustomToken:onComplete: %s", task.isSuccessful());
+
+                        // If sign in fails, display a message to the user. If sign in succeeds
+                        // the auth state listener will be notified and logic to handle the
+                        // signed in user can be handled in the listener.
+                        if (!task.isSuccessful()) {
+                            Timber.e(task.getException(), "signInWithCustomToken");
+                            //TODO
 //                                            Toast.makeText(MainActivity.this, "Authentication failed.",
 //                                                    Toast.LENGTH_SHORT).show();
-                                    subscriber.onError(new Throwable("error auth in Firebase with custom token"));
-                                } else {
-                                    Timber.d("signInWithCustomToken task.getResult(): %s", task.getResult());
-                                    subscriber.onNext(task.getResult());
-                                    subscriber.onCompleted();
-                                }
-                            });
-                        });
-                    } else {
-                        try {
-                            return Observable.error(new Throwable(response.body().string()));
-                        } catch (IOException e) {
-                            return Observable.error(e);
+                            subscriber.onError(new Throwable("error auth in Firebase with custom token"));
+                        } else {
+                            Timber.d("signInWithCustomToken task.getResult(): %s", task.getResult());
+                            subscriber.onNext(task.getResult());
+                            subscriber.onCompleted();
                         }
-                    }
-                })
+                    });
+                }))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         result -> {
-                            Timber.d("result: %s", result);
-                            Timber.d("user: %s", result.getUser());
                             Timber.d("user: %s", result.getUser().getUid());
-                            Timber.d("user: %s", result.getUser().getDisplayName());
-                            Timber.d("user: %s", result.getUser().getEmail());
-                            Timber.d("user: %s", result.getUser().getPhotoUrl());
                         }
                         , error -> {
                             Timber.e(error);
                         }
                 );
-
     }
 
     @Override

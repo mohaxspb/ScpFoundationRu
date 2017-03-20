@@ -33,6 +33,8 @@ public class MainPresenter
     @Override
     public void onNavigationItemClicked(int id) {
         //nothing to do
+//        //FIXME delete test
+//        mApiClient.test();
     }
 
     @Override
