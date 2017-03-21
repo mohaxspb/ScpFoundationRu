@@ -263,9 +263,15 @@ public class MainActivity
     private void authWithCustomToken() {
         Observable.<String>create(subscriber -> {
             OkHttpClient client = new OkHttpClient();
+            String url = "http://192.168.43.56:8080/scp-ru/MyServlet";
+            String params = "?provider=vk&token=" +
+                    VKAccessToken.currentToken().accessToken +
+                    "&email=" + VKAccessToken.currentToken().email +
+                    "&id=" + VKAccessToken.currentToken().userId;
             Request request = new Request.Builder()
 //                    .url("http://37.143.14.68:8080/scp-ru-1/MyServlet?provider=vk&token=" + VKAccessToken.currentToken().accessToken)
-                    .url("http://192.168.0.93:8080/scp-ru/MyServlet?provider=vk&token=" + VKAccessToken.currentToken().accessToken)
+//                    .url("http://192.168.0.93:8080/scp-ru/MyServlet?provider=vk&token=" + VKAccessToken.currentToken().accessToken)
+                    .url(url + params)
                     .build();
             client.newCall(request).enqueue(new Callback() {
                 @Override
