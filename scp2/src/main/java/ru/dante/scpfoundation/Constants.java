@@ -1,5 +1,12 @@
 package ru.dante.scpfoundation;
 
+import android.support.annotation.StringDef;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+import ru.dante.scpfoundation.db.model.Article;
+
 /**
  * Created by mohax on 03.01.2017.
  * <p>
@@ -25,6 +32,16 @@ public interface Constants {
     }
 
     interface Firebase {
+
+        @Retention(RetentionPolicy.SOURCE)
+        @StringDef({SocialProvider.VK})
+        @interface SocialProvider {
+            String VK = "vk";
+        }
+
+        interface Refs{
+            String USERS = "users";
+        }
 
         int REQUEST_INVITE = 1024;
 

@@ -29,33 +29,35 @@ public class User extends RealmObject {
 //    public String uid;
     public String fullName;
 
-    public String firstName;
-    public String lastName;
+//    public String firstName;
+//    public String lastName;
 
     public String avatar;
 
-    @NetworkType
+    public String email;
+
+//    @NetworkType
     public String network;
 
-    @Retention(RetentionPolicy.SOURCE)
-    @StringDef({
-            NetworkType.VK,
-            NetworkType.FACEBOOK,
-            NetworkType.GOOGLE
-    })
-    public @interface NetworkType {
-        String VK = "vk";
-        String FACEBOOK = "facebook";
-        String GOOGLE = "google";
-    }
+//    @Retention(RetentionPolicy.SOURCE)
+//    @StringDef({
+//            NetworkType.VK,
+//            NetworkType.FACEBOOK,
+//            NetworkType.GOOGLE
+//    })
+//    public @interface NetworkType {
+//        String VK = "vk";
+//        String FACEBOOK = "facebook";
+//        String GOOGLE = "google";
+//    }
+
 
     @Override
     public String toString() {
         return "User{" +
                 "fullName='" + fullName + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
                 ", avatar='" + avatar + '\'' +
+                ", email='" + email + '\'' +
                 ", network='" + network + '\'' +
                 '}';
     }

@@ -35,15 +35,9 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.hannesdorfmann.mosby.mvp.MvpActivity;
 import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKCallback;
+import com.vk.sdk.VKScope;
 import com.vk.sdk.VKSdk;
-import com.vk.sdk.api.VKApi;
-import com.vk.sdk.api.VKApiConst;
 import com.vk.sdk.api.VKError;
-import com.vk.sdk.api.VKParameters;
-import com.vk.sdk.api.VKRequest;
-import com.vk.sdk.api.VKResponse;
-import com.vk.sdk.api.model.VKApiUser;
-import com.vk.sdk.api.model.VKList;
 import com.yandex.metrica.YandexMetrica;
 
 import java.lang.reflect.Method;
@@ -57,7 +51,6 @@ import butterknife.ButterKnife;
 import ru.dante.scpfoundation.BuildConfig;
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.R;
-import ru.dante.scpfoundation.db.model.User;
 import ru.dante.scpfoundation.manager.InAppBillingServiceConnectionObservable;
 import ru.dante.scpfoundation.manager.MyNotificationManager;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
@@ -126,9 +119,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
         setContentView(getLayoutResId());
         ButterKnife.bind(this);
 
-        if (mToolbar != null) {
-            setSupportActionBar(mToolbar);
-        }
+        setSupportActionBar(mToolbar);
 
         mPresenter.onCreate();
 
@@ -148,6 +139,25 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
         initAndUpdateRemoteConfig();
 
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void startLogin(@Constants.Firebase.SocialProvider String provider) {
+        switch (provider) {
+            case Constants.Firebase.SocialProvider.VK:
+                VKSdk.login(this, VKScope.EMAIL, VKScope.GROUPS);
+                break;
+            default:
+                throw new RuntimeException("unexpected provider");
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+     //need to do all firebase work in activity, not in fragments presenters
+        //TODO unsubscribe from firebase;
+//        mPresenter.onActivityStop();
     }
 
     @Override
@@ -495,33 +505,10 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
                 //Пользователь успешно авторизовался
                 Timber.d("Auth successfull: %s", vkAccessToken.email);
                 if (vkAccessToken.email != null) {
-                    VKApi.users().get(VKParameters.from(VKApiConst.FIELDS, "photo_200")).executeWithListener(new VKRequest.VKRequestListener() {
-                        @Override
-                        public void onComplete(VKResponse response) {
-                            //noinspection unchecked
-                            VKApiUser vkApiUser = ((VKList<VKApiUser>) response.parsedModel).get(0);
-                            Timber.d("User name %s %s", vkApiUser.first_name, vkApiUser.last_name);
-
-                            User user = new User();
-                            user.network = User.NetworkType.VK;
-                            user.fullName = vkApiUser.first_name + " " + vkApiUser.last_name;
-                            user.firstName = vkApiUser.first_name;
-                            user.lastName = vkApiUser.last_name;
-                            user.avatar = vkApiUser.photo_200;
-
-                            mPresenter.onUserLogined(user);
-                        }
-
-                        @Override
-                        public void onError(VKError error) {
-                            super.onError(error);
-                            Toast.makeText(BaseActivity.this, error.errorMessage, Toast.LENGTH_SHORT).show();
-                        }
-                    });
-
+                    mPresenter.startFirebaseLogin();
                 } else {
                     Toast.makeText(BaseActivity.this, R.string.error_login_no_email, Toast.LENGTH_SHORT).show();
-                    VKSdk.logout();
+                    mPresenter.logoutUser();
                 }
             }
 
@@ -535,6 +522,20 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
+
+//    @Override
+//    public void onStart() {
+//        super.onStart();
+//        mAuth.addAuthStateListener(mAuthListener);
+//    }
+//
+//    @Override
+//    public void onStop() {
+//        super.onStop();
+//        if (mAuthListener != null) {
+//            mAuth.removeAuthStateListener(mAuthListener);
+//        }
+//    }
 
     private void initAndUpdateRemoteConfig() {
         //remote config

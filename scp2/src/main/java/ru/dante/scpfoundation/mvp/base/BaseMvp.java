@@ -3,6 +3,7 @@ package ru.dante.scpfoundation.mvp.base;
 import com.hannesdorfmann.mosby.mvp.MvpPresenter;
 import com.hannesdorfmann.mosby.mvp.MvpView;
 
+import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.db.model.User;
 
 /**
@@ -12,6 +13,8 @@ import ru.dante.scpfoundation.db.model.User;
  */
 public interface BaseMvp {
     interface View extends MvpView {
+        void startLogin(@Constants.Firebase.SocialProvider String provider);
+
         void showError(Throwable throwable);
     }
 
@@ -23,5 +26,13 @@ public interface BaseMvp {
         void onUserLogined(User user);
 
         User getUser();
+
+        void startFirebaseLogin();
+
+        void logoutUser();
+
+        void authWithCustomToken(String token);
+
+        void updateFirebaseUserProfileDataFromProvider(@Constants.Firebase.SocialProvider String provider);
     }
 }

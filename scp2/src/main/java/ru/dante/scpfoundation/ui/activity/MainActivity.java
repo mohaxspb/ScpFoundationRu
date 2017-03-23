@@ -7,23 +7,10 @@ import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.text.TextUtils;
 import android.view.MenuItem;
 
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.vk.sdk.VKAccessToken;
-
-import java.io.IOException;
 import java.util.List;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
-import rx.android.schedulers.AndroidSchedulers;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import ru.dante.scpfoundation.BuildConfig;
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
@@ -43,8 +30,6 @@ import ru.dante.scpfoundation.ui.fragment.RatedArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.RecentArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.SiteSearchArticlesFragment;
 import ru.dante.scpfoundation.util.prerate.PreRate;
-import rx.Observable;
-import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 import static ru.dante.scpfoundation.ui.activity.LicenceActivity.EXTRA_SHOW_ABOUT;
@@ -143,20 +128,6 @@ public class MainActivity
             DialogFragment dialogFragment = NewVersionDialogFragment.newInstance(getString(R.string.new_version_features));
             dialogFragment.show(getFragmentManager(), NewVersionDialogFragment.TAG);
         }
-
-        //FIXME test
-        mAuth = FirebaseAuth.getInstance();
-        mAuthListener = firebaseAuth -> {
-            FirebaseUser user = firebaseAuth.getCurrentUser();
-            if (user != null) {
-                // User is signed in
-                Timber.d("onAuthStateChanged:signed_in: %s", user.getUid());
-            } else {
-                // User is signed out
-                Timber.d("onAuthStateChanged:signed_out");
-            }
-            // ...
-        };
     }
 
     @Override
@@ -242,9 +213,7 @@ public class MainActivity
                 showFragment(OfflineArticlesFragment.newInstance(), OfflineArticlesFragment.TAG);
                 return true;
             case R.id.gallery:
-//                GalleryActivity.startActivity(this);
-                //FIXME test
-                authWithCustomToken();
+                GalleryActivity.startActivity(this);
                 return false;
             case R.id.siteSearch:
                 mCurrentSelectedDrawerItemId = id;
@@ -254,87 +223,6 @@ public class MainActivity
                 Timber.e("unexpected item ID");
                 return true;
         }
-    }
-
-    //FIXME test
-    private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
-
-    private void authWithCustomToken() {
-        Observable.<String>create(subscriber -> {
-            OkHttpClient client = new OkHttpClient();
-//            String url = "http://192.168.43.56:8080/scp-ru/MyServlet";
-            String url = "http://192.168.0.93:8080/scp-ru/MyServlet";
-            String params = "?provider=vk&token=" +
-                    VKAccessToken.currentToken().accessToken +
-                    "&email=" + VKAccessToken.currentToken().email +
-                    "&id=" + VKAccessToken.currentToken().userId;
-            Request request = new Request.Builder()
-//                    .url("http://37.143.14.68:8080/scp-ru-1/MyServlet?provider=vk&token=" + VKAccessToken.currentToken().accessToken)
-//                    .url("http://192.168.0.93:8080/scp-ru/MyServlet?provider=vk&token=" + VKAccessToken.currentToken().accessToken)
-                    .url(url + params)
-                    .build();
-            client.newCall(request).enqueue(new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    subscriber.onError(e);
-                }
-
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    subscriber.onNext(response.body().string());
-                    subscriber.onCompleted();
-                }
-            });
-        })
-                .flatMap(response -> TextUtils.isEmpty(response) ? Observable.error(new IllegalArgumentException("empty token")) : Observable.just(response))
-                .<AuthResult>flatMap(token -> Observable.create(subscriber -> {
-                    Timber.d("token: %s", token);
-                    mAuth.signInWithCustomToken(token).addOnCompleteListener(this, task -> {
-                        Timber.d("signInWithCustomToken:onComplete: %s", task.isSuccessful());
-
-                        // If sign in fails, display a message to the user. If sign in succeeds
-                        // the auth state listener will be notified and logic to handle the
-                        // signed in user can be handled in the listener.
-                        if (!task.isSuccessful()) {
-                            Timber.e(task.getException(), "signInWithCustomToken");
-                            //TODO
-//                                            Toast.makeText(MainActivity.this, "Authentication failed.",
-//                                                    Toast.LENGTH_SHORT).show();
-                            subscriber.onError(new Throwable("error auth in Firebase with custom token"));
-                        } else {
-                            Timber.d("signInWithCustomToken task.getResult(): %s", task.getResult());
-                            subscriber.onNext(task.getResult());
-                            subscriber.onCompleted();
-                        }
-                    });
-                }))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        result -> {
-                            Timber.d("user: %s", result.getUser().getUid());
-                        }
-                        , error -> {
-                            Timber.e(error);
-                        }
-                );
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        mAuth.addAuthStateListener(mAuthListener);
-        // ...
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (mAuthListener != null) {
-            mAuth.removeAuthStateListener(mAuthListener);
-        }
-        // ...
     }
 
     private void showFragment(Fragment fragmentToShow, String tag) {

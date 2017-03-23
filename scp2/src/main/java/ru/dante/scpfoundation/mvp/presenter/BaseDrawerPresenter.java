@@ -1,10 +1,22 @@
 package ru.dante.scpfoundation.mvp.presenter;
 
+import android.text.TextUtils;
+
+import com.vk.sdk.VKAccessToken;
+
+import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import ru.dante.scpfoundation.api.ApiClient;
 import ru.dante.scpfoundation.db.DbProviderFactory;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.mvp.base.BasePresenter;
 import ru.dante.scpfoundation.mvp.base.DrawerMvp;
+import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
