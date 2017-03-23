@@ -329,7 +329,7 @@ public class ArticleFragment
 
     @Override
     public void onUnsupportedLinkPressed(String link) {
-        Snackbar.make(root, R.string.unsupported_link, Snackbar.LENGTH_SHORT).show();
+        showMessage(R.string.unsupported_link);
     }
 
     @Override

@@ -13,12 +13,8 @@ import io.realm.UserRealmProxy;
 @Parcel(implementations = {UserRealmProxy.class}, value = Parcel.Serialization.BEAN, analyze = {User.class})
 public class User extends RealmObject {
 
-    //    @PrimaryKey
-//    public String uid;
+    public String uid;
     public String fullName;
-
-//    public String firstName;
-//    public String lastName;
 
     public String avatar;
 
@@ -39,11 +35,11 @@ public class User extends RealmObject {
 //        String GOOGLE = "google";
 //    }
 
-
     @Override
     public String toString() {
         return "User{" +
-                "fullName='" + fullName + '\'' +
+                "uid='" + uid + '\'' +
+                ", fullName='" + fullName + '\'' +
                 ", avatar='" + avatar + '\'' +
                 ", email='" + email + '\'' +
                 ", network='" + network + '\'' +

@@ -134,4 +134,6 @@
     <string name="vk_group_join_ads_disable_title">Вступи в группу ВК для отключения рекламы на %d часа!</string>
     <string name="need_vk_group_access">Требуется разрешение на доступ к группам. Авторизуйтесь заново.</string>
     <string name="gallery">Галерея</string>
+    <string name="error_login_firebase_connection">Ошибка логина. Попробуйте ещё раз. %s</string>
+    <string name="on_user_logined">Приветствуем, агент %s</string>
 </resources>

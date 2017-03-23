@@ -31,10 +31,4 @@ public abstract class BasePresenter<V extends BaseMvp.View>
         Timber.d("onCreate");
         //nothing to do
     }
-
-    @Override
-    public void onDestroy() {
-        Timber.d("onDestroy");
-        //nothing to do
-    }
 }

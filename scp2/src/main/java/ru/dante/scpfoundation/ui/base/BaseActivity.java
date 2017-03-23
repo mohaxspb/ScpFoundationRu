@@ -13,6 +13,7 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
@@ -50,6 +51,7 @@ import butterknife.ButterKnife;
 import ru.dante.scpfoundation.BuildConfig;
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.R;
+import ru.dante.scpfoundation.api.error.ScpLoginException;
 import ru.dante.scpfoundation.db.model.User;
 import ru.dante.scpfoundation.manager.InAppBillingServiceConnectionObservable;
 import ru.dante.scpfoundation.manager.MyNotificationManager;
@@ -419,8 +421,17 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
 
     @Override
     public void showError(Throwable throwable) {
-        //TODO switch errors types
         Snackbar.make(mRoot, throwable.getMessage(), Snackbar.LENGTH_SHORT);
+    }
+
+    @Override
+    public void showMessage(String message) {
+        Snackbar.make(mRoot, message, Snackbar.LENGTH_SHORT);
+    }
+
+    @Override
+    public void showMessage(@StringRes int message) {
+        showMessage(getString(message));
     }
 
     @Override

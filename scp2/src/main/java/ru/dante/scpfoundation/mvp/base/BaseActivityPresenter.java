@@ -22,7 +22,10 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import ru.dante.scpfoundation.Constants;
+import ru.dante.scpfoundation.MyApplication;
+import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.api.ApiClient;
+import ru.dante.scpfoundation.api.error.ScpLoginException;
 import ru.dante.scpfoundation.db.DbProviderFactory;
 import ru.dante.scpfoundation.db.model.User;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
@@ -56,28 +59,35 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
                 updateFirebaseUserProfileDataFromProvider(Constants.Firebase.SocialProvider.VK);
             } else {
                 Timber.d("email not empty, check for user in firebase DB");
-                //TODO check if we create user object in remote db
+                //check if we create user object in remote db
                 getUserFromFirebaseObservable().subscribe(
                         userFromFirebase -> {
                             if (userFromFirebase == null) {
                                 //create it
                                 User userToWriteToDb = new User();
+                                userToWriteToDb.uid = firebaseUser.getUid();
                                 userToWriteToDb.fullName = firebaseUser.getDisplayName();
                                 if (firebaseUser.getPhotoUrl() != null) {
                                     userToWriteToDb.avatar = firebaseUser.getPhotoUrl().toString();
                                 }
                                 userToWriteToDb.email = firebaseUser.getEmail();
                                 userToWriteToDb.network = Constants.Firebase.SocialProvider.VK;
-                                writeUserToFirebase(userToWriteToDb)
-                                        .subscribe(
-                                                user -> {
-                                                    Timber.d("user write to firebase success");
-                                                },
-                                                error -> {
-                                                    //TODO
-                                                    Timber.e(error);
-                                                }
-                                        );
+                                writeUserToFirebase(userToWriteToDb).subscribe(
+                                        user -> {
+                                            Timber.d("user write to firebase success");
+                                            getView().showMessage(MyApplication.getAppInstance()
+                                                    .getString(R.string.on_user_logined,
+                                                            user.fullName));
+                                        },
+                                        error -> {
+                                            Timber.e(error);
+                                            logoutUser();
+                                            getView().showError(new ScpLoginException(
+                                                    MyApplication.getAppInstance()
+                                                            .getString(R.string.error_login_firebase_connection,
+                                                                    error.getMessage())));
+                                        }
+                                );
                             } else {
                                 //add it to realn DB
                                 Timber.d("user from fire base");
@@ -85,8 +95,12 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
                             }
                         },
                         error -> {
-                            //tODO
                             Timber.e(error);
+                            logoutUser();
+                            getView().showError(new ScpLoginException(
+                                    MyApplication.getAppInstance()
+                                            .getString(R.string.error_login_firebase_connection,
+                                                    error.getMessage())));
                         }
                 );
             }
@@ -103,7 +117,7 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
     }
 
     @Override
-    public void getUserFromDb(){
+    public void getUserFromDb() {
         mDbProviderFactory.getDbProvider().getUserAsync().subscribe(
                 user -> {
                     mUser = user;
@@ -147,17 +161,15 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
     public void onUserLogined(User user) {
         Timber.d("onUserLogined: %s", user);
         if (user != null) {
-            mDbProviderFactory.getDbProvider().saveUser(user)
-                    .subscribe(
-                            result -> Timber.d("user saved"),
-                            error -> Timber.e(error, "error while save user to DB")
-                    );
+            mDbProviderFactory.getDbProvider().saveUser(user).subscribe(
+                    result -> Timber.d("user saved"),
+                    error -> Timber.e(error, "error while save user to DB")
+            );
         } else {
-            mDbProviderFactory.getDbProvider().deleteUser()
-                    .subscribe(
-                            result -> Timber.d("user deleted"),
-                            error -> Timber.e(error, "error while delete user from DB")
-                    );
+            mDbProviderFactory.getDbProvider().deleteUser().subscribe(
+                    result -> Timber.d("user deleted"),
+                    error -> Timber.e(error, "error while delete user from DB")
+            );
         }
     }
 
@@ -211,7 +223,10 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
         VKSdk.logout();
         //TODO add other networks
         mAuth.signOut();
-        onUserLogined(null);
+        mDbProviderFactory.getDbProvider().deleteUser().subscribe(
+                result -> Timber.d("user deleted"),
+                error -> Timber.e(error, "error while delete user from DB")
+        );
     }
 
     @Override

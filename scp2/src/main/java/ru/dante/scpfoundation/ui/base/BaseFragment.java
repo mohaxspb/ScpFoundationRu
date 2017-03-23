@@ -3,6 +3,7 @@ package ru.dante.scpfoundation.ui.base;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -49,7 +50,7 @@ public abstract class BaseFragment<V extends BaseMvp.View, P extends BaseMvp.Pre
     }
 
     @BindView(R.id.root)
-    protected View root;
+    protected View mRoot;
 
     protected abstract int getLayoutResId();
 
@@ -117,7 +118,6 @@ public abstract class BaseFragment<V extends BaseMvp.View, P extends BaseMvp.Pre
 
     @Override
     public void showError(Throwable throwable) {
-        Timber.e(throwable, "showError");
         if (!isAdded()) {
             return;
         }
@@ -127,7 +127,23 @@ public abstract class BaseFragment<V extends BaseMvp.View, P extends BaseMvp.Pre
         } else if (throwable instanceof ScpParseException) {
             message = getString(R.string.error_parse);
         }
-        Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(mRoot, message, Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showMessage(String message) {
+        if (!isAdded()) {
+            return;
+        }
+        Snackbar.make(mRoot, message, Snackbar.LENGTH_SHORT);
+    }
+
+    @Override
+    public void showMessage(@StringRes int message) {
+        if (!isAdded()) {
+            return;
+        }
+        showMessage(getString(message));
     }
 
     protected BaseActivity getBaseActivity() {
