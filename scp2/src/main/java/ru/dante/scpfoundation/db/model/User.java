@@ -1,21 +1,9 @@
 package ru.dante.scpfoundation.db.model;
 
-import android.support.annotation.StringDef;
-
 import org.parceler.Parcel;
-import org.parceler.ParcelPropertyConverter;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayList;
-import java.util.List;
-
-import io.realm.ArticleRealmProxy;
-import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.UserRealmProxy;
-import io.realm.annotations.PrimaryKey;
-import ru.dante.scpfoundation.db.util.RealmStringListParcelConverter;
 
 /**
  * Created by mohax on 03.01.2017.

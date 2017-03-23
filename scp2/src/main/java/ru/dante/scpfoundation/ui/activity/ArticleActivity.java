@@ -91,7 +91,6 @@ public class ArticleActivity
 
         if (getIntent().hasExtra(EXTRA_ARTICLES_URLS_LIST)) {
             mUrls = getIntent().getStringArrayListExtra(EXTRA_ARTICLES_URLS_LIST);
-            mPresenter.setArticlesUrls(mUrls);
             mCurPosition = getIntent().getIntExtra(EXTRA_POSITION, 0);
         }
         ArticlesPagerAdapter adapter = new ArticlesPagerAdapter(getSupportFragmentManager());

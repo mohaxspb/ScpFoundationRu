@@ -1,22 +1,9 @@
-package ru.dante.scpfoundation.mvp.presenter;
+package ru.dante.scpfoundation.mvp.base;
 
-import android.text.TextUtils;
-
-import com.vk.sdk.VKAccessToken;
-
-import java.io.IOException;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 import ru.dante.scpfoundation.api.ApiClient;
 import ru.dante.scpfoundation.db.DbProviderFactory;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
-import ru.dante.scpfoundation.mvp.base.BasePresenter;
-import ru.dante.scpfoundation.mvp.base.DrawerMvp;
-import rx.Observable;
+import ru.dante.scpfoundation.mvp.contract.DrawerMvp;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
@@ -27,7 +14,7 @@ import timber.log.Timber;
  * for TappAwards
  */
 public abstract class BaseDrawerPresenter<V extends DrawerMvp.View>
-        extends BasePresenter<V>
+        extends BaseActivityPresenter<V>
         implements DrawerMvp.Presenter<V> {
 
     public BaseDrawerPresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
@@ -44,12 +31,18 @@ public abstract class BaseDrawerPresenter<V extends DrawerMvp.View>
                 .subscribe(
                         url -> {
                             getView().showProgressDialog(false);
-                            getView().startArticleActivity(url);
+                            getView().onReceiveRandomUrl(url);
                         },
                         error -> {
                             getView().showProgressDialog(false);
                             getView().showError(error);
                         }
                 );
+    }
+
+    @Override
+    public void onNavigationItemClicked(int id) {
+        Timber.d("onNavigationItemClicked: %s", id);
+        //nothing to do
     }
 }

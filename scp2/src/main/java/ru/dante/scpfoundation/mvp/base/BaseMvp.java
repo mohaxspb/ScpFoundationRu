@@ -12,8 +12,8 @@ import ru.dante.scpfoundation.db.model.User;
  * for scp_ru
  */
 public interface BaseMvp {
+
     interface View extends MvpView {
-        void startLogin(@Constants.Firebase.SocialProvider String provider);
 
         void showError(Throwable throwable);
     }
@@ -22,17 +22,5 @@ public interface BaseMvp {
         void onCreate();
 
         void onDestroy();
-
-        void onUserLogined(User user);
-
-        User getUser();
-
-        void startFirebaseLogin();
-
-        void logoutUser();
-
-        void authWithCustomToken(String token);
-
-        void updateFirebaseUserProfileDataFromProvider(@Constants.Firebase.SocialProvider String provider);
     }
 }

@@ -1,6 +1,6 @@
-package ru.dante.scpfoundation.mvp.base;
+package ru.dante.scpfoundation.mvp.contract;
 
-import ru.dante.scpfoundation.db.model.User;
+import ru.dante.scpfoundation.mvp.base.BaseActivityMvp;
 
 /**
  * Created by y.kuchanov on 21.12.16.
@@ -8,21 +8,19 @@ import ru.dante.scpfoundation.db.model.User;
  * for scp_ru
  */
 public interface DrawerMvp {
-    interface View extends BaseMvp.View {
+    interface View extends BaseActivityMvp.View {
         /**
          *
          * @return true if need to show selected
          */
         boolean onNavigationItemClicked(int id);
 
-        void startArticleActivity(String url);
+        void onReceiveRandomUrl(String url);
 
         void showProgressDialog(boolean show);
-
-        void onGetUserFromDB(User user);
     }
 
-    interface Presenter<V extends View> extends BaseMvp.Presenter<V> {
+    interface Presenter<V extends View> extends BaseActivityMvp.Presenter<V> {
         void onNavigationItemClicked(int id);
 
         void getRandomArticleUrl();

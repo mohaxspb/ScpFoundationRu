@@ -25,7 +25,6 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.vending.billing.IInAppBillingService;
 import com.appodeal.ads.Appodeal;
-import com.appodeal.ads.utils.Log;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
@@ -51,6 +50,7 @@ import butterknife.ButterKnife;
 import ru.dante.scpfoundation.BuildConfig;
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.R;
+import ru.dante.scpfoundation.db.model.User;
 import ru.dante.scpfoundation.manager.InAppBillingServiceConnectionObservable;
 import ru.dante.scpfoundation.manager.MyNotificationManager;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
@@ -59,7 +59,7 @@ import ru.dante.scpfoundation.monetization.util.InappHelper;
 import ru.dante.scpfoundation.monetization.util.MyAdListener;
 import ru.dante.scpfoundation.monetization.util.MyNonSkippableVideoCallbacks;
 import ru.dante.scpfoundation.monetization.util.MySkippableVideoCallbacks;
-import ru.dante.scpfoundation.mvp.base.BaseMvp;
+import ru.dante.scpfoundation.mvp.base.BaseActivityMvp;
 import ru.dante.scpfoundation.mvp.base.MonetizationActions;
 import ru.dante.scpfoundation.ui.dialog.NewVersionDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
@@ -74,9 +74,9 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
  * <p>
  * for scp_ru
  */
-public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Presenter<V>>
+public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends BaseActivityMvp.Presenter<V>>
         extends MvpActivity<V, P>
-        implements BaseMvp.View, MonetizationActions, SharedPreferences.OnSharedPreferenceChangeListener {
+        implements BaseActivityMvp.View, MonetizationActions, SharedPreferences.OnSharedPreferenceChangeListener {
 
     @BindView(R.id.root)
     protected View mRoot;
@@ -155,9 +155,15 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
     @Override
     protected void onStop() {
         super.onStop();
-     //need to do all firebase work in activity, not in fragments presenters
-        //TODO unsubscribe from firebase;
-//        mPresenter.onActivityStop();
+        //unsubscribe from firebase;
+        mPresenter.onActivityStopped();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //unsubscribe from firebase;
+        mPresenter.onActivityStarted();
     }
 
     @Override
@@ -175,7 +181,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
         Appodeal.confirm(Appodeal.SKIPPABLE_VIDEO);
         if (BuildConfig.DEBUG) {
             Appodeal.setTesting(true);
-            Appodeal.setLogLevel(Log.LogLevel.debug);
+//            Appodeal.setLogLevel(Log.LogLevel.debug);
         }
         Appodeal.initialize(this, appKey, Appodeal.NON_SKIPPABLE_VIDEO | Appodeal.SKIPPABLE_VIDEO);
         Appodeal.setNonSkippableVideoCallbacks(new MyNonSkippableVideoCallbacks() {
@@ -523,19 +529,10 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
         }
     }
 
-//    @Override
-//    public void onStart() {
-//        super.onStart();
-//        mAuth.addAuthStateListener(mAuthListener);
-//    }
-//
-//    @Override
-//    public void onStop() {
-//        super.onStop();
-//        if (mAuthListener != null) {
-//            mAuth.removeAuthStateListener(mAuthListener);
-//        }
-//    }
+    @Override
+    public void updateUser(User user) {
+        //nothing to do here
+    }
 
     private void initAndUpdateRemoteConfig() {
         //remote config

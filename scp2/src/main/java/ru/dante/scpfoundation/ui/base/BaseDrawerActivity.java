@@ -20,7 +20,7 @@ import butterknife.BindView;
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.db.model.User;
-import ru.dante.scpfoundation.mvp.base.DrawerMvp;
+import ru.dante.scpfoundation.mvp.contract.DrawerMvp;
 import ru.dante.scpfoundation.ui.activity.ArticleActivity;
 import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
 import ru.dante.scpfoundation.ui.holder.HeaderViewHolderLogined;
@@ -132,7 +132,7 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
         Timber.d("onOptionsItemSelected with id: %s", item);
         switch (item.getItemId()) {
             case android.R.id.home:
-                if(isDrawerIndicatorEnabled()) {
+                if (isDrawerIndicatorEnabled()) {
                     mDrawerLayout.openDrawer(GravityCompat.START);
                 } else {
                     finish();
@@ -144,7 +144,7 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
     }
 
     @Override
-    public void startArticleActivity(String url) {
+    public void onReceiveRandomUrl(String url) {
         ArticleActivity.startActivity(this, url);
     }
 
@@ -164,7 +164,7 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
     }
 
     @Override
-    public void onGetUserFromDB(User user) {
+    public void updateUser(User user) {
         Timber.d("onGetUserFromDB: %s", user);
         if (user != null) {
             for (int i = 0; i < mNavigationView.getHeaderCount(); i++) {

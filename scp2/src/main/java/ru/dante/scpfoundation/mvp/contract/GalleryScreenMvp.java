@@ -3,7 +3,6 @@ package ru.dante.scpfoundation.mvp.contract;
 import java.util.List;
 
 import ru.dante.scpfoundation.db.model.VkImage;
-import ru.dante.scpfoundation.mvp.base.DrawerMvp;
 
 /**
  * Created by y.kuchanov on 21.12.16.
