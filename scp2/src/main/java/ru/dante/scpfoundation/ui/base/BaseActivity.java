@@ -51,7 +51,6 @@ import butterknife.ButterKnife;
 import ru.dante.scpfoundation.BuildConfig;
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.R;
-import ru.dante.scpfoundation.api.error.ScpLoginException;
 import ru.dante.scpfoundation.db.model.User;
 import ru.dante.scpfoundation.manager.InAppBillingServiceConnectionObservable;
 import ru.dante.scpfoundation.manager.MyNotificationManager;
@@ -101,6 +100,7 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
     private IInAppBillingService mService;
     private List<Item> mOwnedMarketItems = new ArrayList<>();
     private InterstitialAd mInterstitialAd;
+    private MaterialDialog mProgressDialog;
 
     @NonNull
     @Override
@@ -432,6 +432,28 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
     @Override
     public void showMessage(@StringRes int message) {
         showMessage(getString(message));
+    }
+
+    @Override
+    public void showProgressDialog(String title) {
+        mProgressDialog = new MaterialDialog.Builder(this)
+                .progress(true, 0)
+                .title(title)
+                .cancelable(false)
+                .show();
+    }
+
+    @Override
+    public void showProgressDialog(@StringRes int title) {
+        showProgressDialog(getString(title));
+    }
+
+    @Override
+    public void dismissProgressDialog() {
+        if (mProgressDialog == null || !mProgressDialog.isShowing()) {
+            return;
+        }
+        mProgressDialog.dismiss();
     }
 
     @Override

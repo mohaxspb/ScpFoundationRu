@@ -9,6 +9,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.vk.sdk.VKAccessToken;
@@ -45,8 +46,6 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
         extends BasePresenter<V>
         implements BaseActivityMvp.Presenter<V> {
 
-    private User mUser;
-
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private FirebaseAuth.AuthStateListener mAuthListener = mAuth -> {
         FirebaseUser firebaseUser = mAuth.getCurrentUser();
@@ -78,10 +77,30 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
                                             getView().showMessage(MyApplication.getAppInstance()
                                                     .getString(R.string.on_user_logined,
                                                             user.fullName));
+                                            //TODO create observable for it
+                                            mDbProviderFactory.getDbProvider().saveUser(user).subscribe(
+                                                    result -> {
+                                                        Timber.d("user saved");
+                                                        getView().dismissProgressDialog();
+                                                        getView().showMessage(MyApplication.getAppInstance()
+                                                                .getString(R.string.on_user_logined,
+                                                                        user.fullName));
+                                                    },
+                                                    error -> {
+                                                        Timber.e(error, "error while save user to DB");
+                                                        logoutUser();
+                                                        getView().dismissProgressDialog();
+                                                        getView().showError(new ScpLoginException(
+                                                                MyApplication.getAppInstance()
+                                                                        .getString(R.string.error_login_firebase_connection,
+                                                                                error.getMessage())));
+                                                    }
+                                            );
                                         },
                                         error -> {
                                             Timber.e(error);
                                             logoutUser();
+                                            getView().dismissProgressDialog();
                                             getView().showError(new ScpLoginException(
                                                     MyApplication.getAppInstance()
                                                             .getString(R.string.error_login_firebase_connection,
@@ -90,13 +109,32 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
                                 );
                             } else {
                                 //add it to realn DB
-                                Timber.d("user from fire base");
-                                onUserLogined(userFromFirebase);
+                                Timber.d("user found in firebase");
+                                //TODO create observable for it
+                                mDbProviderFactory.getDbProvider().saveUser(userFromFirebase).subscribe(
+                                        result -> {
+                                            Timber.d("user saved");
+                                            getView().dismissProgressDialog();
+                                            getView().showMessage(MyApplication.getAppInstance()
+                                                    .getString(R.string.on_user_logined,
+                                                            userFromFirebase.fullName));
+                                        },
+                                        error -> {
+                                            Timber.e(error, "error while save user to DB");
+                                            logoutUser();
+                                            getView().dismissProgressDialog();
+                                            getView().showError(new ScpLoginException(
+                                                    MyApplication.getAppInstance()
+                                                            .getString(R.string.error_login_firebase_connection,
+                                                                    error.getMessage())));
+                                        }
+                                );
                             }
                         },
                         error -> {
                             Timber.e(error);
                             logoutUser();
+                            getView().dismissProgressDialog();
                             getView().showError(new ScpLoginException(
                                     MyApplication.getAppInstance()
                                             .getString(R.string.error_login_firebase_connection,
@@ -107,6 +145,7 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
         } else {
             // User is signed out
             Timber.d("onAuthStateChanged:signed_out");
+//            logoutUser();
         }
     };
 
@@ -114,17 +153,6 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
         super(myPreferencesManager, dbProviderFactory, apiClient);
 
         getUserFromDb();
-    }
-
-    @Override
-    public void getUserFromDb() {
-        mDbProviderFactory.getDbProvider().getUserAsync().subscribe(
-                user -> {
-                    mUser = user;
-                    getView().updateUser(mUser);
-                },
-                error -> Timber.e(error, "error while get user from DB")
-        );
     }
 
     @Override
@@ -158,28 +186,8 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
     }
 
     @Override
-    public void onUserLogined(User user) {
-        Timber.d("onUserLogined: %s", user);
-        if (user != null) {
-            mDbProviderFactory.getDbProvider().saveUser(user).subscribe(
-                    result -> Timber.d("user saved"),
-                    error -> Timber.e(error, "error while save user to DB")
-            );
-        } else {
-            mDbProviderFactory.getDbProvider().deleteUser().subscribe(
-                    result -> Timber.d("user deleted"),
-                    error -> Timber.e(error, "error while delete user from DB")
-            );
-        }
-    }
-
-    @Override
-    public User getUser() {
-        return mUser;
-    }
-
-    @Override
     public void startFirebaseLogin() {
+        getView().showProgressDialog(R.string.login_in_progress_custom_token);
         Observable.<String>create(subscriber -> {
             OkHttpClient client = new OkHttpClient();
 //            String url = "http://192.168.43.56:8080/scp-ru/MyServlet";
@@ -214,7 +222,12 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
                             Timber.d("token: %s", token);
                             authWithCustomToken(token);
                         },
-                        error -> getView().showError(error)
+                        error -> {
+                            Timber.e(error);
+                            logoutUser();
+                            getView().dismissProgressDialog();
+                            getView().showError(error);
+                        }
                 );
     }
 
@@ -229,6 +242,7 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
         );
     }
 
+    //TODO return Observable
     @Override
     public void authWithCustomToken(String token) {
         mAuth.signInWithCustomToken(token).addOnCompleteListener(task -> {
@@ -239,6 +253,8 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
             // signed in user can be handled in the listener.
             if (!task.isSuccessful()) {
                 Timber.e(task.getException(), "signInWithCustomToken");
+                logoutUser();
+                getView().dismissProgressDialog();
                 getView().showError(new Throwable("error auth in Firebase with custom token"));
             } else {
                 Timber.d("signInWithCustomToken task.getResult(): %s", task.getResult().getUser().getUid());
@@ -307,8 +323,12 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
                         },
                         error -> {
                             Timber.e(error);
-                            getView().showError(error);
                             logoutUser();
+                            getView().dismissProgressDialog();
+                            getView().showError(new ScpLoginException(
+                                    MyApplication.getAppInstance()
+                                            .getString(R.string.error_login_firebase_connection,
+                                                    error.getMessage())));
                         }
                 );
     }
@@ -333,6 +353,40 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
                         });
             } else {
                 subscriber.onError(new IllegalStateException("firebase user is null"));
+            }
+        });
+    }
+
+    @Override
+    public void syncFavorite(String url, boolean isFavorite) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference reference = database.getReference()
+                .child(Constants.Firebase.Refs.USERS)
+                .child(mUser.uid)
+                .child(Constants.Firebase.Refs.FAVORITES)
+                .child(url);
+        reference.setValue(isFavorite, (databaseError, databaseReference) -> {
+            if (databaseError == null) {
+                getView().showMessage(R.string.sync_fav_success);
+            } else {
+                getView().showError(new Throwable(MyApplication.getAppInstance().getString(R.string.error_while_sync_fav)));
+            }
+        });
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Timber.d("onDataChange exists: %s", dataSnapshot.exists());
+                //TODO think if we realy need to get data before updating it
+                if (dataSnapshot.exists()) {
+
+                } else {
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                getView().showError(new Throwable(MyApplication.getAppInstance().getString(R.string.error_while_sync_fav)));
             }
         });
     }

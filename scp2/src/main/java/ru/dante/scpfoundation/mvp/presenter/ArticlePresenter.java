@@ -30,17 +30,6 @@ public class ArticlePresenter
     }
 
     @Override
-    public void onCreate() {
-        Timber.d("onCreate");
-        //nothing to do...
-    }
-
-    @Override
-    public void onDestroy() {
-        //nothing to do...
-    }
-
-    @Override
     public void setArticleId(String url) {
         Timber.d("setArticleId: %s", url);
         mArticleUrl = url;

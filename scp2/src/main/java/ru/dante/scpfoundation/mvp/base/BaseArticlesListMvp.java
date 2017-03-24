@@ -16,6 +16,7 @@ public interface BaseArticlesListMvp {
     }
 
     interface Presenter<V extends View> extends BaseListMvp.Presenter<V>, BaseArticleActions {
+        //TODO think if we need this subscribers
         Subscriber<Pair<String, Long>> getToggleFavoriteSubscriber();
 
         Subscriber<Pair<String, Boolean>> getToggleReadenSubscriber();

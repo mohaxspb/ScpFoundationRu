@@ -7,7 +7,8 @@ import ru.dante.scpfoundation.db.model.Article;
  * <p>
  * for scp_ru
  */
-public interface BaseArticleActions {
+interface BaseArticleActions {
+
     void toggleFavoriteState(String url);
 
     void toggleReadenState(String url);

@@ -11,6 +11,7 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.hannesdorfmann.mosby.mvp.MvpFragment;
 
 import java.io.IOException;
@@ -42,6 +43,7 @@ public abstract class BaseFragment<V extends BaseMvp.View, P extends BaseMvp.Pre
 
     @Inject
     protected P mPresenter;
+    private MaterialDialog mProgressDialog;
 
     @NonNull
     @Override
@@ -144,6 +146,37 @@ public abstract class BaseFragment<V extends BaseMvp.View, P extends BaseMvp.Pre
             return;
         }
         showMessage(getString(message));
+    }
+
+    @Override
+    public void showProgressDialog(String title) {
+        if (!isAdded()) {
+            return;
+        }
+        mProgressDialog = new MaterialDialog.Builder(getActivity())
+                .progress(true, 0)
+                .title(title)
+                .cancelable(false)
+                .show();
+    }
+
+    @Override
+    public void showProgressDialog(@StringRes int title) {
+        if (!isAdded()) {
+            return;
+        }
+        showProgressDialog(getString(title));
+    }
+
+    @Override
+    public void dismissProgressDialog() {
+        if (!isAdded()) {
+            return;
+        }
+        if (mProgressDialog == null || !mProgressDialog.isShowing()) {
+            return;
+        }
+        mProgressDialog.dismiss();
     }
 
     protected BaseActivity getBaseActivity() {

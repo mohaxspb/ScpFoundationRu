@@ -136,4 +136,7 @@
     <string name="gallery">Галерея</string>
     <string name="error_login_firebase_connection">Ошибка логина. Попробуйте ещё раз. %s</string>
     <string name="on_user_logined">Приветствуем, агент %s</string>
+    <string name="login_in_progress_custom_token">Запрашиваю пароль на сервере Фонда</string>
+    <string name="error_while_sync_fav">Не удалось синхронизировать статью со списком избранного</string>
+    <string name="sync_fav_success">Статья синхронизирована</string>
 </resources>

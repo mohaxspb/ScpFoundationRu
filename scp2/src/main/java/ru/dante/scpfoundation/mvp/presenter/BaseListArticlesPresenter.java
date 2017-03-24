@@ -2,9 +2,19 @@ package ru.dante.scpfoundation.mvp.presenter;
 
 import android.util.Pair;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.List;
 
 import io.realm.RealmResults;
+import ru.dante.scpfoundation.BuildConfig;
+import ru.dante.scpfoundation.Constants;
+import ru.dante.scpfoundation.MyApplication;
+import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.api.ApiClient;
 import ru.dante.scpfoundation.db.DbProviderFactory;
 import ru.dante.scpfoundation.db.model.Article;
@@ -22,24 +32,14 @@ import timber.log.Timber;
  * <p>
  * for TappAwards
  */
-public abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
+abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
         extends BasePresenter<V>
         implements BaseArticlesListMvp.Presenter<V> {
 
     protected RealmResults<Article> mData;
 
-    public BaseListArticlesPresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
+    BaseListArticlesPresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
         super(myPreferencesManager, dbProviderFactory, apiClient);
-    }
-
-    @Override
-    public void onCreate() {
-        Timber.d("onCreate");
-    }
-
-    @Override
-    public void onDestroy() {
-        Timber.d("onDestroy");
     }
 
     @Override
@@ -188,6 +188,8 @@ public abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.Vi
             @Override
             public void onNext(Pair<String, Long> stringBooleanPair) {
                 Timber.d("favs state now is: %s", stringBooleanPair.second);
+                //TODO test
+                syncFavorite(stringBooleanPair.first, stringBooleanPair.second != Article.ORDER_NONE);
             }
         };
     }
@@ -251,5 +253,46 @@ public abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.Vi
                 Timber.d("toggleOfflineState article: %s", article.url);
             }
         };
+    }
+
+    public void syncFavorite(String url, boolean isFavorite) {
+        Timber.d("syncFavorite: %s, %s", url, isFavorite);
+        if (mUser == null) {
+            return;
+        }
+        //as firebase cant have key with '.', '#', '$', '[', or ']' remove site from url
+        url = url.replace(BuildConfig.BASE_API_URL, "");
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference reference = database.getReference()
+                .child(Constants.Firebase.Refs.USERS)
+                .child(mUser.uid)
+                .child(Constants.Firebase.Refs.FAVORITES)
+                .child(url);
+        reference.setValue(isFavorite, (databaseError, databaseReference) -> {
+            Timber.d("setValue on complete error: %s, ref", databaseError, databaseReference);
+            if (databaseError == null) {
+                getView().showMessage(R.string.sync_fav_success);
+            } else {
+                getView().showError(new Throwable(MyApplication.getAppInstance().getString(R.string.error_while_sync_fav)));
+            }
+        });
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Timber.d("onDataChange exists: %s", dataSnapshot.exists());
+                //TODO think if we realy need to get data before updating it
+                if (dataSnapshot.exists()) {
+
+                } else {
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Timber.e("onCancelled: %s", databaseError.getMessage());
+                getView().showError(new Throwable(MyApplication.getAppInstance().getString(R.string.error_while_sync_fav)));
+            }
+        });
     }
 }
