@@ -15,13 +15,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKSdk;
 
-import java.io.IOException;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
@@ -32,7 +25,6 @@ import ru.dante.scpfoundation.db.model.User;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 import static ru.dante.scpfoundation.Constants.Firebase.SocialProvider.VK;
@@ -47,6 +39,7 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
         implements BaseActivityMvp.Presenter<V> {
 
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    //TODO think if we realy need to check user here or we can use one that we get from authInFirebase callback result
     private FirebaseAuth.AuthStateListener mAuthListener = mAuth -> {
         FirebaseUser firebaseUser = mAuth.getCurrentUser();
         if (firebaseUser != null) {
@@ -204,43 +197,7 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
     @Override
     public void startFirebaseLogin(@Constants.Firebase.SocialProvider String provider) {
         getView().showProgressDialog(R.string.login_in_progress_custom_token);
-        Observable<FirebaseUser> authToFirebaseObservable;
-        switch (provider) {
-            case VK:
-                authToFirebaseObservable = Observable.<String>create(subscriber -> {
-                    OkHttpClient client = new OkHttpClient();
-                    //TODO move to build config
-                    String url = "http://37.143.14.68:8080/scp-ru-1/MyServlet";//vps
-//            String url = "http://192.168.0.93:8080/scp-ru/MyServlet";//home
-                    String params = "?provider=vk&token=" +
-                            VKAccessToken.currentToken().accessToken +
-                            "&email=" + VKAccessToken.currentToken().email +
-                            "&id=" + VKAccessToken.currentToken().userId;
-                    Request request = new Request.Builder()
-                            .url(url + params)
-                            .build();
-                    client.newCall(request).enqueue(new Callback() {
-                        @Override
-                        public void onFailure(Call call, IOException e) {
-                            subscriber.onError(e);
-                        }
-
-                        @Override
-                        public void onResponse(Call call, Response response) throws IOException {
-                            subscriber.onNext(response.body().string());
-                            subscriber.onCompleted();
-                        }
-                    });
-                })
-                        .flatMap(response -> TextUtils.isEmpty(response) ? Observable.error(new IllegalArgumentException("empty token")) : Observable.just(response))
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .flatMap(token -> mApiClient.authWithCustomToken(mAuth, token));
-                break;
-            default:
-                throw new IllegalArgumentException("unexpected provider");
-        }
-        authToFirebaseObservable.subscribe(
+        mApiClient.getAuthInFirebaseWithSocialProviderObservable(mAuth, provider).subscribe(
                 //now onAuthStateChanggedListener will be called
                 firebaseUser -> Timber.d("successfully login to firebase and gain user: %s", firebaseUser),
                 error -> {
@@ -267,7 +224,6 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
     @Override
     public void updateFirebaseUserProfileDataFromProvider(@Constants.Firebase.SocialProvider String provider) {
         Observable<Pair<String, String>> nameAvatarObservable;
-
         switch (provider) {
             case VK:
                 nameAvatarObservable = mApiClient.getUserDataFromVk()
@@ -289,27 +245,26 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
                         .setPhotoUri(Uri.parse(nameAvatar.second))
                         .build();
 
-                user.updateProfile(profileUpdates)
-                        .addOnCompleteListener(task -> {
-                            if (task.isSuccessful()) {
-                                Timber.d("User profile updated name and photo.");
-                                if (VKAccessToken.currentToken() != null) {
-                                    user.updateEmail(VKAccessToken.currentToken().email).addOnCompleteListener(task1 -> {
-                                        if (task.isSuccessful()) {
-                                            Timber.d("User profile updated email.");
-                                            subscriber.onNext(null);
-                                            subscriber.onCompleted();
-                                        } else {
-                                            Timber.e("error while update user email");
-                                            subscriber.onError(task.getException());
-                                        }
-                                    });
+                user.updateProfile(profileUpdates).addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Timber.d("User profile updated name and photo.");
+                        if (VKAccessToken.currentToken() != null) {
+                            user.updateEmail(VKAccessToken.currentToken().email).addOnCompleteListener(task1 -> {
+                                if (task.isSuccessful()) {
+                                    Timber.d("User profile updated email.");
+                                    subscriber.onNext(null);
+                                    subscriber.onCompleted();
+                                } else {
+                                    Timber.e("error while update user email");
+                                    subscriber.onError(task.getException());
                                 }
-                            } else {
-                                Timber.e("error while update user name and photo");
-                                subscriber.onError(task.getException());
-                            }
-                        });
+                            });
+                        }
+                    } else {
+                        Timber.e("error while update user name and photo");
+                        subscriber.onError(task.getException());
+                    }
+                });
             } else {
                 Timber.e("user is null while try to update!");
                 subscriber.onError(new IllegalStateException("Firebase user is null while try to update its profile"));

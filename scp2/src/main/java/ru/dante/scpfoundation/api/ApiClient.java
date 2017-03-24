@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Locale;
 
 import io.realm.RealmList;
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -47,7 +49,11 @@ import ru.dante.scpfoundation.db.model.RealmString;
 import ru.dante.scpfoundation.db.model.VkImage;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import timber.log.Timber;
+
+import static ru.dante.scpfoundation.Constants.Firebase.SocialProvider.VK;
 
 /**
  * Created by y.kuchanov on 22.12.16.
@@ -954,5 +960,50 @@ public class ApiClient {
                 subscriber.onCompleted();
             }
         }));
+    }
+
+    //todo use it via retrofit and update server to return JSON with request result
+    public Observable<FirebaseUser> getAuthInFirebaseWithSocialProviderObservable(
+            FirebaseAuth firebaseAuth,
+            @Constants.Firebase.SocialProvider String provider
+    ){
+        Observable<FirebaseUser> authToFirebaseObservable;
+        switch (provider) {
+            case VK:
+                authToFirebaseObservable = Observable.<String>create(subscriber -> {
+                    //TODO move to build config
+                    String url = "http://37.143.14.68:8080/scp-ru-1/MyServlet";//vps
+//            String url = "http://192.168.0.93:8080/scp-ru/MyServlet";//home
+                    String params = "?provider=vk&token=" +
+                            VKAccessToken.currentToken().accessToken +
+                            "&email=" + VKAccessToken.currentToken().email +
+                            "&id=" + VKAccessToken.currentToken().userId;
+                    Request request = new Request.Builder()
+                            .url(url + params)
+                            .build();
+                    mOkHttpClient.newCall(request).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+                            subscriber.onError(e);
+                        }
+
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+                            subscriber.onNext(response.body().string());
+                            subscriber.onCompleted();
+                        }
+                    });
+                })
+                        .flatMap(response -> TextUtils.isEmpty(response) ?
+                                Observable.error(new IllegalArgumentException("empty token")) :
+                                Observable.just(response))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .flatMap(token -> authWithCustomToken(firebaseAuth, token));
+                break;
+            default:
+                throw new IllegalArgumentException("unexpected provider");
+        }
+        return authToFirebaseObservable;
     }
 }
