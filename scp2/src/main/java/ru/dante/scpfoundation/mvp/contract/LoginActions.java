@@ -22,11 +22,11 @@ public interface LoginActions {
 
         Observable<User> getUserFromFirebaseObservable();
 
-        void startFirebaseLogin();
+        void startFirebaseLogin(@Constants.Firebase.SocialProvider String provider);
 
         void logoutUser();
 
-        void authWithCustomToken(String token);
+//        Observable<FirebaseUser> authWithCustomToken(String token);
 
         void updateFirebaseUserProfileDataFromProvider(@Constants.Firebase.SocialProvider String provider);
 

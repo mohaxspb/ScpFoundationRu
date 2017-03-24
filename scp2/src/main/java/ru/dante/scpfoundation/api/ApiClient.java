@@ -2,6 +2,8 @@ package ru.dante.scpfoundation.api;
 
 import android.text.TextUtils;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
 import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.api.VKApi;
@@ -920,30 +922,37 @@ public class ApiClient {
     }
 
     public Observable<VKApiUser> getUserDataFromVk() {
-        return Observable.create(subscriber -> {
-            VKApi.users().get(VKParameters.from(VKApiConst.FIELDS, "photo_200")).executeWithListener(new VKRequest.VKRequestListener() {
-                @Override
-                public void onComplete(VKResponse response) {
-                    //noinspection unchecked
-                    VKApiUser vkApiUser = ((VKList<VKApiUser>) response.parsedModel).get(0);
-                    Timber.d("User name %s %s", vkApiUser.first_name, vkApiUser.last_name);
+        return Observable.create(subscriber -> VKApi.users().get(VKParameters.from(VKApiConst.FIELDS, "photo_200")).executeWithListener(new VKRequest.VKRequestListener() {
+            @Override
+            public void onComplete(VKResponse response) {
+                //noinspection unchecked
+                VKApiUser vkApiUser = ((VKList<VKApiUser>) response.parsedModel).get(0);
+                Timber.d("User name %s %s", vkApiUser.first_name, vkApiUser.last_name);
 
-//                    User user = new User();
-//                    user.network = User.NetworkType.VK;
-//                    user.fullName = vkApiUser.first_name + " " + vkApiUser.last_name;
-//                    user.firstName = vkApiUser.first_name;
-//                    user.lastName = vkApiUser.last_name;
-//                    user.avatar = vkApiUser.photo_200;
+                subscriber.onNext(vkApiUser);
+                subscriber.onCompleted();
+            }
 
-                    subscriber.onNext(vkApiUser);
-                    subscriber.onCompleted();
-                }
+            @Override
+            public void onError(VKError error) {
+                subscriber.onError(error.httpError);
+            }
+        }));
+    }
 
-                @Override
-                public void onError(VKError error) {
-                    subscriber.onError(error.httpError);
-                }
-            });
-        });
+    public Observable<FirebaseUser> authWithCustomToken(FirebaseAuth firebaseAuth, String token) {
+        return Observable.create(subscriber -> firebaseAuth.signInWithCustomToken(token).addOnCompleteListener(task -> {
+            Timber.d("signInWithCustomToken:onComplete: %s", task.isSuccessful());
+
+            // If sign in fails, display a message to the user. If sign in succeeds
+            // the auth state listener will be notified and logic to handle the
+            // signed in user can be handled in the listener.
+            if (!task.isSuccessful()) {
+                subscriber.onError(task.getException());
+            } else {
+                subscriber.onNext(task.getResult().getUser());
+                subscriber.onCompleted();
+            }
+        }));
     }
 }

@@ -59,8 +59,7 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
             } else {
                 Timber.d("email not empty, check for user in firebase DB");
                 //check if we create user object in remote db
-                getUserFromFirebaseObservable().subscribe(
-                        userFromFirebase -> {
+                getUserFromFirebaseObservable().subscribe(userFromFirebase -> {
                             if (userFromFirebase == null) {
                                 //create it
                                 User userToWriteToDb = new User();
@@ -185,50 +184,72 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
         });
     }
 
+    /**
+     * depend on social provider creates proper observable,
+     * that emits Firebase user after successfully login to firebase
+     * and prints it to logs;
+     * if some error ocures dissmises progress dialog in activity,
+     * shows message to user
+     * and call {@link #logoutUser()}
+     * <p>
+     * !!! WARNING !!!
+     * <p>
+     * Do not use result of created Observable as firebase will call AuthStateChanedListener itself
+     * <p>
+     * !!! WARNING !!!
+     * <p>
+     *
+     * @param provider login provider to usse to login to firebase
+     */
     @Override
-    public void startFirebaseLogin() {
+    public void startFirebaseLogin(@Constants.Firebase.SocialProvider String provider) {
         getView().showProgressDialog(R.string.login_in_progress_custom_token);
-        Observable.<String>create(subscriber -> {
-            OkHttpClient client = new OkHttpClient();
-            String url = "http://37.143.14.68:8080/scp-ru-1/MyServlet";//vps
+        Observable<FirebaseUser> authToFirebaseObservable;
+        switch (provider) {
+            case VK:
+                authToFirebaseObservable = Observable.<String>create(subscriber -> {
+                    OkHttpClient client = new OkHttpClient();
+                    //TODO move to build config
+                    String url = "http://37.143.14.68:8080/scp-ru-1/MyServlet";//vps
 //            String url = "http://192.168.0.93:8080/scp-ru/MyServlet";//home
-            String params = "?provider=vk&token=" +
-                    VKAccessToken.currentToken().accessToken +
-                    "&email=" + VKAccessToken.currentToken().email +
-                    "&id=" + VKAccessToken.currentToken().userId;
-            Request request = new Request.Builder()
-//                    .url("http://37.143.14.68:8080/scp-ru-1/MyServlet?provider=vk&token=" + VKAccessToken.currentToken().accessToken)
-//                    .url("http://192.168.0.93:8080/scp-ru/MyServlet?provider=vk&token=" + VKAccessToken.currentToken().accessToken)
-                    .url(url + params)
-                    .build();
-            client.newCall(request).enqueue(new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    subscriber.onError(e);
-                }
-
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    subscriber.onNext(response.body().string());
-                    subscriber.onCompleted();
-                }
-            });
-        })
-                .flatMap(response -> TextUtils.isEmpty(response) ? Observable.error(new IllegalArgumentException("empty token")) : Observable.just(response))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        token -> {
-                            Timber.d("token: %s", token);
-                            authWithCustomToken(token);
-                        },
-                        error -> {
-                            Timber.e(error);
-                            logoutUser();
-                            getView().dismissProgressDialog();
-                            getView().showError(error);
+                    String params = "?provider=vk&token=" +
+                            VKAccessToken.currentToken().accessToken +
+                            "&email=" + VKAccessToken.currentToken().email +
+                            "&id=" + VKAccessToken.currentToken().userId;
+                    Request request = new Request.Builder()
+                            .url(url + params)
+                            .build();
+                    client.newCall(request).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+                            subscriber.onError(e);
                         }
-                );
+
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+                            subscriber.onNext(response.body().string());
+                            subscriber.onCompleted();
+                        }
+                    });
+                })
+                        .flatMap(response -> TextUtils.isEmpty(response) ? Observable.error(new IllegalArgumentException("empty token")) : Observable.just(response))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .flatMap(token -> mApiClient.authWithCustomToken(mAuth, token));
+                break;
+            default:
+                throw new IllegalArgumentException("unexpected provider");
+        }
+        authToFirebaseObservable.subscribe(
+                //now onAuthStateChanggedListener will be called
+                firebaseUser -> Timber.d("successfully login to firebase and gain user: %s", firebaseUser),
+                error -> {
+                    Timber.e(error);
+                    logoutUser();
+                    getView().dismissProgressDialog();
+                    getView().showError(error);
+                }
+        );
     }
 
     @Override
@@ -240,45 +261,6 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
                 result -> Timber.d("user deleted"),
                 error -> Timber.e(error, "error while delete user from DB")
         );
-    }
-
-//    //TODO return Observable
-//    @Override
-//    public void authWithCustomToken(String token) {
-//        mAuth.signInWithCustomToken(token).addOnCompleteListener(task -> {
-//            Timber.d("signInWithCustomToken:onComplete: %s", task.isSuccessful());
-//
-//            // If sign in fails, display a message to the user. If sign in succeeds
-//            // the auth state listener will be notified and logic to handle the
-//            // signed in user can be handled in the listener.
-//            if (!task.isSuccessful()) {
-//                Timber.e(task.getException(), "signInWithCustomToken");
-//                logoutUser();
-//                getView().dismissProgressDialog();
-//                getView().showError(new Throwable("error auth in Firebase with custom token"));
-//            } else {
-//                Timber.d("signInWithCustomToken task.getResult(): %s", task.getResult().getUser().getUid());
-//            }
-//        });
-//    }
-
-    @Override
-    public Observable<Void> authWithCustomToken(String token) {
-        mAuth.signInWithCustomToken(token).addOnCompleteListener(task -> {
-            Timber.d("signInWithCustomToken:onComplete: %s", task.isSuccessful());
-
-            // If sign in fails, display a message to the user. If sign in succeeds
-            // the auth state listener will be notified and logic to handle the
-            // signed in user can be handled in the listener.
-            if (!task.isSuccessful()) {
-                Timber.e(task.getException(), "signInWithCustomToken");
-                logoutUser();
-                getView().dismissProgressDialog();
-                getView().showError(new Throwable("error auth in Firebase with custom token"));
-            } else {
-                Timber.d("signInWithCustomToken task.getResult(): %s", task.getResult().getUser().getUid());
-            }
-        });
     }
 
     //TODO return observable
