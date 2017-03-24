@@ -190,8 +190,8 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
         getView().showProgressDialog(R.string.login_in_progress_custom_token);
         Observable.<String>create(subscriber -> {
             OkHttpClient client = new OkHttpClient();
-//            String url = "http://192.168.43.56:8080/scp-ru/MyServlet";
-            String url = "http://192.168.0.93:8080/scp-ru/MyServlet"; //home
+            String url = "http://37.143.14.68:8080/scp-ru-1/MyServlet";//vps
+//            String url = "http://192.168.0.93:8080/scp-ru/MyServlet";//home
             String params = "?provider=vk&token=" +
                     VKAccessToken.currentToken().accessToken +
                     "&email=" + VKAccessToken.currentToken().email +
@@ -242,9 +242,28 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
         );
     }
 
-    //TODO return Observable
+//    //TODO return Observable
+//    @Override
+//    public void authWithCustomToken(String token) {
+//        mAuth.signInWithCustomToken(token).addOnCompleteListener(task -> {
+//            Timber.d("signInWithCustomToken:onComplete: %s", task.isSuccessful());
+//
+//            // If sign in fails, display a message to the user. If sign in succeeds
+//            // the auth state listener will be notified and logic to handle the
+//            // signed in user can be handled in the listener.
+//            if (!task.isSuccessful()) {
+//                Timber.e(task.getException(), "signInWithCustomToken");
+//                logoutUser();
+//                getView().dismissProgressDialog();
+//                getView().showError(new Throwable("error auth in Firebase with custom token"));
+//            } else {
+//                Timber.d("signInWithCustomToken task.getResult(): %s", task.getResult().getUser().getUid());
+//            }
+//        });
+//    }
+
     @Override
-    public void authWithCustomToken(String token) {
+    public Observable<Void> authWithCustomToken(String token) {
         mAuth.signInWithCustomToken(token).addOnCompleteListener(task -> {
             Timber.d("signInWithCustomToken:onComplete: %s", task.isSuccessful());
 
