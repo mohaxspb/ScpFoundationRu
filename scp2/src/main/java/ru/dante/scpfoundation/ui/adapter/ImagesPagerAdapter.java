@@ -135,10 +135,6 @@ public class ImagesPagerAdapter extends PagerAdapter {
         if (view == null) {
             return;
         }
-//        ImageView imageView = ButterKnife.findById((View) view, R.id.image);
-//        Glide.clear(imageView);
-//        collection.removeView((View) view);
-
         //FROM http://stackoverflow.com/questions/37789091/viewpager-inside-recyclerview-as-row-item
         try {
             // Remove the view from the container

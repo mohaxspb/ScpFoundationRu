@@ -14,7 +14,7 @@ public interface BaseActivityMvp {
 
     }
 
-    interface Presenter<V extends View> extends BaseMvp.Presenter<V>, LoginActions.Presenter, DataSyncActions {
+    interface Presenter<V extends View> extends BaseMvp.Presenter<V>, LoginActions.Presenter {
 
         void onActivityStarted();
 

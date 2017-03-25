@@ -20,15 +20,9 @@ public interface LoginActions {
 
     interface Presenter {
 
-        Observable<User> getUserFromFirebaseObservable();
-
         void startFirebaseLogin(@Constants.Firebase.SocialProvider String provider);
 
         void logoutUser();
-
-//        Observable<FirebaseUser> authWithCustomToken(String token);
-
-        void updateFirebaseUserProfileDataFromProvider(@Constants.Firebase.SocialProvider String provider);
 
         Observable<User> writeUserToFirebase(User user);
     }

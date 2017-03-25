@@ -2,6 +2,9 @@ package ru.dante.scpfoundation.db;
 
 import android.util.Pair;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.vk.sdk.VKSdk;
+
 import java.util.List;
 
 import io.realm.Realm;
@@ -483,6 +486,15 @@ public class DbProvider {
                     subscriber.onError(error);
                     mRealm.close();
                 }));
+    }
+
+    public Observable<Void> logout() {
+        //TODO run loop through enum with providers
+
+        VKSdk.logout();
+        //TODO add other networks
+        FirebaseAuth.getInstance().signOut();
+        return deleteUser();
     }
 
     public Observable<Void> saveImages(List<VkImage> vkImages) {

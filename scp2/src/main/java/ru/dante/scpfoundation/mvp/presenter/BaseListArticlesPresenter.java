@@ -2,19 +2,9 @@ package ru.dante.scpfoundation.mvp.presenter;
 
 import android.util.Pair;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
 import java.util.List;
 
 import io.realm.RealmResults;
-import ru.dante.scpfoundation.BuildConfig;
-import ru.dante.scpfoundation.Constants;
-import ru.dante.scpfoundation.MyApplication;
-import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.api.ApiClient;
 import ru.dante.scpfoundation.db.DbProviderFactory;
 import ru.dante.scpfoundation.db.model.Article;
@@ -22,7 +12,6 @@ import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.mvp.base.BaseArticlesListMvp;
 import ru.dante.scpfoundation.mvp.base.BasePresenter;
 import rx.Observable;
-import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
@@ -136,7 +125,14 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
         Timber.d("toggleFavoriteState: %s", url);
         mDbProviderFactory.getDbProvider().toggleFavorite(url)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(getToggleFavoriteSubscriber());
+                .subscribe(
+                        stringLongPair -> {
+                            Timber.d("favs state now is: %s", stringLongPair.second);
+                            //TODO test
+                            syncFavorite(stringLongPair.first, stringLongPair.second != Article.ORDER_NONE);
+                        },
+                        e -> Timber.e(e, "error toggle favs state...")
+                );
     }
 
     @Override
@@ -144,7 +140,10 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
         Timber.d("toggleReadenState: %s", url);
         mDbProviderFactory.getDbProvider().toggleReaden(url)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(getToggleReadenSubscriber());
+                .subscribe(
+                        stringBooleanPair -> Timber.d("read state now is: %s", stringBooleanPair.second),
+                        e -> Timber.e(e, "error toggle readen state...")
+                );
     }
 
     //TODO think if we need to manage state of loading during confChanges
@@ -156,11 +155,20 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .flatMap(apiData -> mDbProviderFactory.getDbProvider().saveArticle(apiData))
-                    .subscribe(getDownloadArticleSubscriber());
+                    .subscribe(
+                            article1 -> Timber.d("toggleOfflineState article: %s", article.url),
+                            e -> {
+                                Timber.e(e, "error download article");
+                                getView().showError(e);
+                            }
+                    );
         } else {
             mDbProviderFactory.getDbProvider().deleteArticlesText(article.url)
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(getDeleteArticlesTextSubscriber());
+                    .subscribe(
+                            s -> Timber.d("articles text deleted"),
+                            e -> Timber.e(e, "error delete articles text...")
+                    );
         }
     }
 
@@ -170,129 +178,5 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
         Article article = new Article();
         article.url = url;
         toggleOfflineState(article);
-    }
-
-    @Override
-    public Subscriber<Pair<String, Long>> getToggleFavoriteSubscriber() {
-        return new Subscriber<Pair<String, Long>>() {
-            @Override
-            public void onCompleted() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                Timber.e(e, "error toggle favs state...");
-            }
-
-            @Override
-            public void onNext(Pair<String, Long> stringBooleanPair) {
-                Timber.d("favs state now is: %s", stringBooleanPair.second);
-                //TODO test
-                syncFavorite(stringBooleanPair.first, stringBooleanPair.second != Article.ORDER_NONE);
-            }
-        };
-    }
-
-    @Override
-    public Subscriber<Pair<String, Boolean>> getToggleReadenSubscriber() {
-        return new Subscriber<Pair<String, Boolean>>() {
-            @Override
-            public void onCompleted() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                Timber.e(e, "error toggle readen state...");
-            }
-
-            @Override
-            public void onNext(Pair<String, Boolean> stringBooleanPair) {
-                Timber.d("read state now is: %s", stringBooleanPair.second);
-            }
-        };
-    }
-
-    @Override
-    public Subscriber<String> getDeleteArticlesTextSubscriber() {
-        return new Subscriber<String>() {
-            @Override
-            public void onCompleted() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                Timber.e(e, "error delete text...");
-            }
-
-            @Override
-            public void onNext(String stringBooleanPair) {
-                Timber.d("deleted");
-            }
-        };
-    }
-
-    @Override
-    public Subscriber<Article> getDownloadArticleSubscriber() {
-        return new Subscriber<Article>() {
-            @Override
-            public void onCompleted() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                Timber.e(e, "error download article");
-                getView().showError(e);
-            }
-
-            @Override
-            public void onNext(Article article) {
-                Timber.d("toggleOfflineState article: %s", article.url);
-            }
-        };
-    }
-
-    public void syncFavorite(String url, boolean isFavorite) {
-        Timber.d("syncFavorite: %s, %s", url, isFavorite);
-        if (mUser == null) {
-            return;
-        }
-        //as firebase cant have key with '.', '#', '$', '[', or ']' remove site from url
-        url = url.replace(BuildConfig.BASE_API_URL, "");
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference reference = database.getReference()
-                .child(Constants.Firebase.Refs.USERS)
-                .child(mUser.uid)
-                .child(Constants.Firebase.Refs.FAVORITES)
-                .child(url);
-        reference.setValue(isFavorite, (databaseError, databaseReference) -> {
-            Timber.d("setValue on complete error: %s, ref", databaseError, databaseReference);
-            if (databaseError == null) {
-                getView().showMessage(R.string.sync_fav_success);
-            } else {
-                getView().showError(new Throwable(MyApplication.getAppInstance().getString(R.string.error_while_sync_fav)));
-            }
-        });
-        reference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Timber.d("onDataChange exists: %s", dataSnapshot.exists());
-                //TODO think if we realy need to get data before updating it
-                if (dataSnapshot.exists()) {
-
-                } else {
-
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Timber.e("onCancelled: %s", databaseError.getMessage());
-                getView().showError(new Throwable(MyApplication.getAppInstance().getString(R.string.error_while_sync_fav)));
-            }
-        });
     }
 }

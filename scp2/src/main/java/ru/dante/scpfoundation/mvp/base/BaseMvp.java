@@ -6,6 +6,7 @@ import com.hannesdorfmann.mosby.mvp.MvpPresenter;
 import com.hannesdorfmann.mosby.mvp.MvpView;
 
 import ru.dante.scpfoundation.db.model.User;
+import ru.dante.scpfoundation.mvp.contract.DataSyncActions;
 
 /**
  * Created by mohax on 14.01.2017.
@@ -29,7 +30,7 @@ public interface BaseMvp {
         void dismissProgressDialog();
     }
 
-    interface Presenter<V extends MvpView> extends MvpPresenter<V> {
+    interface Presenter<V extends MvpView> extends MvpPresenter<V>, DataSyncActions {
         void onCreate();
 
         void getUserFromDb();

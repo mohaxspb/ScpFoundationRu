@@ -1,19 +1,10 @@
 package ru.dante.scpfoundation.mvp.base;
 
-import android.net.Uri;
 import android.text.TextUtils;
-import android.util.Pair;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.vk.sdk.VKAccessToken;
-import com.vk.sdk.VKSdk;
 
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
@@ -26,8 +17,6 @@ import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import timber.log.Timber;
-
-import static ru.dante.scpfoundation.Constants.Firebase.SocialProvider.VK;
 
 /**
  * Created by mohax on 23.03.2017.
@@ -47,12 +36,30 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
             Timber.d("onAuthStateChanged:signed_in: %s", firebaseUser.getUid());
             if (TextUtils.isEmpty(firebaseUser.getEmail())) {
                 //user firstly signin, so update him with vk data
-                //TODO switch by provider
-                updateFirebaseUserProfileDataFromProvider(Constants.Firebase.SocialProvider.VK);
+                mApiClient.nameAndAvatarFromProviderObservable(Constants.Firebase.SocialProvider.VK)
+                        .flatMap(nameAvatar -> mApiClient.updateFirebaseUsersNameAndAvatarObservable(nameAvatar.first, nameAvatar.second))
+                        .flatMap(aVoid -> mApiClient.updateFirebaseUsersEmailObservable())
+                        .subscribeOn(AndroidSchedulers.mainThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                result -> {
+                                    Timber.d("result");
+                                    //TODO create user object in firebase
+                                },
+                                error -> {
+                                    Timber.e(error);
+                                    logoutUser();
+                                    getView().dismissProgressDialog();
+                                    getView().showError(new ScpLoginException(
+                                            MyApplication.getAppInstance()
+                                                    .getString(R.string.error_login_firebase_connection,
+                                                            error.getMessage())));
+                                }
+                        );
             } else {
                 Timber.d("email not empty, check for user in firebase DB");
                 //check if we create user object in remote db
-                getUserFromFirebaseObservable().subscribe(userFromFirebase -> {
+                mApiClient.getUserFromFirebaseObservable().subscribe(userFromFirebase -> {
                             if (userFromFirebase == null) {
                                 //create it
                                 User userToWriteToDb = new User();
@@ -136,8 +143,7 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
             }
         } else {
             // User is signed out
-            Timber.d("onAuthStateChanged:signed_out");
-//            logoutUser();
+            Timber.d("onAuthStateChanged: signed_out");
         }
     };
 
@@ -145,36 +151,6 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
         super(myPreferencesManager, dbProviderFactory, apiClient);
 
         getUserFromDb();
-    }
-
-    @Override
-    public Observable<User> getUserFromFirebaseObservable() {
-        return Observable.create(subscriber -> {
-            FirebaseUser firebaseUser = mAuth.getCurrentUser();
-            if (firebaseUser != null) {
-                FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-                firebaseDatabase.getReference()
-                        .child(Constants.Firebase.Refs.USERS)
-                        .child(firebaseUser.getUid())
-                        .addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                User userFromFireBase = dataSnapshot.getValue(User.class);
-                                subscriber.onNext(userFromFireBase);
-                                subscriber.onCompleted();
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-                                Timber.e(databaseError.toException(), "onCancelled");
-                                subscriber.onError(databaseError.toException());
-                            }
-                        });
-            } else {
-                subscriber.onNext(null);
-                subscriber.onCompleted();
-            }
-        });
     }
 
     /**
@@ -197,9 +173,12 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
     @Override
     public void startFirebaseLogin(@Constants.Firebase.SocialProvider String provider) {
         getView().showProgressDialog(R.string.login_in_progress_custom_token);
-        mApiClient.getAuthInFirebaseWithSocialProviderObservable(mAuth, provider).subscribe(
+        mApiClient.getAuthInFirebaseWithSocialProviderObservable(provider).subscribe(
                 //now onAuthStateChanggedListener will be called
-                firebaseUser -> Timber.d("successfully login to firebase and gain user: %s", firebaseUser),
+                firebaseUser -> {
+                    Timber.d("successfully login to firebase and gain user: %s", firebaseUser);
+                    //TODO
+                },
                 error -> {
                     Timber.e(error);
                     logoutUser();
@@ -211,82 +190,10 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
 
     @Override
     public void logoutUser() {
-        VKSdk.logout();
-        //TODO add other networks
-        mAuth.signOut();
-        mDbProviderFactory.getDbProvider().deleteUser().subscribe(
-                result -> Timber.d("user deleted"),
-                error -> Timber.e(error, "error while delete user from DB")
+        mDbProviderFactory.getDbProvider().logout().subscribe(
+                result -> Timber.d("logout successful"),
+                error -> Timber.e(error, "error while logout user")
         );
-    }
-
-    //TODO return observable
-    @Override
-    public void updateFirebaseUserProfileDataFromProvider(@Constants.Firebase.SocialProvider String provider) {
-        Observable<Pair<String, String>> nameAvatarObservable;
-        switch (provider) {
-            case VK:
-                nameAvatarObservable = mApiClient.getUserDataFromVk()
-                        .flatMap(vkApiUser -> {
-                            String displayName = vkApiUser.first_name + " " + vkApiUser.last_name;
-                            String avatarUrl = vkApiUser.photo_200;
-                            return Observable.just(new Pair<>(displayName, avatarUrl));
-                        });
-                break;
-            default:
-                throw new RuntimeException("unexpected provider");
-        }
-
-        nameAvatarObservable.flatMap(nameAvatar -> Observable.create(subscriber -> {
-            FirebaseUser user = mAuth.getCurrentUser();
-            if (user != null) {
-                UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                        .setDisplayName(nameAvatar.first)
-                        .setPhotoUri(Uri.parse(nameAvatar.second))
-                        .build();
-
-                user.updateProfile(profileUpdates).addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        Timber.d("User profile updated name and photo.");
-                        if (VKAccessToken.currentToken() != null) {
-                            user.updateEmail(VKAccessToken.currentToken().email).addOnCompleteListener(task1 -> {
-                                if (task.isSuccessful()) {
-                                    Timber.d("User profile updated email.");
-                                    subscriber.onNext(null);
-                                    subscriber.onCompleted();
-                                } else {
-                                    Timber.e("error while update user email");
-                                    subscriber.onError(task.getException());
-                                }
-                            });
-                        }
-                    } else {
-                        Timber.e("error while update user name and photo");
-                        subscriber.onError(task.getException());
-                    }
-                });
-            } else {
-                Timber.e("user is null while try to update!");
-                subscriber.onError(new IllegalStateException("Firebase user is null while try to update its profile"));
-            }
-        }))
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        result -> {
-                            Timber.d("result");
-                            //TODO create user object in firebase
-                        },
-                        error -> {
-                            Timber.e(error);
-                            logoutUser();
-                            getView().dismissProgressDialog();
-                            getView().showError(new ScpLoginException(
-                                    MyApplication.getAppInstance()
-                                            .getString(R.string.error_login_firebase_connection,
-                                                    error.getMessage())));
-                        }
-                );
     }
 
     @Override
@@ -309,40 +216,6 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
                         });
             } else {
                 subscriber.onError(new IllegalStateException("firebase user is null"));
-            }
-        });
-    }
-
-    @Override
-    public void syncFavorite(String url, boolean isFavorite) {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference reference = database.getReference()
-                .child(Constants.Firebase.Refs.USERS)
-                .child(mUser.uid)
-                .child(Constants.Firebase.Refs.FAVORITES)
-                .child(url);
-        reference.setValue(isFavorite, (databaseError, databaseReference) -> {
-            if (databaseError == null) {
-                getView().showMessage(R.string.sync_fav_success);
-            } else {
-                getView().showError(new Throwable(MyApplication.getAppInstance().getString(R.string.error_while_sync_fav)));
-            }
-        });
-        reference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Timber.d("onDataChange exists: %s", dataSnapshot.exists());
-                //TODO think if we realy need to get data before updating it
-                if (dataSnapshot.exists()) {
-
-                } else {
-
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                getView().showError(new Throwable(MyApplication.getAppInstance().getString(R.string.error_while_sync_fav)));
             }
         });
     }

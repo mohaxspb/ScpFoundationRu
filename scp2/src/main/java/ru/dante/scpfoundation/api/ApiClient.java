@@ -1,9 +1,16 @@
 package ru.dante.scpfoundation.api;
 
+import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Pair;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.api.VKApi;
@@ -46,6 +53,7 @@ import ru.dante.scpfoundation.api.model.response.VkGalleryResponse;
 import ru.dante.scpfoundation.api.model.response.VkGroupJoinResponse;
 import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.db.model.RealmString;
+import ru.dante.scpfoundation.db.model.User;
 import ru.dante.scpfoundation.db.model.VkImage;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import rx.Observable;
@@ -946,25 +954,25 @@ public class ApiClient {
         }));
     }
 
-    private Observable<FirebaseUser> authWithCustomToken(FirebaseAuth firebaseAuth, String token) {
-        return Observable.create(subscriber -> firebaseAuth.signInWithCustomToken(token).addOnCompleteListener(task -> {
-            Timber.d("signInWithCustomToken:onComplete: %s", task.isSuccessful());
+    private Observable<FirebaseUser> authWithCustomToken(String token) {
+        return Observable.create(subscriber ->
+                FirebaseAuth.getInstance().signInWithCustomToken(token).addOnCompleteListener(task -> {
+                    Timber.d("signInWithCustomToken:onComplete: %s", task.isSuccessful());
 
-            // If sign in fails, display a message to the user. If sign in succeeds
-            // the auth state listener will be notified and logic to handle the
-            // signed in user can be handled in the listener.
-            if (!task.isSuccessful()) {
-                subscriber.onError(task.getException());
-            } else {
-                subscriber.onNext(task.getResult().getUser());
-                subscriber.onCompleted();
-            }
-        }));
+                    // If sign in fails, display a message to the user. If sign in succeeds
+                    // the auth state listener will be notified and logic to handle the
+                    // signed in user can be handled in the listener.
+                    if (!task.isSuccessful()) {
+                        subscriber.onError(task.getException());
+                    } else {
+                        subscriber.onNext(task.getResult().getUser());
+                        subscriber.onCompleted();
+                    }
+                }));
     }
 
     //todo use it via retrofit and update server to return JSON with request result
     public Observable<FirebaseUser> getAuthInFirebaseWithSocialProviderObservable(
-            FirebaseAuth firebaseAuth,
             @Constants.Firebase.SocialProvider String provider
     ) {
         Observable<FirebaseUser> authToFirebaseObservable;
@@ -997,11 +1005,108 @@ public class ApiClient {
                                 Observable.just(response))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .flatMap(token -> authWithCustomToken(firebaseAuth, token));
+                        .flatMap(this::authWithCustomToken);
                 break;
             default:
                 throw new IllegalArgumentException("unexpected provider");
         }
         return authToFirebaseObservable;
+    }
+
+    public Observable<User> getUserFromFirebaseObservable() {
+        return Observable.create(subscriber -> {
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (firebaseUser != null) {
+                FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+                firebaseDatabase.getReference()
+                        .child(Constants.Firebase.Refs.USERS)
+                        .child(firebaseUser.getUid())
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                User userFromFireBase = dataSnapshot.getValue(User.class);
+                                subscriber.onNext(userFromFireBase);
+                                subscriber.onCompleted();
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                                Timber.e(databaseError.toException(), "onCancelled");
+                                subscriber.onError(databaseError.toException());
+                            }
+                        });
+            } else {
+                subscriber.onNext(null);
+                subscriber.onCompleted();
+            }
+        });
+    }
+
+    public Observable<Void> updateFirebaseUsersEmailObservable() {
+        return Observable.create(subscriber -> {
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            if (user != null) {
+                if (VKAccessToken.currentToken() != null) {
+                    user.updateEmail(VKAccessToken.currentToken().email).addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Timber.d("User profile updated email.");
+                            subscriber.onNext(null);
+                            subscriber.onCompleted();
+                        } else {
+                            Timber.e("error while update user email");
+                            subscriber.onError(task.getException());
+                        }
+                    });
+                } else {
+                    Timber.d("not logined in vk, so cant get email and update firebase user with it");
+                    subscriber.onError(new IllegalArgumentException("vk token is null, so can't get email to update firebase user"));
+                }
+            } else {
+                Timber.e("firebase user is null while try to update!");
+                subscriber.onError(new IllegalStateException("Firebase user is null while try to update its profile"));
+            }
+        });
+    }
+
+    public Observable<Void> updateFirebaseUsersNameAndAvatarObservable(String name, String avatar) {
+        return Observable.create(subscriber -> {
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            if (user != null) {
+                UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                        .setDisplayName(name)
+                        .setPhotoUri(Uri.parse(avatar))
+                        .build();
+
+                user.updateProfile(profileUpdates).addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Timber.d("User profile updated name and photo.");
+                        subscriber.onNext(null);
+                        subscriber.onCompleted();
+                    } else {
+                        Timber.e("error while update user name and photo");
+                        subscriber.onError(task.getException());
+                    }
+                });
+            } else {
+                Timber.e("firebase user is null while try to update!");
+                subscriber.onError(new IllegalStateException("Firebase user is null while try to update its profile"));
+            }
+        });
+    }
+
+    public Observable<Pair<String, String>> nameAndAvatarFromProviderObservable(@Constants.Firebase.SocialProvider String provider) {
+        Observable<Pair<String, String>> nameAvatarObservable;
+        switch (provider) {
+            case VK:
+                nameAvatarObservable = getUserDataFromVk().flatMap(vkApiUser -> {
+                    String displayName = vkApiUser.first_name + " " + vkApiUser.last_name;
+                    String avatarUrl = vkApiUser.photo_200;
+                    return Observable.just(new Pair<>(displayName, avatarUrl));
+                });
+                break;
+            default:
+                throw new RuntimeException("unexpected provider");
+        }
+        return nameAvatarObservable;
     }
 }
