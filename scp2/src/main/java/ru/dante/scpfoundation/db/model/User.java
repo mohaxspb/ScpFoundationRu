@@ -1,5 +1,7 @@
 package ru.dante.scpfoundation.db.model;
 
+import java.util.ArrayList;
+
 import io.realm.RealmList;
 import io.realm.RealmObject;
 
@@ -19,6 +21,17 @@ public class User extends RealmObject {
 
     public RealmList<SocialProviderModel> socialProviders;
 
+    public User(String uid, String fullName, String avatar, String email, RealmList<SocialProviderModel> socialProviders) {
+        this.uid = uid;
+        this.fullName = fullName;
+        this.avatar = avatar;
+        this.email = email;
+        this.socialProviders = socialProviders;
+    }
+
+    public User() {
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -26,7 +39,7 @@ public class User extends RealmObject {
                 ", fullName='" + fullName + '\'' +
                 ", avatar='" + avatar + '\'' +
                 ", email='" + email + '\'' +
-                ", socialProviders='" + socialProviders + '\'' +
+                ", socialProviders='" + new ArrayList<>(socialProviders) + '\'' +
                 '}';
     }
 }

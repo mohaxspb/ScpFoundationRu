@@ -49,6 +49,7 @@ import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.api.error.ScpException;
 import ru.dante.scpfoundation.api.error.ScpNoSearchResultsException;
 import ru.dante.scpfoundation.api.error.ScpParseException;
+import ru.dante.scpfoundation.api.model.FirebaseObjectUser;
 import ru.dante.scpfoundation.api.model.response.VkGalleryResponse;
 import ru.dante.scpfoundation.api.model.response.VkGroupJoinResponse;
 import ru.dante.scpfoundation.db.model.Article;
@@ -1020,8 +1021,7 @@ public class ApiClient {
                         .addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                User userFromFireBase = dataSnapshot.getValue(User.class);
-                                //TODO extract list of social providers manually as we gain ArrayList, not RealmList
+                                User userFromFireBase = dataSnapshot.getValue(FirebaseObjectUser.class).toRealmUser();
                                 subscriber.onNext(userFromFireBase);
                                 subscriber.onCompleted();
                             }
