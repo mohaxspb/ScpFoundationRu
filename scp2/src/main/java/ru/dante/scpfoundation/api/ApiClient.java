@@ -1009,7 +1009,7 @@ public class ApiClient {
         return authToFirebaseObservable;
     }
 
-    public Observable<User> getUserFromFirebaseObservable() {
+    public Observable<User> getUserObjectFromFirebaseObservable() {
         return Observable.create(subscriber -> {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             if (firebaseUser != null) {
@@ -1021,6 +1021,7 @@ public class ApiClient {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 User userFromFireBase = dataSnapshot.getValue(User.class);
+                                //TODO extract list of social providers manually as we gain ArrayList, not RealmList
                                 subscriber.onNext(userFromFireBase);
                                 subscriber.onCompleted();
                             }

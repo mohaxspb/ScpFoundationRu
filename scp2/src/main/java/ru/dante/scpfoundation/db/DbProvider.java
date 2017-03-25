@@ -460,11 +460,11 @@ public class DbProvider {
                 .flatMap(users -> Observable.just(users.isEmpty() ? null : users.first()));
     }
 
-    public Observable<Void> saveUser(User user) {
+    public Observable<User> saveUser(User user) {
         return Observable.create(subscriber -> mRealm.executeTransactionAsync(
                 realm -> realm.insertOrUpdate(user),
                 () -> {
-                    subscriber.onNext(null);
+                    subscriber.onNext(user);
                     subscriber.onCompleted();
                     mRealm.close();
                 },
