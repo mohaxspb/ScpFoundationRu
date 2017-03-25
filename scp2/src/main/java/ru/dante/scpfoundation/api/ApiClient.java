@@ -946,7 +946,7 @@ public class ApiClient {
         }));
     }
 
-    public Observable<FirebaseUser> authWithCustomToken(FirebaseAuth firebaseAuth, String token) {
+    private Observable<FirebaseUser> authWithCustomToken(FirebaseAuth firebaseAuth, String token) {
         return Observable.create(subscriber -> firebaseAuth.signInWithCustomToken(token).addOnCompleteListener(task -> {
             Timber.d("signInWithCustomToken:onComplete: %s", task.isSuccessful());
 
@@ -966,14 +966,12 @@ public class ApiClient {
     public Observable<FirebaseUser> getAuthInFirebaseWithSocialProviderObservable(
             FirebaseAuth firebaseAuth,
             @Constants.Firebase.SocialProvider String provider
-    ){
+    ) {
         Observable<FirebaseUser> authToFirebaseObservable;
         switch (provider) {
             case VK:
                 authToFirebaseObservable = Observable.<String>create(subscriber -> {
-                    //TODO move to build config
-                    String url = "http://37.143.14.68:8080/scp-ru-1/MyServlet";//vps
-//            String url = "http://192.168.0.93:8080/scp-ru/MyServlet";//home
+                    String url = BuildConfig.TOOLS_API_URL + "MyServlet";
                     String params = "?provider=vk&token=" +
                             VKAccessToken.currentToken().accessToken +
                             "&email=" + VKAccessToken.currentToken().email +

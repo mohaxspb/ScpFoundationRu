@@ -55,8 +55,10 @@ android {
             buildConfigField('String[]', 'OLD_SKUS', marketSkusProperties.get("marketSkusOld"))
             buildConfigField('String[]', 'VER_2_SKUS', marketSkusProperties.get("marketSkusVer2"))
         } else {
-            buildConfigField('String[]', 'OLD_SKUS', '{"","",""}')
-            buildConfigField('String[]', 'VER_2_SKUS', '{"","",""}')
+            throw new GradleException("You need to have marketSkus.properties file in root of project with " +
+                    "marketSkusOld," +
+                    "marketSkusVer2," +
+                    " variables to build project")
         }
         //set API keys from secret file or with default values
         if (rootProject.file('apiKeys.properties').exists()) {
@@ -81,24 +83,19 @@ android {
 
             resValue('string', 'firebase_db_url', apiKeysProperties.get("firebaseUri"))
             buildConfigField('String', 'FIREBASE_DB_URL', '"' + apiKeysProperties.get("firebaseUri") + '"')
+
+            resValue('string', 'tools_api_url', apiKeysProperties.get("vpsApiAddress"))
+            buildConfigField('String', 'TOOLS_API_URL', '"' + apiKeysProperties.get("vpsApiAddress") + '"')
         } else {
-            resValue('string', 'yandex_metrica_api_key', 'null')
-            buildConfigField('String', 'YANDEX_METRICA_API_KEY', 'null')
-
-            resValue('string', 'ads_app_id', 'null')
-            buildConfigField('String', 'ADS_APP_ID', 'null')
-
-            resValue('string', 'ad_unit_id_interstitial', 'null')
-            buildConfigField('String', 'AD_UNIT_ID_INTERSTITIAL', 'null')
-
-            resValue('string', 'ad_unit_id_rewarded', 'null')
-            buildConfigField('String', 'AD_UNIT_ID_REWARDED', 'null')
-
-            resValue('integer', 'com_vk_sdk_AppId', 'null')
-            buildConfigField('int', 'VK_SDK_APP_ID', 'null')
-
-            resValue('string', 'firebase_db_url', 'null')
-            buildConfigField('String', 'FIREBASE_DB_URL', 'null')
+            throw new GradleException("You need to have apiKeys.properties file in root of project with " +
+                    "yandexMetricaApiKey," +
+                    "adMobAppId," +
+                    "adsBannerIdInterstitial," +
+                    "adsBannerIdRewarded," +
+                    "vkSdkAppId," +
+                    "firebaseUri," +
+                    "vpsApiAddress" +
+                    " variables to build project")
         }
 
         // Enabling multidex support.

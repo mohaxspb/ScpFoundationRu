@@ -39,7 +39,7 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
         implements BaseActivityMvp.Presenter<V> {
 
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    //TODO think if we realy need to check user here or we can use one that we get from authInFirebase callback result
+    //TODO think if we really need to check user here or we can use one that we get from authInFirebase callback result
     private FirebaseAuth.AuthStateListener mAuthListener = mAuth -> {
         FirebaseUser firebaseUser = mAuth.getCurrentUser();
         if (firebaseUser != null) {
