@@ -94,7 +94,7 @@ public class ImagesPagerAdapter extends PagerAdapter {
         Glide.clear(imageView);
         Glide.with(context)
                 .load(url)
-                .centerCrop()
+                .fitCenter()
                 .thumbnail(.1f)
                 .listener(new RequestListener<String, GlideDrawable>() {
                     @Override
