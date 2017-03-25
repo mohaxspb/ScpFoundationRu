@@ -1109,4 +1109,30 @@ public class ApiClient {
         }
         return nameAvatarObservable;
     }
+
+    /**
+     * @param user local DB {@link User} object to write to firebase DB
+     */
+    public Observable<User> writeUserToFirebaseObservable(User user) {
+        return Observable.create(subscriber -> {
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (firebaseUser != null) {
+                FirebaseDatabase.getInstance()
+                        .getReference(Constants.Firebase.Refs.USERS)
+                        .child(firebaseUser.getUid())
+                        .setValue(user, (databaseError, databaseReference) -> {
+                            if (databaseError == null) {
+                                //success
+                                Timber.d("user created");
+                                subscriber.onNext(user);
+                                subscriber.onCompleted();
+                            } else {
+                                subscriber.onError(databaseError.toException());
+                            }
+                        });
+            } else {
+                subscriber.onError(new IllegalStateException("firebase user is null"));
+            }
+        });
+    }
 }

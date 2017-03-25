@@ -4,7 +4,6 @@ import android.text.TextUtils;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.FirebaseDatabase;
 
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
@@ -14,7 +13,6 @@ import ru.dante.scpfoundation.api.error.ScpLoginException;
 import ru.dante.scpfoundation.db.DbProviderFactory;
 import ru.dante.scpfoundation.db.model.User;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
-import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import timber.log.Timber;
 
@@ -70,7 +68,7 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
                                 }
                                 userToWriteToDb.email = firebaseUser.getEmail();
                                 userToWriteToDb.network = Constants.Firebase.SocialProvider.VK;
-                                writeUserToFirebase(userToWriteToDb).subscribe(
+                                mApiClient.writeUserToFirebaseObservable(userToWriteToDb).subscribe(
                                         user -> {
                                             Timber.d("user write to firebase success");
                                             getView().showMessage(MyApplication.getAppInstance()
@@ -194,30 +192,6 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
                 result -> Timber.d("logout successful"),
                 error -> Timber.e(error, "error while logout user")
         );
-    }
-
-    @Override
-    public Observable<User> writeUserToFirebase(User user) {
-        return Observable.create(subscriber -> {
-            FirebaseUser firebaseUser = mAuth.getCurrentUser();
-            if (firebaseUser != null) {
-                FirebaseDatabase.getInstance()
-                        .getReference(Constants.Firebase.Refs.USERS)
-                        .child(firebaseUser.getUid())
-                        .setValue(user, (databaseError, databaseReference) -> {
-                            if (databaseError == null) {
-                                //success
-                                Timber.d("user created");
-                                subscriber.onNext(user);
-                                subscriber.onCompleted();
-                            } else {
-                                subscriber.onError(databaseError.toException());
-                            }
-                        });
-            } else {
-                subscriber.onError(new IllegalStateException("firebase user is null"));
-            }
-        });
     }
 
     @Override

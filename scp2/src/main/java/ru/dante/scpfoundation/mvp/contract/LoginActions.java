@@ -23,7 +23,5 @@ public interface LoginActions {
         void startFirebaseLogin(@Constants.Firebase.SocialProvider String provider);
 
         void logoutUser();
-
-        Observable<User> writeUserToFirebase(User user);
     }
 }
