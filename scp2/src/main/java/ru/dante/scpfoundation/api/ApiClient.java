@@ -61,8 +61,6 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-import static ru.dante.scpfoundation.Constants.Firebase.SocialProvider.VK;
-
 /**
  * Created by y.kuchanov on 22.12.16.
  * <p>
@@ -972,9 +970,7 @@ public class ApiClient {
     }
 
     //todo use it via retrofit and update server to return JSON with request result
-    public Observable<FirebaseUser> getAuthInFirebaseWithSocialProviderObservable(
-            @Constants.Firebase.SocialProvider String provider
-    ) {
+    public Observable<FirebaseUser> getAuthInFirebaseWithSocialProviderObservable(Constants.Firebase.SocialProvider provider) {
         Observable<FirebaseUser> authToFirebaseObservable;
         switch (provider) {
             case VK:
@@ -1094,7 +1090,7 @@ public class ApiClient {
         });
     }
 
-    public Observable<Pair<String, String>> nameAndAvatarFromProviderObservable(@Constants.Firebase.SocialProvider String provider) {
+    public Observable<Pair<String, String>> nameAndAvatarFromProviderObservable(Constants.Firebase.SocialProvider provider) {
         Observable<Pair<String, String>> nameAvatarObservable;
         switch (provider) {
             case VK:

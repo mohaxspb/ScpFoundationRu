@@ -126,7 +126,7 @@ public class SiteSearchArticlesPresenter
             public void onError(Throwable e) {
                 Timber.e(e);
                 if (e instanceof ScpNoArticleForIdError) {
-                    //we o not have this article in DB, so download it
+                    //we do not have this article in DB, so download it
                     toggleOfflineState(e.getMessage());
                     getView().showError(new Throwable(MyApplication.getAppInstance().getString(R.string.start_download)));
                 }

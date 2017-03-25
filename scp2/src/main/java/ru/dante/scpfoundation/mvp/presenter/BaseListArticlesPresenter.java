@@ -12,6 +12,7 @@ import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.mvp.base.BaseArticlesListMvp;
 import ru.dante.scpfoundation.mvp.base.BasePresenter;
 import rx.Observable;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
@@ -125,14 +126,7 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
         Timber.d("toggleFavoriteState: %s", url);
         mDbProviderFactory.getDbProvider().toggleFavorite(url)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        stringLongPair -> {
-                            Timber.d("favs state now is: %s", stringLongPair.second);
-                            //TODO test
-                            syncFavorite(stringLongPair.first, stringLongPair.second != Article.ORDER_NONE);
-                        },
-                        e -> Timber.e(e, "error toggle favs state...")
-                );
+                .subscribe(getToggleFavoriteSubscriber());
     }
 
     @Override
@@ -140,10 +134,7 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
         Timber.d("toggleReadenState: %s", url);
         mDbProviderFactory.getDbProvider().toggleReaden(url)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        stringBooleanPair -> Timber.d("read state now is: %s", stringBooleanPair.second),
-                        e -> Timber.e(e, "error toggle readen state...")
-                );
+                .subscribe(getToggleReadenSubscriber());
     }
 
     //TODO think if we need to manage state of loading during confChanges
@@ -155,20 +146,11 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .flatMap(apiData -> mDbProviderFactory.getDbProvider().saveArticle(apiData))
-                    .subscribe(
-                            article1 -> Timber.d("toggleOfflineState article: %s", article.url),
-                            e -> {
-                                Timber.e(e, "error download article");
-                                getView().showError(e);
-                            }
-                    );
+                    .subscribe(getDownloadArticleSubscriber());
         } else {
             mDbProviderFactory.getDbProvider().deleteArticlesText(article.url)
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            s -> Timber.d("articles text deleted"),
-                            e -> Timber.e(e, "error delete articles text...")
-                    );
+                    .subscribe(getDeleteArticlesTextSubscriber());
         }
     }
 
@@ -178,5 +160,88 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
         Article article = new Article();
         article.url = url;
         toggleOfflineState(article);
+    }
+
+    @Override
+    public Subscriber<Pair<String, Long>> getToggleFavoriteSubscriber() {
+        return new Subscriber<Pair<String, Long>>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Timber.e(e, "error toggle favs state...");
+            }
+
+            @Override
+            public void onNext(Pair<String, Long> stringBooleanPair) {
+                Timber.d("favs state now is: %s", stringBooleanPair.second);
+                //TODO test
+                syncFavorite(stringBooleanPair.first, stringBooleanPair.second != Article.ORDER_NONE);
+            }
+        };
+    }
+
+    @Override
+    public Subscriber<Pair<String, Boolean>> getToggleReadenSubscriber() {
+        return new Subscriber<Pair<String, Boolean>>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Timber.e(e, "error toggle readen state...");
+            }
+
+            @Override
+            public void onNext(Pair<String, Boolean> stringBooleanPair) {
+                Timber.d("read state now is: %s", stringBooleanPair.second);
+            }
+        };
+    }
+
+    @Override
+    public Subscriber<String> getDeleteArticlesTextSubscriber() {
+        return new Subscriber<String>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Timber.e(e, "error delete text...");
+            }
+
+            @Override
+            public void onNext(String stringBooleanPair) {
+                Timber.d("deleted");
+            }
+        };
+    }
+
+    @Override
+    public Subscriber<Article> getDownloadArticleSubscriber() {
+        return new Subscriber<Article>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Timber.e(e, "error download article");
+                getView().showError(e);
+            }
+
+            @Override
+            public void onNext(Article article) {
+                Timber.d("toggleOfflineState article: %s", article.url);
+            }
+        };
     }
 }

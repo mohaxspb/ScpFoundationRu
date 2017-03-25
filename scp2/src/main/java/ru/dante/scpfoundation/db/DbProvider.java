@@ -489,10 +489,16 @@ public class DbProvider {
     }
 
     public Observable<Void> logout() {
-        //TODO run loop through enum with providers
-
-        VKSdk.logout();
-        //TODO add other networks
+        //run loop through enum with providers and logout from each of them
+        for (Constants.Firebase.SocialProvider provider : Constants.Firebase.SocialProvider.values()) {
+            switch (provider) {
+                case VK:
+                    VKSdk.logout();
+                    break;
+                default:
+                    throw new IllegalArgumentException("unexpected provider");
+            }
+        }
         FirebaseAuth.getInstance().signOut();
         return deleteUser();
     }

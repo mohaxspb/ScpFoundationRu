@@ -144,9 +144,9 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
     }
 
     @Override
-    public void startLogin(@Constants.Firebase.SocialProvider String provider) {
+    public void startLogin(Constants.Firebase.SocialProvider provider) {
         switch (provider) {
-            case Constants.Firebase.SocialProvider.VK:
+            case VK:
                 VKSdk.login(this, VKScope.EMAIL, VKScope.GROUPS);
                 break;
             default:

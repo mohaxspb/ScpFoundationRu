@@ -2,8 +2,13 @@ package ru.dante.scpfoundation.db.model;
 
 import org.parceler.Parcel;
 
+import java.util.List;
+
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.UserRealmProxy;
+import io.realm.annotations.Ignore;
+import ru.dante.scpfoundation.Constants;
 
 /**
  * Created by mohax on 03.01.2017.
@@ -20,20 +25,10 @@ public class User extends RealmObject {
 
     public String email;
 
-//    @NetworkType
-    public String network;
+    @Ignore
+    public List<Constants.Firebase.SocialProvider> socialNetworks;
 
-//    @Retention(RetentionPolicy.SOURCE)
-//    @StringDef({
-//            NetworkType.VK,
-//            NetworkType.FACEBOOK,
-//            NetworkType.GOOGLE
-//    })
-//    public @interface NetworkType {
-//        String VK = "vk";
-//        String FACEBOOK = "facebook";
-//        String GOOGLE = "google";
-//    }
+    public RealmList<RealmString> socialNetworksRealmList;
 
     @Override
     public String toString() {
@@ -42,7 +37,8 @@ public class User extends RealmObject {
                 ", fullName='" + fullName + '\'' +
                 ", avatar='" + avatar + '\'' +
                 ", email='" + email + '\'' +
-                ", network='" + network + '\'' +
+                ", socialNetworks='" + socialNetworks + '\'' +
+                ", socialNetworksRealmList='" + socialNetworksRealmList + '\'' +
                 '}';
     }
 }

@@ -5,12 +5,16 @@ import android.text.TextUtils;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.ArrayList;
+
+import io.realm.RealmList;
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.api.ApiClient;
 import ru.dante.scpfoundation.api.error.ScpLoginException;
 import ru.dante.scpfoundation.db.DbProviderFactory;
+import ru.dante.scpfoundation.db.model.RealmString;
 import ru.dante.scpfoundation.db.model.User;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import rx.android.schedulers.AndroidSchedulers;
@@ -67,7 +71,11 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
                                     userToWriteToDb.avatar = firebaseUser.getPhotoUrl().toString();
                                 }
                                 userToWriteToDb.email = firebaseUser.getEmail();
-                                userToWriteToDb.network = Constants.Firebase.SocialProvider.VK;
+//                                userToWriteToDb.network = Constants.Firebase.SocialProvider.VK;
+                                userToWriteToDb.socialNetworks = new ArrayList<>();
+                                userToWriteToDb.socialNetworks.add(Constants.Firebase.SocialProvider.VK);
+                                userToWriteToDb.socialNetworksRealmList = new RealmList<>();
+                                userToWriteToDb.socialNetworksRealmList.add(new RealmString(Constants.Firebase.SocialProvider.VK.name()));
                                 mApiClient.writeUserToFirebaseObservable(userToWriteToDb).subscribe(
                                         user -> {
                                             Timber.d("user write to firebase success");
@@ -169,7 +177,7 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
      * @param provider login provider to usse to login to firebase
      */
     @Override
-    public void startFirebaseLogin(@Constants.Firebase.SocialProvider String provider) {
+    public void startFirebaseLogin(Constants.Firebase.SocialProvider provider) {
         getView().showProgressDialog(R.string.login_in_progress_custom_token);
         mApiClient.getAuthInFirebaseWithSocialProviderObservable(provider).subscribe(
                 //now onAuthStateChanggedListener will be called
