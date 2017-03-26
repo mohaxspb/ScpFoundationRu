@@ -1,5 +1,7 @@
 package ru.dante.scpfoundation.mvp.contract;
 
+import ru.dante.scpfoundation.db.model.Article;
+
 /**
  * Created by mohax on 24.03.2017.
  * <p>
@@ -7,5 +9,5 @@ package ru.dante.scpfoundation.mvp.contract;
  */
 public interface DataSyncActions {
 
-    void syncFavorite(String url, boolean isFavorite);
+    void syncFavorite(Article article);
 }

@@ -9,9 +9,12 @@ import ru.dante.scpfoundation.db.model.Article;
  */
 interface BaseArticleActions {
 
-    void toggleFavoriteState(String url);
+//    void toggleFavoriteState(String url);
+//
+//    void toggleReadenState(String url);
+    void toggleFavoriteState(Article article);
 
-    void toggleReadenState(String url);
+    void toggleReadenState(Article article);
 
     /**
      *  we need article as arg, as we should determine if we

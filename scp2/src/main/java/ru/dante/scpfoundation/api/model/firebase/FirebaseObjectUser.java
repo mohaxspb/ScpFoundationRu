@@ -1,4 +1,4 @@
-package ru.dante.scpfoundation.api.model;
+package ru.dante.scpfoundation.api.model.firebase;
 
 import java.util.List;
 

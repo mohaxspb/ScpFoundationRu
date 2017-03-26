@@ -18,9 +18,9 @@ public interface BaseArticlesListMvp {
     interface Presenter<V extends View> extends BaseListMvp.Presenter<V>, BaseArticleActions {
         //we need it as we have search fragment in which we do not save gained from api articles to DB
         //and so need to manually update adapter with changed by these actions data
-        Subscriber<Pair<String, Long>> getToggleFavoriteSubscriber();
+        Subscriber<Article> getToggleFavoriteSubscriber();
 
-        Subscriber<Pair<String, Boolean>> getToggleReadenSubscriber();
+        Subscriber<Article> getToggleReadenSubscriber();
 
         Subscriber<String> getDeleteArticlesTextSubscriber();
 

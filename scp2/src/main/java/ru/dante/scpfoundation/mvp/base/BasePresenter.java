@@ -9,7 +9,9 @@ import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.api.ApiClient;
+import ru.dante.scpfoundation.api.model.firebase.ArticleInFirebase;
 import ru.dante.scpfoundation.db.DbProviderFactory;
+import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.db.model.User;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.mvp.contract.LoginActions;
@@ -62,16 +64,21 @@ public abstract class BasePresenter<V extends BaseMvp.View>
     }
 
     @Override
-    public void syncFavorite(String url, boolean isFavorite) {
-        Timber.d("syncFavorite: %s, %s", url, isFavorite);
-        url = url.replace(BuildConfig.BASE_API_URL, "");
+    public void syncFavorite(Article article) {
+        Timber.d("syncFavorite: %s, %s", article.url, article.isInFavorite != Article.ORDER_NONE);
+        String url = article.url.replace(BuildConfig.BASE_API_URL, "");
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference reference = database.getReference()
                 .child(Constants.Firebase.Refs.USERS)
                 .child(mUser.uid)
-                .child(Constants.Firebase.Refs.FAVORITES)
+                .child(Constants.Firebase.Refs.ARTICLES)
                 .child(url);
-        reference.setValue(isFavorite, (databaseError, databaseReference) -> {
+        ArticleInFirebase articleInFirebase = new ArticleInFirebase(
+                article.isInFavorite != Article.ORDER_NONE,
+                article.isInReaden,
+                article.title
+        );
+        reference.setValue(articleInFirebase, (databaseError, databaseReference) -> {
             if (databaseError == null) {
                 Timber.d("sync fav onComplete: %s", MyApplication.getAppInstance().getString(R.string.sync_fav_success));
                 getView().showMessage(R.string.sync_fav_success);

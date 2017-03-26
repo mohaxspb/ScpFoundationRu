@@ -39,6 +39,7 @@ public interface Constants {
         interface Refs{
             String USERS = "users";
             String FAVORITES = "favorites";
+            String ARTICLES = "articles";
         }
 
         int REQUEST_INVITE = 1024;

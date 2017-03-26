@@ -355,7 +355,7 @@ public class DbProvider {
                 }));
     }
 
-    public Observable<Pair<String, Long>> toggleFavorite(String url) {
+    public Observable<Article> toggleFavorite(String url) {
         return Observable.create(subscriber -> mRealm.executeTransactionAsync(
                 realm -> {
                     //check if we have app in db and update
@@ -371,7 +371,7 @@ public class DbProvider {
                             applicationInDb.isInFavorite = Article.ORDER_NONE;
                         }
 
-                        subscriber.onNext(new Pair<>(url, applicationInDb.isInFavorite));
+                        subscriber.onNext(realm.copyFromRealm(applicationInDb));
                         subscriber.onCompleted();
                     } else {
                         Timber.e("No article to add to favorites for ID: %s", url);
@@ -393,7 +393,7 @@ public class DbProvider {
      * @return observable, that emits resulted readen state
      * or error if no artcile found
      */
-    public Observable<Pair<String, Boolean>> toggleReaden(String url) {
+    public Observable<Article> toggleReaden(String url) {
         return Observable.create(subscriber -> mRealm.executeTransactionAsync(
                 realm -> {
                     //check if we have app in db and update
@@ -402,7 +402,7 @@ public class DbProvider {
                             .findFirst();
                     if (applicationInDb != null) {
                         applicationInDb.isInReaden = !applicationInDb.isInReaden;
-                        subscriber.onNext(new Pair<>(url, applicationInDb.isInReaden));
+                        subscriber.onNext(realm.copyFromRealm(applicationInDb));
                         subscriber.onCompleted();
                     } else {
                         Timber.e("No article to add to favorites for ID: %s", url);

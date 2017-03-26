@@ -64,12 +64,12 @@ public abstract class BaseListArticlesWithSearchFragment
 
             @Override
             public void toggleReadenState(Article article) {
-                mPresenter.toggleReadenState(article.url);
+                mPresenter.toggleReadenState(article);
             }
 
             @Override
             public void toggleFavoriteState(Article article) {
-                mPresenter.toggleFavoriteState(article.url);
+                mPresenter.toggleFavoriteState(article);
             }
 
             @Override

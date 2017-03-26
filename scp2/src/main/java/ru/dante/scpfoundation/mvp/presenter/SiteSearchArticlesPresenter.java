@@ -85,8 +85,8 @@ public class SiteSearchArticlesPresenter
     }
 
     @Override
-    public Subscriber<Pair<String, Long>> getToggleFavoriteSubscriber() {
-        return new Subscriber<Pair<String, Long>>() {
+    public Subscriber<Article> getToggleFavoriteSubscriber() {
+        return new Subscriber<Article>() {
             @Override
             public void onCompleted() {
 
@@ -103,11 +103,11 @@ public class SiteSearchArticlesPresenter
             }
 
             @Override
-            public void onNext(Pair<String, Long> stringBooleanPair) {
+            public void onNext(Article result) {
                 Article article = new Article();
-                article.url = stringBooleanPair.first;
+                article.url = result.url;
                 if (mSearchData.contains(article)) {
-                    mSearchData.get(mSearchData.indexOf(article)).isInFavorite = stringBooleanPair.second;
+                    mSearchData.get(mSearchData.indexOf(article)).isInFavorite = result.isInFavorite;
                     getView().updateData(mSearchData);
                 }
             }
@@ -115,8 +115,8 @@ public class SiteSearchArticlesPresenter
     }
 
     @Override
-    public Subscriber<Pair<String, Boolean>> getToggleReadenSubscriber() {
-        return new Subscriber<Pair<String, Boolean>>() {
+    public Subscriber<Article> getToggleReadenSubscriber() {
+        return new Subscriber<Article>() {
             @Override
             public void onCompleted() {
 
@@ -133,11 +133,11 @@ public class SiteSearchArticlesPresenter
             }
 
             @Override
-            public void onNext(Pair<String, Boolean> stringBooleanPair) {
+            public void onNext(Article stringBooleanPair) {
                 Article article = new Article();
-                article.url = stringBooleanPair.first;
+                article.url = stringBooleanPair.url;
                 if (mSearchData.contains(article)) {
-                    mSearchData.get(mSearchData.indexOf(article)).isInReaden = stringBooleanPair.second;
+                    mSearchData.get(mSearchData.indexOf(article)).isInReaden = stringBooleanPair.isInReaden;
                     getView().updateData(mSearchData);
                 }
             }

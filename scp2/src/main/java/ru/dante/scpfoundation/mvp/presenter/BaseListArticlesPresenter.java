@@ -120,19 +120,35 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
                             }
                         });
     }
+//
+//    @Override
+//    public void toggleFavoriteState(String url) {
+//        Timber.d("toggleFavoriteState: %s", url);
+//        mDbProviderFactory.getDbProvider().toggleFavorite(url)
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(getToggleFavoriteSubscriber());
+//    }
+//
+//    @Override
+//    public void toggleReadenState(String url) {
+//        Timber.d("toggleReadenState: %s", url);
+//        mDbProviderFactory.getDbProvider().toggleReaden(url)
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(getToggleReadenSubscriber());
+//    }
 
     @Override
-    public void toggleFavoriteState(String url) {
-        Timber.d("toggleFavoriteState: %s", url);
-        mDbProviderFactory.getDbProvider().toggleFavorite(url)
+    public void toggleFavoriteState(Article article) {
+        Timber.d("toggleFavoriteState: %s", article);
+        mDbProviderFactory.getDbProvider().toggleFavorite(article.url)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(getToggleFavoriteSubscriber());
     }
 
     @Override
-    public void toggleReadenState(String url) {
-        Timber.d("toggleReadenState: %s", url);
-        mDbProviderFactory.getDbProvider().toggleReaden(url)
+    public void toggleReadenState(Article article) {
+        Timber.d("toggleReadenState: %s", article);
+        mDbProviderFactory.getDbProvider().toggleReaden(article.url)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(getToggleReadenSubscriber());
     }
@@ -163,8 +179,8 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
     }
 
     @Override
-    public Subscriber<Pair<String, Long>> getToggleFavoriteSubscriber() {
-        return new Subscriber<Pair<String, Long>>() {
+    public Subscriber<Article> getToggleFavoriteSubscriber() {
+        return new Subscriber<Article>() {
             @Override
             public void onCompleted() {
 
@@ -176,17 +192,17 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
             }
 
             @Override
-            public void onNext(Pair<String, Long> stringBooleanPair) {
-                Timber.d("favs state now is: %s", stringBooleanPair.second);
+            public void onNext(Article article) {
+                Timber.d("favs state now is: %s", article.isInFavorite != Article.ORDER_NONE);
                 //TODO test
-                syncFavorite(stringBooleanPair.first, stringBooleanPair.second != Article.ORDER_NONE);
+                syncFavorite(article);
             }
         };
     }
 
     @Override
-    public Subscriber<Pair<String, Boolean>> getToggleReadenSubscriber() {
-        return new Subscriber<Pair<String, Boolean>>() {
+    public Subscriber<Article> getToggleReadenSubscriber() {
+        return new Subscriber<Article>() {
             @Override
             public void onCompleted() {
 
@@ -198,8 +214,8 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
             }
 
             @Override
-            public void onNext(Pair<String, Boolean> stringBooleanPair) {
-                Timber.d("read state now is: %s", stringBooleanPair.second);
+            public void onNext(Article article) {
+                Timber.d("read state now is: %s", article.isInFavorite != Article.ORDER_NONE);
             }
         };
     }
