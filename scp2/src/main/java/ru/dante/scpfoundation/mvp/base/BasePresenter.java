@@ -1,12 +1,10 @@
 package ru.dante.scpfoundation.mvp.base;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.hannesdorfmann.mosby.mvp.MvpNullObjectBasePresenter;
 
+import ru.dante.scpfoundation.BuildConfig;
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
@@ -50,8 +48,8 @@ public abstract class BasePresenter<V extends BaseMvp.View>
         mDbProviderFactory.getDbProvider().getUserAsync().subscribe(
                 user -> {
                     mUser = user;
-                    if(getView() instanceof LoginActions.View) {
-                        ((LoginActions.View)getView()).updateUser(mUser);
+                    if (getView() instanceof LoginActions.View) {
+                        ((LoginActions.View) getView()).updateUser(mUser);
                     }
                 },
                 error -> Timber.e(error, "error while get user from DB")
@@ -65,6 +63,8 @@ public abstract class BasePresenter<V extends BaseMvp.View>
 
     @Override
     public void syncFavorite(String url, boolean isFavorite) {
+        Timber.d("syncFavorite: %s, %s", url, isFavorite);
+        url = url.replace(BuildConfig.BASE_API_URL, "");
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference reference = database.getReference()
                 .child(Constants.Firebase.Refs.USERS)
@@ -73,25 +73,11 @@ public abstract class BasePresenter<V extends BaseMvp.View>
                 .child(url);
         reference.setValue(isFavorite, (databaseError, databaseReference) -> {
             if (databaseError == null) {
+                Timber.d("sync fav onComplete: %s", MyApplication.getAppInstance().getString(R.string.sync_fav_success));
                 getView().showMessage(R.string.sync_fav_success);
             } else {
-                getView().showError(new Throwable(MyApplication.getAppInstance().getString(R.string.error_while_sync_fav)));
-            }
-        });
-        reference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Timber.d("onDataChange exists: %s", dataSnapshot.exists());
-                //TODO think if we realy need to get data before updating it
-                if (dataSnapshot.exists()) {
-
-                } else {
-
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                Timber.e(databaseError.toException());
+                Timber.d("sync fav onCompleteL %s", MyApplication.getAppInstance().getString(R.string.error_while_sync_fav));
                 getView().showError(new Throwable(MyApplication.getAppInstance().getString(R.string.error_while_sync_fav)));
             }
         });

@@ -1,6 +1,5 @@
 package ru.dante.scpfoundation.mvp.base;
 
-import ru.dante.scpfoundation.mvp.contract.DataSyncActions;
 import ru.dante.scpfoundation.mvp.contract.LoginActions;
 
 /**

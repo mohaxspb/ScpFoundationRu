@@ -195,7 +195,7 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
                 long numOfMillis = FirebaseRemoteConfig.getInstance()
                         .getLong(Constants.Firebase.RemoteConfigKeys.REWARDED_VIDEO_COOLDOWN_IN_MILLIS);
                 long hours = numOfMillis / 1000 / 60 / 60;
-                Snackbar.make(mRoot, getString(R.string.ads_reward_gained, hours), Snackbar.LENGTH_LONG).show();
+                showMessage(getString(R.string.ads_reward_gained, hours));
 
                 Bundle bundle = new Bundle();
                 bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.EventType.REWARD_GAINED);
@@ -232,7 +232,7 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
         if (Appodeal.isLoaded(Appodeal.NON_SKIPPABLE_VIDEO)) {
             Appodeal.show(this, Appodeal.NON_SKIPPABLE_VIDEO);
         } else {
-            Snackbar.make(mRoot, R.string.reward_not_loaded_yet, Snackbar.LENGTH_SHORT).show();
+            showMessage(R.string.reward_not_loaded_yet);
         }
     }
 
@@ -421,12 +421,12 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
 
     @Override
     public void showError(Throwable throwable) {
-        Snackbar.make(mRoot, throwable.getMessage(), Snackbar.LENGTH_SHORT);
+        Snackbar.make(mRoot, throwable.getMessage(), Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
     public void showMessage(String message) {
-        Snackbar.make(mRoot, message, Snackbar.LENGTH_SHORT);
+        Snackbar.make(mRoot, message, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
