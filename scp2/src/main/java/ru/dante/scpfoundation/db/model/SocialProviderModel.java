@@ -1,6 +1,9 @@
 package ru.dante.scpfoundation.db.model;
 
+import com.vk.sdk.VKAccessToken;
+
 import io.realm.RealmObject;
+import ru.dante.scpfoundation.Constants;
 
 /**
  * Created by mohax on 25.03.2017.
@@ -19,6 +22,15 @@ public class SocialProviderModel extends RealmObject {
     }
 
     public SocialProviderModel() {
+    }
+
+    public static SocialProviderModel getSocialProviderModelForProvider(Constants.Firebase.SocialProvider provider){
+        switch (provider){
+            case VK:
+                return new SocialProviderModel(provider.name(), VKAccessToken.currentToken().userId);
+            default:
+                throw new IllegalArgumentException("unexpected provider");
+        }
     }
 
     @Override

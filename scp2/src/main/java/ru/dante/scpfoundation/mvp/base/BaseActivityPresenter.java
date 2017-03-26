@@ -4,17 +4,17 @@ import android.text.TextUtils;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.vk.sdk.VKAccessToken;
 
-import io.realm.RealmList;
+import java.util.ArrayList;
+
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.api.ApiClient;
 import ru.dante.scpfoundation.api.error.ScpLoginException;
+import ru.dante.scpfoundation.api.model.firebase.FirebaseObjectUser;
 import ru.dante.scpfoundation.db.DbProviderFactory;
 import ru.dante.scpfoundation.db.model.SocialProviderModel;
-import ru.dante.scpfoundation.db.model.User;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -83,6 +83,7 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
                 .flatMap(firebaseUser -> mApiClient.getUserObjectFromFirebaseObservable())
                 .flatMap(userObjectInFirebase -> {
                     if (userObjectInFirebase == null) {
+                        Timber.d("there is no User object in firebase database, so create new one");
                         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
                         if (firebaseUser == null) {
                             return Observable.error(new ScpLoginException(
@@ -90,24 +91,25 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
                                             .getString(R.string.error_login_firebase_connection,
                                                     "firebase user is null")));
                         }
-                        User userToWriteToDb = new User();
+                        FirebaseObjectUser userToWriteToDb = new FirebaseObjectUser();
                         userToWriteToDb.uid = firebaseUser.getUid();
                         userToWriteToDb.fullName = firebaseUser.getDisplayName();
                         if (firebaseUser.getPhotoUrl() != null) {
                             userToWriteToDb.avatar = firebaseUser.getPhotoUrl().toString();
                         }
                         userToWriteToDb.email = firebaseUser.getEmail();
-                        userToWriteToDb.socialProviders = new RealmList<>();
-                        userToWriteToDb.socialProviders.add(new SocialProviderModel(
-                                Constants.Firebase.SocialProvider.VK.name(),
-                                VKAccessToken.currentToken().userId)
-                        );
+                        userToWriteToDb.socialProviders = new ArrayList<>();
+                         userToWriteToDb.socialProviders.add( SocialProviderModel.getSocialProviderModelForProvider(provider));
+                       //userToWriteToDb.socialProviders.put(provider.name(), SocialProviderModel.getSocialProviderModelForProvider(provider));
                         return mApiClient.writeUserToFirebaseObservable(userToWriteToDb);
                     } else {
                         return Observable.just(userObjectInFirebase);
                     }
                 })
-                .flatMap(userObjectInFirebase -> mDbProviderFactory.getDbProvider().saveUser(userObjectInFirebase))
+                //save user articles to realm
+                .flatMap(userObjectInFirebase -> mDbProviderFactory.getDbProvider().saveArticlesFromFirebase(userObjectInFirebase))
+                //save user to realm
+                .flatMap(userObjectInFirebase -> mDbProviderFactory.getDbProvider().saveUser(userObjectInFirebase.toRealmUser()))
                 .subscribe(
                         userInRealm -> {
                             Timber.d("user saved");

@@ -9,6 +9,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
@@ -49,6 +50,7 @@ import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.api.error.ScpException;
 import ru.dante.scpfoundation.api.error.ScpNoSearchResultsException;
 import ru.dante.scpfoundation.api.error.ScpParseException;
+import ru.dante.scpfoundation.api.model.firebase.ArticleInFirebase;
 import ru.dante.scpfoundation.api.model.firebase.FirebaseObjectUser;
 import ru.dante.scpfoundation.api.model.response.VkGalleryResponse;
 import ru.dante.scpfoundation.api.model.response.VkGroupJoinResponse;
@@ -1010,7 +1012,7 @@ public class ApiClient {
         return authToFirebaseObservable;
     }
 
-    public Observable<User> getUserObjectFromFirebaseObservable() {
+    public Observable<FirebaseObjectUser> getUserObjectFromFirebaseObservable() {
         return Observable.create(subscriber -> {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             if (firebaseUser != null) {
@@ -1021,7 +1023,7 @@ public class ApiClient {
                         .addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                User userFromFireBase = dataSnapshot.getValue(FirebaseObjectUser.class).toRealmUser();
+                                FirebaseObjectUser userFromFireBase = dataSnapshot.getValue(FirebaseObjectUser.class);
                                 subscriber.onNext(userFromFireBase);
                                 subscriber.onCompleted();
                             }
@@ -1110,7 +1112,7 @@ public class ApiClient {
     /**
      * @param user local DB {@link User} object to write to firebase DB
      */
-    public Observable<User> writeUserToFirebaseObservable(User user) {
+    public Observable<FirebaseObjectUser> writeUserToFirebaseObservable(FirebaseObjectUser user) {
         return Observable.create(subscriber -> {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             if (firebaseUser != null) {
@@ -1130,6 +1132,39 @@ public class ApiClient {
             } else {
                 subscriber.onError(new IllegalStateException("firebase user is null"));
             }
+        });
+    }
+
+    public Observable<Article> writeArticleToFirebase(Article article) {
+        return Observable.create(subscriber -> {
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (firebaseUser == null) {
+                subscriber.onError(new IllegalArgumentException("firebase user is null"));
+                return;
+            }
+            String url = article.url.replace(BuildConfig.BASE_API_URL, "");
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference reference = database.getReference()
+                    .child(Constants.Firebase.Refs.USERS)
+                    .child(firebaseUser.getUid())
+                    .child(Constants.Firebase.Refs.ARTICLES)
+                    .child(url);
+            ArticleInFirebase articleInFirebase = new ArticleInFirebase(
+                    article.isInFavorite != Article.ORDER_NONE,
+                    article.isInReaden,
+                    article.title,
+                    article.url,
+                    System.currentTimeMillis()
+            );
+
+            reference.setValue(articleInFirebase, (databaseError, databaseReference) -> {
+                if (databaseError == null) {
+                    subscriber.onNext(article);
+                    subscriber.onCompleted();
+                } else {
+                    subscriber.onError(databaseError.toException());
+                }
+            });
         });
     }
 }

@@ -1,15 +1,10 @@
 package ru.dante.scpfoundation.mvp.base;
 
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.hannesdorfmann.mosby.mvp.MvpNullObjectBasePresenter;
 
-import ru.dante.scpfoundation.BuildConfig;
-import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.api.ApiClient;
-import ru.dante.scpfoundation.api.model.firebase.ArticleInFirebase;
 import ru.dante.scpfoundation.db.DbProviderFactory;
 import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.db.model.User;
@@ -65,30 +60,17 @@ public abstract class BasePresenter<V extends BaseMvp.View>
 
     @Override
     public void updateArticleInFirebase(Article article) {
-        Timber.d("updateArticleInFirebase: %s, %s", article.url, article.isInFavorite != Article.ORDER_NONE);
-        String url = article.url.replace(BuildConfig.BASE_API_URL, "");
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference reference = database.getReference()
-                .child(Constants.Firebase.Refs.USERS)
-                .child(mUser.uid)
-                .child(Constants.Firebase.Refs.ARTICLES)
-                .child(url);
-        ArticleInFirebase articleInFirebase = new ArticleInFirebase(
-                article.isInFavorite != Article.ORDER_NONE,
-                article.isInReaden,
-                article.title,
-                System.currentTimeMillis()
+        Timber.d("updateArticleInFirebase: %s", article.url);
+        mApiClient.writeArticleToFirebase(article)
+                .subscribe(
+                article1 -> {
+                    Timber.d("sync fav onComplete: %s", MyApplication.getAppInstance().getString(R.string.sync_fav_success));
+                    getView().showMessage(R.string.sync_fav_success);
+                },
+                e -> {
+                    Timber.e(e);
+                    getView().showError(new Throwable(MyApplication.getAppInstance().getString(R.string.error_while_sync_fav)));
+                }
         );
-
-        reference.setValue(articleInFirebase, (databaseError, databaseReference) -> {
-            if (databaseError == null) {
-                Timber.d("sync fav onComplete: %s", MyApplication.getAppInstance().getString(R.string.sync_fav_success));
-                getView().showMessage(R.string.sync_fav_success);
-            } else {
-                Timber.e(databaseError.toException());
-                Timber.d("sync fav onCompleteL %s", MyApplication.getAppInstance().getString(R.string.error_while_sync_fav));
-                getView().showError(new Throwable(MyApplication.getAppInstance().getString(R.string.error_while_sync_fav)));
-            }
-        });
     }
 }

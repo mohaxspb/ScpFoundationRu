@@ -5,12 +5,16 @@ import android.util.Pair;
 import com.google.firebase.auth.FirebaseAuth;
 import com.vk.sdk.VKSdk;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
 import ru.dante.scpfoundation.Constants;
+import ru.dante.scpfoundation.api.model.firebase.ArticleInFirebase;
+import ru.dante.scpfoundation.api.model.firebase.FirebaseObjectUser;
 import ru.dante.scpfoundation.db.error.ScpNoArticleForIdError;
 import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.db.model.User;
@@ -542,5 +546,51 @@ public class DbProvider {
                 .filter(RealmResults::isLoaded)
                 .filter(RealmResults::isValid)
                 .flatMap(realmResults -> Observable.just(mRealm.copyFromRealm(realmResults)));
+    }
+
+    public Observable<FirebaseObjectUser> saveArticlesFromFirebase(FirebaseObjectUser firebaseObjectUser) {
+        return Observable.create(subscriber -> mRealm.executeTransactionAsync(
+                realm -> {
+                    if (firebaseObjectUser.articles == null) {
+                        return;
+                    }
+                    List<ArticleInFirebase> inFirebaseList = new ArrayList<ArticleInFirebase>(firebaseObjectUser.articles.values());
+                    Collections.sort(inFirebaseList, (articleInFirebase, t1) ->
+                            articleInFirebase.updated < t1.updated ? -1 : articleInFirebase.updated > t1.updated ? 1 : 0);
+                    long counter = 0;
+                    for (ArticleInFirebase article : inFirebaseList) {
+                        Article realmArticle = realm.where(Article.class).equalTo(Article.FIELD_URL, article.url).findFirst();
+                        if (realmArticle == null) {
+                            realmArticle = new Article();
+                            realmArticle.url = article.url;
+                            realmArticle.title = article.title;
+                            if (article.isFavorite) {
+                                realmArticle.isInFavorite = counter;
+                                counter++;
+                            } else {
+                                realmArticle.isInFavorite = Article.ORDER_NONE;
+                            }
+                            realmArticle.isInReaden = article.isRead;
+                            realm.insert(realmArticle);
+                        } else {
+                            if (article.isFavorite) {
+                                realmArticle.isInFavorite = counter;
+                                counter++;
+                            } else {
+                                realmArticle.isInFavorite = Article.ORDER_NONE;
+                            }
+                            realmArticle.isInReaden = article.isRead;
+                        }
+                    }
+                },
+                () -> {
+                    subscriber.onNext(firebaseObjectUser);
+                    subscriber.onCompleted();
+                    mRealm.close();
+                },
+                error -> {
+                    subscriber.onError(error);
+                    mRealm.close();
+                }));
     }
 }

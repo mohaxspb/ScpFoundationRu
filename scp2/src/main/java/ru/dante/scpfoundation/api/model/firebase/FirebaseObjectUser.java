@@ -1,6 +1,7 @@
 package ru.dante.scpfoundation.api.model.firebase;
 
 import java.util.List;
+import java.util.Map;
 
 import io.realm.RealmList;
 import ru.dante.scpfoundation.db.model.SocialProviderModel;
@@ -25,6 +26,14 @@ public class FirebaseObjectUser {
 
     public List<SocialProviderModel> socialProviders;
 
+    public Map<String, ArticleInFirebase> articles;
+
+    public User toRealmUser() {
+        return new User(uid, fullName, avatar, email, new RealmList<SocialProviderModel>() {{
+            addAll(socialProviders);
+        }});
+    }
+
     @Override
     public String toString() {
         return "FirebaseObjectUser{" +
@@ -33,12 +42,7 @@ public class FirebaseObjectUser {
                 ", avatar='" + avatar + '\'' +
                 ", email='" + email + '\'' +
                 ", socialProviders=" + socialProviders +
+                ", articles=" + articles +
                 '}';
-    }
-
-    public User toRealmUser() {
-        return new User(uid, fullName, avatar, email, new RealmList<SocialProviderModel>() {{
-            addAll(socialProviders);
-        }});
     }
 }
