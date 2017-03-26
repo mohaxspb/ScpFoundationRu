@@ -24,7 +24,7 @@ import ru.dante.scpfoundation.db.util.RealmStringListParcelConverter;
 @Parcel(implementations = {ArticleRealmProxy.class}, value = Parcel.Serialization.BEAN, analyze = {Article.class})
 public class Article extends RealmObject {
 
-    //    public static final String FIELD_IS_IN_READEN = "isInReaden";
+    public static final String FIELD_IS_IN_READEN = "isInReaden";
     public static final String FIELD_IS_IN_RECENT = "isInRecent";
     public static final String FIELD_IS_IN_FAVORITE = "isInFavorite";
     public static final String FIELD_IS_IN_MOST_RATED = "isInMostRated";

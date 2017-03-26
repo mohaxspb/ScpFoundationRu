@@ -64,8 +64,8 @@ public abstract class BasePresenter<V extends BaseMvp.View>
     }
 
     @Override
-    public void syncFavorite(Article article) {
-        Timber.d("syncFavorite: %s, %s", article.url, article.isInFavorite != Article.ORDER_NONE);
+    public void updateArticleInFirebase(Article article) {
+        Timber.d("updateArticleInFirebase: %s, %s", article.url, article.isInFavorite != Article.ORDER_NONE);
         String url = article.url.replace(BuildConfig.BASE_API_URL, "");
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference reference = database.getReference()
@@ -76,8 +76,10 @@ public abstract class BasePresenter<V extends BaseMvp.View>
         ArticleInFirebase articleInFirebase = new ArticleInFirebase(
                 article.isInFavorite != Article.ORDER_NONE,
                 article.isInReaden,
-                article.title
+                article.title,
+                System.currentTimeMillis()
         );
+
         reference.setValue(articleInFirebase, (databaseError, databaseReference) -> {
             if (databaseError == null) {
                 Timber.d("sync fav onComplete: %s", MyApplication.getAppInstance().getString(R.string.sync_fav_success));

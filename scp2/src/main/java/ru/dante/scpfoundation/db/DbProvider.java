@@ -474,9 +474,23 @@ public class DbProvider {
                 }));
     }
 
-    public Observable<Void> deleteUser() {
+    public Observable<Void> deleteUserData() {
         return Observable.create(subscriber -> mRealm.executeTransactionAsync(
-                realm -> realm.delete(User.class),
+                realm -> {
+                    realm.delete(User.class);
+                    List<Article> favs = realm.where(Article.class)
+                            .notEqualTo(Article.FIELD_IS_IN_FAVORITE, Article.ORDER_NONE)
+                            .findAll();
+                    for (Article article : favs) {
+                        article.isInFavorite = Article.ORDER_NONE;
+                    }
+                    List<Article> read = realm.where(Article.class)
+                            .equalTo(Article.FIELD_IS_IN_READEN, true)
+                            .findAll();
+                    for (Article article : read) {
+                        article.isInReaden = false;
+                    }
+                },
                 () -> {
                     subscriber.onNext(null);
                     subscriber.onCompleted();
@@ -500,7 +514,7 @@ public class DbProvider {
             }
         }
         FirebaseAuth.getInstance().signOut();
-        return deleteUser();
+        return deleteUserData();
     }
 
     public Observable<Void> saveImages(List<VkImage> vkImages) {

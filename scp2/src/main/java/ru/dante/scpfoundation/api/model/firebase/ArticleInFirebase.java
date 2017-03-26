@@ -10,11 +10,13 @@ public class ArticleInFirebase {
     public boolean isFavorite;
     public boolean isRead;
     public String title;
+    public long updated;
 
-    public ArticleInFirebase(boolean isFavorite, boolean isRead, String title) {
+    public ArticleInFirebase(boolean isFavorite, boolean isRead, String title, long updated) {
         this.isFavorite = isFavorite;
         this.isRead = isRead;
         this.title = title;
+        this.updated = updated;
     }
 
     public ArticleInFirebase() {
@@ -26,6 +28,7 @@ public class ArticleInFirebase {
                 "isFavorite=" + isFavorite +
                 ", isRead=" + isRead +
                 ", title='" + title + '\'' +
+                ", updated=" + updated +
                 '}';
     }
 }
