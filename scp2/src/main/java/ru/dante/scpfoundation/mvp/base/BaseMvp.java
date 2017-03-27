@@ -36,5 +36,7 @@ public interface BaseMvp {
         void getUserFromDb();
 
         User getUser();
+
+        void onUserChanged(User user);
     }
 }

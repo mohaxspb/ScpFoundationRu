@@ -48,9 +48,15 @@ public abstract class BasePresenter<V extends BaseMvp.View>
                     if (getView() instanceof LoginActions.View) {
                         ((LoginActions.View) getView()).updateUser(mUser);
                     }
+                    onUserChanged(mUser);
                 },
                 error -> Timber.e(error, "error while get user from DB")
         );
+    }
+
+    @Override
+    public void onUserChanged(User user) {
+        //empty implemetation
     }
 
     @Override

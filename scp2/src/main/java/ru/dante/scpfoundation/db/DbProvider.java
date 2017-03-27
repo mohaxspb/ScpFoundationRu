@@ -5,7 +5,6 @@ import android.util.Pair;
 import com.google.firebase.auth.FirebaseAuth;
 import com.vk.sdk.VKSdk;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -14,7 +13,6 @@ import io.realm.RealmResults;
 import io.realm.Sort;
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.api.model.firebase.ArticleInFirebase;
-import ru.dante.scpfoundation.api.model.firebase.FirebaseObjectUser;
 import ru.dante.scpfoundation.db.error.ScpNoArticleForIdError;
 import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.db.model.User;
@@ -455,13 +453,16 @@ public class DbProvider {
                 }));
     }
 
+    /**
+     * @return Observable, that emits unmanaged user
+     */
     public Observable<User> getUserAsync() {
         return mRealm.where(User.class)
                 .findAllAsync()
                 .asObservable()
                 .filter(RealmResults::isLoaded)
                 .filter(RealmResults::isValid)
-                .flatMap(users -> Observable.just(users.isEmpty() ? null : users.first()));
+                .flatMap(users -> Observable.just(users.isEmpty() ? null : mRealm.copyFromRealm(users.first())));
     }
 
     public Observable<User> saveUser(User user) {
@@ -548,13 +549,9 @@ public class DbProvider {
                 .flatMap(realmResults -> Observable.just(mRealm.copyFromRealm(realmResults)));
     }
 
-    public Observable<FirebaseObjectUser> saveArticlesFromFirebase(FirebaseObjectUser firebaseObjectUser) {
+    public Observable<List<ArticleInFirebase>> saveArticlesFromFirebase(List<ArticleInFirebase> inFirebaseList) {
         return Observable.create(subscriber -> mRealm.executeTransactionAsync(
                 realm -> {
-                    if (firebaseObjectUser.articles == null) {
-                        return;
-                    }
-                    List<ArticleInFirebase> inFirebaseList = new ArrayList<ArticleInFirebase>(firebaseObjectUser.articles.values());
                     Collections.sort(inFirebaseList, (articleInFirebase, t1) ->
                             articleInFirebase.updated < t1.updated ? -1 : articleInFirebase.updated > t1.updated ? 1 : 0);
                     long counter = 0;
@@ -584,7 +581,7 @@ public class DbProvider {
                     }
                 },
                 () -> {
-                    subscriber.onNext(firebaseObjectUser);
+                    subscriber.onNext(inFirebaseList);
                     subscriber.onCompleted();
                     mRealm.close();
                 },

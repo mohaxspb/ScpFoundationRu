@@ -37,6 +37,7 @@ public class MyPreferenceManager {
         String DESIGN_FONT_PATH = "DESIGN_FONT_PATH";
         String PACKAGE_INSTALLED = "PACKAGE_INSTALLED";
         String VK_GROUP_JOINED = "VK_GROUP_JOINED";
+        String USER_UID = "USER_UID";
     }
 
     private SharedPreferences mPreferences;
@@ -204,6 +205,16 @@ public class MyPreferenceManager {
     public void applyAwardVkGroupJoined() {
         setLastTimeAdsShows((System.currentTimeMillis() +
                 FirebaseRemoteConfig.getInstance().getLong(Constants.Firebase.RemoteConfigKeys.FREE_VK_GROUPS_JOIN_REWARD)));
+    }
+
+    //user
+
+    public void setUserId(String uid) {
+        mPreferences.edit().putString(Keys.USER_UID, uid).apply();
+    }
+
+    public String getUserId() {
+        return mPreferences.getString(Keys.USER_UID, "");
     }
 
     //utils

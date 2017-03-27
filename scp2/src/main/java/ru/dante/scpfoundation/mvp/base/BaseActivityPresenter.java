@@ -4,14 +4,22 @@ import android.text.TextUtils;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.api.ApiClient;
 import ru.dante.scpfoundation.api.error.ScpLoginException;
+import ru.dante.scpfoundation.api.model.firebase.ArticleInFirebase;
 import ru.dante.scpfoundation.api.model.firebase.FirebaseObjectUser;
 import ru.dante.scpfoundation.db.DbProviderFactory;
 import ru.dante.scpfoundation.db.model.SocialProviderModel;
@@ -38,6 +46,33 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
         } else {
             // User is signed out
             Timber.d("onAuthStateChanged: signed_out");
+
+            listenToArticlesInFirebase(false);
+        }
+    };
+
+    private DatabaseReference mFirebaseArticlesRef;
+
+    private ValueEventListener articlesChangeListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            Timber.d("articles in user changed!");
+            GenericTypeIndicator<Map<String, ArticleInFirebase>> t = new GenericTypeIndicator<Map<String, ArticleInFirebase>>() {
+            };
+            Map<String, ArticleInFirebase> map = dataSnapshot.getValue(t);
+
+            if (map != null) {
+                mDbProviderFactory.getDbProvider().saveArticlesFromFirebase(new ArrayList<>(map.values()))
+                        .subscribe(
+                                result -> Timber.d("articles in realm updated!"),
+                                Timber::e
+                        );
+            }
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+            Timber.e(databaseError.toException());
         }
     };
 
@@ -99,20 +134,26 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
                         }
                         userToWriteToDb.email = firebaseUser.getEmail();
                         userToWriteToDb.socialProviders = new ArrayList<>();
-                         userToWriteToDb.socialProviders.add( SocialProviderModel.getSocialProviderModelForProvider(provider));
-                       //userToWriteToDb.socialProviders.put(provider.name(), SocialProviderModel.getSocialProviderModelForProvider(provider));
+                        userToWriteToDb.socialProviders.add(SocialProviderModel.getSocialProviderModelForProvider(provider));
+                        //userToWriteToDb.socialProviders.put(provider.name(), SocialProviderModel.getSocialProviderModelForProvider(provider));
                         return mApiClient.writeUserToFirebaseObservable(userToWriteToDb);
                     } else {
                         return Observable.just(userObjectInFirebase);
                     }
                 })
                 //save user articles to realm
-                .flatMap(userObjectInFirebase -> mDbProviderFactory.getDbProvider().saveArticlesFromFirebase(userObjectInFirebase))
+                .flatMap(userObjectInFirebase -> userObjectInFirebase.articles == null ?
+                        Observable.just(userObjectInFirebase) :
+                        mDbProviderFactory.getDbProvider()
+                                .saveArticlesFromFirebase(new ArrayList<>(userObjectInFirebase.articles.values()))
+                                .flatMap(articles -> Observable.just(userObjectInFirebase))
+                )
                 //save user to realm
                 .flatMap(userObjectInFirebase -> mDbProviderFactory.getDbProvider().saveUser(userObjectInFirebase.toRealmUser()))
                 .subscribe(
                         userInRealm -> {
                             Timber.d("user saved");
+                            mMyPreferencesManager.setUserId(userInRealm.uid);
                             getView().dismissProgressDialog();
                             getView().showMessage(MyApplication.getAppInstance()
                                     .getString(R.string.on_user_logined,
@@ -133,7 +174,10 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
     @Override
     public void logoutUser() {
         mDbProviderFactory.getDbProvider().logout().subscribe(
-                result -> Timber.d("logout successful"),
+                result -> {
+                    Timber.d("logout successful");
+                    mMyPreferencesManager.setUserId("");
+                },
                 error -> Timber.e(error, "error while logout user")
         );
     }
@@ -141,10 +185,40 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
     @Override
     public void onActivityStarted() {
         mAuth.addAuthStateListener(mAuthListener);
+
+        listenToArticlesInFirebase(true);
     }
 
     @Override
     public void onActivityStopped() {
         mAuth.removeAuthStateListener(mAuthListener);
+        listenToArticlesInFirebase(false);
+    }
+
+    private void listenToArticlesInFirebase(boolean listen) {
+        if (listen) {
+//            if (!TextUtils.isEmpty(mMyPreferencesManager.getUserId())) {
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (firebaseUser != null && !TextUtils.isEmpty(firebaseUser.getUid())) {
+                if (mFirebaseArticlesRef != null) {
+                    mFirebaseArticlesRef.removeEventListener(articlesChangeListener);
+                }
+                mFirebaseArticlesRef = FirebaseDatabase.getInstance().getReference()
+                        .child(Constants.Firebase.Refs.USERS)
+//                        .child(mMyPreferencesManager.getUserId())
+                        .child(firebaseUser.getUid())
+                        .child(Constants.Firebase.Refs.ARTICLES);
+
+                mFirebaseArticlesRef.addValueEventListener(articlesChangeListener);
+            } else {
+                if (mFirebaseArticlesRef != null) {
+                    mFirebaseArticlesRef.removeEventListener(articlesChangeListener);
+                }
+            }
+        } else {
+            if (mFirebaseArticlesRef != null) {
+                mFirebaseArticlesRef.removeEventListener(articlesChangeListener);
+            }
+        }
     }
 }
