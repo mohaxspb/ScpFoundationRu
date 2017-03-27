@@ -23,6 +23,8 @@ import android.widget.ProgressBar;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.vending.billing.IInAppBillingService;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,6 +41,7 @@ import ru.dante.scpfoundation.monetization.model.Subscription;
 import ru.dante.scpfoundation.monetization.util.InappHelper;
 import ru.dante.scpfoundation.ui.adapter.RecyclerAdapterSubscriptions;
 import ru.dante.scpfoundation.ui.base.BaseBottomSheetDialogFragment;
+import ru.dante.scpfoundation.util.SecureUtils;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -221,7 +224,16 @@ public class SubscriptionsFragmentDialog
 
                     Bundle bundle = new Bundle();
                     bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, sku);
+                    bundle.putFloat(FirebaseAnalytics.Param.VALUE, .5f);
+                    bundle.putFloat(FirebaseAnalytics.Param.PRICE, .5f);
                     FirebaseAnalytics.getInstance(getActivity()).logEvent(FirebaseAnalytics.Event.ECOMMERCE_PURCHASE, bundle);
+
+                    if (SecureUtils.checkLuckyPatcher(getActivity()) || SecureUtils.checkIfPackageChanged(getActivity())) {
+                        Bundle args = new Bundle();
+                        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+                        args.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "CRACK_" + sku + ((firebaseUser != null) ? firebaseUser.getUid() : ""));
+                        FirebaseAnalytics.getInstance(getActivity()).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, args);
+                    }
                 } catch (JSONException e) {
                     Timber.e(e, "Failed to parse purchase data.");
                 }
