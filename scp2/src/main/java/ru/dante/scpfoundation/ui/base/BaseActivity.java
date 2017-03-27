@@ -66,6 +66,7 @@ import ru.dante.scpfoundation.ui.dialog.NewVersionDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
 import ru.dante.scpfoundation.ui.dialog.TextSizeDialogFragment;
+import ru.dante.scpfoundation.util.SecureUtils;
 import ru.dante.scpfoundation.util.SystemUtils;
 import timber.log.Timber;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
@@ -345,7 +346,20 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
                     Timber.d("market items: %s", items);
                     mOwnedMarketItems = items;
                     supportInvalidateOptionsMenu();
-                    if(!mOwnedMarketItems.isEmpty() && Sec)
+                    if(!mOwnedMarketItems.isEmpty()){
+                        if(!SecureUtils.checkIfPackageChanged(this) && !SecureUtils.checkLuckyPatcher(this)) {
+                            mMyPreferenceManager.setHasSubscription(true);
+                        } else {
+                            mMyPreferenceManager.setHasSubscription(false);
+                            mMyPreferenceManager.setAppCracked(true);
+                            mMyPreferenceManager.setLastTimeAdsShows(0);
+
+                            showMessage(R.string.app_cracked);
+                            mPresenter.deleteAllData();
+                        }
+                    } else {
+                        mMyPreferenceManager.setHasSubscription(false);
+                    }
                 },
                 error -> Timber.e(error, "error while getting owned items")
         );

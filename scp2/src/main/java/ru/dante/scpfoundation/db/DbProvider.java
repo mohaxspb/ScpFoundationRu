@@ -590,4 +590,25 @@ public class DbProvider {
                     mRealm.close();
                 }));
     }
+
+    public Observable<Void> deleteAllArticlesText() {
+        return Observable.create(subscriber -> mRealm.executeTransactionAsync(
+                realm -> {
+                    RealmResults<Article> articles = realm.where(Article.class).findAll();
+
+                    for (Article article : articles) {
+                        article.text = null;
+                    }
+                },
+                () -> {
+                    subscriber.onNext(null);
+                    subscriber.onCompleted();
+                    mRealm.close();
+                },
+                error -> {
+                    subscriber.onError(error);
+                    mRealm.close();
+                })
+        );
+    }
 }

@@ -18,5 +18,7 @@ public interface BaseActivityMvp {
         void onActivityStarted();
 
         void onActivityStopped();
+
+        void deleteAllData();
     }
 }

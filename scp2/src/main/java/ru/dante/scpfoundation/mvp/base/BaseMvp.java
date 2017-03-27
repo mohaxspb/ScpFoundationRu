@@ -38,5 +38,7 @@ public interface BaseMvp {
         User getUser();
 
         void onUserChanged(User user);
+
+        void deleteAllData();
     }
 }
