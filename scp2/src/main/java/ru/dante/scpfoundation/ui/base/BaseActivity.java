@@ -340,14 +340,15 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
 
     @Override
     public void updateOwnedMarketItems() {
-        InappHelper.getOwnedInappsObserveble(this, mService)
-                .subscribe(
-                        items -> {
-                            Timber.d("market items: %s", items);
-                            mOwnedMarketItems = items;
-                            supportInvalidateOptionsMenu();
-                        },
-                        error -> Timber.e(error, "errror while getting owned items"));
+        InappHelper.getOwnedInappsObserveble(this, mService).subscribe(
+                items -> {
+                    Timber.d("market items: %s", items);
+                    mOwnedMarketItems = items;
+                    supportInvalidateOptionsMenu();
+                    if(!mOwnedMarketItems.isEmpty() && Sec)
+                },
+                error -> Timber.e(error, "error while getting owned items")
+        );
     }
 
     @Override

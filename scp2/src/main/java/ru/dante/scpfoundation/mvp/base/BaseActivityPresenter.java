@@ -192,6 +192,7 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
     @Override
     public void onActivityStopped() {
         mAuth.removeAuthStateListener(mAuthListener);
+
         listenToArticlesInFirebase(false);
     }
 

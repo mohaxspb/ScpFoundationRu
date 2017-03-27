@@ -67,8 +67,7 @@ public abstract class BasePresenter<V extends BaseMvp.View>
     @Override
     public void updateArticleInFirebase(Article article) {
         Timber.d("updateArticleInFirebase: %s", article.url);
-        mApiClient.writeArticleToFirebase(article)
-                .subscribe(
+        mApiClient.writeArticleToFirebase(article).subscribe(
                 article1 -> {
                     Timber.d("sync fav onComplete: %s", MyApplication.getAppInstance().getString(R.string.sync_fav_success));
                     getView().showMessage(R.string.sync_fav_success);

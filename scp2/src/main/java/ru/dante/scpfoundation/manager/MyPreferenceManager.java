@@ -38,6 +38,8 @@ public class MyPreferenceManager {
         String PACKAGE_INSTALLED = "PACKAGE_INSTALLED";
         String VK_GROUP_JOINED = "VK_GROUP_JOINED";
         String USER_UID = "USER_UID";
+        String HAS_SUBSCRIPTION = "HAS_SUBSCRIPTION";
+        String APP_IS_CRACKED = "APP_IS_CRACKED";
     }
 
     private SharedPreferences mPreferences;
@@ -208,13 +210,30 @@ public class MyPreferenceManager {
     }
 
     //user
-
     public void setUserId(String uid) {
         mPreferences.edit().putString(Keys.USER_UID, uid).apply();
     }
 
     public String getUserId() {
         return mPreferences.getString(Keys.USER_UID, "");
+    }
+
+    //subscription
+    public void setHasSubscription(boolean hasSubscription) {
+        mPreferences.edit().putBoolean(Keys.HAS_SUBSCRIPTION, hasSubscription).apply();
+    }
+
+    public boolean getHasSubscription() {
+        return mPreferences.getBoolean(Keys.HAS_SUBSCRIPTION, false);
+    }
+
+    //secure
+    public boolean isAppCracked() {
+        return mPreferences.getBoolean(Keys.APP_IS_CRACKED, false);
+    }
+
+    public void setAppCracked(boolean cracked) {
+        mPreferences.edit().putBoolean(Keys.APP_IS_CRACKED, cracked).apply();
     }
 
     //utils
