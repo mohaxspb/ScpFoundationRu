@@ -7,7 +7,7 @@ apply plugin: 'me.tatarka.retrolambda'
 //which must be in format major, minor, patch, where patch goes from 0 to 99
 apply from: '../versioning.gradle'
 
-ext.supportLibraryVersion = '25.3.0'
+ext.supportLibraryVersion = '25.3.1'
 ext.googleLibraryVersion = '10.2.1'
 
 android {
