@@ -85,6 +85,11 @@ public class Article extends RealmObject {
 
     public long localUpdateTimeStamp;
 
+    /**
+     * we write true while update/write article from firebase data listener
+     */
+    public boolean synced;
+
     public boolean hasTabs;
     @ParcelPropertyConverter(RealmStringListParcelConverter.class)
     public RealmList<RealmString> tabsTexts;

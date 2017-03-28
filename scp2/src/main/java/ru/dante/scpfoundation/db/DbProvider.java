@@ -568,6 +568,9 @@ public class DbProvider {
                                 realmArticle.isInFavorite = Article.ORDER_NONE;
                             }
                             realmArticle.isInReaden = article.isRead;
+
+                            realmArticle.synced = true;
+
                             realm.insert(realmArticle);
                         } else {
                             if (article.isFavorite) {
@@ -577,6 +580,8 @@ public class DbProvider {
                                 realmArticle.isInFavorite = Article.ORDER_NONE;
                             }
                             realmArticle.isInReaden = article.isRead;
+
+                            realmArticle.synced = true;
                         }
                     }
                 },
@@ -599,6 +604,23 @@ public class DbProvider {
                     for (Article article : articles) {
                         article.text = null;
                     }
+                },
+                () -> {
+                    subscriber.onNext(null);
+                    subscriber.onCompleted();
+                    mRealm.close();
+                },
+                error -> {
+                    subscriber.onError(error);
+                    mRealm.close();
+                })
+        );
+    }
+
+    public Observable<Article> setArticleSynced(Article article, boolean synced) {
+        return Observable.create(subscriber -> mRealm.executeTransactionAsync(
+                realm -> {
+                        article.synced = synced;
                 },
                 () -> {
                     subscriber.onNext(null);

@@ -223,7 +223,7 @@ public class MyPreferenceManager {
         mPreferences.edit().putBoolean(Keys.HAS_SUBSCRIPTION, hasSubscription).apply();
     }
 
-    public boolean getHasSubscription() {
+    public boolean isHasSubscription() {
         return mPreferences.getBoolean(Keys.HAS_SUBSCRIPTION, false);
     }
 

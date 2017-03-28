@@ -62,7 +62,8 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
             Map<String, ArticleInFirebase> map = dataSnapshot.getValue(t);
 
             if (map != null) {
-                mDbProviderFactory.getDbProvider().saveArticlesFromFirebase(new ArrayList<>(map.values()))
+                mDbProviderFactory.getDbProvider()
+                        .saveArticlesFromFirebase(new ArrayList<>(map.values()))
                         .subscribe(
                                 result -> Timber.d("articles in realm updated!"),
                                 Timber::e
@@ -186,7 +187,9 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
     public void onActivityStarted() {
         mAuth.addAuthStateListener(mAuthListener);
 
-        listenToArticlesInFirebase(true);
+        if (mMyPreferencesManager.isHasSubscription()) {
+            listenToArticlesInFirebase(true);
+        }
     }
 
     @Override
