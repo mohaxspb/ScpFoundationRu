@@ -65,17 +65,22 @@ public abstract class BasePresenter<V extends BaseMvp.View>
     }
 
     @Override
-    public void updateArticleInFirebase(Article article) {
+    public void updateArticleInFirebase(Article article, boolean shouldShowResultMessage) {
         Timber.d("updateArticleInFirebase: %s", article.url);
         mApiClient.writeArticleToFirebase(article)
                 .flatMap(article1 -> mDbProviderFactory.getDbProvider().setArticleSynced(article, true)).subscribe(
                 article1 -> {
                     Timber.d("sync fav onComplete: %s", MyApplication.getAppInstance().getString(R.string.sync_fav_success));
-                    getView().showMessage(R.string.sync_fav_success);
+                    //show only for favorites
+                    if (shouldShowResultMessage) {
+                        getView().showMessage(R.string.sync_fav_success);
+                    }
                 },
                 e -> {
                     Timber.e(e);
-                    getView().showError(new Throwable(MyApplication.getAppInstance().getString(R.string.error_while_sync_fav)));
+                    if (shouldShowResultMessage) {
+                        getView().showError(new Throwable(MyApplication.getAppInstance().getString(R.string.error_while_sync)));
+                    }
                 }
         );
     }

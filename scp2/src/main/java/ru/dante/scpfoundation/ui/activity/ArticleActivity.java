@@ -86,7 +86,6 @@ public class ArticleActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Timber.d("onCreate");
         super.onCreate(savedInstanceState);
 
         if (getIntent().hasExtra(EXTRA_ARTICLES_URLS_LIST)) {

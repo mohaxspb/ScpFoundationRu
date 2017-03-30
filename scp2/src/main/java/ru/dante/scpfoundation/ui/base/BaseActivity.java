@@ -111,6 +111,7 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Timber.d("onCreate");
         callInjections();
         if (mMyPreferenceManager.isNightMode()) {
             setTheme(R.style.SCP_Theme_Dark);

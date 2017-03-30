@@ -47,32 +47,33 @@ public class ArticlePresenter
         getView().showCenterProgress(true);
         getView().enableSwipeRefresh(false);
 
-        mDbProviderFactory.getDbProvider().getArticleAsync(mArticleUrl)
-                .subscribe(
-                        data -> {
-                            Timber.d("getDataFromDb data: %s", data);
-                            mData = data;
-                            if (mData == null) {
-                                getDataFromApi();
-                            } else if (mData.text == null) {
-                                getView().showData(mData);
-                                getDataFromApi();
-                            } else {
-                                getView().showData(mData);
-                                getView().showCenterProgress(false);
-                                getView().enableSwipeRefresh(true);
-                            }
-                        },
-                        error -> {
-                            getView().showCenterProgress(false);
-                            getView().enableSwipeRefresh(true);
-                            getView().showError(error);
-                        },
-                        () -> Timber.d("getDataFromDb onCompleted"));
+        mDbProviderFactory.getDbProvider().getArticleAsync(mArticleUrl).subscribe(
+                data -> {
+                    Timber.d("getDataFromDb data: %s", data);
+                    mData = data;
+                    if (mData == null) {
+                        getDataFromApi();
+                    } else if (mData.text == null) {
+                        getView().showData(mData);
+                        getDataFromApi();
+                    } else {
+                        getView().showData(mData);
+                        getView().showCenterProgress(false);
+                        getView().enableSwipeRefresh(true);
+                    }
+                },
+                error -> {
+                    getView().showCenterProgress(false);
+                    getView().enableSwipeRefresh(true);
+                    getView().showError(error);
+                },
+                () -> Timber.d("getDataFromDb onCompleted")
+        );
     }
 
     @Override
     public void getDataFromApi() {
+        Timber.d("getDataFromApi: %s", mArticleUrl);
         mApiClient.getArticle(mArticleUrl)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -92,7 +93,8 @@ public class ArticlePresenter
                             getView().showCenterProgress(false);
                             getView().enableSwipeRefresh(true);
                             getView().showSwipeProgress(false);
-                        });
+                        }
+                );
     }
 
     @Override
@@ -101,7 +103,10 @@ public class ArticlePresenter
         mDbProviderFactory.getDbProvider()
                 .toggleReaden(url)
                 .subscribe(
-                        resultState -> Timber.d("read state now is: %b", resultState),
+                        article -> {
+                            Timber.d("read state now is: %s", article);
+                            updateArticleInFirebase(article, false);
+                        },
                         Timber::e
                 );
     }

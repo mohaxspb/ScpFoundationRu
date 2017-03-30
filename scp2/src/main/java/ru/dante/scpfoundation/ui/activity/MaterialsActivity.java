@@ -71,7 +71,6 @@ public class MaterialsActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Timber.d("onCreate");
         super.onCreate(savedInstanceState);
 
         if (getIntent().hasExtra(EXTRA_SHOW_DISABLE_ADS)) {

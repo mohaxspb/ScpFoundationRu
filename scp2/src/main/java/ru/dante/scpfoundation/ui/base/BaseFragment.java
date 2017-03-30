@@ -1,6 +1,8 @@
 package ru.dante.scpfoundation.ui.base;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -116,6 +118,28 @@ public abstract class BaseFragment<V extends BaseMvp.View, P extends BaseMvp.Pre
         Timber.d("onDestroyView");
         super.onDestroyView();
         mUnbinder.unbind();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (this instanceof SharedPreferences.OnSharedPreferenceChangeListener) {
+            PreferenceManager.getDefaultSharedPreferences(getActivity())
+                    .registerOnSharedPreferenceChangeListener(
+                            (SharedPreferences.OnSharedPreferenceChangeListener) this
+                    );
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (this instanceof SharedPreferences.OnSharedPreferenceChangeListener) {
+            PreferenceManager.getDefaultSharedPreferences(getActivity())
+                    .unregisterOnSharedPreferenceChangeListener(
+                            (SharedPreferences.OnSharedPreferenceChangeListener) this
+                    );
+        }
     }
 
     @Override

@@ -194,8 +194,7 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
             @Override
             public void onNext(Article article) {
                 Timber.d("favs state now is: %s", article.isInFavorite != Article.ORDER_NONE);
-                //TODO test
-                updateArticleInFirebase(article);
+                updateArticleInFirebase(article, true);
             }
         };
     }
@@ -216,6 +215,7 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
             @Override
             public void onNext(Article article) {
                 Timber.d("read state now is: %s", article.isInFavorite != Article.ORDER_NONE);
+                updateArticleInFirebase(article, false);
             }
         };
     }

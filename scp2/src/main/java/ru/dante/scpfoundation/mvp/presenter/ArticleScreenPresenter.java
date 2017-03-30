@@ -24,7 +24,10 @@ public class ArticleScreenPresenter
     public void toggleFavorite(String url) {
         Timber.d("toggleFavorite url: %s", url);
         mDbProviderFactory.getDbProvider().toggleFavorite(url).subscribe(
-                resultState -> Timber.d("fav state now is: %b", resultState),
+                article -> {
+                    Timber.d("fav state now is: %s", article);
+                    updateArticleInFirebase(article, true);
+                },
                 Timber::e
         );
     }
