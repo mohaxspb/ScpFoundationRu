@@ -9,13 +9,17 @@ import android.support.v7.widget.RecyclerView;
  * for scp_ru
  */
 public abstract class ReachBottomRecyclerScrollListener extends RecyclerView.OnScrollListener {
+
+    private boolean alreadyReachedBottom;
+
     @Override
     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
         RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
         int totalItemCount = layoutManager.getItemCount();
         int lastCompletelyVisibleItemPosition = ((LinearLayoutManager) layoutManager).findLastCompletelyVisibleItemPosition();
 
-        if (lastCompletelyVisibleItemPosition == totalItemCount - 1) {
+        if (!alreadyReachedBottom && lastCompletelyVisibleItemPosition == totalItemCount - 1) {
+            alreadyReachedBottom = true;
             onBottomReached();
         }
     }

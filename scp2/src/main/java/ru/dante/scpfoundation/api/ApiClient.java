@@ -210,7 +210,7 @@ public class ApiClient {
 
                     Article article = new Article();
                     article.title = title;
-                    article.url = url;
+                    article.url = url.trim();
                     article.rating = rating;
                     article.authorName = authorName;
                     article.authorUrl = authorUrl;

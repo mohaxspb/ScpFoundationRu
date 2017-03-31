@@ -4,7 +4,6 @@ import android.util.Pair;
 
 import java.util.List;
 
-import io.realm.RealmResults;
 import io.realm.Sort;
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.api.ApiClient;
@@ -35,7 +34,7 @@ public abstract class BaseObjectsArticlesPresenter<V extends BaseArticlesListMvp
     }
 
     @Override
-    protected Observable<RealmResults<Article>> getDbObservable() {
+    protected Observable<List<Article>> getDbObservable() {
         return mDbProviderFactory.getDbProvider()
                 .getArticlesSortedAsync(getObjectsInDbFieldName(), Sort.ASCENDING)
                 //onNext check if data is empty and we do not tried to update it

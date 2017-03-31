@@ -29,7 +29,7 @@ public class OfflineArticlesPresenter
     }
 
     @Override
-    protected Observable<RealmResults<Article>> getDbObservable() {
+    protected Observable<List<Article>> getDbObservable() {
         return mDbProviderFactory.getDbProvider().getOfflineArticlesSortedAsync(Article.FIELD_LOCAL_UPDATE_TIME_STAMP, Sort.DESCENDING);
     }
 

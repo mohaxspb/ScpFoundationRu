@@ -31,7 +31,10 @@ public class SecureUtils {
         return packageExists(context, "com.dimonvideo.luckypatcher") ||
                 packageExists(context, "com.android.protips") ||
                 packageExists(context, "com.chelpus.lackypatch") ||
-                packageExists(context, "com.android.vending.billing.InAppBillingService.LACK");
+                packageExists(context, "com.android.vending.billing.InAppBillingService.LACK")
+                //freedom
+                || packageExists(context, "cc.madkite.freedom")
+                || packageExists(context, "madkite.freedom");
     }
 
     private static boolean packageExists(Context context, final String packageName) {

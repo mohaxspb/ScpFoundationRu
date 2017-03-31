@@ -107,7 +107,7 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
 
             @Override
             public void toggleReadenState(Article article) {
-                mPresenter.toggleReadenState(article);
+                mPresenter.toggleReadState(article);
             }
 
             @Override
@@ -144,7 +144,7 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
     }
 
     /**
-     * override it to change or disable endless scroolling behavior
+     * override it to change or disable endless scrolling behavior
      */
     @Override
     public void resetOnScrollListener() {

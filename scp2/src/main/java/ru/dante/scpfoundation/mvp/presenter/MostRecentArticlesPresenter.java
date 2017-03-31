@@ -4,7 +4,6 @@ import android.util.Pair;
 
 import java.util.List;
 
-import io.realm.RealmResults;
 import io.realm.Sort;
 import ru.dante.scpfoundation.api.ApiClient;
 import ru.dante.scpfoundation.db.DbProviderFactory;
@@ -25,7 +24,7 @@ public class MostRecentArticlesPresenter extends BaseListArticlesPresenter<Recen
     }
 
     @Override
-    protected Observable<RealmResults<Article>> getDbObservable() {
+    protected Observable<List<Article>> getDbObservable() {
         return mDbProviderFactory.getDbProvider().getArticlesSortedAsync(Article.FIELD_IS_IN_RECENT, Sort.ASCENDING);
     }
 

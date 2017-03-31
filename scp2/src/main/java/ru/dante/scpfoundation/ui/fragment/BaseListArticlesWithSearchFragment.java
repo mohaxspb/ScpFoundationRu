@@ -64,7 +64,7 @@ public abstract class BaseListArticlesWithSearchFragment
 
             @Override
             public void toggleReadenState(Article article) {
-                mPresenter.toggleReadenState(article);
+                mPresenter.toggleReadState(article);
             }
 
             @Override

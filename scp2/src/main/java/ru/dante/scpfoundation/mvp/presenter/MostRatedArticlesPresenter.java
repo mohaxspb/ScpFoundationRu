@@ -18,14 +18,16 @@ import rx.Observable;
  * <p>
  * for TappAwards
  */
-public class MostRatedArticlesPresenter extends BaseListArticlesPresenter<RatedArticlesMvp.View> implements RatedArticlesMvp.Presenter {
+public class MostRatedArticlesPresenter
+        extends BaseListArticlesPresenter<RatedArticlesMvp.View>
+        implements RatedArticlesMvp.Presenter {
 
     public MostRatedArticlesPresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
         super(myPreferencesManager, dbProviderFactory, apiClient);
     }
 
     @Override
-    protected Observable<RealmResults<Article>> getDbObservable() {
+    protected Observable<List<Article>> getDbObservable() {
         return mDbProviderFactory.getDbProvider().getArticlesSortedAsync(Article.FIELD_IS_IN_MOST_RATED, Sort.ASCENDING);
     }
 

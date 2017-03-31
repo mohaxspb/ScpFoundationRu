@@ -11,10 +11,10 @@ interface BaseArticleActions {
 
 //    void toggleFavoriteState(String url);
 //
-//    void toggleReadenState(String url);
+//    void toggleReadState(String url);
     void toggleFavoriteState(Article article);
 
-    void toggleReadenState(Article article);
+    void toggleReadState(Article article);
 
     /**
      *  we need article as arg, as we should determine if we

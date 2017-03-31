@@ -273,7 +273,6 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
 
         HolderWithImage(View itemView) {
             super(itemView);
-//            ButterKnife.bind(this, itemView);
         }
 
         void bind(Article article) {
@@ -338,7 +337,6 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
 
         HolderMedium(View itemView) {
             super(itemView);
-//            ButterKnife.bind(this, itemView);
         }
 
         @Override

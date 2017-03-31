@@ -245,7 +245,7 @@ public class ArticleActivity
 
     @Override
     public void setFavoriteState(boolean isInFavorite) {
-        Timber.d("setFavoriteState: %s", isInFavorite);
+//        Timber.d("setFavoriteState: %s", isInFavorite);
         if (mToolbar != null && mToolbar.getMenu() != null) {
             MenuItem item = mToolbar.getMenu().findItem(R.id.menuItemFavorite);
             if (item != null) {

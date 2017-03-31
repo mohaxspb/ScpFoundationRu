@@ -36,16 +36,17 @@ public class DbProvider {
         mRealm.close();
     }
 
-    public Observable<RealmResults<Article>> getArticlesSortedAsync(String field, Sort order) {
+    public Observable<List<Article>> getArticlesSortedAsync(String field, Sort order) {
         return mRealm.where(Article.class)
                 .notEqualTo(field, Article.ORDER_NONE)
                 .findAllSortedAsync(field, order)
                 .asObservable()
                 .filter(RealmResults::isLoaded)
-                .filter(RealmResults::isValid);
+                .filter(RealmResults::isValid)
+                .flatMap(articles -> Observable.just(mRealm.copyFromRealm(articles)));
     }
 
-    public Observable<RealmResults<Article>> getOfflineArticlesSortedAsync(String field, Sort order) {
+    public Observable<List<Article>> getOfflineArticlesSortedAsync(String field, Sort order) {
         return mRealm.where(Article.class)
                 .notEqualTo(Article.FIELD_TEXT, (String) null)
                 //remove articles from main activity
@@ -55,7 +56,8 @@ public class DbProvider {
                 .findAllSortedAsync(field, order)
                 .asObservable()
                 .filter(RealmResults::isLoaded)
-                .filter(RealmResults::isValid);
+                .filter(RealmResults::isValid)
+                .flatMap(articles -> Observable.just(mRealm.copyFromRealm(articles)));
     }
 
     public Observable<Pair<Integer, Integer>> saveRecentArticlesList(List<Article> apiData, int offset) {
@@ -304,6 +306,29 @@ public class DbProvider {
                 .flatMap(arts -> arts.isEmpty() ? Observable.just(null) : Observable.just(arts.first()));
     }
 
+    public Observable<Article> getUnmanagedArticleAsync(String articleUrl) {
+        return mRealm.where(Article.class)
+                .equalTo(Article.FIELD_URL, articleUrl)
+                .findAllAsync()
+                .<List<Article>>asObservable()
+                .filter(RealmResults::isLoaded)
+                .filter(RealmResults::isValid)
+                .flatMap(arts -> arts.isEmpty() ? Observable.just(null) : Observable.just(mRealm.copyFromRealm(arts.first())))
+                .doOnNext(article -> close());
+    }
+
+    public Observable<Article> getUnmanagedArticleAsyncOnes(String articleUrl) {
+        return mRealm.where(Article.class)
+                .equalTo(Article.FIELD_URL, articleUrl)
+                .findAllAsync()
+                .<List<Article>>asObservable()
+                .filter(RealmResults::isLoaded)
+                .filter(RealmResults::isValid)
+                .first()
+                .flatMap(arts -> arts.isEmpty() ? Observable.just(null) : Observable.just(mRealm.copyFromRealm(arts.first())))
+                .doOnNext(article -> close());
+    }
+
     public Article getUnmanagedArticleSync(String url) {
         Article articleFromDb = mRealm.where(Article.class).equalTo(Article.FIELD_URL, url).findFirst();
         return articleFromDb == null ? null : mRealm.copyFromRealm(articleFromDb);
@@ -392,26 +417,32 @@ public class DbProvider {
 
     /**
      * @param url used as Article ID
-     * @return observable, that emits resulted readen state
-     * or error if no artcile found
+     * @return observable, that emits updated article
+     * or error if no article found
      */
-    public Observable<Article> toggleReaden(String url) {
+    public Observable<String> toggleReaden(String url) {
         return Observable.create(subscriber -> mRealm.executeTransactionAsync(
                 realm -> {
                     //check if we have app in db and update
-                    Article applicationInDb = realm.where(Article.class)
+                    Article article = realm.where(Article.class)
                             .equalTo(Article.FIELD_URL, url)
                             .findFirst();
-                    if (applicationInDb != null) {
-                        applicationInDb.isInReaden = !applicationInDb.isInReaden;
-                        subscriber.onNext(realm.copyFromRealm(applicationInDb));
-                        subscriber.onCompleted();
+                    if (article != null) {
+//                        Timber.d("article: %s", article.isInReaden);
+                        article.isInReaden = !article.isInReaden;
+//                        Timber.d("article: %s", article.isInReaden);
+//                        Article updatedArticle;
+//                        updatedArticle = realm.copyFromRealm(article);
+//                        Timber.d("updatedArticle: %s", updatedArticle.isInReaden);
+//                        subscriber.onNext(updatedArticle);
+//                        subscriber.onCompleted();
                     } else {
                         Timber.e("No article to add to favorites for ID: %s", url);
                         subscriber.onError(new ScpNoArticleForIdError(url));
                     }
                 },
                 () -> {
+                    subscriber.onNext(url);
                     subscriber.onCompleted();
                     mRealm.close();
                 },
@@ -620,16 +651,23 @@ public class DbProvider {
     public Observable<Article> setArticleSynced(Article article, boolean synced) {
         return Observable.create(subscriber -> mRealm.executeTransactionAsync(
                 realm -> {
-                        article.synced = synced;
+                    Article articleInDb = realm.where(Article.class).equalTo(Article.FIELD_URL, article.url).findFirst();
+                    if (articleInDb != null) {
+                        articleInDb.synced = synced;
+//                        subscriber.onCompleted();
+                    } else {
+                        subscriber.onError(new ScpNoArticleForIdError(article.url));
+                    }
                 },
                 () -> {
-                    subscriber.onNext(null);
-                    subscriber.onCompleted();
                     mRealm.close();
+                    article.synced = synced;
+                    subscriber.onNext(article);
+                    subscriber.onCompleted();
                 },
                 error -> {
-                    subscriber.onError(error);
                     mRealm.close();
+                    subscriber.onError(error);
                 })
         );
     }

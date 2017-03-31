@@ -47,7 +47,7 @@ public class ArticlePresenter
         getView().showCenterProgress(true);
         getView().enableSwipeRefresh(false);
 
-        mDbProviderFactory.getDbProvider().getArticleAsync(mArticleUrl).subscribe(
+        mDbProviderFactory.getDbProvider().getUnmanagedArticleAsync(mArticleUrl).subscribe(
                 data -> {
                     Timber.d("getDataFromDb data: %s", data);
                     mData = data;
@@ -102,9 +102,10 @@ public class ArticlePresenter
         Timber.d("setArticleIsReaden url: %s", url);
         mDbProviderFactory.getDbProvider()
                 .toggleReaden(url)
+                .flatMap(articleUrl -> mDbProviderFactory.getDbProvider().getUnmanagedArticleAsyncOnes(articleUrl))
                 .subscribe(
                         article -> {
-                            Timber.d("read state now is: %s", article);
+                            Timber.d("read state now is: %s", article.isInReaden);
                             updateArticleInFirebase(article, false);
                         },
                         Timber::e
