@@ -120,6 +120,7 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
                 mPresenter.toggleOfflineState(article);
             }
         });
+        getAdapter().setHasStableIds(true);
     }
 
     @Override
@@ -132,8 +133,8 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
             showCenterProgress(false);
         }
         getAdapter().setData(data);
-//        mRecyclerView.swapAdapter(getAdapter(), true);
         resetOnScrollListener();
+//        mRecyclerView.post(() -> getAdapter().notifyDataSetChanged());
     }
 
     protected void getDataFromDb() {

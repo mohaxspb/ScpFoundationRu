@@ -50,7 +50,7 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
         getView().enableSwipeRefresh(false);
 
         getDbObservable()
-                .subscribeOn(AndroidSchedulers.mainThread())
+//                .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         data -> {

@@ -126,6 +126,8 @@ public abstract class BaseListArticlesWithSearchFragment
             public boolean onQueryTextChange(String newText) {
                 mSearchQuery = newText;
                 mAdapter.sortArticles(newText);
+//                mAdapter.notifyItemRangeChanged(0, mAdapter.getItemCount());
+//                mRecyclerView.invalidate();
                 return true;
             }
         });

@@ -66,6 +66,7 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
 //        notifyItemRangeInserted(0, mData.size());
         Timber.d("previousCount/mData.size(): %s/%s", previousCount, mData.size());
 
+//        notifyItemRangeChanged(0, mData.size());
         notifyDataSetChanged();
 
 //        if (previousCount != mData.size()) {
@@ -78,6 +79,11 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
 //        }
 //        notifyItemRangeInserted(0, mData.size());
 //        notifyDataSetChanged();
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return mData.get(position).url.hashCode();
     }
 
     @Override
