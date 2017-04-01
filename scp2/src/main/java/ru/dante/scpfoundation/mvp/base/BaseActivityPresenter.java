@@ -200,6 +200,7 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
     }
 
     private void listenToArticlesInFirebase(boolean listen) {
+        Timber.d("listenToArticlesInFirebase: %s", listen);
         if (listen) {
 //            if (!TextUtils.isEmpty(mMyPreferencesManager.getUserId())) {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();

@@ -49,24 +49,27 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
         getView().showCenterProgress(true);
         getView().enableSwipeRefresh(false);
 
-        getDbObservable().subscribe(
-                data -> {
-                    Timber.d("getDataFromDb data.size(): %s", data.size());
-                    mData = data;
-                    getView().updateData(mData);
+        getDbObservable()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        data -> {
+                            Timber.d("getDataFromDb data.size(): %s", data.size());
+                            mData = data;
+                            getView().updateData(mData);
 //                            getView().showCenterProgress(false);
-                    if (mData.isEmpty()) {
-                        getView().enableSwipeRefresh(true);
-                    } else {
-                        getView().showCenterProgress(false);
-                    }
-                },
-                error -> {
-                    getView().showCenterProgress(false);
-                    getView().enableSwipeRefresh(true);
-                    getView().showError(error);
-                }
-        );
+                            if (mData.isEmpty()) {
+                                getView().enableSwipeRefresh(true);
+                            } else {
+                                getView().showCenterProgress(false);
+                            }
+                        },
+                        error -> {
+                            getView().showCenterProgress(false);
+                            getView().enableSwipeRefresh(true);
+                            getView().showError(error);
+                        }
+                );
     }
 
     @Override

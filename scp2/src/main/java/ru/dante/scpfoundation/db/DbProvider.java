@@ -617,14 +617,15 @@ public class DbProvider {
                     }
                 },
                 () -> {
+                    mRealm.close();
                     subscriber.onNext(inFirebaseList);
                     subscriber.onCompleted();
-                    mRealm.close();
                 },
                 error -> {
-                    subscriber.onError(error);
                     mRealm.close();
-                }));
+                    subscriber.onError(error);
+                })
+        );
     }
 
     public Observable<Void> deleteAllArticlesText() {

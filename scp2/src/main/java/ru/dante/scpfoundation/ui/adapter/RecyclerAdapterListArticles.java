@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -26,6 +27,7 @@ import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
 import ru.dante.scpfoundation.util.AttributeGetter;
 import ru.dante.scpfoundation.util.DateUtils;
+import timber.log.Timber;
 import uk.co.chrisjenx.calligraphy.CalligraphyUtils;
 
 /**
@@ -42,7 +44,7 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
     @Inject
     MyPreferenceManager mMyPreferenceManager;
 
-    private List<Article> mData;
+    private List<Article> mData = new ArrayList<>();
 
     private ArticleClickListener mArticleClickListener;
     private boolean shouldShowPopupOnFavoriteClick;
@@ -53,8 +55,29 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
     }
 
     public void setData(List<Article> data) {
-        mData = data;
+//        mData = data;
+        int previousCount = mData.size();
+
+//        notifyItemRangeRemoved(0, previousCount);
+
+        mData.clear();
+        mData.addAll(data);
+
+//        notifyItemRangeInserted(0, mData.size());
+        Timber.d("previousCount/mData.size(): %s/%s", previousCount, mData.size());
+
         notifyDataSetChanged();
+
+//        if (previousCount != mData.size()) {
+//            Timber.d("previousCount/mData.size(): %s/%s", previousCount, mData);
+//
+//            notifyItemRangeInserted(0, mData.size());
+//        } else {
+//            notifyItemRangeChanged(0, mData.size());
+////            notifyDataSetChanged();
+//        }
+//        notifyItemRangeInserted(0, mData.size());
+//        notifyDataSetChanged();
     }
 
     @Override
