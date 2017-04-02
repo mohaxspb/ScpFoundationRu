@@ -1,7 +1,9 @@
 package ru.dante.scpfoundation.mvp.base;
 
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.hannesdorfmann.mosby.mvp.MvpNullObjectBasePresenter;
 
+import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.api.ApiClient;
@@ -67,6 +69,18 @@ public abstract class BasePresenter<V extends BaseMvp.View>
     @Override
     public void updateArticleInFirebase(Article article, boolean shouldShowResultMessage) {
         Timber.d("updateArticleInFirebase: %s", article.url);
+        if (!mMyPreferencesManager.isHasSubscription()) {
+            Timber.d("does not have subscription, so no auto sync");
+            long curNumOfAttempts = mMyPreferencesManager.getNumOfAttemptsToAutoSync();
+            long maxNumOfAttempts = FirebaseRemoteConfig.getInstance()
+                    .getLong(Constants.Firebase.RemoteConfigKeys.NUM_OF_SYNC_ATTEMPTS_BEFORE_CALL_TO_ACTION);
+            if (curNumOfAttempts >= maxNumOfAttempts) {
+                //show call to action
+                mMyPreferencesManager.setNumOfAttemptsToAutoSync(0);
+                getView().showSnackBarWithAction(Constants.Firebase.CallToActionReason.ENABLE_AUTO_SYNC);
+            }
+            return;
+        }
         mApiClient.writeArticleToFirebase(article)
                 .flatMap(article1 -> mDbProviderFactory.getDbProvider().setArticleSynced(article, true))
                 .subscribe(

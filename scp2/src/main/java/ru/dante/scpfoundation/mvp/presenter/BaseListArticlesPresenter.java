@@ -120,7 +120,8 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
                             if (mData != null && !mData.isEmpty()) {
                                 getView().resetOnScrollListener();
                             }
-                        });
+                        }
+                );
     }
 
     @Override

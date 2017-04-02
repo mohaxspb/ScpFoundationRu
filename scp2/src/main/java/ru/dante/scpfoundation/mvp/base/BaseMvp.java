@@ -5,6 +5,7 @@ import android.support.annotation.StringRes;
 import com.hannesdorfmann.mosby.mvp.MvpPresenter;
 import com.hannesdorfmann.mosby.mvp.MvpView;
 
+import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.db.model.User;
 import ru.dante.scpfoundation.mvp.contract.DataSyncActions;
 
@@ -28,6 +29,8 @@ public interface BaseMvp {
         void showProgressDialog(@StringRes int title);
 
         void dismissProgressDialog();
+
+        void showSnackBarWithAction(Constants.Firebase.CallToActionReason reason);
     }
 
     interface Presenter<V extends MvpView> extends MvpPresenter<V>, DataSyncActions {

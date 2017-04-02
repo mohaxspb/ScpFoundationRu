@@ -23,6 +23,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.api.error.ScpParseException;
 import ru.dante.scpfoundation.manager.MyNotificationManager;
@@ -210,5 +211,10 @@ public abstract class BaseFragment<V extends BaseMvp.View, P extends BaseMvp.Pre
             throw new RuntimeException("Activity must extend BaseActivity");
         }
         return (BaseActivity) getActivity();
+    }
+
+    @Override
+    public void showSnackBarWithAction(Constants.Firebase.CallToActionReason reason) {
+        getBaseActivity().showSnackBarWithAction(reason);
     }
 }

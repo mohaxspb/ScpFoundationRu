@@ -90,4 +90,8 @@
         <key>num_of_intersitial_between_rewarded</key>
         <value>5</value>
     </entry>
+    <entry>
+        <key>num_of_sync_attempts_before_call_to_action</key>
+        <value>5</value>
+    </entry>
 </defaultsMap>

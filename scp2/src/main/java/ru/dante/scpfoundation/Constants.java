@@ -32,6 +32,10 @@ public interface Constants {
 //            String VK = "vk";
 //        }
 
+        enum CallToActionReason{
+            REMOVE_ADS, ENABLE_AUTO_SYNC, ENABLE_FONTS
+        }
+
         enum SocialProvider{
             VK
         }
@@ -56,6 +60,7 @@ public interface Constants {
             String FREE_VK_GROUPS_ENABLED = "free_vk_groups_enabled";
             String FREE_VK_GROUPS_JOIN_REWARD = "free_vk_groups_join_reward";
             String VK_GROUPS_TO_JOIN_JSON = "vk_groups_to_join_json";
+            String NUM_OF_SYNC_ATTEMPTS_BEFORE_CALL_TO_ACTION = "num_of_sync_attempts_before_call_to_action";
         }
 
         interface Analitics {

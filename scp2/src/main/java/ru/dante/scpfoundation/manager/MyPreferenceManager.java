@@ -40,6 +40,7 @@ public class MyPreferenceManager {
         String USER_UID = "USER_UID";
         String HAS_SUBSCRIPTION = "HAS_SUBSCRIPTION";
         String APP_IS_CRACKED = "APP_IS_CRACKED";
+        String AUTO_SYNC_ATTEMPTS = "AUTO_SYNC_ATTEMPTS";
     }
 
     private SharedPreferences mPreferences;
@@ -225,6 +226,15 @@ public class MyPreferenceManager {
 
     public boolean isHasSubscription() {
         return mPreferences.getBoolean(Keys.HAS_SUBSCRIPTION, false);
+    }
+
+    //auto sync
+    public void setNumOfAttemptsToAutoSync(int numOfAttemptsToAutoSync) {
+        mPreferences.edit().putInt(Keys.AUTO_SYNC_ATTEMPTS, numOfAttemptsToAutoSync).apply();
+    }
+
+    public int getNumOfAttemptsToAutoSync() {
+        return mPreferences.getInt(Keys.AUTO_SYNC_ATTEMPTS, 0);
     }
 
     //secure
