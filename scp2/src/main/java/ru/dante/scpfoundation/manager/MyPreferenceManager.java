@@ -229,12 +229,12 @@ public class MyPreferenceManager {
     }
 
     //auto sync
-    public void setNumOfAttemptsToAutoSync(int numOfAttemptsToAutoSync) {
-        mPreferences.edit().putInt(Keys.AUTO_SYNC_ATTEMPTS, numOfAttemptsToAutoSync).apply();
+    public void setNumOfAttemptsToAutoSync(long numOfAttemptsToAutoSync) {
+        mPreferences.edit().putLong(Keys.AUTO_SYNC_ATTEMPTS, numOfAttemptsToAutoSync).apply();
     }
 
-    public int getNumOfAttemptsToAutoSync() {
-        return mPreferences.getInt(Keys.AUTO_SYNC_ATTEMPTS, 0);
+    public long getNumOfAttemptsToAutoSync() {
+        return mPreferences.getLong(Keys.AUTO_SYNC_ATTEMPTS, 0);
     }
 
     //secure

@@ -70,14 +70,19 @@ public abstract class BasePresenter<V extends BaseMvp.View>
     public void updateArticleInFirebase(Article article, boolean shouldShowResultMessage) {
         Timber.d("updateArticleInFirebase: %s", article.url);
         if (!mMyPreferencesManager.isHasSubscription()) {
-            Timber.d("does not have subscription, so no auto sync");
+
             long curNumOfAttempts = mMyPreferencesManager.getNumOfAttemptsToAutoSync();
             long maxNumOfAttempts = FirebaseRemoteConfig.getInstance()
                     .getLong(Constants.Firebase.RemoteConfigKeys.NUM_OF_SYNC_ATTEMPTS_BEFORE_CALL_TO_ACTION);
+
+            Timber.d("does not have subscription, so no auto sync: %s/%s", curNumOfAttempts, maxNumOfAttempts);
+
             if (curNumOfAttempts >= maxNumOfAttempts) {
                 //show call to action
                 mMyPreferencesManager.setNumOfAttemptsToAutoSync(0);
                 getView().showSnackBarWithAction(Constants.Firebase.CallToActionReason.ENABLE_AUTO_SYNC);
+            } else {
+                mMyPreferencesManager.setNumOfAttemptsToAutoSync(curNumOfAttempts + 1);
             }
             return;
         }

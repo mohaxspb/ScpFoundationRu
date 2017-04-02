@@ -72,7 +72,7 @@
     <string name="settings_notif_vibrate_on">Вибрация</string>
     <string name="settings_notif_sound_on">Звук уведомления</string>
     <string name="settings_notification">Настройки уведомлений</string>
-    <string name="dialog_title_subscriptions">Отключение рекламы и дополнительный функционал</string>
+    <string name="dialog_title_subscriptions">Отключение рекламы, автоматическая облачная синхронизация и атмосферные шрифты</string>
     <string name="current_subscription">Ваша текущая подписка</string>
     <string name="no_subscriptions">Пусто</string>
     <string name="refresh">Обновить</string>
@@ -101,7 +101,7 @@
     <string name="yes_sir">Так точно!</string>
     <string name="reward_not_loaded_yet">Ещё не загружено. Попробуйте ещё раз</string>
     <string name="settings_design_font">Шрифт</string>
-    <string name="login_advantages">Внимание персонал! Авторизация не обязательна. Дальнейшие инструкции вы можете получить у руководителя зоны содержания.</string>
+    <string name="login_advantages">Внимание персонал! Авторизация не обязательна, но она нужна для облачной синхронизации избранных статей и статуса прочитанности оных. Дальнейшие инструкции вы можете получить у руководителя зоны содержания.</string>
     <string name="login_advantages_title">Зачем авторизация?</string>
     <string name="login_greetings">Добро пожаловать, агент %s</string>
     <string name="error_login_no_email">Невозможно авторизоваться без информации о e-mail</string>
@@ -110,7 +110,7 @@
     <string name="only_premium">Только для подписавшихся</string>
     <string name="activate">Активировать</string>
     <string name="info">Информация</string>
-    <string name="subs_info">В дополнительный функционал входит отключение рекламы, все шрифты без ограничения и в будущем много чего ещё, например облачная синхронизация избранного и прочитанного. Также, подписавшись, вы сильно промотивируете разработчиков всё быстрее и быстрее добавлять фичи и фиксить баги!</string>
+    <string name="subs_info">В дополнительный функционал входит отключение рекламы, все шрифты без ограничения, а также облачная синхронизация избранного и прочитанного. И самое главное - подписавшись, вы сильно промотивируете разработчиков всё быстрее и быстрее добавлять фичи и фиксить баги!</string>
 
     <string-array name="download_types">
         <item>Объекты I</item>

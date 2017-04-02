@@ -92,7 +92,7 @@
     </entry>
     <entry>
         <key>num_of_sync_attempts_before_call_to_action</key>
-        <!--FIXME for test use 1, for prod use i.e. 5-->
-        <value>1</value>
+        <!--for test use 1, for prod use i.e. 5-->
+        <value>5</value>
     </entry>
 </defaultsMap>

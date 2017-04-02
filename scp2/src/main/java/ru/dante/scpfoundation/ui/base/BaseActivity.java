@@ -305,7 +305,6 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
                     bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.AUTO_SYNC);
                     mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
                 });
-                snackbar.setActionTextColor(ContextCompat.getColor(BaseActivity.this, R.color.material_green_500));
                 break;
             default:
                 throw new IllegalArgumentException("unexpected callToActionReason");
