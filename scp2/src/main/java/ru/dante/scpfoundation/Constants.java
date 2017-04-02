@@ -76,6 +76,7 @@ public interface Constants {
                 String MENU = "MENU";
                 String DRAWER_HEADER_LOGINED = "DRAWER_HEADER_LOGINED";
                 String FONT = "FONT";
+                String AUTO_SYNC = "AUTO_SYNC";
             }
 
             String INVITED_FIVE_FRIENDS = "INVITED_FIVE_FRIENDS";

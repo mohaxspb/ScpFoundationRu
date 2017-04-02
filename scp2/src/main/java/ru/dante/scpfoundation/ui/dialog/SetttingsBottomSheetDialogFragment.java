@@ -13,8 +13,6 @@ import android.support.annotation.StringDef;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.BottomSheetDialogFragment;
-import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,8 +22,6 @@ import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-
-import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -236,25 +232,14 @@ public class SetttingsBottomSheetDialogFragment
 
                         fontPreferedSpinner.setSelection(fontsPathsList.indexOf(mMyPreferenceManager.getFontPath()));
 
-                        Snackbar.make(mRoot, R.string.only_premium, Snackbar.LENGTH_LONG)
-                                .setAction(R.string.activate, action -> {
-                                    BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
-                                    subsDF.show(getChildFragmentManager(), subsDF.getTag());
-
-                                    Bundle bundle = new Bundle();
-                                    bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.FONT);
-                                    FirebaseAnalytics.getInstance(getActivity()).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
-                                })
-                                .setActionTextColor(ContextCompat.getColor(getActivity(), R.color.material_green_500))
-                                .show();
-                    } else {
                         mMyPreferenceManager.setFontPath(fontsPathsList.get(position));
+                        getBaseActivity().showSnackBarWithAction(Constants.Firebase.CallToActionReason.ENABLE_FONTS);
                     }
                 }
 
                 @Override
                 public void onNothingSelected(AdapterView<?> adapterView) {
-
+                    Timber.d("onNothingSelected");
                 }
             });
         });
@@ -290,7 +275,8 @@ public class SetttingsBottomSheetDialogFragment
         });
     }
 
-    @NonNull @Override
+    @NonNull
+    @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         BottomSheetDialog dialog = (BottomSheetDialog) super.onCreateDialog(savedInstanceState);
 

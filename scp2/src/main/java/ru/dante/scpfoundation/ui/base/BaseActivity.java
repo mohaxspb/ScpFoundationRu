@@ -260,18 +260,7 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
             @Override
             public void onAdClosed() {
                 super.onAdClosed();
-                Snackbar snackbar = Snackbar.make(mRoot, R.string.remove_ads, Snackbar.LENGTH_LONG);
-                snackbar.setAction(R.string.yes_bliad, v -> {
-                    snackbar.dismiss();
-                    BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
-                    subsDF.show(getSupportFragmentManager(), subsDF.getTag());
-
-                    Bundle bundle = new Bundle();
-                    bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.SNACK_BAR);
-                    mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
-                });
-                snackbar.setActionTextColor(ContextCompat.getColor(BaseActivity.this, R.color.material_green_500));
-                snackbar.show();
+                showSnackBarWithAction(Constants.Firebase.CallToActionReason.REMOVE_ADS);
             }
         };
         showInterstitial(adListener);
@@ -279,9 +268,11 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
 
     @Override
     public void showSnackBarWithAction(Constants.Firebase.CallToActionReason reason) {
+        Timber.d("showSnackBarWithAction: %s", reason);
+        Snackbar snackbar;
         switch (reason) {
             case REMOVE_ADS:
-                Snackbar snackbar = Snackbar.make(mRoot, R.string.remove_ads, Snackbar.LENGTH_LONG);
+                snackbar = Snackbar.make(mRoot, R.string.remove_ads, Snackbar.LENGTH_LONG);
                 snackbar.setAction(R.string.yes_bliad, v -> {
                     snackbar.dismiss();
                     BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
@@ -291,18 +282,36 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
                     bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.SNACK_BAR);
                     mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
                 });
-                snackbar.setActionTextColor(ContextCompat.getColor(BaseActivity.this, R.color.material_green_500));
-                snackbar.show();
                 break;
             case ENABLE_FONTS:
-                //TODO
+                snackbar = Snackbar.make(mRoot, R.string.only_premium, Snackbar.LENGTH_LONG);
+                snackbar.setAction(R.string.activate, action -> {
+                    BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
+                    subsDF.show(getSupportFragmentManager(), subsDF.getTag());
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.FONT);
+                    FirebaseAnalytics.getInstance(this).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+                });
                 break;
             case ENABLE_AUTO_SYNC:
-                //TODO
+                snackbar = Snackbar.make(mRoot, R.string.auto_sync_disabled, Snackbar.LENGTH_LONG);
+                snackbar.setAction(R.string.enable_auto_sync, v -> {
+                    snackbar.dismiss();
+                    BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
+                    subsDF.show(getSupportFragmentManager(), subsDF.getTag());
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.AUTO_SYNC);
+                    mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+                });
+                snackbar.setActionTextColor(ContextCompat.getColor(BaseActivity.this, R.color.material_green_500));
                 break;
             default:
                 throw new IllegalArgumentException("unexpected callToActionReason");
         }
+        snackbar.setActionTextColor(ContextCompat.getColor(BaseActivity.this, R.color.material_green_500));
+        snackbar.show();
     }
 
     /**

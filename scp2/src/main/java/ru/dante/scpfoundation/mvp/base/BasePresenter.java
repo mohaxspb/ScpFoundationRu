@@ -23,7 +23,7 @@ public abstract class BasePresenter<V extends BaseMvp.View>
         extends MvpNullObjectBasePresenter<V>
         implements BaseMvp.Presenter<V> {
 
-    protected MyPreferenceManager mMyPreferencesManager;
+    MyPreferenceManager mMyPreferencesManager;
     protected DbProviderFactory mDbProviderFactory;
     protected ApiClient mApiClient;
 

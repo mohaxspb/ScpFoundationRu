@@ -141,4 +141,6 @@
     <string name="sync_fav_success">Статья синхронизирована</string>
     <string name="app_cracked">Зарегистрирована попытка взлома базы данных Фонда. Данные будут удалены.</string>
     <string name="deleting_data">Удаляю секретные данные…</string>
+    <string name="auto_sync_disabled">Автоматическая синхронизация отключена</string>
+    <string name="enable_auto_sync">Включить</string>
 </resources>
