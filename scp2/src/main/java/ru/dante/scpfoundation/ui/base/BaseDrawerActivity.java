@@ -99,6 +99,7 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
         }
 
 //        onGetUserFromDB(mPresenter.getUser());
+        updateUser(mPresenter.getUser());
     }
 
     /**
@@ -175,7 +176,11 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
 
             HeaderViewHolderLogined headerViewHolder = new HeaderViewHolderLogined(headerLogined);
 
-            headerViewHolder.logout.setOnClickListener(view -> mPresenter.logoutUser());
+            headerViewHolder.logout.setOnClickListener(view -> {
+                        mPresenter.logoutUser();
+                        mDrawerLayout.closeDrawer(GravityCompat.START);
+                    }
+            );
 
             headerViewHolder.inapp.setOnClickListener(view -> {
                 BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
