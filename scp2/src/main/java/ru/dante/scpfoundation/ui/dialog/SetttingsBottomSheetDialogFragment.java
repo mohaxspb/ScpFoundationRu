@@ -2,21 +2,17 @@ package ru.dante.scpfoundation.ui.dialog;
 
 import android.app.Dialog;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.StringDef;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v7.widget.SwitchCompat;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
@@ -36,9 +32,9 @@ import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.manager.MyNotificationManager;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
+import ru.dante.scpfoundation.ui.adapter.SettingsSpinnerAdapter;
 import ru.dante.scpfoundation.ui.base.BaseBottomSheetDialogFragment;
 import ru.dante.scpfoundation.util.AttributeGetter;
-import ru.dante.scpfoundation.util.DimensionUtils;
 import timber.log.Timber;
 import uk.co.chrisjenx.calligraphy.CalligraphyUtils;
 
@@ -150,64 +146,8 @@ public class SetttingsBottomSheetDialogFragment
         List<String> fontsList = Arrays.asList(getResources().getStringArray(R.array.fonts_names));
 
         ArrayAdapter<String> adapter =
-                new ArrayAdapter<String>(getActivity(), R.layout.design_list_spinner_item_font, fontsList) {
-                    @Override
-                    public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-                        View v = convertView;
-
-                        if (v == null) {
-                            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-                            v = inflater.inflate(R.layout.design_list_spinner_item_font, parent, false);
-                        }
-
-                        String fontPath = fontsPathsList.get(position);
-                        TextView textView = (TextView) v;
-                        textView.setText(fontsList.get(position));
-                        int padding = DimensionUtils.getDefaultMargin();
-                        textView.setPadding(padding, padding, padding, padding);
-                        CalligraphyUtils.applyFontToTextView(parent.getContext(), textView, fontPath);
-
-                        boolean isNightMode = mMyPreferenceManager.isNightMode();
-                        int backgroundColorSelected = isNightMode ? Color.parseColor("#33ECEFF1") : Color.parseColor("#33724646");
-//                        int backgroundColorUnselected = AttributeGetter.getColor(parent.getContext(), R.attr.windowbackgroundOverrided);
-                        int backgroundColorUnselected = isNightMode ? Color.parseColor("#3337474F") : Color.parseColor("#33ECEFF1");
-
-                        boolean isSelected = position == fontsPathsList.indexOf(mMyPreferenceManager.getFontPath());
-//                        Timber.d("isSelected: %s", isSelected);
-
-                        v.setBackgroundColor(isSelected ? backgroundColorSelected : backgroundColorUnselected);
-
-                        return v;
-                    }
-
-                    @NonNull
-                    @Override
-                    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-                        View v = convertView;
-
-                        if (v == null) {
-                            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-                            v = inflater.inflate(R.layout.design_list_spinner_item_font, parent, false);
-                        }
-
-                        String fontPath = fontsPathsList.get(position);
-                        TextView textView = (TextView) v;
-                        textView.setText(fontsList.get(position));
-                        int padding = DimensionUtils.getDefaultMarginSmall();
-                        textView.setPadding(padding, padding, padding, padding);
-                        CalligraphyUtils.applyFontToTextView(parent.getContext(), textView, fontPath);
-
-                        boolean isNightMode = mMyPreferenceManager.isNightMode();
-                        int backgroundColorSelected = isNightMode ? Color.parseColor("#ECEFF1") : Color.parseColor("#724646");
-                        int backgroundColorUnselected = AttributeGetter.getColor(parent.getContext(), R.attr.windowbackgroundOverrided);
-
-                        boolean isSelected = position == fontPath.indexOf(mMyPreferenceManager.getFontPath());
-
-                        v.setBackgroundColor(isSelected ? backgroundColorSelected : backgroundColorUnselected);
-
-                        return v;
-                    }
-                };
+                new SettingsSpinnerAdapter(getActivity(), R.layout.design_list_spinner_item_font, fontsList, fontsPathsList);
+        adapter.setDropDownViewResource(R.layout.design_list_spinner_item_font);
 
         Drawable.ConstantState fontsSpinnerDrawableConstantState = fontPreferedSpinner.getBackground().getConstantState();
         if (fontsSpinnerDrawableConstantState != null) {
@@ -227,13 +167,14 @@ public class SetttingsBottomSheetDialogFragment
                 public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
                     Timber.d("onItemSelected position: %s, font: %s", position, fontsList.get(position));
                     //close all except 2 for unsubscribed
-                    if (position > 1 && getBaseActivity().getOwnedItems().isEmpty()) {
+//                    if (position > 1 && !getBaseActivity().getOwnedItems().isEmpty()) {
+                    if (position > 1 && !mMyPreferenceManager.isHasSubscription()) {
                         Timber.d("show subs dialog");
 
                         fontPreferedSpinner.setSelection(fontsPathsList.indexOf(mMyPreferenceManager.getFontPath()));
-
+                        showSnackBarWithAction(Constants.Firebase.CallToActionReason.ENABLE_FONTS);
+                    } else {
                         mMyPreferenceManager.setFontPath(fontsPathsList.get(position));
-                        getBaseActivity().showSnackBarWithAction(Constants.Firebase.CallToActionReason.ENABLE_FONTS);
                     }
                 }
 
