@@ -1,5 +1,7 @@
 package ru.dante.scpfoundation.db;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Pair;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -9,6 +11,7 @@ import java.util.Collections;
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.RealmObject;
 import io.realm.RealmResults;
 import io.realm.Sort;
 import ru.dante.scpfoundation.Constants;
@@ -18,6 +21,9 @@ import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.db.model.User;
 import ru.dante.scpfoundation.db.model.VkImage;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.android.schedulers.HandlerScheduler;
+import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 /**
@@ -600,7 +606,7 @@ public class DbProvider {
                             }
                             realmArticle.isInReaden = article.isRead;
 
-                            realmArticle.synced = true;
+                            realmArticle.synced = Article.SYNCED_OK;
 
                             realm.insert(realmArticle);
                         } else {
@@ -612,7 +618,7 @@ public class DbProvider {
                             }
                             realmArticle.isInReaden = article.isRead;
 
-                            realmArticle.synced = true;
+                            realmArticle.synced = Article.SYNCED_OK;
                         }
                     }
                 },
@@ -654,7 +660,7 @@ public class DbProvider {
                 realm -> {
                     Article articleInDb = realm.where(Article.class).equalTo(Article.FIELD_URL, article.url).findFirst();
                     if (articleInDb != null) {
-                        articleInDb.synced = synced;
+                        articleInDb.synced = synced ? Article.SYNCED_OK : Article.SYNCED_NEED;
 //                        subscriber.onCompleted();
                     } else {
                         subscriber.onError(new ScpNoArticleForIdError(article.url));
@@ -662,7 +668,7 @@ public class DbProvider {
                 },
                 () -> {
                     mRealm.close();
-                    article.synced = synced;
+                    article.synced = synced ? Article.SYNCED_OK : Article.SYNCED_NEED;
                     subscriber.onNext(article);
                     subscriber.onCompleted();
                 },
@@ -671,5 +677,15 @@ public class DbProvider {
                     subscriber.onError(error);
                 })
         );
+    }
+
+    public Observable<List<Article>> getUnsynedArticlesManaged() {
+        return mRealm.where(Article.class)
+                .equalTo(Article.FIELD_SYNCED, Article.SYNCED_NEED)
+                .findAll()
+                .asObservable()
+                .first()
+                .flatMap(realmResults -> Observable.just(mRealm.copyFromRealm(realmResults)))
+                .doOnCompleted(this::close);
     }
 }

@@ -296,13 +296,13 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
                 break;
             case ENABLE_AUTO_SYNC:
                 snackbar = Snackbar.make(mRoot, R.string.auto_sync_disabled, Snackbar.LENGTH_LONG);
-                snackbar.setAction(R.string.enable_auto_sync, v -> {
+                snackbar.setAction(R.string.turn_on, v -> {
                     snackbar.dismiss();
                     BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
                     subsDF.show(getSupportFragmentManager(), subsDF.getTag());
 
                     Bundle bundle = new Bundle();
-                    bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.AUTO_SYNC);
+                    bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.AUTO_SYNC_SNACKBAR);
                     mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
                 });
                 break;

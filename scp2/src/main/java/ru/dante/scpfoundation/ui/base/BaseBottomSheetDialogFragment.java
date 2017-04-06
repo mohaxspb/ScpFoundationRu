@@ -104,7 +104,6 @@ public abstract class BaseBottomSheetDialogFragment extends BottomSheetDialogFra
             case REMOVE_ADS:
                 snackbar = Snackbar.make(mRoot, R.string.remove_ads, Snackbar.LENGTH_LONG);
                 snackbar.setAction(R.string.yes_bliad, v -> {
-                    snackbar.dismiss();
                     BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
                     subsDF.show(getChildFragmentManager(), subsDF.getTag());
 
@@ -126,13 +125,12 @@ public abstract class BaseBottomSheetDialogFragment extends BottomSheetDialogFra
                 break;
             case ENABLE_AUTO_SYNC:
                 snackbar = Snackbar.make(mRoot, R.string.auto_sync_disabled, Snackbar.LENGTH_LONG);
-                snackbar.setAction(R.string.enable_auto_sync, v -> {
-                    snackbar.dismiss();
+                snackbar.setAction(R.string.turn_on, v -> {
                     BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
                     subsDF.show(getChildFragmentManager(), subsDF.getTag());
 
                     Bundle bundle = new Bundle();
-                    bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.AUTO_SYNC);
+                    bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.AUTO_SYNC_SNACKBAR);
                     FirebaseAnalytics.getInstance(getActivity()).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
                 });
                 break;

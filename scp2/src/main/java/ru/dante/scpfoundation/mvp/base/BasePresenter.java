@@ -1,17 +1,26 @@
 package ru.dante.scpfoundation.mvp.base;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.hannesdorfmann.mosby.mvp.MvpNullObjectBasePresenter;
+
+import java.util.List;
 
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.api.ApiClient;
+import ru.dante.scpfoundation.db.DbProvider;
 import ru.dante.scpfoundation.db.DbProviderFactory;
 import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.db.model.User;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.mvp.contract.LoginActions;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 /**
@@ -67,10 +76,9 @@ public abstract class BasePresenter<V extends BaseMvp.View>
     }
 
     @Override
-    public void updateArticleInFirebase(Article article, boolean shouldShowResultMessage) {
+    public void updateArticleInFirebase(Article article, boolean showResultMessage) {
         Timber.d("updateArticleInFirebase: %s", article.url);
         if (!mMyPreferencesManager.isHasSubscription()) {
-
             long curNumOfAttempts = mMyPreferencesManager.getNumOfAttemptsToAutoSync();
             long maxNumOfAttempts = FirebaseRemoteConfig.getInstance()
                     .getLong(Constants.Firebase.RemoteConfigKeys.NUM_OF_SYNC_ATTEMPTS_BEFORE_CALL_TO_ACTION);
@@ -92,14 +100,48 @@ public abstract class BasePresenter<V extends BaseMvp.View>
                         article1 -> {
                             Timber.d("sync article onComplete: %s", article1.url);
                             //show only for favorites
-                            if (shouldShowResultMessage) {
+                            if (showResultMessage) {
                                 getView().showMessage(R.string.sync_fav_success);
                             }
                         },
                         e -> {
                             Timber.e(e);
-                            if (shouldShowResultMessage) {
+                            if (showResultMessage) {
                                 getView().showError(new Throwable(MyApplication.getAppInstance().getString(R.string.error_while_sync)));
+                            }
+                        }
+                );
+    }
+
+    @Override
+    public void syncArticles(boolean showResultMessage) {
+        Timber.d("syncArticles showResultMessage: %s", showResultMessage);
+        //TODO
+        //get unsynced articles from DB
+        //write them to firebase
+        //mark them as synced
+        Observable.<List<Article>>create(subscriber -> {
+            mDbProviderFactory.getDbProvider().getUnsynedArticlesManaged().subscribe(
+                    data -> {
+                        Timber.d("data: %s", data);
+                        Timber.d("data.get(0). %s", data.get(0).isManaged());
+                        subscriber.onNext(data);
+                        subscriber.onCompleted();
+                    },
+                    e -> {
+                        subscriber.onError(e);
+                    }
+            );
+        })
+                .subscribe(
+                        data -> {
+                            Timber.d("data: %s", data);
+                            Timber.d("data.get(0). %s", data.get(0).isManaged());
+                        },
+                        e -> {
+                            Timber.e(e);
+                            if (showResultMessage) {
+                                getView().showMessage(R.string.error_while_all_data_sync);
                             }
                         }
                 );

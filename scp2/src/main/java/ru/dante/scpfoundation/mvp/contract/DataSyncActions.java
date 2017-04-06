@@ -9,5 +9,7 @@ import ru.dante.scpfoundation.db.model.Article;
  */
 public interface DataSyncActions {
 
-    void updateArticleInFirebase(Article article, boolean shouldShowResultMessage);
+    void updateArticleInFirebase(Article article, boolean showResultMessage);
+
+    void syncArticles(boolean showResultMessage);
 }

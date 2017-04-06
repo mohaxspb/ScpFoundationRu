@@ -180,6 +180,42 @@
                     android:layout_height="wrap_content"
                     />
             </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+                <TextView
+                    android:id="@+id/sync"
+                    android:layout_width="0dp"
+                    android:gravity="center"
+                    android:padding="@dimen/defaultMargin"
+                    android:layout_gravity="center_vertical"
+                    android:background="?selectableItemBackground"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/sync"
+                    />
+
+                <TextView
+                    android:id="@+id/buy"
+                    android:layout_width="0dp"
+                    android:padding="@dimen/defaultMargin"
+                    android:gravity="center"
+                    android:textColor="@color/material_green_500"
+                    android:layout_gravity="center_vertical"
+                    android:background="?selectableItemBackground"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/enable_auto_sync"
+                    />
+            </LinearLayout>
+
         </LinearLayout>
+
     </android.support.v4.widget.NestedScrollView>
+
 </android.support.design.widget.CoordinatorLayout>

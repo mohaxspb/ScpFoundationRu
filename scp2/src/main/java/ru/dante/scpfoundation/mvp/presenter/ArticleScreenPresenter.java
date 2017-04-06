@@ -23,12 +23,14 @@ public class ArticleScreenPresenter
     @Override
     public void toggleFavorite(String url) {
         Timber.d("toggleFavorite url: %s", url);
-        mDbProviderFactory.getDbProvider().toggleFavorite(url).subscribe(
-                article -> {
-                    Timber.d("fav state now is: %s", article);
-                    updateArticleInFirebase(article, true);
-                },
-                Timber::e
-        );
+        mDbProviderFactory.getDbProvider().toggleFavorite(url)
+                .flatMap(article1 -> mDbProviderFactory.getDbProvider().setArticleSynced(article1, false))
+                .subscribe(
+                        article -> {
+                            Timber.d("fav state now is: %s", article);
+                            updateArticleInFirebase(article, true);
+                        },
+                        Timber::e
+                );
     }
 }

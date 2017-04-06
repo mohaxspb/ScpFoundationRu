@@ -103,6 +103,7 @@ public class ArticlePresenter
         mDbProviderFactory.getDbProvider()
                 .toggleReaden(url)
                 .flatMap(articleUrl -> mDbProviderFactory.getDbProvider().getUnmanagedArticleAsyncOnes(articleUrl))
+                .flatMap(article1 -> mDbProviderFactory.getDbProvider().setArticleSynced(article1, false))
                 .subscribe(
                         article -> {
                             Timber.d("read state now is: %s", article.isInReaden);

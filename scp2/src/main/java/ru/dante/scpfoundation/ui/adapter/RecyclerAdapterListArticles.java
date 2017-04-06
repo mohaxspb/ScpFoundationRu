@@ -6,6 +6,8 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -362,7 +364,7 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
         }
     }
 
-    class HolderMedium extends HolderWithImage {
+    private class HolderMedium extends HolderWithImage {
 
         HolderMedium(View itemView) {
             super(itemView);

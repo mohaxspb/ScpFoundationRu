@@ -71,12 +71,12 @@ public interface Constants {
             }
 
             interface StartScreen {
-                String MAIN_TO_ARTICLE_SNACK_BAR = "MAIN_TO_ARTICLE_SNACK_BAR";
                 String SNACK_BAR = "SNACK_BAR";
                 String MENU = "MENU";
                 String DRAWER_HEADER_LOGINED = "DRAWER_HEADER_LOGINED";
                 String FONT = "FONT";
-                String AUTO_SYNC = "AUTO_SYNC";
+                String AUTO_SYNC_SNACKBAR = "AUTO_SYNC_SNACKBAR";
+                String AUTO_SYNC_FROM_SETTINGS = "AUTO_SYNC_FROM_SETTINGS";
             }
 
             String INVITED_FIVE_FRIENDS = "INVITED_FIVE_FRIENDS";

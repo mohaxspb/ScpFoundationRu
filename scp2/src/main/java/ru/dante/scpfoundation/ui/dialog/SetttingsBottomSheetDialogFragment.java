@@ -19,6 +19,8 @@ import android.widget.FrameLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
@@ -27,6 +29,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
@@ -214,6 +217,24 @@ public class SetttingsBottomSheetDialogFragment
             mMyPreferenceManager.setNotificationVibrationEnabled(checked);
             mMyNotificationManager.checkAlarm();
         });
+    }
+
+    @OnClick(R.id.buy)
+    void onActivateAutoSyncClicked(){
+        Timber.d("onActivateAutoSyncClicked");
+        dismiss();
+        BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
+        subsDF.show(getActivity().getSupportFragmentManager(), subsDF.getTag());
+
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.AUTO_SYNC_FROM_SETTINGS);
+        FirebaseAnalytics.getInstance(getActivity()).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+    }
+
+    @OnClick(R.id.sync)
+    void onSyncClicked(){
+        Timber.d("onSyncClicked");
+        getBaseActivity().createPresenter().syncArticles(true);
     }
 
     @NonNull
