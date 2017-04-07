@@ -83,6 +83,9 @@ public class SetttingsBottomSheetDialogFragment
     @BindView(R.id.notifVibrateIsOnSwitch)
     SwitchCompat notifVibrateIsOnSwitch;
 
+    @BindView(R.id.buy)
+    TextView mActivateAutoSync;
+
     @Inject
     protected MyPreferenceManager mMyPreferenceManager;
     @Inject
@@ -217,10 +220,13 @@ public class SetttingsBottomSheetDialogFragment
             mMyPreferenceManager.setNotificationVibrationEnabled(checked);
             mMyNotificationManager.checkAlarm();
         });
+
+        //hide activate subs for good users
+        mActivateAutoSync.setVisibility(getBaseActivity().getOwnedItems().isEmpty() ? View.VISIBLE : View.GONE);
     }
 
     @OnClick(R.id.buy)
-    void onActivateAutoSyncClicked(){
+    void onActivateAutoSyncClicked() {
         Timber.d("onActivateAutoSyncClicked");
         dismiss();
         BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
@@ -232,7 +238,7 @@ public class SetttingsBottomSheetDialogFragment
     }
 
     @OnClick(R.id.sync)
-    void onSyncClicked(){
+    void onSyncClicked() {
         Timber.d("onSyncClicked");
         getBaseActivity().createPresenter().syncArticles(true);
     }

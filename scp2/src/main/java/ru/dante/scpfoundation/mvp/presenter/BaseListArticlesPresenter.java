@@ -128,8 +128,9 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
     public void toggleFavoriteState(Article article) {
         Timber.d("toggleFavoriteState: %s", article);
         mDbProviderFactory.getDbProvider().toggleFavorite(article.url)
-                .flatMap(article1 -> mDbProviderFactory.getDbProvider().setArticleSynced(article1, false))
+                .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread())
+                .flatMap(article1 -> mDbProviderFactory.getDbProvider().setArticleSynced(article1, false))
                 .subscribe(getToggleFavoriteSubscriber());
     }
 

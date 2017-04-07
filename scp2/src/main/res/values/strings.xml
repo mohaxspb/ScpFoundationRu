@@ -147,4 +147,5 @@
     <string name="sync">Синхронизировать</string>
     <string name="subscribe">Подписаться</string>
     <string name="error_while_all_data_sync">Не удалось сохранить данные в облако</string>
+    <string name="all_data_sync_success">Все данные сохранены с облако!</string>
 </resources>

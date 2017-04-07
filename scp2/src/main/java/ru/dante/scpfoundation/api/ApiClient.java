@@ -33,8 +33,10 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import io.realm.RealmList;
 import okhttp3.Call;
@@ -1160,6 +1162,47 @@ public class ApiClient {
             reference.setValue(articleInFirebase, (databaseError, databaseReference) -> {
                 if (databaseError == null) {
                     subscriber.onNext(article);
+                    subscriber.onCompleted();
+                } else {
+                    subscriber.onError(databaseError.toException());
+                }
+            });
+        });
+    }
+
+    public Observable<List<Article>> writeArticlesToFirebase(List<Article> articles) {
+        return Observable.create(subscriber -> {
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (firebaseUser == null) {
+                subscriber.onError(new IllegalArgumentException("firebase user is null"));
+                return;
+            }
+
+            Map<String, Object> users = new HashMap<>();
+
+            for (Article article : articles) {
+                String url = article.url.replace(BuildConfig.BASE_API_URL, "");
+
+                ArticleInFirebase articleInFirebase = new ArticleInFirebase(
+                        article.isInFavorite != Article.ORDER_NONE,
+                        article.isInReaden,
+                        article.title,
+                        article.url,
+                        System.currentTimeMillis()
+                );
+
+                users.put(url, articleInFirebase);
+            }
+
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference reference = database.getReference()
+                    .child(Constants.Firebase.Refs.USERS)
+                    .child(firebaseUser.getUid())
+                    .child(Constants.Firebase.Refs.ARTICLES);
+
+            reference.updateChildren(users, (databaseError, databaseReference) -> {
+                if (databaseError == null) {
+                    subscriber.onNext(articles);
                     subscriber.onCompleted();
                 } else {
                     subscriber.onError(databaseError.toException());

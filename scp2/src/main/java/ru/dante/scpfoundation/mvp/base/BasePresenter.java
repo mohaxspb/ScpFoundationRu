@@ -1,8 +1,5 @@
 package ru.dante.scpfoundation.mvp.base;
 
-import android.os.Handler;
-import android.os.Looper;
-
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.hannesdorfmann.mosby.mvp.MvpNullObjectBasePresenter;
 
@@ -12,15 +9,12 @@ import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.api.ApiClient;
-import ru.dante.scpfoundation.db.DbProvider;
 import ru.dante.scpfoundation.db.DbProviderFactory;
 import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.db.model.User;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.mvp.contract.LoginActions;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 /**
@@ -116,27 +110,25 @@ public abstract class BasePresenter<V extends BaseMvp.View>
     @Override
     public void syncArticles(boolean showResultMessage) {
         Timber.d("syncArticles showResultMessage: %s", showResultMessage);
-        //TODO
         //get unsynced articles from DB
         //write them to firebase
         //mark them as synced
-        Observable.<List<Article>>create(subscriber -> {
-            mDbProviderFactory.getDbProvider().getUnsynedArticlesManaged().subscribe(
-                    data -> {
-                        Timber.d("data: %s", data);
-                        Timber.d("data.get(0). %s", data.get(0).isManaged());
-                        subscriber.onNext(data);
-                        subscriber.onCompleted();
-                    },
-                    e -> {
-                        subscriber.onError(e);
-                    }
-            );
-        })
+        Observable.<List<Article>>create(subscriber -> mDbProviderFactory.getDbProvider().getUnsynedArticlesUnmanaged()
                 .subscribe(
                         data -> {
-                            Timber.d("data: %s", data);
-                            Timber.d("data.get(0). %s", data.get(0).isManaged());
+                            subscriber.onNext(data);
+                            subscriber.onCompleted();
+                        },
+                        subscriber::onError
+                ))
+                .flatMap(articles -> mApiClient.writeArticlesToFirebase(articles))
+                .flatMap(articles -> mDbProviderFactory.getDbProvider().setArticlesSynced(articles, true))
+                .subscribe(
+                        data -> {
+                            Timber.d("articles saved to firebase: %s", data);
+                            if (showResultMessage) {
+                                getView().showMessage(R.string.all_data_sync_success);
+                            }
                         },
                         e -> {
                             Timber.e(e);

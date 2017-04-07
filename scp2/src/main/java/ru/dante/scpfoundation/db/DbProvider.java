@@ -1,7 +1,5 @@
 package ru.dante.scpfoundation.db;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Pair;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -11,7 +9,6 @@ import java.util.Collections;
 import java.util.List;
 
 import io.realm.Realm;
-import io.realm.RealmObject;
 import io.realm.RealmResults;
 import io.realm.Sort;
 import ru.dante.scpfoundation.Constants;
@@ -21,9 +18,6 @@ import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.db.model.User;
 import ru.dante.scpfoundation.db.model.VkImage;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.android.schedulers.HandlerScheduler;
-import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 /**
@@ -296,21 +290,21 @@ public class DbProvider {
                 }));
     }
 
-    /**
-     * @param articleUrl used as ID
-     * @return Observable that emits managed, valid and loaded Article
-     * and emits changes to it
-     * or null if there is no one in DB with this url
-     */
-    public Observable<Article> getArticleAsync(String articleUrl) {
-        return mRealm.where(Article.class)
-                .equalTo(Article.FIELD_URL, articleUrl)
-                .findAllAsync()
-                .<List<Article>>asObservable()
-                .filter(RealmResults::isLoaded)
-                .filter(RealmResults::isValid)
-                .flatMap(arts -> arts.isEmpty() ? Observable.just(null) : Observable.just(arts.first()));
-    }
+//    /**
+//     * @param articleUrl used as ID
+//     * @return Observable that emits managed, valid and loaded Article
+//     * and emits changes to it
+//     * or null if there is no one in DB with this url
+//     */
+//    public Observable<Article> getArticleAsync(String articleUrl) {
+//        return mRealm.where(Article.class)
+//                .equalTo(Article.FIELD_URL, articleUrl)
+//                .findAllAsync()
+//                .<List<Article>>asObservable()
+//                .filter(RealmResults::isLoaded)
+//                .filter(RealmResults::isValid)
+//                .flatMap(arts -> arts.isEmpty() ? Observable.just(null) : Observable.just(arts.first()));
+//    }
 
     public Observable<Article> getUnmanagedArticleAsync(String articleUrl) {
         return mRealm.where(Article.class)
@@ -516,7 +510,7 @@ public class DbProvider {
                 }));
     }
 
-    public Observable<Void> deleteUserData() {
+    private Observable<Void> deleteUserData() {
         return Observable.create(subscriber -> mRealm.executeTransactionAsync(
                 realm -> {
                     realm.delete(User.class);
@@ -679,7 +673,7 @@ public class DbProvider {
         );
     }
 
-    public Observable<List<Article>> getUnsynedArticlesManaged() {
+    public Observable<List<Article>> getUnsynedArticlesUnmanaged() {
         return mRealm.where(Article.class)
                 .equalTo(Article.FIELD_SYNCED, Article.SYNCED_NEED)
                 .findAll()
@@ -687,5 +681,30 @@ public class DbProvider {
                 .first()
                 .flatMap(realmResults -> Observable.just(mRealm.copyFromRealm(realmResults)))
                 .doOnCompleted(this::close);
+    }
+
+    public Observable<List<Article>> setArticlesSynced(List<Article> articles, boolean synced) {
+        return Observable.create(subscriber -> mRealm.executeTransactionAsync(
+                realm -> {
+                    for (Article article : articles) {
+                        Article articleInDb = realm.where(Article.class).equalTo(Article.FIELD_URL, article.url).findFirst();
+                        if (articleInDb != null) {
+                            articleInDb.synced = synced ? Article.SYNCED_OK : Article.SYNCED_NEED;
+                        }
+                    }
+                },
+                () -> {
+                    mRealm.close();
+                    for (Article article : articles) {
+                        article.synced = synced ? Article.SYNCED_OK : Article.SYNCED_NEED;
+                    }
+                    subscriber.onNext(articles);
+                    subscriber.onCompleted();
+                },
+                error -> {
+                    mRealm.close();
+                    subscriber.onError(error);
+                })
+        );
     }
 }
