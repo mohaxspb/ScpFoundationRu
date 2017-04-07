@@ -30,7 +30,6 @@ public class OurApplicationHolder extends BaseHolder<BaseModel, BaseAdapterClick
 
     public OurApplicationHolder(View itemView) {
         super(itemView);
-        MyApplication.getAppComponent().inject(this);
     }
 
     @Override
