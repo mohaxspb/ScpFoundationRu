@@ -20,6 +20,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -240,6 +241,10 @@ public class SetttingsBottomSheetDialogFragment
     @OnClick(R.id.sync)
     void onSyncClicked() {
         Timber.d("onSyncClicked");
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            showSnackBarWithAction(Constants.Firebase.CallToActionReason.SYNC_NEED_AUTH);
+            return;
+        }
         getBaseActivity().createPresenter().syncArticles(true);
     }
 

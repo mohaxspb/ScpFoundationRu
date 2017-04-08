@@ -134,6 +134,13 @@ public abstract class BaseBottomSheetDialogFragment extends BottomSheetDialogFra
                     FirebaseAnalytics.getInstance(getActivity()).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
                 });
                 break;
+            case SYNC_NEED_AUTH:
+                snackbar = Snackbar.make(mRoot, R.string.sync_need_auth, Snackbar.LENGTH_LONG);
+                snackbar.setAction(R.string.authorize, v -> {
+                    snackbar.dismiss();
+                    getBaseActivity().startLogin(Constants.Firebase.SocialProvider.VK);
+                });
+                break;
             default:
                 throw new IllegalArgumentException("unexpected callToActionReason");
         }

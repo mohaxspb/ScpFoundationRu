@@ -33,7 +33,7 @@ public interface Constants {
 //        }
 
         enum CallToActionReason{
-            REMOVE_ADS, ENABLE_AUTO_SYNC, ENABLE_FONTS
+            REMOVE_ADS, ENABLE_AUTO_SYNC, SYNC_NEED_AUTH, ENABLE_FONTS
         }
 
         enum SocialProvider{
