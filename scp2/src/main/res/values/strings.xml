@@ -151,4 +151,5 @@
     <string name="sync_need_auth">Требуется авторизация</string>
     <string name="authorize">Авторизоваться</string>
     <string name="settings_data_sync">Сохранение статей в облако</string>
+    <string name="all_data_already_synced">Данные уже синхронизированы, дополнительных действий не требуется.</string>
 </resources>

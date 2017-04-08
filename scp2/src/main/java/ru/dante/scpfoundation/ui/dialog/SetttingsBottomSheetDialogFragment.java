@@ -246,6 +246,7 @@ public class SetttingsBottomSheetDialogFragment
             return;
         }
         getBaseActivity().createPresenter().syncArticles(true);
+        dismiss();
     }
 
     @NonNull

@@ -122,13 +122,25 @@ public abstract class BasePresenter<V extends BaseMvp.View>
                         },
                         subscriber::onError
                 ))
-                .flatMap(articles -> mApiClient.writeArticlesToFirebase(articles))
-                .flatMap(articles -> mDbProviderFactory.getDbProvider().setArticlesSynced(articles, true))
+                .flatMap(articles -> {
+                    if (articles.isEmpty()) {
+                        return Observable.just(articles);
+                    } else {
+                        return mApiClient.writeArticlesToFirebase(articles)
+                                .flatMap(writebArticles -> mDbProviderFactory.getDbProvider().setArticlesSynced(writebArticles, true));
+                    }
+                })
+//                .flatMap(articles -> mApiClient.writeArticlesToFirebase(articles))
+//                .flatMap(articles -> mDbProviderFactory.getDbProvider().setArticlesSynced(articles, true))
                 .subscribe(
                         data -> {
                             Timber.d("articles saved to firebase: %s", data);
                             if (showResultMessage) {
-                                getView().showMessage(R.string.all_data_sync_success);
+                                if (data.isEmpty()) {
+                                    getView().showMessage(R.string.all_data_already_synced);
+                                } else {
+                                    getView().showMessage(R.string.all_data_sync_success);
+                                }
                             }
                         },
                         e -> {
