@@ -1,7 +1,17 @@
 package ru.dante.scpfoundation.api;
 
+import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Pair;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.api.VKApi;
@@ -11,7 +21,9 @@ import com.vk.sdk.api.VKParameters;
 import com.vk.sdk.api.VKRequest;
 import com.vk.sdk.api.VKResponse;
 import com.vk.sdk.api.model.VKApiPhoto;
+import com.vk.sdk.api.model.VKApiUser;
 import com.vk.sdk.api.model.VKAttachments;
+import com.vk.sdk.api.model.VKList;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -21,10 +33,14 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import io.realm.RealmList;
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -36,13 +52,18 @@ import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.api.error.ScpException;
 import ru.dante.scpfoundation.api.error.ScpNoSearchResultsException;
 import ru.dante.scpfoundation.api.error.ScpParseException;
+import ru.dante.scpfoundation.api.model.firebase.ArticleInFirebase;
+import ru.dante.scpfoundation.api.model.firebase.FirebaseObjectUser;
 import ru.dante.scpfoundation.api.model.response.VkGalleryResponse;
 import ru.dante.scpfoundation.api.model.response.VkGroupJoinResponse;
 import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.db.model.RealmString;
+import ru.dante.scpfoundation.db.model.User;
 import ru.dante.scpfoundation.db.model.VkImage;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 /**
@@ -191,7 +212,7 @@ public class ApiClient {
 
                     Article article = new Article();
                     article.title = title;
-                    article.url = url;
+                    article.url = url.trim();
                     article.rating = rating;
                     article.authorName = authorName;
                     article.authorUrl = authorUrl;
@@ -915,5 +936,278 @@ public class ApiClient {
             images.add(image);
         }
         return images;
+    }
+
+    public Observable<VKApiUser> getUserDataFromVk() {
+        return Observable.create(subscriber -> VKApi.users().get(VKParameters.from(VKApiConst.FIELDS, "photo_200")).executeWithListener(new VKRequest.VKRequestListener() {
+            @Override
+            public void onComplete(VKResponse response) {
+                //noinspection unchecked
+                VKApiUser vkApiUser = ((VKList<VKApiUser>) response.parsedModel).get(0);
+                Timber.d("User name %s %s", vkApiUser.first_name, vkApiUser.last_name);
+
+                subscriber.onNext(vkApiUser);
+                subscriber.onCompleted();
+            }
+
+            @Override
+            public void onError(VKError error) {
+                subscriber.onError(error.httpError);
+            }
+        }));
+    }
+
+    private Observable<FirebaseUser> authWithCustomToken(String token) {
+        return Observable.create(subscriber ->
+                FirebaseAuth.getInstance().signInWithCustomToken(token).addOnCompleteListener(task -> {
+                    Timber.d("signInWithCustomToken:onComplete: %s", task.isSuccessful());
+
+                    // If sign in fails, display a message to the user. If sign in succeeds
+                    // the auth state listener will be notified and logic to handle the
+                    // signed in user can be handled in the listener.
+                    if (!task.isSuccessful()) {
+                        subscriber.onError(task.getException());
+                    } else {
+                        subscriber.onNext(task.getResult().getUser());
+                        subscriber.onCompleted();
+                    }
+                }));
+    }
+
+    //todo use it via retrofit and update server to return JSON with request result
+    public Observable<FirebaseUser> getAuthInFirebaseWithSocialProviderObservable(Constants.Firebase.SocialProvider provider) {
+        Observable<FirebaseUser> authToFirebaseObservable;
+        switch (provider) {
+            case VK:
+                authToFirebaseObservable = Observable.<String>create(subscriber -> {
+                    String url = BuildConfig.TOOLS_API_URL + "MyServlet";
+                    String params = "?provider=vk&token=" +
+                            VKAccessToken.currentToken().accessToken +
+                            "&email=" + VKAccessToken.currentToken().email +
+                            "&id=" + VKAccessToken.currentToken().userId;
+                    Request request = new Request.Builder()
+                            .url(url + params)
+                            .build();
+                    mOkHttpClient.newCall(request).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+                            subscriber.onError(e);
+                        }
+
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+                            subscriber.onNext(response.body().string());
+                            subscriber.onCompleted();
+                        }
+                    });
+                })
+                        .flatMap(response -> TextUtils.isEmpty(response) ?
+                                Observable.error(new IllegalArgumentException("empty token")) :
+                                Observable.just(response))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .flatMap(this::authWithCustomToken);
+                break;
+            default:
+                throw new IllegalArgumentException("unexpected provider");
+        }
+        return authToFirebaseObservable;
+    }
+
+    public Observable<FirebaseObjectUser> getUserObjectFromFirebaseObservable() {
+        return Observable.create(subscriber -> {
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (firebaseUser != null) {
+                FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+                firebaseDatabase.getReference()
+                        .child(Constants.Firebase.Refs.USERS)
+                        .child(firebaseUser.getUid())
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                FirebaseObjectUser userFromFireBase = dataSnapshot.getValue(FirebaseObjectUser.class);
+                                subscriber.onNext(userFromFireBase);
+                                subscriber.onCompleted();
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                                Timber.e(databaseError.toException(), "onCancelled");
+                                subscriber.onError(databaseError.toException());
+                            }
+                        });
+            } else {
+                subscriber.onNext(null);
+                subscriber.onCompleted();
+            }
+        });
+    }
+
+    public Observable<Void> updateFirebaseUsersEmailObservable() {
+        return Observable.create(subscriber -> {
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            if (user != null) {
+                if (VKAccessToken.currentToken() != null) {
+                    user.updateEmail(VKAccessToken.currentToken().email).addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Timber.d("User profile updated email.");
+                            subscriber.onNext(null);
+                            subscriber.onCompleted();
+                        } else {
+                            Timber.e("error while update user email");
+                            subscriber.onError(task.getException());
+                        }
+                    });
+                } else {
+                    Timber.d("not logined in vk, so cant get email and update firebase user with it");
+                    subscriber.onError(new IllegalArgumentException("vk token is null, so can't get email to update firebase user"));
+                }
+            } else {
+                Timber.e("firebase user is null while try to update!");
+                subscriber.onError(new IllegalStateException("Firebase user is null while try to update its profile"));
+            }
+        });
+    }
+
+    public Observable<Void> updateFirebaseUsersNameAndAvatarObservable(String name, String avatar) {
+        return Observable.create(subscriber -> {
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            if (user != null) {
+                UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                        .setDisplayName(name)
+                        .setPhotoUri(Uri.parse(avatar))
+                        .build();
+
+                user.updateProfile(profileUpdates).addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Timber.d("User profile updated name and photo.");
+                        subscriber.onNext(null);
+                        subscriber.onCompleted();
+                    } else {
+                        Timber.e("error while update user name and photo");
+                        subscriber.onError(task.getException());
+                    }
+                });
+            } else {
+                Timber.e("firebase user is null while try to update!");
+                subscriber.onError(new IllegalStateException("Firebase user is null while try to update its profile"));
+            }
+        });
+    }
+
+    public Observable<Pair<String, String>> nameAndAvatarFromProviderObservable(Constants.Firebase.SocialProvider provider) {
+        Observable<Pair<String, String>> nameAvatarObservable;
+        switch (provider) {
+            case VK:
+                nameAvatarObservable = getUserDataFromVk().flatMap(vkApiUser -> {
+                    String displayName = vkApiUser.first_name + " " + vkApiUser.last_name;
+                    String avatarUrl = vkApiUser.photo_200;
+                    return Observable.just(new Pair<>(displayName, avatarUrl));
+                });
+                break;
+            default:
+                throw new RuntimeException("unexpected provider");
+        }
+        return nameAvatarObservable;
+    }
+
+    /**
+     * @param user local DB {@link User} object to write to firebase DB
+     */
+    public Observable<FirebaseObjectUser> writeUserToFirebaseObservable(FirebaseObjectUser user) {
+        return Observable.create(subscriber -> {
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (firebaseUser != null) {
+                FirebaseDatabase.getInstance()
+                        .getReference(Constants.Firebase.Refs.USERS)
+                        .child(firebaseUser.getUid())
+                        .setValue(user, (databaseError, databaseReference) -> {
+                            if (databaseError == null) {
+                                //success
+                                Timber.d("user created");
+                                subscriber.onNext(user);
+                                subscriber.onCompleted();
+                            } else {
+                                subscriber.onError(databaseError.toException());
+                            }
+                        });
+            } else {
+                subscriber.onError(new IllegalStateException("firebase user is null"));
+            }
+        });
+    }
+
+    public Observable<Article> writeArticleToFirebase(Article article) {
+        return Observable.create(subscriber -> {
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (firebaseUser == null) {
+                subscriber.onError(new IllegalArgumentException("firebase user is null"));
+                return;
+            }
+            String url = article.url.replace(BuildConfig.BASE_API_URL, "");
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference reference = database.getReference()
+                    .child(Constants.Firebase.Refs.USERS)
+                    .child(firebaseUser.getUid())
+                    .child(Constants.Firebase.Refs.ARTICLES)
+                    .child(url);
+            ArticleInFirebase articleInFirebase = new ArticleInFirebase(
+                    article.isInFavorite != Article.ORDER_NONE,
+                    article.isInReaden,
+                    article.title,
+                    article.url,
+                    System.currentTimeMillis()
+            );
+
+            reference.setValue(articleInFirebase, (databaseError, databaseReference) -> {
+                if (databaseError == null) {
+                    subscriber.onNext(article);
+                    subscriber.onCompleted();
+                } else {
+                    subscriber.onError(databaseError.toException());
+                }
+            });
+        });
+    }
+
+    public Observable<List<Article>> writeArticlesToFirebase(List<Article> articles) {
+        return Observable.create(subscriber -> {
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (firebaseUser == null) {
+                subscriber.onError(new IllegalArgumentException("firebase user is null"));
+                return;
+            }
+
+            Map<String, Object> users = new HashMap<>();
+
+            for (Article article : articles) {
+                String url = article.url.replace(BuildConfig.BASE_API_URL, "");
+
+                ArticleInFirebase articleInFirebase = new ArticleInFirebase(
+                        article.isInFavorite != Article.ORDER_NONE,
+                        article.isInReaden,
+                        article.title,
+                        article.url,
+                        System.currentTimeMillis()
+                );
+
+                users.put(url, articleInFirebase);
+            }
+
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference reference = database.getReference()
+                    .child(Constants.Firebase.Refs.USERS)
+                    .child(firebaseUser.getUid())
+                    .child(Constants.Firebase.Refs.ARTICLES);
+
+            reference.updateChildren(users, (databaseError, databaseReference) -> {
+                if (databaseError == null) {
+                    subscriber.onNext(articles);
+                    subscriber.onCompleted();
+                } else {
+                    subscriber.onError(databaseError.toException());
+                }
+            });
+        });
     }
 }

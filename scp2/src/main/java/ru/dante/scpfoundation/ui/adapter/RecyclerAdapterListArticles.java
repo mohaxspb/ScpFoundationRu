@@ -6,6 +6,8 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -13,6 +15,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -26,6 +29,7 @@ import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
 import ru.dante.scpfoundation.util.AttributeGetter;
 import ru.dante.scpfoundation.util.DateUtils;
+import timber.log.Timber;
 import uk.co.chrisjenx.calligraphy.CalligraphyUtils;
 
 /**
@@ -42,7 +46,7 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
     @Inject
     MyPreferenceManager mMyPreferenceManager;
 
-    private List<Article> mData;
+    private List<Article> mData = new ArrayList<>();
 
     private ArticleClickListener mArticleClickListener;
     private boolean shouldShowPopupOnFavoriteClick;
@@ -53,8 +57,35 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
     }
 
     public void setData(List<Article> data) {
-        mData = data;
+//        mData = data;
+        int previousCount = mData.size();
+
+//        notifyItemRangeRemoved(0, previousCount);
+
+        mData.clear();
+        mData.addAll(data);
+
+//        notifyItemRangeInserted(0, mData.size());
+        Timber.d("previousCount/mData.size(): %s/%s", previousCount, mData.size());
+
+//        notifyItemRangeChanged(0, mData.size());
         notifyDataSetChanged();
+
+//        if (previousCount != mData.size()) {
+//            Timber.d("previousCount/mData.size(): %s/%s", previousCount, mData);
+//
+//            notifyItemRangeInserted(0, mData.size());
+//        } else {
+//            notifyItemRangeChanged(0, mData.size());
+////            notifyDataSetChanged();
+//        }
+//        notifyItemRangeInserted(0, mData.size());
+//        notifyDataSetChanged();
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return mData.get(position).url.hashCode();
     }
 
     @Override
@@ -273,7 +304,6 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
 
         HolderWithImage(View itemView) {
             super(itemView);
-//            ButterKnife.bind(this, itemView);
         }
 
         void bind(Article article) {
@@ -334,11 +364,10 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
         }
     }
 
-    class HolderMedium extends HolderWithImage {
+    private class HolderMedium extends HolderWithImage {
 
         HolderMedium(View itemView) {
             super(itemView);
-//            ButterKnife.bind(this, itemView);
         }
 
         @Override

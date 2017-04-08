@@ -14,6 +14,8 @@ import ru.dante.scpfoundation.di.DaggerAppComponent;
 import ru.dante.scpfoundation.di.module.AppModule;
 import ru.dante.scpfoundation.di.module.PresentersModule;
 import ru.dante.scpfoundation.di.module.StorageModule;
+import ru.dante.scpfoundation.manager.MyPreferenceManager;
+import ru.dante.scpfoundation.util.SecureUtils;
 import ru.dante.scpfoundation.util.SystemUtils;
 import timber.log.Timber;
 
@@ -83,5 +85,11 @@ public class MyApplication extends MultiDexApplication {
 
         //print versionCode
         Timber.d("VERSION_CODE: %s", BuildConfig.VERSION_CODE);
+
+        //secure
+        if(SecureUtils.checkIfPackageChanged(this) || SecureUtils.checkLuckyPatcher(this)){
+            MyPreferenceManager myPreferenceManager = new MyPreferenceManager(this);
+            myPreferenceManager.setAppCracked(true);
+        }
     }
 }

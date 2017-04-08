@@ -13,6 +13,7 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
@@ -25,7 +26,6 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.vending.billing.IInAppBillingService;
 import com.appodeal.ads.Appodeal;
-import com.appodeal.ads.utils.Log;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
@@ -35,15 +35,9 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.hannesdorfmann.mosby.mvp.MvpActivity;
 import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKCallback;
+import com.vk.sdk.VKScope;
 import com.vk.sdk.VKSdk;
-import com.vk.sdk.api.VKApi;
-import com.vk.sdk.api.VKApiConst;
 import com.vk.sdk.api.VKError;
-import com.vk.sdk.api.VKParameters;
-import com.vk.sdk.api.VKRequest;
-import com.vk.sdk.api.VKResponse;
-import com.vk.sdk.api.model.VKApiUser;
-import com.vk.sdk.api.model.VKList;
 import com.yandex.metrica.YandexMetrica;
 
 import java.lang.reflect.Method;
@@ -66,12 +60,13 @@ import ru.dante.scpfoundation.monetization.util.InappHelper;
 import ru.dante.scpfoundation.monetization.util.MyAdListener;
 import ru.dante.scpfoundation.monetization.util.MyNonSkippableVideoCallbacks;
 import ru.dante.scpfoundation.monetization.util.MySkippableVideoCallbacks;
-import ru.dante.scpfoundation.mvp.base.BaseMvp;
+import ru.dante.scpfoundation.mvp.base.BaseActivityMvp;
 import ru.dante.scpfoundation.mvp.base.MonetizationActions;
 import ru.dante.scpfoundation.ui.dialog.NewVersionDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
 import ru.dante.scpfoundation.ui.dialog.TextSizeDialogFragment;
+import ru.dante.scpfoundation.util.SecureUtils;
 import ru.dante.scpfoundation.util.SystemUtils;
 import timber.log.Timber;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
@@ -81,9 +76,9 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
  * <p>
  * for scp_ru
  */
-public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Presenter<V>>
+public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends BaseActivityMvp.Presenter<V>>
         extends MvpActivity<V, P>
-        implements BaseMvp.View, MonetizationActions, SharedPreferences.OnSharedPreferenceChangeListener {
+        implements BaseActivityMvp.View, MonetizationActions, SharedPreferences.OnSharedPreferenceChangeListener {
 
     @BindView(R.id.root)
     protected View mRoot;
@@ -106,6 +101,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
     private IInAppBillingService mService;
     private List<Item> mOwnedMarketItems = new ArrayList<>();
     private InterstitialAd mInterstitialAd;
+    private MaterialDialog mProgressDialog;
 
     @NonNull
     @Override
@@ -115,6 +111,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Timber.d("onCreate");
         callInjections();
         if (mMyPreferenceManager.isNightMode()) {
             setTheme(R.style.SCP_Theme_Dark);
@@ -126,9 +123,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
         setContentView(getLayoutResId());
         ButterKnife.bind(this);
 
-        if (mToolbar != null) {
-            setSupportActionBar(mToolbar);
-        }
+        setSupportActionBar(mToolbar);
 
         mPresenter.onCreate();
 
@@ -151,6 +146,31 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
     }
 
     @Override
+    public void startLogin(Constants.Firebase.SocialProvider provider) {
+        switch (provider) {
+            case VK:
+                VKSdk.login(this, VKScope.EMAIL, VKScope.GROUPS);
+                break;
+            default:
+                throw new RuntimeException("unexpected provider");
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        //unsubscribe from firebase;
+        mPresenter.onActivityStopped();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //unsubscribe from firebase;
+        mPresenter.onActivityStarted();
+    }
+
+    @Override
     public void initAds() {
         //init frameworks
         MobileAds.initialize(getApplicationContext(), getString(R.string.ads_app_id));
@@ -165,7 +185,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
         Appodeal.confirm(Appodeal.SKIPPABLE_VIDEO);
         if (BuildConfig.DEBUG) {
             Appodeal.setTesting(true);
-            Appodeal.setLogLevel(Log.LogLevel.debug);
+//            Appodeal.setLogLevel(Log.LogLevel.debug);
         }
         Appodeal.initialize(this, appKey, Appodeal.NON_SKIPPABLE_VIDEO | Appodeal.SKIPPABLE_VIDEO);
         Appodeal.setNonSkippableVideoCallbacks(new MyNonSkippableVideoCallbacks() {
@@ -177,7 +197,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
                 long numOfMillis = FirebaseRemoteConfig.getInstance()
                         .getLong(Constants.Firebase.RemoteConfigKeys.REWARDED_VIDEO_COOLDOWN_IN_MILLIS);
                 long hours = numOfMillis / 1000 / 60 / 60;
-                Snackbar.make(mRoot, getString(R.string.ads_reward_gained, hours), Snackbar.LENGTH_LONG).show();
+                showMessage(getString(R.string.ads_reward_gained, hours));
 
                 Bundle bundle = new Bundle();
                 bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.EventType.REWARD_GAINED);
@@ -214,7 +234,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
         if (Appodeal.isLoaded(Appodeal.NON_SKIPPABLE_VIDEO)) {
             Appodeal.show(this, Appodeal.NON_SKIPPABLE_VIDEO);
         } else {
-            Snackbar.make(mRoot, R.string.reward_not_loaded_yet, Snackbar.LENGTH_SHORT).show();
+            showMessage(R.string.reward_not_loaded_yet);
         }
     }
 
@@ -240,7 +260,19 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
             @Override
             public void onAdClosed() {
                 super.onAdClosed();
-                Snackbar snackbar = Snackbar.make(mRoot, R.string.remove_ads, Snackbar.LENGTH_LONG);
+                showSnackBarWithAction(Constants.Firebase.CallToActionReason.REMOVE_ADS);
+            }
+        };
+        showInterstitial(adListener);
+    }
+
+    @Override
+    public void showSnackBarWithAction(Constants.Firebase.CallToActionReason reason) {
+        Timber.d("showSnackBarWithAction: %s", reason);
+        Snackbar snackbar;
+        switch (reason) {
+            case REMOVE_ADS:
+                snackbar = Snackbar.make(mRoot, R.string.remove_ads, Snackbar.LENGTH_LONG);
                 snackbar.setAction(R.string.yes_bliad, v -> {
                     snackbar.dismiss();
                     BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
@@ -250,11 +282,42 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
                     bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.SNACK_BAR);
                     mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
                 });
-                snackbar.setActionTextColor(ContextCompat.getColor(BaseActivity.this, R.color.material_green_500));
-                snackbar.show();
-            }
-        };
-        showInterstitial(adListener);
+                break;
+            case ENABLE_FONTS:
+                snackbar = Snackbar.make(mRoot, R.string.only_premium, Snackbar.LENGTH_LONG);
+                snackbar.setAction(R.string.activate, action -> {
+                    BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
+                    subsDF.show(getSupportFragmentManager(), subsDF.getTag());
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.FONT);
+                    FirebaseAnalytics.getInstance(this).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+                });
+                break;
+            case ENABLE_AUTO_SYNC:
+                snackbar = Snackbar.make(mRoot, R.string.auto_sync_disabled, Snackbar.LENGTH_LONG);
+                snackbar.setAction(R.string.turn_on, v -> {
+                    snackbar.dismiss();
+                    BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
+                    subsDF.show(getSupportFragmentManager(), subsDF.getTag());
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.AUTO_SYNC_SNACKBAR);
+                    mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+                });
+                break;
+            case SYNC_NEED_AUTH:
+                snackbar = Snackbar.make(mRoot, R.string.sync_need_auth, Snackbar.LENGTH_LONG);
+                snackbar.setAction(R.string.authorize, v -> {
+                    snackbar.dismiss();
+                    startLogin(Constants.Firebase.SocialProvider.VK);
+                });
+                break;
+            default:
+                throw new IllegalArgumentException("unexpected callToActionReason");
+        }
+        snackbar.setActionTextColor(ContextCompat.getColor(BaseActivity.this, R.color.material_green_500));
+        snackbar.show();
     }
 
     /**
@@ -322,14 +385,28 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
 
     @Override
     public void updateOwnedMarketItems() {
-        InappHelper.getOwnedInappsObserveble(this, mService)
-                .subscribe(
-                        items -> {
-                            Timber.d("market items: %s", items);
-                            mOwnedMarketItems = items;
-                            supportInvalidateOptionsMenu();
-                        },
-                        error -> Timber.e(error, "errror while getting owned items"));
+        InappHelper.getOwnedInappsObserveble(this, mService).subscribe(
+                items -> {
+                    Timber.d("market items: %s", items);
+                    mOwnedMarketItems = items;
+                    supportInvalidateOptionsMenu();
+                    if (!mOwnedMarketItems.isEmpty()) {
+                        if (!SecureUtils.checkIfPackageChanged(this) && !SecureUtils.checkLuckyPatcher(this)) {
+                            mMyPreferenceManager.setHasSubscription(true);
+                        } else {
+                            mMyPreferenceManager.setHasSubscription(false);
+                            mMyPreferenceManager.setAppCracked(true);
+                            mMyPreferenceManager.setLastTimeAdsShows(0);
+
+                            showMessage(R.string.app_cracked);
+                            mPresenter.deleteAllData();
+                        }
+                    } else {
+                        mMyPreferenceManager.setHasSubscription(false);
+                    }
+                },
+                error -> Timber.e(error, "error while getting owned items")
+        );
     }
 
     @Override
@@ -403,8 +480,39 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
 
     @Override
     public void showError(Throwable throwable) {
-        //TODO switch errors types
-        Snackbar.make(mRoot, throwable.getMessage(), Snackbar.LENGTH_SHORT);
+        Snackbar.make(mRoot, throwable.getMessage(), Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showMessage(String message) {
+        Snackbar.make(mRoot, message, Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showMessage(@StringRes int message) {
+        showMessage(getString(message));
+    }
+
+    @Override
+    public void showProgressDialog(String title) {
+        mProgressDialog = new MaterialDialog.Builder(this)
+                .progress(true, 0)
+                .title(title)
+                .cancelable(false)
+                .show();
+    }
+
+    @Override
+    public void showProgressDialog(@StringRes int title) {
+        showProgressDialog(getString(title));
+    }
+
+    @Override
+    public void dismissProgressDialog() {
+        if (mProgressDialog == null || !mProgressDialog.isShowing()) {
+            return;
+        }
+        mProgressDialog.dismiss();
     }
 
     @Override
@@ -495,33 +603,10 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
                 //Пользователь успешно авторизовался
                 Timber.d("Auth successfull: %s", vkAccessToken.email);
                 if (vkAccessToken.email != null) {
-                    VKApi.users().get(VKParameters.from(VKApiConst.FIELDS, "photo_200")).executeWithListener(new VKRequest.VKRequestListener() {
-                        @Override
-                        public void onComplete(VKResponse response) {
-                            //noinspection unchecked
-                            VKApiUser vkApiUser = ((VKList<VKApiUser>) response.parsedModel).get(0);
-                            Timber.d("User name %s %s", vkApiUser.first_name, vkApiUser.last_name);
-
-                            User user = new User();
-                            user.network = User.NetworkType.VK;
-                            user.fullName = vkApiUser.first_name + " " + vkApiUser.last_name;
-                            user.firstName = vkApiUser.first_name;
-                            user.lastName = vkApiUser.last_name;
-                            user.avatar = vkApiUser.photo_200;
-
-                            mPresenter.onUserLogined(user);
-                        }
-
-                        @Override
-                        public void onError(VKError error) {
-                            super.onError(error);
-                            Toast.makeText(BaseActivity.this, error.errorMessage, Toast.LENGTH_SHORT).show();
-                        }
-                    });
-
+                    mPresenter.startFirebaseLogin(Constants.Firebase.SocialProvider.VK);
                 } else {
                     Toast.makeText(BaseActivity.this, R.string.error_login_no_email, Toast.LENGTH_SHORT).show();
-                    VKSdk.logout();
+                    mPresenter.logoutUser();
                 }
             }
 
@@ -534,6 +619,11 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
         })) {
             super.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    @Override
+    public void updateUser(User user) {
+        //nothing to do here
     }
 
     private void initAndUpdateRemoteConfig() {

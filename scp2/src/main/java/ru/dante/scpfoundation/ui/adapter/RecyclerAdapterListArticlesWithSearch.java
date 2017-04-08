@@ -26,6 +26,7 @@ public class RecyclerAdapterListArticlesWithSearch extends RecyclerAdapterListAr
         if (mData == null) {
             return;
         }
+        int prevCount = mSortedData.size();
         mSortedData.clear();
         for (Article article : mData) {
             if (article.title.toLowerCase().contains(searchQuery.toLowerCase())) {
@@ -33,6 +34,10 @@ public class RecyclerAdapterListArticlesWithSearch extends RecyclerAdapterListAr
             }
         }
         notifyDataSetChanged();
+
+//        if (mSortedData.size() < prevCount) {
+//            notifyItemRangeRemoved(0, prevCount - mSortedData.size());
+//        }
     }
 
     public void setData(List<Article> data) {

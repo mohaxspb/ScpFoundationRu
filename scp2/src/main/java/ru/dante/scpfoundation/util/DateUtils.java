@@ -14,13 +14,13 @@ import timber.log.Timber;
 public class DateUtils {
 
     //17 Jan 2017 21:16
-    public static final String SITE_DATE_FORMAT_0 = "dd MMM yyyy HH:mm";
-    public static final String SITE_DATE_FORMAT = "HH:mm dd.MM.yyyy";
+    private static final String SITE_DATE_FORMAT_0 = "dd MMM yyyy HH:mm";
+    private static final String SITE_DATE_FORMAT = "HH:mm dd.MM.yyyy";
 
-    public static final String SIMPLE_DATE_FORMAT = "dd.MM.yyyy";
+    private static final String SIMPLE_DATE_FORMAT = "dd.MM.yyyy";
 
     public static String getArticleDateShortFormat(String rawDate) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat(SITE_DATE_FORMAT, Locale.getDefault());
+        SimpleDateFormat dateFormat = new SimpleDateFormat(SITE_DATE_FORMAT, Locale.ENGLISH);
         Date convertedDate;
         try {
             convertedDate = dateFormat.parse(rawDate);
@@ -28,7 +28,7 @@ public class DateUtils {
             return sdf.format(convertedDate);
         } catch (Exception e) {
             try {
-                dateFormat = new SimpleDateFormat(SITE_DATE_FORMAT_0, Locale.getDefault());
+                dateFormat = new SimpleDateFormat(SITE_DATE_FORMAT_0, Locale.ENGLISH);
                 convertedDate = dateFormat.parse(rawDate);
                 SimpleDateFormat sdf = new SimpleDateFormat(SIMPLE_DATE_FORMAT, Locale.getDefault());
                 return sdf.format(convertedDate);

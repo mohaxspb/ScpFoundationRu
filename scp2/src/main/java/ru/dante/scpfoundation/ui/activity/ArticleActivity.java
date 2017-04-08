@@ -4,12 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialogFragment;
-import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.view.MenuItem;
-
-import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +19,6 @@ import ru.dante.scpfoundation.mvp.base.MonetizationActions;
 import ru.dante.scpfoundation.mvp.contract.ArticleScreenMvp;
 import ru.dante.scpfoundation.ui.adapter.ArticlesPagerAdapter;
 import ru.dante.scpfoundation.ui.base.BaseDrawerActivity;
-import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
 import ru.dante.scpfoundation.ui.dialog.TextSizeDialogFragment;
 import ru.dante.scpfoundation.ui.fragment.ArticleFragment;
 import ru.dante.scpfoundation.util.IntentUtils;
@@ -86,12 +81,10 @@ public class ArticleActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Timber.d("onCreate");
         super.onCreate(savedInstanceState);
 
         if (getIntent().hasExtra(EXTRA_ARTICLES_URLS_LIST)) {
             mUrls = getIntent().getStringArrayListExtra(EXTRA_ARTICLES_URLS_LIST);
-            mPresenter.setArticlesUrls(mUrls);
             mCurPosition = getIntent().getIntExtra(EXTRA_POSITION, 0);
         }
         ArticlesPagerAdapter adapter = new ArticlesPagerAdapter(getSupportFragmentManager());
@@ -115,18 +108,8 @@ public class ArticleActivity
         mViewPager.setCurrentItem(mCurPosition);
 
         if (getIntent().hasExtra(EXTRA_SHOW_DISABLE_ADS)) {
-            Snackbar snackbar = Snackbar.make(mRoot, R.string.remove_ads, Snackbar.LENGTH_LONG);
-            snackbar.setAction(R.string.yes_bliad, v -> {
-                snackbar.dismiss();
-                BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
-                subsDF.show(getSupportFragmentManager(), subsDF.getTag());
-
-                Bundle bundle = new Bundle();
-                bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.MAIN_TO_ARTICLE_SNACK_BAR);
-                mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
-            });
-            snackbar.setActionTextColor(ContextCompat.getColor(this, R.color.material_green_500));
-            snackbar.show();
+            showSnackBarWithAction(Constants.Firebase.CallToActionReason.REMOVE_ADS);
+            getIntent().removeExtra(EXTRA_SHOW_DISABLE_ADS);
         }
     }
 
@@ -247,7 +230,7 @@ public class ArticleActivity
 
     @Override
     public void setFavoriteState(boolean isInFavorite) {
-        Timber.d("setFavoriteState: %s", isInFavorite);
+//        Timber.d("setFavoriteState: %s", isInFavorite);
         if (mToolbar != null && mToolbar.getMenu() != null) {
             MenuItem item = mToolbar.getMenu().findItem(R.id.menuItemFavorite);
             if (item != null) {

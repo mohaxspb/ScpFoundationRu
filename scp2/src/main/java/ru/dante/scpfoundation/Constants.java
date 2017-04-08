@@ -26,6 +26,26 @@ public interface Constants {
 
     interface Firebase {
 
+//        @Retention(RetentionPolicy.SOURCE)
+//        @StringDef({SocialProvider.VK})
+//        @interface SocialProvider {
+//            String VK = "vk";
+//        }
+
+        enum CallToActionReason{
+            REMOVE_ADS, ENABLE_AUTO_SYNC, SYNC_NEED_AUTH, ENABLE_FONTS
+        }
+
+        enum SocialProvider{
+            VK
+        }
+
+        interface Refs{
+            String USERS = "users";
+            String FAVORITES = "favorites";
+            String ARTICLES = "articles";
+        }
+
         int REQUEST_INVITE = 1024;
 
         interface RemoteConfigKeys {
@@ -40,6 +60,7 @@ public interface Constants {
             String FREE_VK_GROUPS_ENABLED = "free_vk_groups_enabled";
             String FREE_VK_GROUPS_JOIN_REWARD = "free_vk_groups_join_reward";
             String VK_GROUPS_TO_JOIN_JSON = "vk_groups_to_join_json";
+            String NUM_OF_SYNC_ATTEMPTS_BEFORE_CALL_TO_ACTION = "num_of_sync_attempts_before_call_to_action";
         }
 
         interface Analitics {
@@ -50,11 +71,12 @@ public interface Constants {
             }
 
             interface StartScreen {
-                String MAIN_TO_ARTICLE_SNACK_BAR = "MAIN_TO_ARTICLE_SNACK_BAR";
                 String SNACK_BAR = "SNACK_BAR";
                 String MENU = "MENU";
                 String DRAWER_HEADER_LOGINED = "DRAWER_HEADER_LOGINED";
                 String FONT = "FONT";
+                String AUTO_SYNC_SNACKBAR = "AUTO_SYNC_SNACKBAR";
+                String AUTO_SYNC_FROM_SETTINGS = "AUTO_SYNC_FROM_SETTINGS";
             }
 
             String INVITED_FIVE_FRIENDS = "INVITED_FIVE_FRIENDS";

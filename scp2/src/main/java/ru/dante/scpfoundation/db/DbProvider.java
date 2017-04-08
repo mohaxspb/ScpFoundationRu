@@ -2,12 +2,17 @@ package ru.dante.scpfoundation.db;
 
 import android.util.Pair;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.vk.sdk.VKSdk;
+
+import java.util.Collections;
 import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
 import ru.dante.scpfoundation.Constants;
+import ru.dante.scpfoundation.api.model.firebase.ArticleInFirebase;
 import ru.dante.scpfoundation.db.error.ScpNoArticleForIdError;
 import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.db.model.User;
@@ -232,7 +237,7 @@ public class DbProvider {
 
                             applicationInDb.type = applicationToWrite.type;
                         } else {
-                            applicationToWrite.isInMostRated = i;
+//                            applicationToWrite.isInMostRated = i;
                             switch (inDbField) {
                                 case Article.FIELD_IS_IN_OBJECTS_1:
                                     applicationToWrite.isInObjects1 = i;
@@ -273,7 +278,7 @@ public class DbProvider {
                     }
                 },
                 () -> {
-                    subscriber.onNext(new Pair<>(data.size(), data.size()));
+                    subscriber.onNext(new Pair<>(data.size(), 0));
                     subscriber.onCompleted();
                     mRealm.close();
                 },
@@ -283,20 +288,43 @@ public class DbProvider {
                 }));
     }
 
-    /**
-     * @param articleUrl used as ID
-     * @return Observable that emits managed, valid and loaded Article
-     * and emits changes to it
-     * or null if there is no one in DB with this url
-     */
-    public Observable<Article> getArticleAsync(String articleUrl) {
+//    /**
+//     * @param articleUrl used as ID
+//     * @return Observable that emits managed, valid and loaded Article
+//     * and emits changes to it
+//     * or null if there is no one in DB with this url
+//     */
+//    public Observable<Article> getArticleAsync(String articleUrl) {
+//        return mRealm.where(Article.class)
+//                .equalTo(Article.FIELD_URL, articleUrl)
+//                .findAllAsync()
+//                .<List<Article>>asObservable()
+//                .filter(RealmResults::isLoaded)
+//                .filter(RealmResults::isValid)
+//                .flatMap(arts -> arts.isEmpty() ? Observable.just(null) : Observable.just(arts.first()));
+//    }
+
+    public Observable<Article> getUnmanagedArticleAsync(String articleUrl) {
         return mRealm.where(Article.class)
                 .equalTo(Article.FIELD_URL, articleUrl)
                 .findAllAsync()
                 .<List<Article>>asObservable()
                 .filter(RealmResults::isLoaded)
                 .filter(RealmResults::isValid)
-                .flatMap(arts -> arts.isEmpty() ? Observable.just(null) : Observable.just(arts.first()));
+                .flatMap(arts -> arts.isEmpty() ? Observable.just(null) : Observable.just(mRealm.copyFromRealm(arts.first())))
+                .doOnNext(article -> close());
+    }
+
+    public Observable<Article> getUnmanagedArticleAsyncOnes(String articleUrl) {
+        return mRealm.where(Article.class)
+                .equalTo(Article.FIELD_URL, articleUrl)
+                .findAllAsync()
+                .<List<Article>>asObservable()
+                .filter(RealmResults::isLoaded)
+                .filter(RealmResults::isValid)
+                .first()
+                .flatMap(arts -> arts.isEmpty() ? Observable.just(null) : Observable.just(mRealm.copyFromRealm(arts.first())))
+                .doOnNext(article -> close());
     }
 
     public Article getUnmanagedArticleSync(String url) {
@@ -352,7 +380,7 @@ public class DbProvider {
                 }));
     }
 
-    public Observable<Pair<String, Long>> toggleFavorite(String url) {
+    public Observable<Article> toggleFavorite(String url) {
         return Observable.create(subscriber -> mRealm.executeTransactionAsync(
                 realm -> {
                     //check if we have app in db and update
@@ -368,7 +396,7 @@ public class DbProvider {
                             applicationInDb.isInFavorite = Article.ORDER_NONE;
                         }
 
-                        subscriber.onNext(new Pair<>(url, applicationInDb.isInFavorite));
+                        subscriber.onNext(realm.copyFromRealm(applicationInDb));
                         subscriber.onCompleted();
                     } else {
                         Timber.e("No article to add to favorites for ID: %s", url);
@@ -387,26 +415,32 @@ public class DbProvider {
 
     /**
      * @param url used as Article ID
-     * @return observable, that emits resulted readen state
-     * or error if no artcile found
+     * @return observable, that emits updated article
+     * or error if no article found
      */
-    public Observable<Pair<String, Boolean>> toggleReaden(String url) {
+    public Observable<String> toggleReaden(String url) {
         return Observable.create(subscriber -> mRealm.executeTransactionAsync(
                 realm -> {
                     //check if we have app in db and update
-                    Article applicationInDb = realm.where(Article.class)
+                    Article article = realm.where(Article.class)
                             .equalTo(Article.FIELD_URL, url)
                             .findFirst();
-                    if (applicationInDb != null) {
-                        applicationInDb.isInReaden = !applicationInDb.isInReaden;
-                        subscriber.onNext(new Pair<>(url, applicationInDb.isInReaden));
-                        subscriber.onCompleted();
+                    if (article != null) {
+//                        Timber.d("article: %s", article.isInReaden);
+                        article.isInReaden = !article.isInReaden;
+//                        Timber.d("article: %s", article.isInReaden);
+//                        Article updatedArticle;
+//                        updatedArticle = realm.copyFromRealm(article);
+//                        Timber.d("updatedArticle: %s", updatedArticle.isInReaden);
+//                        subscriber.onNext(updatedArticle);
+//                        subscriber.onCompleted();
                     } else {
                         Timber.e("No article to add to favorites for ID: %s", url);
                         subscriber.onError(new ScpNoArticleForIdError(url));
                     }
                 },
                 () -> {
+                    subscriber.onNext(url);
                     subscriber.onCompleted();
                     mRealm.close();
                 },
@@ -448,19 +482,50 @@ public class DbProvider {
                 }));
     }
 
+    /**
+     * @return Observable, that emits unmanaged user
+     */
     public Observable<User> getUserAsync() {
         return mRealm.where(User.class)
                 .findAllAsync()
                 .asObservable()
                 .filter(RealmResults::isLoaded)
                 .filter(RealmResults::isValid)
-                .flatMap(users -> Observable.just(users.isEmpty() ? null : users.first()));
+                .flatMap(users -> Observable.just(users.isEmpty() ? null : mRealm.copyFromRealm(users.first())));
     }
 
-    public Observable<Void> saveUser(User user) {
+    public Observable<User> saveUser(User user) {
         return Observable.create(subscriber -> mRealm.executeTransactionAsync(
                 realm -> realm.insertOrUpdate(user),
                 () -> {
+                    subscriber.onNext(user);
+                    subscriber.onCompleted();
+                    mRealm.close();
+                },
+                error -> {
+                    subscriber.onError(error);
+                    mRealm.close();
+                }));
+    }
+
+    private Observable<Void> deleteUserData() {
+        return Observable.create(subscriber -> mRealm.executeTransactionAsync(
+                realm -> {
+                    realm.delete(User.class);
+                    List<Article> favs = realm.where(Article.class)
+                            .notEqualTo(Article.FIELD_IS_IN_FAVORITE, Article.ORDER_NONE)
+                            .findAll();
+                    for (Article article : favs) {
+                        article.isInFavorite = Article.ORDER_NONE;
+                    }
+                    List<Article> read = realm.where(Article.class)
+                            .equalTo(Article.FIELD_IS_IN_READEN, true)
+                            .findAll();
+                    for (Article article : read) {
+                        article.isInReaden = false;
+                    }
+                },
+                () -> {
                     subscriber.onNext(null);
                     subscriber.onCompleted();
                     mRealm.close();
@@ -471,18 +536,19 @@ public class DbProvider {
                 }));
     }
 
-    public Observable<Void> deleteUser() {
-        return Observable.create(subscriber -> mRealm.executeTransactionAsync(
-                realm -> realm.delete(User.class),
-                () -> {
-                    subscriber.onNext(null);
-                    subscriber.onCompleted();
-                    mRealm.close();
-                },
-                error -> {
-                    subscriber.onError(error);
-                    mRealm.close();
-                }));
+    public Observable<Void> logout() {
+        //run loop through enum with providers and logout from each of them
+        for (Constants.Firebase.SocialProvider provider : Constants.Firebase.SocialProvider.values()) {
+            switch (provider) {
+                case VK:
+                    VKSdk.logout();
+                    break;
+                default:
+                    throw new IllegalArgumentException("unexpected provider");
+            }
+        }
+        FirebaseAuth.getInstance().signOut();
+        return deleteUserData();
     }
 
     public Observable<Void> saveImages(List<VkImage> vkImages) {
@@ -510,5 +576,132 @@ public class DbProvider {
                 .filter(RealmResults::isLoaded)
                 .filter(RealmResults::isValid)
                 .flatMap(realmResults -> Observable.just(mRealm.copyFromRealm(realmResults)));
+    }
+
+    public Observable<List<ArticleInFirebase>> saveArticlesFromFirebase(List<ArticleInFirebase> inFirebaseList) {
+        return Observable.create(subscriber -> mRealm.executeTransactionAsync(
+                realm -> {
+                    Collections.sort(inFirebaseList, (articleInFirebase, t1) ->
+                            articleInFirebase.updated < t1.updated ? -1 : articleInFirebase.updated > t1.updated ? 1 : 0);
+                    long counter = 0;
+                    for (ArticleInFirebase article : inFirebaseList) {
+                        Article realmArticle = realm.where(Article.class).equalTo(Article.FIELD_URL, article.url).findFirst();
+                        if (realmArticle == null) {
+                            realmArticle = new Article();
+                            realmArticle.url = article.url;
+                            realmArticle.title = article.title;
+                            if (article.isFavorite) {
+                                realmArticle.isInFavorite = counter;
+                                counter++;
+                            } else {
+                                realmArticle.isInFavorite = Article.ORDER_NONE;
+                            }
+                            realmArticle.isInReaden = article.isRead;
+
+                            realmArticle.synced = Article.SYNCED_OK;
+
+                            realm.insert(realmArticle);
+                        } else {
+                            if (article.isFavorite) {
+                                realmArticle.isInFavorite = counter;
+                                counter++;
+                            } else {
+                                realmArticle.isInFavorite = Article.ORDER_NONE;
+                            }
+                            realmArticle.isInReaden = article.isRead;
+
+                            realmArticle.synced = Article.SYNCED_OK;
+                        }
+                    }
+                },
+                () -> {
+                    mRealm.close();
+                    subscriber.onNext(inFirebaseList);
+                    subscriber.onCompleted();
+                },
+                error -> {
+                    mRealm.close();
+                    subscriber.onError(error);
+                })
+        );
+    }
+
+    public Observable<Void> deleteAllArticlesText() {
+        return Observable.create(subscriber -> mRealm.executeTransactionAsync(
+                realm -> {
+                    RealmResults<Article> articles = realm.where(Article.class).findAll();
+
+                    for (Article article : articles) {
+                        article.text = null;
+                    }
+                },
+                () -> {
+                    subscriber.onNext(null);
+                    subscriber.onCompleted();
+                    mRealm.close();
+                },
+                error -> {
+                    subscriber.onError(error);
+                    mRealm.close();
+                })
+        );
+    }
+
+    public Observable<Article> setArticleSynced(Article article, boolean synced) {
+        return Observable.create(subscriber -> mRealm.executeTransactionAsync(
+                realm -> {
+                    Article articleInDb = realm.where(Article.class).equalTo(Article.FIELD_URL, article.url).findFirst();
+                    if (articleInDb != null) {
+                        articleInDb.synced = synced ? Article.SYNCED_OK : Article.SYNCED_NEED;
+                    } else {
+                        subscriber.onError(new ScpNoArticleForIdError(article.url));
+                    }
+                },
+                () -> {
+                    mRealm.close();
+                    article.synced = synced ? Article.SYNCED_OK : Article.SYNCED_NEED;
+                    subscriber.onNext(article);
+                    subscriber.onCompleted();
+                },
+                error -> {
+                    mRealm.close();
+                    subscriber.onError(error);
+                })
+        );
+    }
+
+    public Observable<List<Article>> getUnsynedArticlesUnmanaged() {
+        return mRealm.where(Article.class)
+                .equalTo(Article.FIELD_SYNCED, Article.SYNCED_NEED)
+                .findAll()
+                .asObservable()
+                .first()
+                .flatMap(realmResults -> Observable.just(mRealm.copyFromRealm(realmResults)))
+                .doOnCompleted(this::close);
+    }
+
+    public Observable<List<Article>> setArticlesSynced(List<Article> articles, boolean synced) {
+        return Observable.create(subscriber -> mRealm.executeTransactionAsync(
+                realm -> {
+                    for (Article article : articles) {
+                        Article articleInDb = realm.where(Article.class).equalTo(Article.FIELD_URL, article.url).findFirst();
+                        if (articleInDb != null) {
+                            articleInDb.synced = synced ? Article.SYNCED_OK : Article.SYNCED_NEED;
+                        }
+                    }
+                },
+                () -> {
+                    mRealm.close();
+                    for (Article article : articles) {
+                        article.synced = synced ? Article.SYNCED_OK : Article.SYNCED_NEED;
+                    }
+                    subscriber.onNext(articles);
+                    subscriber.onCompleted();
+                },
+                error -> {
+                    mRealm.close();
+                    subscriber.onError(error);
+                })
+        );
     }
 }

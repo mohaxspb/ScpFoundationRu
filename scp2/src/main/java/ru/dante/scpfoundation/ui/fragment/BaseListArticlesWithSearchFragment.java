@@ -64,12 +64,12 @@ public abstract class BaseListArticlesWithSearchFragment
 
             @Override
             public void toggleReadenState(Article article) {
-                mPresenter.toggleReadenState(article.url);
+                mPresenter.toggleReadState(article);
             }
 
             @Override
             public void toggleFavoriteState(Article article) {
-                mPresenter.toggleFavoriteState(article.url);
+                mPresenter.toggleFavoriteState(article);
             }
 
             @Override
@@ -126,6 +126,8 @@ public abstract class BaseListArticlesWithSearchFragment
             public boolean onQueryTextChange(String newText) {
                 mSearchQuery = newText;
                 mAdapter.sortArticles(newText);
+//                mAdapter.notifyItemRangeChanged(0, mAdapter.getItemCount());
+//                mRecyclerView.invalidate();
                 return true;
             }
         });

@@ -18,7 +18,9 @@ import rx.Observable;
  * <p>
  * for TappAwards
  */
-public class MostRatedArticlesPresenter extends BaseListArticlesPresenter<RatedArticlesMvp.View> implements RatedArticlesMvp.Presenter {
+public class MostRatedArticlesPresenter
+        extends BaseListArticlesPresenter<RatedArticlesMvp.View>
+        implements RatedArticlesMvp.Presenter {
 
     public MostRatedArticlesPresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
         super(myPreferencesManager, dbProviderFactory, apiClient);

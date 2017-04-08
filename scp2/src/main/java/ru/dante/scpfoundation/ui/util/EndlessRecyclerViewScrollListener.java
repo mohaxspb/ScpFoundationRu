@@ -36,9 +36,11 @@ public abstract class EndlessRecyclerViewScrollListener extends RecyclerView.OnS
         return maxSize;
     }
 
-    // This happens many times a second during a scroll, so be wary of the code you place here.
-    // We are given a few useful parameters to help us work out if we need to load some more data,
-    // but first we check if we are waiting for the previous load to finish.
+    /**
+     * This happens many times a second during a scroll, so be wary of the code you place here.
+     * We are given a few useful parameters to help us work out if we need to load some more data,
+     * but first we check if we are waiting for the previous load to finish.
+     */
     @Override
     public void onScrolled(RecyclerView view, int dx, int dy) {
         RecyclerView.LayoutManager layoutManager = view.getLayoutManager();
@@ -73,13 +75,17 @@ public abstract class EndlessRecyclerViewScrollListener extends RecyclerView.OnS
         }
     }
 
-    // Call this method whenever performing new searches
+    /**
+     * Call this method whenever performing new searches
+     */
     public void resetState() {
         this.currentPage = this.startingPageIndex;
         this.previousTotalItemCount = 0;
         this.loading = true;
     }
 
-    // Defines the process for actually loading more data based on page
+    /**
+     * Defines the process for actually loading more data based on page
+     */
     public abstract void onLoadMore(int page, int totalItemsCount, RecyclerView view);
 }

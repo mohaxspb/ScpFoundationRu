@@ -11,23 +11,20 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.vk.sdk.VKScope;
-import com.vk.sdk.VKSdk;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.db.model.User;
-import ru.dante.scpfoundation.mvp.base.DrawerMvp;
+import ru.dante.scpfoundation.mvp.contract.DrawerMvp;
 import ru.dante.scpfoundation.ui.activity.ArticleActivity;
 import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
+import ru.dante.scpfoundation.ui.holder.HeaderViewHolderLogined;
+import ru.dante.scpfoundation.ui.holder.HeaderViewHolderUnlogined;
 import timber.log.Timber;
 
 /**
@@ -101,7 +98,8 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
             mNavigationView.getMenu().setGroupCheckable(0, false, true);
         }
 
-        onGetUserFromDB(mPresenter.getUser());
+//        onGetUserFromDB(mPresenter.getUser());
+        updateUser(mPresenter.getUser());
     }
 
     /**
@@ -135,7 +133,7 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
         Timber.d("onOptionsItemSelected with id: %s", item);
         switch (item.getItemId()) {
             case android.R.id.home:
-                if(isDrawerIndicatorEnabled()) {
+                if (isDrawerIndicatorEnabled()) {
                     mDrawerLayout.openDrawer(GravityCompat.START);
                 } else {
                     finish();
@@ -147,7 +145,7 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
     }
 
     @Override
-    public void startArticleActivity(String url) {
+    public void onReceiveRandomUrl(String url) {
         ArticleActivity.startActivity(this, url);
     }
 
@@ -167,8 +165,8 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
     }
 
     @Override
-    public void onGetUserFromDB(User user) {
-        Timber.d("onGetUserFromDB: %s", user);
+    public void updateUser(User user) {
+        Timber.d("updateUser: %s", user);
         if (user != null) {
             for (int i = 0; i < mNavigationView.getHeaderCount(); i++) {
                 mNavigationView.removeHeaderView(mNavigationView.getHeaderView(i));
@@ -179,10 +177,10 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
             HeaderViewHolderLogined headerViewHolder = new HeaderViewHolderLogined(headerLogined);
 
             headerViewHolder.logout.setOnClickListener(view -> {
-                //TODO switch by network type
-                VKSdk.logout();
-                mPresenter.onUserLogined(null);
-            });
+                        mPresenter.logoutUser();
+                        mDrawerLayout.closeDrawer(GravityCompat.START);
+                    }
+            );
 
             headerViewHolder.inapp.setOnClickListener(view -> {
                 BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
@@ -206,44 +204,13 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
 
             HeaderViewHolderUnlogined headerViewHolder = new HeaderViewHolderUnlogined(headerUnlogined);
 
-            headerViewHolder.mLogin.setOnClickListener(view -> VKSdk.login(this, VKScope.EMAIL, VKScope.GROUPS));
+            headerViewHolder.mLogin.setOnClickListener(view -> startLogin(Constants.Firebase.SocialProvider.VK));
 
             headerViewHolder.mLoginInfo.setOnClickListener(view -> new MaterialDialog.Builder(this)
                     .content(R.string.login_advantages)
                     .title(R.string.login_advantages_title)
                     .positiveText(android.R.string.ok)
                     .show());
-        }
-//                    Toast.makeText(BaseActivity.this, getString(R.string.login_greetings), Toast.LENGTH_SHORT).show();
-    }
-
-    protected static class HeaderViewHolderUnlogined {
-
-        @BindView(R.id.login)
-        View mLogin;
-        @BindView(R.id.loginInfo)
-        View mLoginInfo;
-
-        HeaderViewHolderUnlogined(View view) {
-            ButterKnife.bind(this, view);
-        }
-    }
-
-    protected static class HeaderViewHolderLogined {
-
-        @BindView(R.id.level)
-        TextView level;
-        @BindView(R.id.name)
-        TextView name;
-        @BindView(R.id.avatar)
-        ImageView avatar;
-        @BindView(R.id.logout)
-        View logout;
-        @BindView(R.id.inapp)
-        View inapp;
-
-        HeaderViewHolderLogined(View view) {
-            ButterKnife.bind(this, view);
         }
     }
 }

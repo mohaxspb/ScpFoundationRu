@@ -24,7 +24,7 @@ import ru.dante.scpfoundation.db.util.RealmStringListParcelConverter;
 @Parcel(implementations = {ArticleRealmProxy.class}, value = Parcel.Serialization.BEAN, analyze = {Article.class})
 public class Article extends RealmObject {
 
-    //    public static final String FIELD_IS_IN_READEN = "isInReaden";
+    public static final String FIELD_IS_IN_READEN = "isInReaden";
     public static final String FIELD_IS_IN_RECENT = "isInRecent";
     public static final String FIELD_IS_IN_FAVORITE = "isInFavorite";
     public static final String FIELD_IS_IN_MOST_RATED = "isInMostRated";
@@ -42,8 +42,14 @@ public class Article extends RealmObject {
     public static final String FIELD_IS_IN_JOKES = "isInJokes";
 
     public static final String FIELD_URL = "url";
+    //TODO think if we really need it
     public static final String FIELD_LOCAL_UPDATE_TIME_STAMP = "localUpdateTimeStamp";
     public static final String FIELD_TEXT = "text";
+
+    public static final String FIELD_SYNCED = "synced";
+
+    public static final int SYNCED_OK = 1;
+    public static final int SYNCED_NEED = -1;
 
     public static final int ORDER_NONE = -1;
 
@@ -84,6 +90,18 @@ public class Article extends RealmObject {
     public long isInJokes = ORDER_NONE;
 
     public long localUpdateTimeStamp;
+
+    /**
+     * we write true while update/write article from firebase data listener
+     * <p>
+     * default value is Integer.MAX_VALUE
+     * <p>
+     * if we made changes, that we need to sync we mark articles as unsynced with {@link #SYNCED_NEED}
+     * <p>
+     * if we made changes, and successfully sync them we mark it as synced with {@link #SYNCED_OK}
+     * <p>
+     */
+    public int synced = Integer.MAX_VALUE;
 
     public boolean hasTabs;
     @ParcelPropertyConverter(RealmStringListParcelConverter.class)

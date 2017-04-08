@@ -37,6 +37,10 @@ public class MyPreferenceManager {
         String DESIGN_FONT_PATH = "DESIGN_FONT_PATH";
         String PACKAGE_INSTALLED = "PACKAGE_INSTALLED";
         String VK_GROUP_JOINED = "VK_GROUP_JOINED";
+        String USER_UID = "USER_UID";
+        String HAS_SUBSCRIPTION = "HAS_SUBSCRIPTION";
+        String APP_IS_CRACKED = "APP_IS_CRACKED";
+        String AUTO_SYNC_ATTEMPTS = "AUTO_SYNC_ATTEMPTS";
     }
 
     private SharedPreferences mPreferences;
@@ -204,6 +208,42 @@ public class MyPreferenceManager {
     public void applyAwardVkGroupJoined() {
         setLastTimeAdsShows((System.currentTimeMillis() +
                 FirebaseRemoteConfig.getInstance().getLong(Constants.Firebase.RemoteConfigKeys.FREE_VK_GROUPS_JOIN_REWARD)));
+    }
+
+    //user
+    public void setUserId(String uid) {
+        mPreferences.edit().putString(Keys.USER_UID, uid).apply();
+    }
+
+    public String getUserId() {
+        return mPreferences.getString(Keys.USER_UID, "");
+    }
+
+    //subscription
+    public void setHasSubscription(boolean hasSubscription) {
+        mPreferences.edit().putBoolean(Keys.HAS_SUBSCRIPTION, hasSubscription).apply();
+    }
+
+    public boolean isHasSubscription() {
+        return mPreferences.getBoolean(Keys.HAS_SUBSCRIPTION, false);
+    }
+
+    //auto sync
+    public void setNumOfAttemptsToAutoSync(long numOfAttemptsToAutoSync) {
+        mPreferences.edit().putLong(Keys.AUTO_SYNC_ATTEMPTS, numOfAttemptsToAutoSync).apply();
+    }
+
+    public long getNumOfAttemptsToAutoSync() {
+        return mPreferences.getLong(Keys.AUTO_SYNC_ATTEMPTS, 0);
+    }
+
+    //secure
+    public boolean isAppCracked() {
+        return mPreferences.getBoolean(Keys.APP_IS_CRACKED, false);
+    }
+
+    public void setAppCracked(boolean cracked) {
+        mPreferences.edit().putBoolean(Keys.APP_IS_CRACKED, cracked).apply();
     }
 
     //utils

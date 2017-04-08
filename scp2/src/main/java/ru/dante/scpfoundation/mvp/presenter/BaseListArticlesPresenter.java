@@ -22,24 +22,14 @@ import timber.log.Timber;
  * <p>
  * for TappAwards
  */
-public abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
+abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
         extends BasePresenter<V>
         implements BaseArticlesListMvp.Presenter<V> {
 
-    protected RealmResults<Article> mData;
+    protected List<Article> mData;
 
-    public BaseListArticlesPresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
+    BaseListArticlesPresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
         super(myPreferencesManager, dbProviderFactory, apiClient);
-    }
-
-    @Override
-    public void onCreate() {
-        Timber.d("onCreate");
-    }
-
-    @Override
-    public void onDestroy() {
-        Timber.d("onDestroy");
     }
 
     @Override
@@ -61,29 +51,34 @@ public abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.Vi
         getView().enableSwipeRefresh(false);
 
         getDbObservable()
+//                .subscribeOn(AndroidSchedulers.mainThread())
+//                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         data -> {
                             Timber.d("getDataFromDb data.size(): %s", data.size());
                             mData = data;
-                            getView().updateData(mData);
 //                            getView().showCenterProgress(false);
                             if (mData.isEmpty()) {
                                 getView().enableSwipeRefresh(true);
                             } else {
                                 getView().showCenterProgress(false);
+                                getView().updateData(mData);
                             }
                         },
-                        error -> {
+                        e -> {
+                            Timber.e(e);
                             getView().showCenterProgress(false);
                             getView().enableSwipeRefresh(true);
-                            getView().showError(error);
-                        });
+                            getView().showError(e);
+                        }
+                );
     }
 
     @Override
     public void getDataFromApi(int offset) {
         Timber.d("getDataFromApi with offset: %s", offset);
-        if (mData != null && mData.isLoaded() && mData.isValid() && !mData.isEmpty()) {
+        if (mData != null && !mData.isEmpty()) {
             getView().showCenterProgress(false);
             if (offset != 0) {
                 getView().enableSwipeRefresh(true);
@@ -128,21 +123,27 @@ public abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.Vi
                             if (mData != null && !mData.isEmpty()) {
                                 getView().resetOnScrollListener();
                             }
-                        });
+                        }
+                );
     }
 
     @Override
-    public void toggleFavoriteState(String url) {
-        Timber.d("toggleFavoriteState: %s", url);
-        mDbProviderFactory.getDbProvider().toggleFavorite(url)
+    public void toggleFavoriteState(Article article) {
+        Timber.d("toggleFavoriteState: %s", article);
+        mDbProviderFactory.getDbProvider().toggleFavorite(article.url)
+                .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread())
+                .flatMap(article1 -> mDbProviderFactory.getDbProvider().setArticleSynced(article1, false))
                 .subscribe(getToggleFavoriteSubscriber());
     }
 
     @Override
-    public void toggleReadenState(String url) {
-        Timber.d("toggleReadenState: %s", url);
-        mDbProviderFactory.getDbProvider().toggleReaden(url)
+    public void toggleReadState(Article article) {
+        Timber.d("toggleReadState: %s", article);
+        mDbProviderFactory.getDbProvider().toggleReaden(article.url)
+                .flatMap(articleUrl -> mDbProviderFactory.getDbProvider().getUnmanagedArticleAsyncOnes(articleUrl))
+                .flatMap(article1 -> mDbProviderFactory.getDbProvider().setArticleSynced(article1, false))
+                .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(getToggleReadenSubscriber());
     }
@@ -173,8 +174,8 @@ public abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.Vi
     }
 
     @Override
-    public Subscriber<Pair<String, Long>> getToggleFavoriteSubscriber() {
-        return new Subscriber<Pair<String, Long>>() {
+    public Subscriber<Article> getToggleFavoriteSubscriber() {
+        return new Subscriber<Article>() {
             @Override
             public void onCompleted() {
 
@@ -186,15 +187,16 @@ public abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.Vi
             }
 
             @Override
-            public void onNext(Pair<String, Long> stringBooleanPair) {
-                Timber.d("favs state now is: %s", stringBooleanPair.second);
+            public void onNext(Article article) {
+                Timber.d("favs state now is: %s", article.isInFavorite != Article.ORDER_NONE);
+                updateArticleInFirebase(article, true);
             }
         };
     }
 
     @Override
-    public Subscriber<Pair<String, Boolean>> getToggleReadenSubscriber() {
-        return new Subscriber<Pair<String, Boolean>>() {
+    public Subscriber<Article> getToggleReadenSubscriber() {
+        return new Subscriber<Article>() {
             @Override
             public void onCompleted() {
 
@@ -202,12 +204,13 @@ public abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.Vi
 
             @Override
             public void onError(Throwable e) {
-                Timber.e(e, "error toggle readen state...");
+                Timber.e(e, "error toggle read state...");
             }
 
             @Override
-            public void onNext(Pair<String, Boolean> stringBooleanPair) {
-                Timber.d("read state now is: %s", stringBooleanPair.second);
+            public void onNext(Article article) {
+                Timber.d("read state now is: %s", article.isInFavorite != Article.ORDER_NONE);
+                updateArticleInFirebase(article, false);
             }
         };
     }
@@ -248,7 +251,7 @@ public abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.Vi
 
             @Override
             public void onNext(Article article) {
-                Timber.d("toggleOfflineState article: %s", article.url);
+                Timber.d("getDownloadArticleSubscriber onNext article: %s", article.url);
             }
         };
     }

@@ -7,13 +7,19 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
+
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.R;
-import ru.dante.scpfoundation.ui.base.BaseActivity;
+import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
+import timber.log.Timber;
 
 /**
  * Created by mohax on 14.01.2017.
@@ -87,4 +93,58 @@ public abstract class BaseBottomSheetDialogFragment extends BottomSheetDialogFra
     }
 
     protected abstract int getLayoutResId();
+
+    /**
+     * do not use activities method as SnackBar can't be shown over bottomsheet dialog
+     */
+    public void showSnackBarWithAction(Constants.Firebase.CallToActionReason reason) {
+        Timber.d("showSnackBarWithAction: %s", reason);
+        Snackbar snackbar;
+        switch (reason) {
+            case REMOVE_ADS:
+                snackbar = Snackbar.make(mRoot, R.string.remove_ads, Snackbar.LENGTH_LONG);
+                snackbar.setAction(R.string.yes_bliad, v -> {
+                    BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
+                    subsDF.show(getChildFragmentManager(), subsDF.getTag());
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.SNACK_BAR);
+                    FirebaseAnalytics.getInstance(getActivity()).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+                });
+                break;
+            case ENABLE_FONTS:
+                snackbar = Snackbar.make(mRoot, R.string.only_premium, Snackbar.LENGTH_LONG);
+                snackbar.setAction(R.string.activate, action -> {
+                    BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
+                    subsDF.show(getChildFragmentManager(), subsDF.getTag());
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.FONT);
+                    FirebaseAnalytics.getInstance(getActivity()).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+                });
+                break;
+            case ENABLE_AUTO_SYNC:
+                snackbar = Snackbar.make(mRoot, R.string.auto_sync_disabled, Snackbar.LENGTH_LONG);
+                snackbar.setAction(R.string.turn_on, v -> {
+                    BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
+                    subsDF.show(getChildFragmentManager(), subsDF.getTag());
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.AUTO_SYNC_SNACKBAR);
+                    FirebaseAnalytics.getInstance(getActivity()).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+                });
+                break;
+            case SYNC_NEED_AUTH:
+                snackbar = Snackbar.make(mRoot, R.string.sync_need_auth, Snackbar.LENGTH_LONG);
+                snackbar.setAction(R.string.authorize, v -> {
+                    snackbar.dismiss();
+                    getBaseActivity().startLogin(Constants.Firebase.SocialProvider.VK);
+                });
+                break;
+            default:
+                throw new IllegalArgumentException("unexpected callToActionReason");
+        }
+        snackbar.setActionTextColor(ContextCompat.getColor(getActivity(), R.color.material_green_500));
+        snackbar.show();
+    }
 }

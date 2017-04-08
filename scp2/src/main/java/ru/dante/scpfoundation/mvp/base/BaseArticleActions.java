@@ -7,10 +7,14 @@ import ru.dante.scpfoundation.db.model.Article;
  * <p>
  * for scp_ru
  */
-public interface BaseArticleActions {
-    void toggleFavoriteState(String url);
+interface BaseArticleActions {
 
-    void toggleReadenState(String url);
+//    void toggleFavoriteState(String url);
+//
+//    void toggleReadState(String url);
+    void toggleFavoriteState(Article article);
+
+    void toggleReadState(Article article);
 
     /**
      *  we need article as arg, as we should determine if we
