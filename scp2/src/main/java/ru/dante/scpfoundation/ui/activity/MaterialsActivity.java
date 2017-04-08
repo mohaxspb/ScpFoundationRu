@@ -49,7 +49,7 @@ public class MaterialsActivity
                             intent.putExtra(EXTRA_SHOW_DISABLE_ADS, true);
                             context.startActivity(intent);
                         }
-                    });
+                    }, true);
                     return;
                 } else {
                     Timber.d("Ads not loaded yet");

@@ -252,7 +252,7 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
     }
 
     /**
-     * ads adsListener with showing SnackBar after ads closing and calles {@link #showInterstitial(MyAdListener)}
+     * ads adsListener with showing SnackBar after ads closing and calles {@link MonetizationActions#showInterstitial(MyAdListener, boolean)}
      */
     @Override
     public void showInterstitial() {
@@ -263,7 +263,21 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
                 showSnackBarWithAction(Constants.Firebase.CallToActionReason.REMOVE_ADS);
             }
         };
-        showInterstitial(adListener);
+        showInterstitial(adListener, true);
+    }
+
+    /**
+     * checks if it's time to show rewarded instead of simple interstitial
+     * and it's ready and shows rewarded video or interstitial
+     */
+    @Override
+    public void showInterstitial(MyAdListener adListener, boolean showVideoIfNeedAndCan) {
+        if (mMyPreferenceManager.isTimeToShowVideoInsteadOfInterstitial() && Appodeal.isLoaded(Appodeal.SKIPPABLE_VIDEO)) {
+            Appodeal.show(this, Appodeal.SKIPPABLE_VIDEO);
+        } else {
+            mInterstitialAd.setAdListener(adListener);
+            mInterstitialAd.show();
+        }
     }
 
     @Override
@@ -318,20 +332,6 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
         }
         snackbar.setActionTextColor(ContextCompat.getColor(BaseActivity.this, R.color.material_green_500));
         snackbar.show();
-    }
-
-    /**
-     * checks if it's time to show rewarded instead of simple interstitial
-     * and it's ready and shows rewarded video or interstitial
-     */
-    @Override
-    public void showInterstitial(MyAdListener adListener) {
-        if (mMyPreferenceManager.isTimeToShowVideoInsteadOfInterstitial() && Appodeal.isLoaded(Appodeal.SKIPPABLE_VIDEO)) {
-            Appodeal.show(this, Appodeal.SKIPPABLE_VIDEO);
-        } else {
-            mInterstitialAd.setAdListener(adListener);
-            mInterstitialAd.show();
-        }
     }
 
     @Override

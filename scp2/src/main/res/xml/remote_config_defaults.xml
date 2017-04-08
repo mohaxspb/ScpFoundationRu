@@ -95,4 +95,8 @@
         <!--for test use 1, for prod use i.e. 5-->
         <value>5</value>
     </entry>
+    <entry>
+        <key>num_of_gallery_photos_between_intersitial</key>
+        <value>20</value>
+    </entry>
 </defaultsMap>
