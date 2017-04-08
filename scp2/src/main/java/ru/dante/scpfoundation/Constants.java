@@ -61,6 +61,7 @@ public interface Constants {
             String FREE_VK_GROUPS_JOIN_REWARD = "free_vk_groups_join_reward";
             String VK_GROUPS_TO_JOIN_JSON = "vk_groups_to_join_json";
             String NUM_OF_SYNC_ATTEMPTS_BEFORE_CALL_TO_ACTION = "num_of_sync_attempts_before_call_to_action";
+            String NUM_OF_GALLERY_PHOTOS_BETWEEN_INTERSITIAL = "num_of_gallery_photos_between_intersitial";
         }
 
         interface Analitics {

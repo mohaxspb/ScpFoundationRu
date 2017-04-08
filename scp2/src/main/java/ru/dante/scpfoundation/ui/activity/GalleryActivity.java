@@ -1,17 +1,24 @@
 package ru.dante.scpfoundation.ui.activity;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.view.ViewPager;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import ru.dante.scpfoundation.BuildConfig;
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
@@ -24,6 +31,7 @@ import ru.dante.scpfoundation.ui.adapter.ImagesPagerAdapter;
 import ru.dante.scpfoundation.ui.base.BaseDrawerActivity;
 import ru.dante.scpfoundation.ui.fragment.FragmentMaterialsAll;
 import ru.dante.scpfoundation.util.IntentUtils;
+import ru.dante.scpfoundation.util.SystemUtils;
 import timber.log.Timber;
 
 public class GalleryActivity
@@ -41,6 +49,9 @@ public class GalleryActivity
     @BindView(R.id.refresh)
     Button mRefresh;
 
+    @BindView(R.id.banner)
+    AdView mAdView;
+
     private ImagesPagerAdapter mAdapter;
 
     public static void startActivity(Context context) {
@@ -57,7 +68,7 @@ public class GalleryActivity
                             intent.putExtra(EXTRA_SHOW_DISABLE_ADS, true);
                             context.startActivity(intent);
                         }
-                    });
+                    }, true);
                     return;
                 } else {
                     Timber.d("Ads not loaded yet");
@@ -87,12 +98,55 @@ public class GalleryActivity
         mAdapter = new ImagesPagerAdapter();
         mViewPager.setAdapter(mAdapter);
 
+        //ads
+        initAds();
+
+        mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                if (position %  FirebaseRemoteConfig.getInstance()
+                        .getLong(Constants.Firebase.RemoteConfigKeys.NUM_OF_GALLERY_PHOTOS_BETWEEN_INTERSITIAL) == 0) {
+                    showInterstitial(new MyAdListener() {
+                        @Override
+                        public void onAdClosed() {
+                            showSnackBarWithAction(Constants.Firebase.CallToActionReason.REMOVE_ADS);
+                            requestNewInterstitial();
+                        }
+                    }, false);
+                }
+            }
+        });
+
         if (mPresenter.getData() != null) {
             mAdapter.setData(mPresenter.getData());
         } else {
             mPresenter.getDataFromDb();
             mPresenter.updateData();
         }
+    }
+
+    @Override
+    public void initAds() {
+        super.initAds();
+
+        if (!isAdsLoaded()) {
+            requestNewInterstitial();
+        }
+
+        AdRequest.Builder adRequest = new AdRequest.Builder();
+
+        if (BuildConfig.DEBUG) {
+            @SuppressLint("HardwareIds")
+            String androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+            String deviceId;
+            deviceId = SystemUtils.MD5(androidId);
+            if (deviceId != null) {
+                deviceId = deviceId.toUpperCase();
+                adRequest.addTestDevice(deviceId);
+            }
+            adRequest.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
+        }
+        mAdView.loadAd(adRequest.build());
     }
 
     @Override
@@ -185,6 +239,9 @@ public class GalleryActivity
         Timber.d("onOptionsItemSelected with id: %s", item);
         switch (item.getItemId()) {
             case R.id.share:
+                if (mAdapter.getData().isEmpty()) {
+                    return true;
+                }
                 List<RealmString> allUrls = mAdapter.getData().get(mViewPager.getCurrentItem()).allUrls;
                 IntentUtils.shareUrl(allUrls.get(allUrls.size() - 1).getVal());
                 return true;
@@ -214,8 +271,6 @@ public class GalleryActivity
     @OnClick(R.id.refresh)
     public void onRefreshClicked() {
         Timber.d("onRefreshClicked");
-//        showEmptyPlaceholder(false);
-//        showCenterProgress(true);
         mPresenter.updateData();
     }
 }
