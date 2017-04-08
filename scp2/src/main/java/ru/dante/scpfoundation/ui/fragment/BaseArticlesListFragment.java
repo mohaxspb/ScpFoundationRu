@@ -129,12 +129,11 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
         if (!isAdded()) {
             return;
         }
-        if (data.isEmpty()) {
-            showCenterProgress(false);
-        }
+//        if (!data.isEmpty()) {
+//            showCenterProgress(false);
+//        }
         getAdapter().setData(data);
         resetOnScrollListener();
-//        mRecyclerView.post(() -> getAdapter().notifyDataSetChanged());
     }
 
     protected void getDataFromDb() {

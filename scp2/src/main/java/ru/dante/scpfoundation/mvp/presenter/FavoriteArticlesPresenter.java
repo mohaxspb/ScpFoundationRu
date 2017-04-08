@@ -4,6 +4,7 @@ import android.util.Pair;
 
 import java.util.List;
 
+import io.realm.RealmResults;
 import io.realm.Sort;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
@@ -28,7 +29,7 @@ public class FavoriteArticlesPresenter
     }
 
     @Override
-    protected Observable<List<Article>> getDbObservable() {
+    protected Observable<RealmResults<Article>> getDbObservable() {
         return mDbProviderFactory.getDbProvider().getArticlesSortedAsync(Article.FIELD_IS_IN_FAVORITE, Sort.DESCENDING);
     }
 

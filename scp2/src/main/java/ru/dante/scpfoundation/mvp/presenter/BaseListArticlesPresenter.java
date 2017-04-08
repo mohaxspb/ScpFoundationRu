@@ -4,6 +4,7 @@ import android.util.Pair;
 
 import java.util.List;
 
+import io.realm.RealmResults;
 import ru.dante.scpfoundation.api.ApiClient;
 import ru.dante.scpfoundation.db.DbProviderFactory;
 import ru.dante.scpfoundation.db.model.Article;
@@ -36,7 +37,7 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
         return mData;
     }
 
-    protected abstract Observable<List<Article>> getDbObservable();
+    protected abstract Observable<RealmResults<Article>> getDbObservable();
 
     protected abstract Observable<List<Article>> getApiObservable(int offset);
 
@@ -51,23 +52,25 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
 
         getDbObservable()
 //                .subscribeOn(AndroidSchedulers.mainThread())
+//                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         data -> {
                             Timber.d("getDataFromDb data.size(): %s", data.size());
                             mData = data;
-                            getView().updateData(mData);
 //                            getView().showCenterProgress(false);
                             if (mData.isEmpty()) {
                                 getView().enableSwipeRefresh(true);
                             } else {
                                 getView().showCenterProgress(false);
+                                getView().updateData(mData);
                             }
                         },
-                        error -> {
+                        e -> {
+                            Timber.e(e);
                             getView().showCenterProgress(false);
                             getView().enableSwipeRefresh(true);
-                            getView().showError(error);
+                            getView().showError(e);
                         }
                 );
     }

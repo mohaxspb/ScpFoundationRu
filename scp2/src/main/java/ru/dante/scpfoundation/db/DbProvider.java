@@ -36,17 +36,16 @@ public class DbProvider {
         mRealm.close();
     }
 
-    public Observable<List<Article>> getArticlesSortedAsync(String field, Sort order) {
+    public Observable<RealmResults<Article>> getArticlesSortedAsync(String field, Sort order) {
         return mRealm.where(Article.class)
                 .notEqualTo(field, Article.ORDER_NONE)
                 .findAllSortedAsync(field, order)
                 .asObservable()
                 .filter(RealmResults::isLoaded)
-                .filter(RealmResults::isValid)
-                .flatMap(articles -> Observable.just(mRealm.copyFromRealm(articles)));
+                .filter(RealmResults::isValid);
     }
 
-    public Observable<List<Article>> getOfflineArticlesSortedAsync(String field, Sort order) {
+    public Observable<RealmResults<Article>> getOfflineArticlesSortedAsync(String field, Sort order) {
         return mRealm.where(Article.class)
                 .notEqualTo(Article.FIELD_TEXT, (String) null)
                 //remove articles from main activity
@@ -56,8 +55,7 @@ public class DbProvider {
                 .findAllSortedAsync(field, order)
                 .asObservable()
                 .filter(RealmResults::isLoaded)
-                .filter(RealmResults::isValid)
-                .flatMap(articles -> Observable.just(mRealm.copyFromRealm(articles)));
+                .filter(RealmResults::isValid);
     }
 
     public Observable<Pair<Integer, Integer>> saveRecentArticlesList(List<Article> apiData, int offset) {
@@ -239,7 +237,7 @@ public class DbProvider {
 
                             applicationInDb.type = applicationToWrite.type;
                         } else {
-                            applicationToWrite.isInMostRated = i;
+//                            applicationToWrite.isInMostRated = i;
                             switch (inDbField) {
                                 case Article.FIELD_IS_IN_OBJECTS_1:
                                     applicationToWrite.isInObjects1 = i;
@@ -280,7 +278,7 @@ public class DbProvider {
                     }
                 },
                 () -> {
-                    subscriber.onNext(new Pair<>(data.size(), data.size()));
+                    subscriber.onNext(new Pair<>(data.size(), 0));
                     subscriber.onCompleted();
                     mRealm.close();
                 },
@@ -655,7 +653,6 @@ public class DbProvider {
                     Article articleInDb = realm.where(Article.class).equalTo(Article.FIELD_URL, article.url).findFirst();
                     if (articleInDb != null) {
                         articleInDb.synced = synced ? Article.SYNCED_OK : Article.SYNCED_NEED;
-//                        subscriber.onCompleted();
                     } else {
                         subscriber.onError(new ScpNoArticleForIdError(article.url));
                     }

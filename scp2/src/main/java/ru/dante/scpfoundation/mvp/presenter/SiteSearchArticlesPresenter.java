@@ -4,6 +4,7 @@ import android.util.Pair;
 
 import java.util.List;
 
+import io.realm.RealmResults;
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
@@ -45,10 +46,10 @@ public class SiteSearchArticlesPresenter
     }
 
     @Override
-    protected Observable<List<Article>> getDbObservable() {
+    protected Observable<RealmResults<Article>> getDbObservable() {
         //we fo not save search results to db
         return Observable
-                .<List<Article>>empty()
+                .<RealmResults<Article>>empty()
                 .doOnCompleted(() -> getView().showCenterProgress(false));
     }
 

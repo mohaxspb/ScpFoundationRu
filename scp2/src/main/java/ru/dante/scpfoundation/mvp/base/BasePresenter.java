@@ -113,6 +113,7 @@ public abstract class BasePresenter<V extends BaseMvp.View>
         //get unsynced articles from DB
         //write them to firebase
         //mark them as synced
+        //toDO use managed ones
         Observable.<List<Article>>create(subscriber -> mDbProviderFactory.getDbProvider().getUnsynedArticlesUnmanaged()
                 .subscribe(
                         data -> {
