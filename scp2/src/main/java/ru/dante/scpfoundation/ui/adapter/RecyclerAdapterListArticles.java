@@ -6,8 +6,6 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
-import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -22,6 +20,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.RealmResults;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.db.model.Article;
@@ -29,7 +28,6 @@ import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
 import ru.dante.scpfoundation.util.AttributeGetter;
 import ru.dante.scpfoundation.util.DateUtils;
-import timber.log.Timber;
 import uk.co.chrisjenx.calligraphy.CalligraphyUtils;
 
 /**
@@ -46,7 +44,7 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
     @Inject
     MyPreferenceManager mMyPreferenceManager;
 
-    private List<Article> mData = new ArrayList<>();
+    private List<Article> mData;// = new ArrayList<>();
 
     private ArticleClickListener mArticleClickListener;
     private boolean shouldShowPopupOnFavoriteClick;
@@ -131,7 +129,7 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
 
     @Override
     public int getItemCount() {
-        return mData == null ? 0 : mData.size();
+        return mData == null || !((RealmResults<Article>)mData).isValid()? 0 : mData.size();
     }
 
     public void setArticleClickListener(ArticleClickListener articleClickListener) {

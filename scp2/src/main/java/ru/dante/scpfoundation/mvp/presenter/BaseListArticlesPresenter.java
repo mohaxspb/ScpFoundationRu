@@ -6,6 +6,7 @@ import java.util.List;
 
 import io.realm.RealmResults;
 import ru.dante.scpfoundation.api.ApiClient;
+import ru.dante.scpfoundation.db.DbProvider;
 import ru.dante.scpfoundation.db.DbProviderFactory;
 import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
@@ -16,7 +17,6 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
 /**
@@ -28,7 +28,7 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
         extends BasePresenter<V>
         implements BaseArticlesListMvp.Presenter<V> {
 
-    protected List<Article> mData;
+    protected RealmResults<Article> mData;
 
     BaseListArticlesPresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
         super(myPreferencesManager, dbProviderFactory, apiClient);
@@ -46,6 +46,7 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
     protected abstract Observable<Pair<Integer, Integer>> getSaveToDbObservable(List<Article> data, int offset);
 
     private Subscription mDbSubscription;
+    protected DbProvider mDbProvider;
 
     @Override
     public void getDataFromDb() {
@@ -54,20 +55,22 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
         getView().showCenterProgress(true);
         getView().enableSwipeRefresh(false);
 
+//        mDbProvider =
         mDbSubscription = getDbObservable()
 //                .subscribeOn(AndroidSchedulers.mainThread())
 //                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         data -> {
-                            //todo check if realm is closed and resubscribe, by calling getDataFromDb
+                            //check if realm is closed and resubscribe, by calling getDataFromDb
                             if (!data.isValid()) {
                                 Timber.e("data is not valid, so unsubscribe and restart observable");
-                                mDbSubscription.unsubscribe();
-                                mDbSubscription = null;
                                 mData = null;
                                 getView().updateData(mData);
+//                                mDbSubscription.unsubscribe();
+//                                mDbSubscription = null;
                                 getDataFromDb();
+                                return;
                             }
                             Timber.d("getDataFromDb data.size(): %s", data.size());
                             mData = data;
@@ -92,7 +95,7 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
     @Override
     public void getDataFromApi(int offset) {
         Timber.d("getDataFromApi with offset: %s", offset);
-        if (mData != null && !mData.isEmpty()) {
+        if (mData != null && mData.isValid() && !mData.isEmpty()) {
             getView().showCenterProgress(false);
             if (offset != 0) {
                 getView().enableSwipeRefresh(true);
@@ -108,6 +111,11 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
 
             getView().showCenterProgress(true);
         }
+
+        if (mData != null && !mData.isValid()) {
+            getDataFromDb();
+        }
+
         getApiObservable(offset)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -143,6 +151,10 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
 
     @Override
     public void toggleFavoriteState(Article article) {
+        if (!article.isValid()) {
+//            getDataFromDb();
+            return;
+        }
         Timber.d("toggleFavoriteState: %s", article);
         mDbProviderFactory.getDbProvider().toggleFavorite(article.url)
                 .subscribeOn(AndroidSchedulers.mainThread())
@@ -153,6 +165,10 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
 
     @Override
     public void toggleReadState(Article article) {
+        if (!article.isValid()) {
+//            getDataFromDb();
+            return;
+        }
         Timber.d("toggleReadState: %s", article);
         mDbProviderFactory.getDbProvider().toggleReaden(article.url)
                 .flatMap(articleUrl -> mDbProviderFactory.getDbProvider().getUnmanagedArticleAsyncOnes(articleUrl))
@@ -165,6 +181,10 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
     //TODO think if we need to manage state of loading during confChanges
     @Override
     public void toggleOfflineState(Article article) {
+        if (!article.isValid()) {
+//            getDataFromDb();
+            return;
+        }
         Timber.d("toggleOfflineState: %s", article.url);
         if (article.text == null) {
             mApiClient.getArticle(article.url)

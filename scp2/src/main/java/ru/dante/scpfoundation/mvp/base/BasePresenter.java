@@ -91,7 +91,7 @@ public abstract class BasePresenter<V extends BaseMvp.View>
             return;
         }
         mApiClient.writeArticleToFirebase(article)
-                .flatMap(article1 -> mDbProviderFactory.getDbProvider().setArticleSynced(article, true))
+                .flatMap(article1 -> mDbProviderFactory.getDbProvider().setArticleSynced(article1, true))
                 .subscribe(
                         article1 -> {
                             Timber.d("sync article onComplete: %s", article1.url);

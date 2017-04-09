@@ -12,6 +12,7 @@ import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.mvp.contract.RatedArticlesMvp;
 import rx.Observable;
+import timber.log.Timber;
 
 /**
  * Created by y.kuchanov on 21.12.16.
@@ -26,9 +27,17 @@ public class MostRatedArticlesPresenter
         super(myPreferencesManager, dbProviderFactory, apiClient);
     }
 
+//    @Override
+//    protected Observable<RealmResults<Article>> getDbObservable() {
+//        return mDbProviderFactory.getDbProvider().getArticlesSortedAsync(Article.FIELD_IS_IN_MOST_RATED, Sort.ASCENDING);
+//    }
+
+
     @Override
     protected Observable<RealmResults<Article>> getDbObservable() {
-        return mDbProviderFactory.getDbProvider().getArticlesSortedAsync(Article.FIELD_IS_IN_MOST_RATED, Sort.ASCENDING);
+        Timber.d("getDbObservable");
+        mDbProvider = mDbProviderFactory.getDbProvider();
+        return mDbProvider.getArticlesSortedAsync(Article.FIELD_IS_IN_MOST_RATED, Sort.ASCENDING);
     }
 
     @Override

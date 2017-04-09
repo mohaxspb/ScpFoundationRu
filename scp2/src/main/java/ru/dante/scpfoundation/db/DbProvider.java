@@ -33,6 +33,7 @@ public class DbProvider {
     }
 
     public void close() {
+        Timber.d("close");
         mRealm.close();
     }
 
@@ -311,8 +312,9 @@ public class DbProvider {
                 .<List<Article>>asObservable()
                 .filter(RealmResults::isLoaded)
                 .filter(RealmResults::isValid)
-                .flatMap(arts -> arts.isEmpty() ? Observable.just(null) : Observable.just(mRealm.copyFromRealm(arts.first())))
-                .doOnNext(article -> close());
+//                .first()
+                .flatMap(arts -> arts.isEmpty() ? Observable.just(null) : Observable.just(mRealm.copyFromRealm(arts.first())));
+//                .doOnNext(article -> close());
     }
 
     public Observable<Article> getUnmanagedArticleAsyncOnes(String articleUrl) {
@@ -658,10 +660,10 @@ public class DbProvider {
                     }
                 },
                 () -> {
-                    mRealm.close();
                     article.synced = synced ? Article.SYNCED_OK : Article.SYNCED_NEED;
                     subscriber.onNext(article);
                     subscriber.onCompleted();
+                    mRealm.close();
                 },
                 error -> {
                     mRealm.close();
