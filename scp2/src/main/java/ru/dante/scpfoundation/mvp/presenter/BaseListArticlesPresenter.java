@@ -13,8 +13,10 @@ import ru.dante.scpfoundation.mvp.base.BaseArticlesListMvp;
 import ru.dante.scpfoundation.mvp.base.BasePresenter;
 import rx.Observable;
 import rx.Subscriber;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
 /**
@@ -43,6 +45,8 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
 
     protected abstract Observable<Pair<Integer, Integer>> getSaveToDbObservable(List<Article> data, int offset);
 
+    private Subscription mDbSubscription;
+
     @Override
     public void getDataFromDb() {
         Timber.d("getDataFromDb");
@@ -50,12 +54,21 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
         getView().showCenterProgress(true);
         getView().enableSwipeRefresh(false);
 
-        getDbObservable()
+        mDbSubscription = getDbObservable()
 //                .subscribeOn(AndroidSchedulers.mainThread())
 //                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         data -> {
+                            //todo check if realm is closed and resubscribe, by calling getDataFromDb
+                            if (!data.isValid()) {
+                                Timber.e("data is not valid, so unsubscribe and restart observable");
+                                mDbSubscription.unsubscribe();
+                                mDbSubscription = null;
+                                mData = null;
+                                getView().updateData(mData);
+                                getDataFromDb();
+                            }
                             Timber.d("getDataFromDb data.size(): %s", data.size());
                             mData = data;
 //                            getView().showCenterProgress(false);
@@ -73,6 +86,7 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
                             getView().showError(e);
                         }
                 );
+
     }
 
     @Override

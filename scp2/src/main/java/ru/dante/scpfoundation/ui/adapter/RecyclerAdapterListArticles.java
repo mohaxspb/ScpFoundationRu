@@ -57,16 +57,16 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
     }
 
     public void setData(List<Article> data) {
-//        mData = data;
-        int previousCount = mData.size();
+        mData = data;
+//        int previousCount = mData.size();
 
 //        notifyItemRangeRemoved(0, previousCount);
 
-        mData.clear();
-        mData.addAll(data);
+//        mData.clear();
+//        mData.addAll(data);
 
 //        notifyItemRangeInserted(0, mData.size());
-        Timber.d("previousCount/mData.size(): %s/%s", previousCount, mData.size());
+//        Timber.d("previousCount/mData.size(): %s/%s", previousCount, mData.size());
 
 //        notifyItemRangeChanged(0, mData.size());
         notifyDataSetChanged();

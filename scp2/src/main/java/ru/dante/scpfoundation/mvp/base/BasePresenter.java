@@ -72,7 +72,9 @@ public abstract class BasePresenter<V extends BaseMvp.View>
     @Override
     public void updateArticleInFirebase(Article article, boolean showResultMessage) {
         Timber.d("updateArticleInFirebase: %s", article.url);
-        if (!mMyPreferencesManager.isHasSubscription()) {
+        //FIXME test
+        if (false) {
+//        if (!mMyPreferencesManager.isHasSubscription()) {
             long curNumOfAttempts = mMyPreferencesManager.getNumOfAttemptsToAutoSync();
             long maxNumOfAttempts = FirebaseRemoteConfig.getInstance()
                     .getLong(Constants.Firebase.RemoteConfigKeys.NUM_OF_SYNC_ATTEMPTS_BEFORE_CALL_TO_ACTION);
