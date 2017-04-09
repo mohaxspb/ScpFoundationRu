@@ -305,6 +305,12 @@ public class DbProvider {
 //                .flatMap(arts -> arts.isEmpty() ? Observable.just(null) : Observable.just(arts.first()));
 //    }
 
+    /**
+     * @param articleUrl used as ID
+     * @return Observable that emits <b>unmanaged</b>, valid and loaded Article
+     * and emits changes to it
+     * or null if there is no one in DB with this url
+     */
     public Observable<Article> getUnmanagedArticleAsync(String articleUrl) {
         return mRealm.where(Article.class)
                 .equalTo(Article.FIELD_URL, articleUrl)
@@ -312,9 +318,7 @@ public class DbProvider {
                 .<List<Article>>asObservable()
                 .filter(RealmResults::isLoaded)
                 .filter(RealmResults::isValid)
-//                .first()
                 .flatMap(arts -> arts.isEmpty() ? Observable.just(null) : Observable.just(mRealm.copyFromRealm(arts.first())));
-//                .doOnNext(article -> close());
     }
 
     public Observable<Article> getUnmanagedArticleAsyncOnes(String articleUrl) {
