@@ -41,6 +41,7 @@ public class MyPreferenceManager {
         String HAS_SUBSCRIPTION = "HAS_SUBSCRIPTION";
         String APP_IS_CRACKED = "APP_IS_CRACKED";
         String AUTO_SYNC_ATTEMPTS = "AUTO_SYNC_ATTEMPTS";
+        String VK_GROUP_APP_JOINED = "VK_GROUP_APP_JOINED";
     }
 
     private SharedPreferences mPreferences;
@@ -235,6 +236,14 @@ public class MyPreferenceManager {
 
     public long getNumOfAttemptsToAutoSync() {
         return mPreferences.getLong(Keys.AUTO_SYNC_ATTEMPTS, 0);
+    }
+
+    public boolean isVkGroupAppJoined() {
+        return mPreferences.getBoolean(Keys.VK_GROUP_APP_JOINED, false);
+    }
+
+    public void setVkGroupAppJoinedn(boolean joined) {
+        mPreferences.edit().putBoolean(Keys.VK_GROUP_APP_JOINED, joined).apply();
     }
 
     //secure

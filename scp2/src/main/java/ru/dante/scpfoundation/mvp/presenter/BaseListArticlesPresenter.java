@@ -14,7 +14,6 @@ import ru.dante.scpfoundation.mvp.base.BaseArticlesListMvp;
 import ru.dante.scpfoundation.mvp.base.BasePresenter;
 import rx.Observable;
 import rx.Subscriber;
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
@@ -45,8 +44,7 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
 
     protected abstract Observable<Pair<Integer, Integer>> getSaveToDbObservable(List<Article> data, int offset);
 
-    private Subscription mDbSubscription;
-    protected DbProvider mDbProvider;
+    DbProvider mDbProvider;
 
     @Override
     public void getDataFromDb() {
@@ -55,10 +53,7 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
         getView().showCenterProgress(true);
         getView().enableSwipeRefresh(false);
 
-//        mDbProvider =
-        mDbSubscription = getDbObservable()
-//                .subscribeOn(AndroidSchedulers.mainThread())
-//                .subscribeOn(Schedulers.io())
+        getDbObservable()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         data -> {
@@ -67,8 +62,6 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
                                 Timber.e("data is not valid, so unsubscribe and restart observable");
                                 mData = null;
                                 getView().updateData(mData);
-//                                mDbSubscription.unsubscribe();
-//                                mDbSubscription = null;
                                 getDataFromDb();
                                 return;
                             }
@@ -152,7 +145,6 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
     @Override
     public void toggleFavoriteState(Article article) {
         if (!article.isValid()) {
-//            getDataFromDb();
             return;
         }
         Timber.d("toggleFavoriteState: %s", article);
@@ -166,7 +158,6 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
     @Override
     public void toggleReadState(Article article) {
         if (!article.isValid()) {
-//            getDataFromDb();
             return;
         }
         Timber.d("toggleReadState: %s", article);
@@ -175,14 +166,13 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
                 .flatMap(article1 -> mDbProviderFactory.getDbProvider().setArticleSynced(article1, false))
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(getToggleReadenSubscriber());
+                .subscribe(getToggleReadSubscriber());
     }
 
     //TODO think if we need to manage state of loading during confChanges
     @Override
     public void toggleOfflineState(Article article) {
         if (!article.isValid()) {
-//            getDataFromDb();
             return;
         }
         Timber.d("toggleOfflineState: %s", article.url);
@@ -224,12 +214,13 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
             public void onNext(Article article) {
                 Timber.d("favs state now is: %s", article.isInFavorite != Article.ORDER_NONE);
                 updateArticleInFirebase(article, true);
+                updateUserScoreFromAction(1);
             }
         };
     }
 
     @Override
-    public Subscriber<Article> getToggleReadenSubscriber() {
+    public Subscriber<Article> getToggleReadSubscriber() {
         return new Subscriber<Article>() {
             @Override
             public void onCompleted() {

@@ -42,8 +42,8 @@ public interface Constants {
 
         interface Refs{
             String USERS = "users";
-            String FAVORITES = "favorites";
             String ARTICLES = "articles";
+            String SCORE = "score";
         }
 
         int REQUEST_INVITE = 1024;
@@ -62,6 +62,8 @@ public interface Constants {
             String VK_GROUPS_TO_JOIN_JSON = "vk_groups_to_join_json";
             String NUM_OF_SYNC_ATTEMPTS_BEFORE_CALL_TO_ACTION = "num_of_sync_attempts_before_call_to_action";
             String NUM_OF_GALLERY_PHOTOS_BETWEEN_INTERSITIAL = "num_of_gallery_photos_between_intersitial";
+            String SCORE_MULTIPLIER_SUBSCRIPTION = "score_multiplier_subscription";
+            String SCORE_MULTIPLIER_VK_GROUP_APP = "score_multiplier_vk_group_app";
         }
 
         interface Analitics {

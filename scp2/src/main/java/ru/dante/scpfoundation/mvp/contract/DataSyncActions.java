@@ -12,4 +12,6 @@ public interface DataSyncActions {
     void updateArticleInFirebase(Article article, boolean showResultMessage);
 
     void syncArticles(boolean showResultMessage);
+
+    void updateUserScoreFromAction(int score);
 }

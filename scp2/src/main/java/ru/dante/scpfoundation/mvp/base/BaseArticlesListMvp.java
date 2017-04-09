@@ -20,7 +20,7 @@ public interface BaseArticlesListMvp {
         //and so need to manually update adapter with changed by these actions data
         Subscriber<Article> getToggleFavoriteSubscriber();
 
-        Subscriber<Article> getToggleReadenSubscriber();
+        Subscriber<Article> getToggleReadSubscriber();
 
         Subscriber<String> getDeleteArticlesTextSubscriber();
 

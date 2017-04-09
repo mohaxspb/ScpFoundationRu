@@ -712,6 +712,7 @@ public class DbProvider {
     }
 
     public Observable<User> incrementUserScore(int score) {
+        Timber.d("incrementUserScore: %s", score);
         return Observable.create(subscriber -> mRealm.executeTransactionAsync(
                 realm -> {
                     //check if we have app in db and update
@@ -722,7 +723,7 @@ public class DbProvider {
                         subscriber.onNext(realm.copyFromRealm(user));
                         subscriber.onCompleted();
                     } else {
-                        Timber.e("No user to increment scrore");
+                        Timber.e("No user to increment score");
                         subscriber.onError(new IllegalStateException());
                     }
                 },

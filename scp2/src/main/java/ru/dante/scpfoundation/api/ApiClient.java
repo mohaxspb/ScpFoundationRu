@@ -1137,6 +1137,33 @@ public class ApiClient {
         });
     }
 
+    /**
+     * @param score new total score value
+     */
+    public Observable<Integer> updateScoreInFirebaseObservable(int score) {
+        return Observable.create(subscriber -> {
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (firebaseUser != null) {
+                FirebaseDatabase.getInstance()
+                        .getReference(Constants.Firebase.Refs.USERS)
+                        .child(firebaseUser.getUid())
+                        .child(Constants.Firebase.Refs.SCORE)
+                        .setValue(score, (databaseError, databaseReference) -> {
+                            if (databaseError == null) {
+                                //success
+                                Timber.d("user created");
+                                subscriber.onNext(score);
+                                subscriber.onCompleted();
+                            } else {
+                                subscriber.onError(databaseError.toException());
+                            }
+                        });
+            } else {
+                subscriber.onError(new IllegalStateException("firebase user is null"));
+            }
+        });
+    }
+
     public Observable<Article> writeArticleToFirebase(Article article) {
         return Observable.create(subscriber -> {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();

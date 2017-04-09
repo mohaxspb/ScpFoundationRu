@@ -1,5 +1,6 @@
 package ru.dante.scpfoundation.mvp.base;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.hannesdorfmann.mosby.mvp.MvpNullObjectBasePresenter;
 
@@ -15,6 +16,8 @@ import ru.dante.scpfoundation.db.model.User;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.mvp.contract.LoginActions;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 /**
@@ -142,6 +145,47 @@ public abstract class BasePresenter<V extends BaseMvp.View>
                                 getView().showMessage(R.string.error_while_all_data_sync);
                             }
                         }
+                );
+    }
+
+    /**
+     * check if user loged in,
+     * calculate final score to add value from modificators,
+     * //TODO check if this article was not rewarded before (may be we can mark article as requested rewar and try to add this core later, when user manually sync data)
+     * write score to realm,
+     * write it to firebase if user has subscription
+     */
+    @Override
+    public void updateUserScoreFromAction(int score) {
+        Timber.d("updateUserScore: %s", score);
+
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            Timber.d("user unlogined, do nothing");
+            return;
+        }
+
+        FirebaseRemoteConfig remoteConfig = FirebaseRemoteConfig.getInstance();
+        double subscriptionModificator = remoteConfig.getDouble(Constants.Firebase.RemoteConfigKeys.SCORE_MULTIPLIER_SUBSCRIPTION);
+        double vkGroupAppModificator = remoteConfig.getDouble(Constants.Firebase.RemoteConfigKeys.SCORE_MULTIPLIER_VK_GROUP_APP);
+
+        boolean hasSubscriptionModificator = mMyPreferencesManager.isHasSubscription();
+        boolean hasVkGroupAppModificator = mMyPreferencesManager.isVkGroupAppJoined();
+
+        subscriptionModificator = hasSubscriptionModificator ? subscriptionModificator : 1;
+        vkGroupAppModificator = hasVkGroupAppModificator ? vkGroupAppModificator : 1;
+        //check if user has subs and joined vk group to add multilplier
+        int totalScoreToAdd = (int) (score * subscriptionModificator * vkGroupAppModificator);
+
+        mDbProviderFactory.getDbProvider().incrementUserScore(totalScoreToAdd)
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(Schedulers.io())
+                //TODO test
+                .flatMap(user ->/* mMyPreferencesManager.isHasSubscription()*/true ? mApiClient.updateScoreInFirebaseObservable(user.score) : Observable.empty())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        newTotalScore -> Timber.d("score updated in firebase"),
+                        Timber::e,
+                        () -> Timber.d("onCompleted")
                 );
     }
 }
