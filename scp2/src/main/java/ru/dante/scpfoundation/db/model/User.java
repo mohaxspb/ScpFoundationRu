@@ -19,6 +19,8 @@ public class User extends RealmObject {
 
     public String email;
 
+    public int score;
+
     public RealmList<SocialProviderModel> socialProviders;
 
     public User(
@@ -45,7 +47,8 @@ public class User extends RealmObject {
                 ", fullName='" + fullName + '\'' +
                 ", avatar='" + avatar + '\'' +
                 ", email='" + email + '\'' +
-                ", socialProviders='" + new ArrayList<>(socialProviders) + '\'' +
+                ", score=" + score +
+                ", socialProviders=" + socialProviders +
                 '}';
     }
 }

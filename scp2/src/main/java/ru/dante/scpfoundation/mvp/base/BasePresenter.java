@@ -72,9 +72,7 @@ public abstract class BasePresenter<V extends BaseMvp.View>
     @Override
     public void updateArticleInFirebase(Article article, boolean showResultMessage) {
         Timber.d("updateArticleInFirebase: %s", article.url);
-        //FIXME test
-        if (false) {
-//        if (!mMyPreferencesManager.isHasSubscription()) {
+        if (!mMyPreferencesManager.isHasSubscription()) {
             long curNumOfAttempts = mMyPreferencesManager.getNumOfAttemptsToAutoSync();
             long maxNumOfAttempts = FirebaseRemoteConfig.getInstance()
                     .getLong(Constants.Firebase.RemoteConfigKeys.NUM_OF_SYNC_ATTEMPTS_BEFORE_CALL_TO_ACTION);
@@ -115,7 +113,7 @@ public abstract class BasePresenter<V extends BaseMvp.View>
         //get unsynced articles from DB
         //write them to firebase
         //mark them as synced
-        //toDO use managed ones
+        //TODO use managed ones
         Observable.<List<Article>>create(subscriber -> mDbProviderFactory.getDbProvider().getUnsynedArticlesUnmanaged()
                 .subscribe(
                         data -> {

@@ -710,4 +710,30 @@ public class DbProvider {
                 })
         );
     }
+
+    public Observable<User> incrementUserScore(int score) {
+        return Observable.create(subscriber -> mRealm.executeTransactionAsync(
+                realm -> {
+                    //check if we have app in db and update
+                    User user = realm.where(User.class).findFirst();
+                    if (user != null) {
+                        user.score = user.score + score;
+
+                        subscriber.onNext(realm.copyFromRealm(user));
+                        subscriber.onCompleted();
+                    } else {
+                        Timber.e("No user to increment scrore");
+                        subscriber.onError(new IllegalStateException());
+                    }
+                },
+                () -> {
+                    subscriber.onCompleted();
+                    mRealm.close();
+                },
+                error -> {
+                    subscriber.onError(error);
+                    mRealm.close();
+                })
+        );
+    }
 }
