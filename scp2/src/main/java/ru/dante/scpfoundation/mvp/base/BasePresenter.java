@@ -156,13 +156,20 @@ public abstract class BasePresenter<V extends BaseMvp.View>
      * write it to firebase if user has subscription
      */
     @Override
-    public void updateUserScoreFromAction(int score) {
-        Timber.d("updateUserScore: %s", score);
+    public void updateUserScoreFromAction(@ScoreAction String action) {
+        Timber.d("updateUserScore: %s", action);
 
         if (FirebaseAuth.getInstance().getCurrentUser() == null) {
             Timber.d("user unlogined, do nothing");
             return;
         }
+
+        //check if user has subscription and if not just mark article as need to sync score
+
+
+        int score = 1;
+
+        //TODO switch by action to get initial score value
 
         FirebaseRemoteConfig remoteConfig = FirebaseRemoteConfig.getInstance();
         double subscriptionModificator = remoteConfig.getDouble(Constants.Firebase.RemoteConfigKeys.SCORE_MULTIPLIER_SUBSCRIPTION);

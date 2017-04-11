@@ -1,5 +1,10 @@
 package ru.dante.scpfoundation.mvp.contract;
 
+import android.support.annotation.StringDef;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 import ru.dante.scpfoundation.db.model.Article;
 
 /**
@@ -9,9 +14,15 @@ import ru.dante.scpfoundation.db.model.Article;
  */
 public interface DataSyncActions {
 
+    @Retention(RetentionPolicy.SOURCE)
+    @StringDef({ScoreAction.FAVORITE})
+    @interface ScoreAction {
+        String FAVORITE = "FAVORITE";
+    }
+
     void updateArticleInFirebase(Article article, boolean showResultMessage);
 
     void syncArticles(boolean showResultMessage);
 
-    void updateUserScoreFromAction(int score);
+    void updateUserScoreFromAction(@ScoreAction String action);
 }
