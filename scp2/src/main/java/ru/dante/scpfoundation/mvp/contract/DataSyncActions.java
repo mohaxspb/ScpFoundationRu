@@ -18,6 +18,12 @@ public interface DataSyncActions {
     @StringDef({ScoreAction.FAVORITE})
     @interface ScoreAction {
         String FAVORITE = "FAVORITE";
+        String READ = "READ";
+        String INTERSTITIAL_SHOWN = "INTERSTITIAL_SHOWN";
+        String VK_GROUP = "VK_GROUP";
+        String OUR_APP = "OUR_APP";
+        String REWARDED_VIDEO = "REWARDED_VIDEO";
+        String NONE = "NONE";
     }
 
     void updateArticleInFirebase(Article article, boolean showResultMessage);

@@ -12,29 +12,36 @@
             {
             "id": "ru.spb.android.borscha",
             "name": "Борщ",
-            "description": "Генератор юмора. Свежие шутки, приколы, гифки, cамый популярный паблик, журнал.",
-            "imageUrl": "https://lh3.googleusercontent.com/q1Xyzne1iSjQbf2YftlO9hprdmJbYAdcYsmxu3tDhlayvzwR0f3798Ov1s3EVkyNWg=w300-rw"
+            "description": "Генератор юмора. Свежие шутки, приколы, гифки, cамый популярный паблик,
+            журнал.",
+            "imageUrl":
+            "https://lh3.googleusercontent.com/q1Xyzne1iSjQbf2YftlO9hprdmJbYAdcYsmxu3tDhlayvzwR0f3798Ov1s3EVkyNWg=w300-rw"
             },
             {
             "id": "ru.spb.android.palata6",
             "name": "Палата № 6",
-            "description": "Радость, грусть, сочувствие, любовь, страх, безразличие, удовольствие и другие эмоции",
-            "imageUrl": "https://lh3.googleusercontent.com/2oXjwIeltn-wSrZ8zQB3aGTFPW-w9ef-y2Yi_EeOTLLrTO6Jg9VtejzwDtM6iKPv3bh2=w300-rw"
+            "description": "Радость, грусть, сочувствие, любовь, страх, безразличие, удовольствие и
+            другие эмоции",
+            "imageUrl":
+            "https://lh3.googleusercontent.com/2oXjwIeltn-wSrZ8zQB3aGTFPW-w9ef-y2Yi_EeOTLLrTO6Jg9VtejzwDtM6iKPv3bh2=w300-rw"
             },
             {
             "id": "ru.dante.scpfoundation.eng",
             "name": "SCP Foundation EN On/Offline",
             "description": "Англоязычное приложение для англоязычной части Фонда",
-            "imageUrl": "https://lh3.googleusercontent.com/IQuXO0zOC1hBS6YUmBo91-G_2WcYPFc2pjIuxTXr_NvbiH-APDSk_rJcbJTijGxwwtcQ=w300-rw"
+            "imageUrl":
+            "https://lh3.googleusercontent.com/IQuXO0zOC1hBS6YUmBo91-G_2WcYPFc2pjIuxTXr_NvbiH-APDSk_rJcbJTijGxwwtcQ=w300-rw"
             },
             {
             "id": "ru.kuchanov.vjux",
             "name": "Котик Вжух - Кот волшебник Мем",
             "description": "Вжух и ты волшебник, создай свой вжух взмахом руки.",
-            "imageUrl": "https//lh3.googleusercontent.com/5P7o006Il-iA8e6TjNYvogcObxC0rHj69VljyLd0YvbC6YhvlDCh6BS0jaKmznWbUSk=w300-rw"
+            "imageUrl":
+            "https//lh3.googleusercontent.com/5P7o006Il-iA8e6TjNYvogcObxC0rHj69VljyLd0YvbC6YhvlDCh6BS0jaKmznWbUSk=w300-rw"
             }
             ]
-            }</value>
+            }
+        </value>
     </entry>
     <entry>
         <key>app_install_reward_in_millis</key>
@@ -57,7 +64,8 @@
             {
             "id": "599638",
             "name": "SCP Foundation RU/ENG. Приложение для Android",
-            "description": "Официальная группа приложения в ВК. Тут вы найдёте самые последние новости о развитии приложения, а также разный контент по вселенной SCP",
+            "description": "Официальная группа приложения в ВК. Тут вы найдёте самые последние
+            новости о развитии приложения, а также разный контент по вселенной SCP",
             "imageUrl": "https://pp.userapi.com/c604519/v604519296/46aa/i9Y7zDF_J5M.jpg"
             },
             {
@@ -67,7 +75,8 @@
             "imageUrl": "https://pp.userapi.com/c639829/v639829296/5462/Chzn6rgbuL8.jpg"
             }
             ]
-            }</value>
+            }
+        </value>
     </entry>
     <entry>
         <key>free_vk_groups_join_reward</key>
@@ -99,6 +108,7 @@
         <key>num_of_gallery_photos_between_intersitial</key>
         <value>20</value>
     </entry>
+    <!--score-->
     <entry>
         <key>score_multiplier_subscription</key>
         <value>3</value>
@@ -106,5 +116,34 @@
     <entry>
         <key>score_multiplier_vk_group_app</key>
         <value>2</value>
+    </entry>
+    <!---->
+    <entry>
+        <key>score_action_favorite</key>
+        <value>1</value>
+    </entry>
+    <entry>
+        <key>score_action_read</key>
+        <value>1</value>
+    </entry>
+    <entry>
+        <key>score_action_interstitial_shown</key>
+        <value>5</value>
+    </entry>
+    <entry>
+        <key>score_action_vk_group</key>
+        <value>10</value>
+    </entry>
+    <entry>
+        <key>score_action_our_app</key>
+        <value>20</value>
+    </entry>
+    <entry>
+        <key>score_action_rewarded_video</key>
+        <value>30</value>
+    </entry>
+    <entry>
+        <key>score_action_none</key>
+        <value>0</value>
     </entry>
 </defaultsMap>

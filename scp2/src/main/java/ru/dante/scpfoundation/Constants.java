@@ -64,6 +64,14 @@ public interface Constants {
             String NUM_OF_GALLERY_PHOTOS_BETWEEN_INTERSITIAL = "num_of_gallery_photos_between_intersitial";
             String SCORE_MULTIPLIER_SUBSCRIPTION = "score_multiplier_subscription";
             String SCORE_MULTIPLIER_VK_GROUP_APP = "score_multiplier_vk_group_app";
+            //score
+            String SCORE_ACTION_FAVORITE = "score_action_favorite";
+            String SCORE_ACTION_READ = "score_action_read";
+            String SCORE_ACTION_INTERSTITIAL_SHOWN = "score_action_interstitial_shown";
+            String SCORE_ACTION_VK_GROUP = "score_action_vk_group";
+            String SCORE_ACTION_OUR_APP = "score_action_our_app";
+            String SCORE_ACTION_REWARDED_VIDEO = "score_action_rewarded_video";
+            String SCORE_ACTION_NONE = "score_action_none";
         }
 
         interface Analitics {

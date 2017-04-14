@@ -1138,26 +1138,28 @@ public class ApiClient {
     }
 
     /**
-     * @param score new total score value
+     * @param score score to add to user
      */
     public Observable<Integer> updateScoreInFirebaseObservable(int score) {
         return Observable.create(subscriber -> {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             if (firebaseUser != null) {
-                FirebaseDatabase.getInstance()
-                        .getReference(Constants.Firebase.Refs.USERS)
-                        .child(firebaseUser.getUid())
-                        .child(Constants.Firebase.Refs.SCORE)
-                        .setValue(score, (databaseError, databaseReference) -> {
-                            if (databaseError == null) {
-                                //success
-                                Timber.d("user created");
-                                subscriber.onNext(score);
-                                subscriber.onCompleted();
-                            } else {
-                                subscriber.onError(databaseError.toException());
-                            }
-                        });
+                //TODO add, not rewrite
+                sd
+//                FirebaseDatabase.getInstance()
+//                        .getReference(Constants.Firebase.Refs.USERS)
+//                        .child(firebaseUser.getUid())
+//                        .child(Constants.Firebase.Refs.SCORE)
+//                        .setValue(score, (databaseError, databaseReference) -> {
+//                            if (databaseError == null) {
+//                                //success
+//                                Timber.d("user created");
+//                                subscriber.onNext(score);
+//                                subscriber.onCompleted();
+//                            } else {
+//                                subscriber.onError(databaseError.toException());
+//                            }
+//                        });
             } else {
                 subscriber.onError(new IllegalStateException("firebase user is null"));
             }
@@ -1191,6 +1193,35 @@ public class ApiClient {
                     subscriber.onNext(article);
                     subscriber.onCompleted();
                 } else {
+                    subscriber.onError(databaseError.toException());
+                }
+            });
+        });
+    }
+
+    public Observable<ArticleInFirebase> getArticleFromFirebase(Article article) {
+        return Observable.create(subscriber -> {
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (firebaseUser == null) {
+                subscriber.onError(new IllegalArgumentException("firebase user is null"));
+                return;
+            }
+            String url = article.url.replace(BuildConfig.BASE_API_URL, "");
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference reference = database.getReference()
+                    .child(Constants.Firebase.Refs.USERS)
+                    .child(firebaseUser.getUid())
+                    .child(Constants.Firebase.Refs.ARTICLES)
+                    .child(url);
+            reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    subscriber.onNext(dataSnapshot.getValue(ArticleInFirebase.class));
+                    subscriber.onCompleted();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
                     subscriber.onError(databaseError.toException());
                 }
             });

@@ -91,7 +91,61 @@ public abstract class BasePresenter<V extends BaseMvp.View>
             }
             return;
         }
-        mApiClient.writeArticleToFirebase(article)
+
+        //TODO check if user has subscription and if not just mark article as need to sync score
+        FirebaseRemoteConfig remoteConfig = FirebaseRemoteConfig.getInstance();
+
+        long score = 1;
+
+        @ScoreAction
+        String action = article.isInReaden ? ScoreAction.READ :
+                article.isInFavorite != Article.ORDER_NONE ? ScoreAction.FAVORITE : ScoreAction.NONE;
+
+        //switch by action to get initial score value
+        switch (action) {
+            case ScoreAction.FAVORITE:
+                score = remoteConfig.getLong(Constants.Firebase.RemoteConfigKeys.SCORE_ACTION_FAVORITE);
+                break;
+            case ScoreAction.READ:
+                score = remoteConfig.getLong(Constants.Firebase.RemoteConfigKeys.SCORE_ACTION_READ);
+                break;
+            case ScoreAction.INTERSTITIAL_SHOWN:
+                score = remoteConfig.getLong(Constants.Firebase.RemoteConfigKeys.SCORE_ACTION_INTERSTITIAL_SHOWN);
+                break;
+            case ScoreAction.VK_GROUP:
+                score = remoteConfig.getLong(Constants.Firebase.RemoteConfigKeys.SCORE_ACTION_VK_GROUP);
+                break;
+            case ScoreAction.OUR_APP:
+                score = remoteConfig.getLong(Constants.Firebase.RemoteConfigKeys.SCORE_ACTION_OUR_APP);
+                break;
+            case ScoreAction.REWARDED_VIDEO:
+                score = remoteConfig.getLong(Constants.Firebase.RemoteConfigKeys.SCORE_ACTION_REWARDED_VIDEO);
+                break;
+            case ScoreAction.NONE:
+                score = remoteConfig.getLong(Constants.Firebase.RemoteConfigKeys.SCORE_ACTION_NONE);
+                break;
+            default:
+                throw new RuntimeException("unexpected score action");
+        }
+
+        double subscriptionModificator = remoteConfig.getDouble(Constants.Firebase.RemoteConfigKeys.SCORE_MULTIPLIER_SUBSCRIPTION);
+        double vkGroupAppModificator = remoteConfig.getDouble(Constants.Firebase.RemoteConfigKeys.SCORE_MULTIPLIER_VK_GROUP_APP);
+
+        boolean hasSubscriptionModificator = mMyPreferencesManager.isHasSubscription();
+        boolean hasVkGroupAppModificator = mMyPreferencesManager.isVkGroupAppJoined();
+
+        subscriptionModificator = hasSubscriptionModificator ? subscriptionModificator : 1;
+        vkGroupAppModificator = hasVkGroupAppModificator ? vkGroupAppModificator : 1;
+        //check if user has subs and joined vk group to add multilplier
+        int totalScoreToAdd = (int) (score * subscriptionModificator * vkGroupAppModificator);
+
+        mApiClient.getArticleFromFirebase(article)
+                .flatMap(articleInFirebase -> articleInFirebase == null ?
+                        mApiClient.updateScoreInFirebaseObservable(totalScoreToAdd)
+                                //score will be added to firebase user object
+                                .flatMap(addedScore -> Observable.just(article))
+                        : Observable.just(article))
+                .flatMap(article1 -> mApiClient.writeArticleToFirebase(article1))
                 .flatMap(article1 -> mDbProviderFactory.getDbProvider().setArticleSynced(article1, true))
                 .subscribe(
                         article1 -> {
@@ -157,42 +211,23 @@ public abstract class BasePresenter<V extends BaseMvp.View>
      */
     @Override
     public void updateUserScoreFromAction(@ScoreAction String action) {
-        Timber.d("updateUserScore: %s", action);
+//        Timber.d("updateUserScore: %s", action);
+//
+//        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+//            Timber.d("user unlogined, do nothing");
+//            return;
+//        }
 
-        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
-            Timber.d("user unlogined, do nothing");
-            return;
-        }
-
-        //check if user has subscription and if not just mark article as need to sync score
-
-
-        int score = 1;
-
-        //TODO switch by action to get initial score value
-
-        FirebaseRemoteConfig remoteConfig = FirebaseRemoteConfig.getInstance();
-        double subscriptionModificator = remoteConfig.getDouble(Constants.Firebase.RemoteConfigKeys.SCORE_MULTIPLIER_SUBSCRIPTION);
-        double vkGroupAppModificator = remoteConfig.getDouble(Constants.Firebase.RemoteConfigKeys.SCORE_MULTIPLIER_VK_GROUP_APP);
-
-        boolean hasSubscriptionModificator = mMyPreferencesManager.isHasSubscription();
-        boolean hasVkGroupAppModificator = mMyPreferencesManager.isVkGroupAppJoined();
-
-        subscriptionModificator = hasSubscriptionModificator ? subscriptionModificator : 1;
-        vkGroupAppModificator = hasVkGroupAppModificator ? vkGroupAppModificator : 1;
-        //check if user has subs and joined vk group to add multilplier
-        int totalScoreToAdd = (int) (score * subscriptionModificator * vkGroupAppModificator);
-
-        mDbProviderFactory.getDbProvider().incrementUserScore(totalScoreToAdd)
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .observeOn(Schedulers.io())
-                //TODO test
-                .flatMap(user ->/* mMyPreferencesManager.isHasSubscription()*/true ? mApiClient.updateScoreInFirebaseObservable(user.score) : Observable.empty())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        newTotalScore -> Timber.d("score updated in firebase"),
-                        Timber::e,
-                        () -> Timber.d("onCompleted")
-                );
+//        mDbProviderFactory.getDbProvider().incrementUserScore(totalScoreToAdd)
+//                .subscribeOn(AndroidSchedulers.mainThread())
+//                .observeOn(Schedulers.io())
+//                //TODO test
+//                .flatMap(user ->/* mMyPreferencesManager.isHasSubscription()*/true ? mApiClient.updateScoreInFirebaseObservable(user.score) : Observable.empty())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(
+//                        newTotalScore -> Timber.d("score updated in firebase"),
+//                        Timber::e,
+//                        () -> Timber.d("onCompleted")
+//                );
     }
 }
