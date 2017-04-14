@@ -11,6 +11,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.vk.sdk.VKAccessToken;
@@ -1144,8 +1146,39 @@ public class ApiClient {
         return Observable.create(subscriber -> {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             if (firebaseUser != null) {
-                //TODO add, not rewrite
-                sd
+                //add, not rewrite
+                FirebaseDatabase.getInstance()
+                        .getReference(Constants.Firebase.Refs.USERS)
+                        .child(firebaseUser.getUid())
+                        .child(Constants.Firebase.Refs.SCORE)
+                        .runTransaction(new Transaction.Handler() {
+                            @Override
+                            public Transaction.Result doTransaction(MutableData mutableData) {
+                                Integer p = mutableData.getValue(Integer.class);
+                                if (p == null) {
+                                    return Transaction.success(mutableData);
+                                }
+
+                                p = p + score;
+
+                                // Set value and report transaction success
+                                mutableData.setValue(p);
+                                return Transaction.success(mutableData);
+                            }
+
+                            @Override
+                            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+                                if(databaseError==null) {
+                                    Timber.d("onComplete: %s", dataSnapshot.getValue());
+                                    subscriber.onNext(dataSnapshot.getValue(Integer.class));
+                                    subscriber.onCompleted();
+                                } else {
+                                    Timber.e(databaseError.toException(), "onComplete with error: %s", databaseError.toString());
+                                    subscriber.onError(databaseError.toException());
+                                }
+                            }
+                        });
+
 //                FirebaseDatabase.getInstance()
 //                        .getReference(Constants.Firebase.Refs.USERS)
 //                        .child(firebaseUser.getUid())
