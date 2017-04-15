@@ -6,7 +6,6 @@ import java.util.List;
 
 import io.realm.RealmResults;
 import ru.dante.scpfoundation.api.ApiClient;
-import ru.dante.scpfoundation.db.DbProvider;
 import ru.dante.scpfoundation.db.DbProviderFactory;
 import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
@@ -43,8 +42,6 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
     protected abstract Observable<List<Article>> getApiObservable(int offset);
 
     protected abstract Observable<Pair<Integer, Integer>> getSaveToDbObservable(List<Article> data, int offset);
-
-    DbProvider mDbProvider;
 
     @Override
     public void getDataFromDb() {
@@ -214,7 +211,6 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
             public void onNext(Article article) {
                 Timber.d("favs state now is: %s", article.isInFavorite != Article.ORDER_NONE);
                 updateArticleInFirebase(article, true);
-//                updateUserScoreFromAction(1);
             }
         };
     }

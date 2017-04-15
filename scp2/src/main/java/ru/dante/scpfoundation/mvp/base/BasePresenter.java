@@ -1,5 +1,6 @@
 package ru.dante.scpfoundation.mvp.base;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.hannesdorfmann.mosby.mvp.MvpNullObjectBasePresenter;
 
@@ -89,53 +90,13 @@ public abstract class BasePresenter<V extends BaseMvp.View>
             return;
         }
 
-        //TODO check if user has subscription and if not just mark article as need to sync score
-        FirebaseRemoteConfig remoteConfig = FirebaseRemoteConfig.getInstance();
-
-        long score;
-
         @ScoreAction
         String action = article.isInReaden ? ScoreAction.READ :
                 article.isInFavorite != Article.ORDER_NONE ? ScoreAction.FAVORITE : ScoreAction.NONE;
 
-        //switch by action to get initial score value
-        switch (action) {
-            case ScoreAction.FAVORITE:
-                score = remoteConfig.getLong(Constants.Firebase.RemoteConfigKeys.SCORE_ACTION_FAVORITE);
-                break;
-            case ScoreAction.READ:
-                score = remoteConfig.getLong(Constants.Firebase.RemoteConfigKeys.SCORE_ACTION_READ);
-                break;
-            case ScoreAction.INTERSTITIAL_SHOWN:
-                score = remoteConfig.getLong(Constants.Firebase.RemoteConfigKeys.SCORE_ACTION_INTERSTITIAL_SHOWN);
-                break;
-            case ScoreAction.VK_GROUP:
-                score = remoteConfig.getLong(Constants.Firebase.RemoteConfigKeys.SCORE_ACTION_VK_GROUP);
-                break;
-            case ScoreAction.OUR_APP:
-                score = remoteConfig.getLong(Constants.Firebase.RemoteConfigKeys.SCORE_ACTION_OUR_APP);
-                break;
-            case ScoreAction.REWARDED_VIDEO:
-                score = remoteConfig.getLong(Constants.Firebase.RemoteConfigKeys.SCORE_ACTION_REWARDED_VIDEO);
-                break;
-            case ScoreAction.NONE:
-                score = remoteConfig.getLong(Constants.Firebase.RemoteConfigKeys.SCORE_ACTION_NONE);
-                break;
-            default:
-                throw new RuntimeException("unexpected score action");
-        }
+        int totalScoreToAdd = getTotalScoreToAddFromAction(action);
 
-        double subscriptionModificator = remoteConfig.getDouble(Constants.Firebase.RemoteConfigKeys.SCORE_MULTIPLIER_SUBSCRIPTION);
-        double vkGroupAppModificator = remoteConfig.getDouble(Constants.Firebase.RemoteConfigKeys.SCORE_MULTIPLIER_VK_GROUP_APP);
-
-        boolean hasSubscriptionModificator = mMyPreferencesManager.isHasSubscription();
-        boolean hasVkGroupAppModificator = mMyPreferencesManager.isVkGroupAppJoined();
-
-        subscriptionModificator = hasSubscriptionModificator ? subscriptionModificator : 1;
-        vkGroupAppModificator = hasVkGroupAppModificator ? vkGroupAppModificator : 1;
-        //check if user has subs and joined vk group to add multilplier
-        int totalScoreToAdd = (int) (score * subscriptionModificator * vkGroupAppModificator);
-
+        //update score for articles, that is not in firebase, than write/update them
         mApiClient.getArticleFromFirebase(article)
                 .flatMap(articleInFirebase -> articleInFirebase == null ?
                         mApiClient.updateScoreInFirebaseObservable(totalScoreToAdd)
@@ -195,34 +156,90 @@ public abstract class BasePresenter<V extends BaseMvp.View>
                             dbProvider.close();
                         }
                 );
+        //TODO update user score in realm from firebase value
     }
 
     /**
      * check if user loged in,
      * calculate final score to add value from modificators,
-     * //TODO check if this article was not rewarded before (may be we can mark article as requested rewar and try to add this core later, when user manually sync data)
-     * write score to realm,
-     * write it to firebase if user has subscription
+     * if user do not have subscription we increment unsynced score
+     * if user has subscription we increment score in firebase
      */
     @Override
     public void updateUserScoreFromAction(@ScoreAction String action) {
-//        Timber.d("updateUserScore: %s", action);
+        Timber.d("updateUserScore: %s", action);
 //
-//        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
-//            Timber.d("user unlogined, do nothing");
-//            return;
-//        }
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            Timber.d("user unlogined, do nothing");
+            return;
+        }
 
-//        mDbProviderFactory.getDbProvider().incrementUserScore(totalScoreToAdd)
-//                .subscribeOn(AndroidSchedulers.mainThread())
-//                .observeOn(Schedulers.io())
-//                //TODO test
-//                .flatMap(user ->/* mMyPreferencesManager.isHasSubscription()*/true ? mApiClient.updateScoreInFirebaseObservable(user.score) : Observable.empty())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(
-//                        newTotalScore -> Timber.d("score updated in firebase"),
-//                        Timber::e,
-//                        () -> Timber.d("onCompleted")
-//                );
+        int totalScoreToAdd = getTotalScoreToAddFromAction(action);
+
+        if (!mMyPreferencesManager.isHasSubscription()) {
+            long curNumOfAttempts = mMyPreferencesManager.getNumOfAttemptsToAutoSync();
+            long maxNumOfAttempts = FirebaseRemoteConfig.getInstance()
+                    .getLong(Constants.Firebase.RemoteConfigKeys.NUM_OF_SYNC_ATTEMPTS_BEFORE_CALL_TO_ACTION);
+
+            Timber.d("does not have subscription, so no auto sync: %s/%s", curNumOfAttempts, maxNumOfAttempts);
+
+            if (curNumOfAttempts >= maxNumOfAttempts) {
+                //show call to action
+                mMyPreferencesManager.setNumOfAttemptsToAutoSync(0);
+                getView().showSnackBarWithAction(Constants.Firebase.CallToActionReason.ENABLE_AUTO_SYNC);
+            } else {
+                mMyPreferencesManager.setNumOfAttemptsToAutoSync(curNumOfAttempts + 1);
+            }
+
+            //TODO increment unsynced score to sync it later
+
+            return;
+        }
+
+        //TODO increment scoreInFirebase
+        //TODO we should set zero as unsynced score only in onSuccess callbak, to not loose some score from broken connection
+    }
+
+    private int getTotalScoreToAddFromAction(@ScoreAction String action) {
+        long score;
+
+        //switch by action to get initial score value
+        FirebaseRemoteConfig remoteConfig = FirebaseRemoteConfig.getInstance();
+        switch (action) {
+            case ScoreAction.FAVORITE:
+                score = remoteConfig.getLong(Constants.Firebase.RemoteConfigKeys.SCORE_ACTION_FAVORITE);
+                break;
+            case ScoreAction.READ:
+                score = remoteConfig.getLong(Constants.Firebase.RemoteConfigKeys.SCORE_ACTION_READ);
+                break;
+            case ScoreAction.INTERSTITIAL_SHOWN:
+                score = remoteConfig.getLong(Constants.Firebase.RemoteConfigKeys.SCORE_ACTION_INTERSTITIAL_SHOWN);
+                break;
+            case ScoreAction.VK_GROUP:
+                score = remoteConfig.getLong(Constants.Firebase.RemoteConfigKeys.SCORE_ACTION_VK_GROUP);
+                break;
+            case ScoreAction.OUR_APP:
+                score = remoteConfig.getLong(Constants.Firebase.RemoteConfigKeys.SCORE_ACTION_OUR_APP);
+                break;
+            case ScoreAction.REWARDED_VIDEO:
+                score = remoteConfig.getLong(Constants.Firebase.RemoteConfigKeys.SCORE_ACTION_REWARDED_VIDEO);
+                break;
+            case ScoreAction.NONE:
+                score = remoteConfig.getLong(Constants.Firebase.RemoteConfigKeys.SCORE_ACTION_NONE);
+                break;
+            default:
+                throw new RuntimeException("unexpected score action");
+        }
+
+        double subscriptionModificator = remoteConfig.getDouble(Constants.Firebase.RemoteConfigKeys.SCORE_MULTIPLIER_SUBSCRIPTION);
+        double vkGroupAppModificator = remoteConfig.getDouble(Constants.Firebase.RemoteConfigKeys.SCORE_MULTIPLIER_VK_GROUP_APP);
+
+        boolean hasSubscriptionModificator = mMyPreferencesManager.isHasSubscription();
+        boolean hasVkGroupAppModificator = mMyPreferencesManager.isVkGroupAppJoined();
+
+        subscriptionModificator = hasSubscriptionModificator ? subscriptionModificator : 1;
+        vkGroupAppModificator = hasVkGroupAppModificator ? vkGroupAppModificator : 1;
+        //check if user has subs and joined vk group to add multilplier
+        return (int) (score * subscriptionModificator * vkGroupAppModificator);
     }
 }
