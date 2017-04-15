@@ -3,18 +3,18 @@ package ru.dante.scpfoundation.mvp.base;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.hannesdorfmann.mosby.mvp.MvpNullObjectBasePresenter;
 
-import java.util.List;
-
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.api.ApiClient;
+import ru.dante.scpfoundation.db.DbProvider;
 import ru.dante.scpfoundation.db.DbProviderFactory;
 import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.db.model.User;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.mvp.contract.LoginActions;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import timber.log.Timber;
 
 /**
@@ -92,7 +92,7 @@ public abstract class BasePresenter<V extends BaseMvp.View>
         //TODO check if user has subscription and if not just mark article as need to sync score
         FirebaseRemoteConfig remoteConfig = FirebaseRemoteConfig.getInstance();
 
-        long score = 1;
+        long score;
 
         @ScoreAction
         String action = article.isInReaden ? ScoreAction.READ :
@@ -167,34 +167,32 @@ public abstract class BasePresenter<V extends BaseMvp.View>
         //get unsynced articles from DB
         //write them to firebase
         //mark them as synced
-        //TODO use managed ones
-        Observable.<List<Article>>create(subscriber -> mDbProviderFactory.getDbProvider().getUnsynedArticlesUnmanaged()
-                .subscribe(
-                        data -> {
-                            subscriber.onNext(data);
-                            subscriber.onCompleted();
-                        },
-                        subscriber::onError
-                ))
-                .flatMap(articles -> articles.isEmpty() ? Observable.just(articles) :
+        DbProvider dbProvider = mDbProviderFactory.getDbProvider();
+        dbProvider.getUnsyncedArticlesManaged()
+                .doOnNext(articles -> Timber.d("articles: %s", articles))
+                .flatMap(articles -> articles.isEmpty() ? Observable.just(0) :
                         mApiClient.writeArticlesToFirebase(articles)
                                 .flatMap(writeArticles -> mDbProviderFactory.getDbProvider().setArticlesSynced(writeArticles, true)))
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         data -> {
                             Timber.d("articles saved to firebase: %s", data);
                             if (showResultMessage) {
-                                if (data.isEmpty()) {
+                                if (data == 0) {
                                     getView().showMessage(R.string.all_data_already_synced);
                                 } else {
                                     getView().showMessage(R.string.all_data_sync_success);
                                 }
                             }
+                            dbProvider.close();
                         },
                         e -> {
                             Timber.e(e);
                             if (showResultMessage) {
                                 getView().showMessage(R.string.error_while_all_data_sync);
                             }
+                            dbProvider.close();
                         }
                 );
     }

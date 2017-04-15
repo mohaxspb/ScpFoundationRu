@@ -99,13 +99,13 @@ public class MyPreferenceManager {
     }
 
     //new arts notifications
-    public int getNotificationPeriodInMinutes() {
+    int getNotificationPeriodInMinutes() {
         return mPreferences.getInt(Keys.NOTIFICATION_PERIOD, 60);
     }
 
-    public void setNotificationPeriodInMinutes(int minutes) {
-        mPreferences.edit().putInt(Keys.NOTIFICATION_PERIOD, minutes).apply();
-    }
+//    public void setNotificationPeriodInMinutes(int minutes) {
+//        mPreferences.edit().putInt(Keys.NOTIFICATION_PERIOD, minutes).apply();
+//    }
 
     public boolean isNotificationEnabled() {
         return mPreferences.getBoolean(Keys.NOTIFICATION_IS_ON, true);
@@ -216,9 +216,9 @@ public class MyPreferenceManager {
         mPreferences.edit().putString(Keys.USER_UID, uid).apply();
     }
 
-    public String getUserId() {
-        return mPreferences.getString(Keys.USER_UID, "");
-    }
+//    public String getUserId() {
+//        return mPreferences.getString(Keys.USER_UID, "");
+//    }
 
     //subscription
     public void setHasSubscription(boolean hasSubscription) {
@@ -227,6 +227,8 @@ public class MyPreferenceManager {
 
     public boolean isHasSubscription() {
         return mPreferences.getBoolean(Keys.HAS_SUBSCRIPTION, false);
+//        // test
+//        return true;
     }
 
     //auto sync
@@ -242,14 +244,14 @@ public class MyPreferenceManager {
         return mPreferences.getBoolean(Keys.VK_GROUP_APP_JOINED, false);
     }
 
-    public void setVkGroupAppJoinedn(boolean joined) {
-        mPreferences.edit().putBoolean(Keys.VK_GROUP_APP_JOINED, joined).apply();
-    }
-
-    //secure
-    public boolean isAppCracked() {
-        return mPreferences.getBoolean(Keys.APP_IS_CRACKED, false);
-    }
+//    public void setVkGroupAppJoinedn(boolean joined) {
+//        mPreferences.edit().putBoolean(Keys.VK_GROUP_APP_JOINED, joined).apply();
+//    }
+//
+//    //secure
+//    public boolean isAppCracked() {
+//        return mPreferences.getBoolean(Keys.APP_IS_CRACKED, false);
+//    }
 
     public void setAppCracked(boolean cracked) {
         mPreferences.edit().putBoolean(Keys.APP_IS_CRACKED, cracked).apply();

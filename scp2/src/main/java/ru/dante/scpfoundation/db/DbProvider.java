@@ -5,6 +5,7 @@ import android.util.Pair;
 import com.google.firebase.auth.FirebaseAuth;
 import com.vk.sdk.VKSdk;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -654,6 +655,7 @@ public class DbProvider {
     }
 
     public Observable<Article> setArticleSynced(Article article, boolean synced) {
+        Timber.d("setArticleSynced url: %s, newState: %s", article.url, synced);
         return Observable.create(subscriber -> mRealm.executeTransactionAsync(
                 realm -> {
                     Article articleInDb = realm.where(Article.class).equalTo(Article.FIELD_URL, article.url).findFirst();
@@ -676,58 +678,44 @@ public class DbProvider {
         );
     }
 
-    public Observable<List<Article>> getUnsynedArticlesUnmanaged() {
+//    public Observable<List<Article>> getUnsyncedArticlesUnmanaged() {
+//        return mRealm.where(Article.class)
+//                .equalTo(Article.FIELD_SYNCED, Article.SYNCED_NEED)
+//                .findAll()
+//                .asObservable()
+//                .first()
+//                .flatMap(realmResults -> Observable.just(mRealm.copyFromRealm(realmResults)))
+//                .doOnCompleted(this::close);
+//    }
+
+    public Observable<RealmResults<Article>> getUnsyncedArticlesManaged() {
         return mRealm.where(Article.class)
                 .equalTo(Article.FIELD_SYNCED, Article.SYNCED_NEED)
-                .findAll()
+                .findAllAsync()
                 .asObservable()
-                .first()
-                .flatMap(realmResults -> Observable.just(mRealm.copyFromRealm(realmResults)))
-                .doOnCompleted(this::close);
+                .filter(RealmResults::isLoaded)
+                .filter(RealmResults::isValid)
+                .first();
     }
 
-    public Observable<List<Article>> setArticlesSynced(List<Article> articles, boolean synced) {
+    public Observable<Integer> setArticlesSynced(List<Article> articles, boolean synced) {
+        Timber.d("setArticlesSynced size: %s, new state: %s", articles.size(), synced);
+        List<String> urls = new ArrayList<>();
+        for (Article article : articles) {
+            urls.add(article.url);
+        }
+        int articlesToSyncSize = articles.size();
         return Observable.create(subscriber -> mRealm.executeTransactionAsync(
                 realm -> {
-                    for (Article article : articles) {
-                        Article articleInDb = realm.where(Article.class).equalTo(Article.FIELD_URL, article.url).findFirst();
+                    for (String url : urls) {
+                        Article articleInDb = realm.where(Article.class).equalTo(Article.FIELD_URL, url).findFirst();
                         if (articleInDb != null) {
                             articleInDb.synced = synced ? Article.SYNCED_OK : Article.SYNCED_NEED;
                         }
                     }
                 },
                 () -> {
-                    mRealm.close();
-                    for (Article article : articles) {
-                        article.synced = synced ? Article.SYNCED_OK : Article.SYNCED_NEED;
-                    }
-                    subscriber.onNext(articles);
-                    subscriber.onCompleted();
-                },
-                error -> {
-                    mRealm.close();
-                    subscriber.onError(error);
-                })
-        );
-    }
-
-    public Observable<User> incrementUserScore(int score) {
-        Timber.d("incrementUserScore: %s", score);
-        return Observable.create(subscriber -> mRealm.executeTransactionAsync(
-                realm -> {
-                    //check if we have app in db and update
-                    User user = realm.where(User.class).findFirst();
-                    if (user != null) {
-                        user.score = user.score + score;
-
-                        subscriber.onNext(realm.copyFromRealm(user));
-                        subscriber.onCompleted();
-                    } else {
-                        Timber.e("No user to increment score");
-                        subscriber.onError(new IllegalStateException());
-                    }
-                },
-                () -> {
+                    subscriber.onNext(articlesToSyncSize);
                     subscriber.onCompleted();
                     mRealm.close();
                 },
@@ -737,4 +725,31 @@ public class DbProvider {
                 })
         );
     }
+
+//    public Observable<User> incrementUserScore(int score) {
+//        Timber.d("incrementUserScore: %s", score);
+//        return Observable.create(subscriber -> mRealm.executeTransactionAsync(
+//                realm -> {
+//                    //check if we have app in db and update
+//                    User user = realm.where(User.class).findFirst();
+//                    if (user != null) {
+//                        user.score = user.score + score;
+//
+//                        subscriber.onNext(realm.copyFromRealm(user));
+//                        subscriber.onCompleted();
+//                    } else {
+//                        Timber.e("No user to increment score");
+//                        subscriber.onError(new IllegalStateException());
+//                    }
+//                },
+//                () -> {
+//                    subscriber.onCompleted();
+//                    mRealm.close();
+//                },
+//                error -> {
+//                    subscriber.onError(error);
+//                    mRealm.close();
+//                })
+//        );
+//    }
 }

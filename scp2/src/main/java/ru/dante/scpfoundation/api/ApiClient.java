@@ -1178,21 +1178,6 @@ public class ApiClient {
                                 }
                             }
                         });
-
-//                FirebaseDatabase.getInstance()
-//                        .getReference(Constants.Firebase.Refs.USERS)
-//                        .child(firebaseUser.getUid())
-//                        .child(Constants.Firebase.Refs.SCORE)
-//                        .setValue(score, (databaseError, databaseReference) -> {
-//                            if (databaseError == null) {
-//                                //success
-//                                Timber.d("user created");
-//                                subscriber.onNext(score);
-//                                subscriber.onCompleted();
-//                            } else {
-//                                subscriber.onError(databaseError.toException());
-//                            }
-//                        });
             } else {
                 subscriber.onError(new IllegalStateException("firebase user is null"));
             }
