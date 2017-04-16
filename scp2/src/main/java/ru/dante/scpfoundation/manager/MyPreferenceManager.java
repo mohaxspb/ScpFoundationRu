@@ -41,7 +41,8 @@ public class MyPreferenceManager {
         String HAS_SUBSCRIPTION = "HAS_SUBSCRIPTION";
         String APP_IS_CRACKED = "APP_IS_CRACKED";
         String AUTO_SYNC_ATTEMPTS = "AUTO_SYNC_ATTEMPTS";
-        String VK_GROUP_APP_JOINED = "VK_GROUP_APP_JOINED";
+        //        String VK_GROUP_APP_JOINED = "VK_GROUP_APP_JOINED";
+        String UNSYNCED_SCORE = "UNSYNCED_SCORE";
     }
 
     private SharedPreferences mPreferences;
@@ -241,17 +242,27 @@ public class MyPreferenceManager {
     }
 
     public boolean isVkGroupAppJoined() {
-        return mPreferences.getBoolean(Keys.VK_GROUP_APP_JOINED, false);
+        String appVkGroupId = FirebaseRemoteConfig.getInstance().getString(Constants.Firebase.RemoteConfigKeys.VK_APP_GROUP_ID);
+        return isVkGroupJoined(appVkGroupId);
     }
 
-//    public void setVkGroupAppJoinedn(boolean joined) {
-//        mPreferences.edit().putBoolean(Keys.VK_GROUP_APP_JOINED, joined).apply();
-//    }
-//
-//    //secure
-//    public boolean isAppCracked() {
-//        return mPreferences.getBoolean(Keys.APP_IS_CRACKED, false);
-//    }
+    public void addUnsyncedScore(int scoreToAdd) {
+        int newTotalScore = getNumOfUnsyncedScore() + scoreToAdd;
+        mPreferences.edit().putInt(Keys.UNSYNCED_SCORE, newTotalScore).apply();
+    }
+
+    public void setNumOfUnsyncedScore(int totalScore) {
+        mPreferences.edit().putInt(Keys.UNSYNCED_SCORE, totalScore).apply();
+    }
+
+    public int getNumOfUnsyncedScore() {
+        return mPreferences.getInt(Keys.UNSYNCED_SCORE, 0);
+    }
+
+    // secure
+    public boolean isAppCracked() {
+        return mPreferences.getBoolean(Keys.APP_IS_CRACKED, false);
+    }
 
     public void setAppCracked(boolean cracked) {
         mPreferences.edit().putBoolean(Keys.APP_IS_CRACKED, cracked).apply();

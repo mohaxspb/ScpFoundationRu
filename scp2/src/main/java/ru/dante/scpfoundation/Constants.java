@@ -49,19 +49,25 @@ public interface Constants {
         int REQUEST_INVITE = 1024;
 
         interface RemoteConfigKeys {
-            String APPS_TO_INSTALL_JSON = "apps_to_install_json";
+            //ads
+            String NUM_OF_GALLERY_PHOTOS_BETWEEN_INTERSITIAL = "num_of_gallery_photos_between_intersitial";
+            String PERIOD_BETWEEN_INTERSTITIAL_IN_MILLIS = "period_between_interstitial_in_millis";
+            String NUM_OF_INTERSITIAL_BETWEEN_REWARDED = "num_of_intersitial_between_rewarded";
+            String NUM_OF_SYNC_ATTEMPTS_BEFORE_CALL_TO_ACTION = "num_of_sync_attempts_before_call_to_action";
+            //enabled options
             String FREE_INVITES_ENABLED = "free_invites_enabled";
             String FREE_APPS_INSTALL_ENABLED = "free_apps_install_enabled";
             String FREE_REWARDED_VIDEO_ENABLED = "free_rewarded_video_enabled";
-            String PERIOD_BETWEEN_INTERSTITIAL_IN_MILLIS = "period_between_interstitial_in_millis";
-            String REWARDED_VIDEO_COOLDOWN_IN_MILLIS = "rewarded_video_cooldown_in_millis";
-            String NUM_OF_INTERSITIAL_BETWEEN_REWARDED = "num_of_intersitial_between_rewarded";
-            String APP_INSTALL_REWARD_IN_MILLIS = "app_install_reward_in_millis";
             String FREE_VK_GROUPS_ENABLED = "free_vk_groups_enabled";
-            String FREE_VK_GROUPS_JOIN_REWARD = "free_vk_groups_join_reward";
+            //actions variants
+            String APPS_TO_INSTALL_JSON = "apps_to_install_json";
             String VK_GROUPS_TO_JOIN_JSON = "vk_groups_to_join_json";
-            String NUM_OF_SYNC_ATTEMPTS_BEFORE_CALL_TO_ACTION = "num_of_sync_attempts_before_call_to_action";
-            String NUM_OF_GALLERY_PHOTOS_BETWEEN_INTERSITIAL = "num_of_gallery_photos_between_intersitial";
+            //disable ads
+            String APP_INSTALL_REWARD_IN_MILLIS = "app_install_reward_in_millis";
+            String FREE_VK_GROUPS_JOIN_REWARD = "free_vk_groups_join_reward";
+            String REWARDED_VIDEO_COOLDOWN_IN_MILLIS = "rewarded_video_cooldown_in_millis";
+            //score multipliers
+            String VK_APP_GROUP_ID = "vk_app_group_id";
             String SCORE_MULTIPLIER_SUBSCRIPTION = "score_multiplier_subscription";
             String SCORE_MULTIPLIER_VK_GROUP_APP = "score_multiplier_vk_group_app";
             //score

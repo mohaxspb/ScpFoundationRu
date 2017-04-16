@@ -1,5 +1,7 @@
 package ru.dante.scpfoundation.mvp.base;
 
+import android.support.v4.util.Pair;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.hannesdorfmann.mosby.mvp.MvpNullObjectBasePresenter;
@@ -99,7 +101,7 @@ public abstract class BasePresenter<V extends BaseMvp.View>
         //update score for articles, that is not in firebase, than write/update them
         mApiClient.getArticleFromFirebase(article)
                 .flatMap(articleInFirebase -> articleInFirebase == null ?
-                        mApiClient.updateScoreInFirebaseObservable(totalScoreToAdd)
+                        mApiClient.incrementScoreInFirebaseObservable(totalScoreToAdd)
                                 //score will be added to firebase user object
                                 .flatMap(addedScore -> Observable.just(article))
                         : Observable.just(article))
@@ -123,8 +125,8 @@ public abstract class BasePresenter<V extends BaseMvp.View>
     }
 
     @Override
-    public void syncArticles(boolean showResultMessage) {
-        Timber.d("syncArticles showResultMessage: %s", showResultMessage);
+    public void syncData(boolean showResultMessage) {
+        Timber.d("syncData showResultMessage: %s", showResultMessage);
         //get unsynced articles from DB
         //write them to firebase
         //mark them as synced
@@ -134,19 +136,34 @@ public abstract class BasePresenter<V extends BaseMvp.View>
                 .flatMap(articles -> articles.isEmpty() ? Observable.just(0) :
                         mApiClient.writeArticlesToFirebase(articles)
                                 .flatMap(writeArticles -> mDbProviderFactory.getDbProvider().setArticlesSynced(writeArticles, true)))
+                //also increment user score from unsynced score
+                .flatMap(updatedArticles -> {
+                    int unsyncedScore = mMyPreferencesManager.getNumOfUnsyncedScore();
+                    if (unsyncedScore == 0) {
+                        return Observable.just(new Pair<>(updatedArticles, 0));
+                    } else {
+                        return mApiClient.incrementScoreInFirebaseObservable(unsyncedScore)
+                                .flatMap(newTotalScore -> Observable.just(new Pair<>(updatedArticles, unsyncedScore)));
+                    }
+                })
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         data -> {
                             Timber.d("articles saved to firebase: %s", data);
                             if (showResultMessage) {
-                                if (data == 0) {
+                                if (data.first == 0 && data.second == 0) {
                                     getView().showMessage(R.string.all_data_already_synced);
                                 } else {
-                                    getView().showMessage(R.string.all_data_sync_success);
+                                    getView().showMessage(MyApplication.getAppInstance()
+                                            .getString(R.string.all_data_sync_success, data.first, data.second));
                                 }
                             }
                             dbProvider.close();
+                            //we should set zero as unsynced score only in onSuccess callback,
+                            //to not loose some score from broken connection
+                            //reset unsynced score as we already sync it
+                            mMyPreferencesManager.setNumOfUnsyncedScore(0);
                         },
                         e -> {
                             Timber.e(e);
@@ -156,6 +173,7 @@ public abstract class BasePresenter<V extends BaseMvp.View>
                             dbProvider.close();
                         }
                 );
+
         //TODO update user score in realm from firebase value
     }
 
@@ -168,7 +186,7 @@ public abstract class BasePresenter<V extends BaseMvp.View>
     @Override
     public void updateUserScoreFromAction(@ScoreAction String action) {
         Timber.d("updateUserScore: %s", action);
-//
+
         if (FirebaseAuth.getInstance().getCurrentUser() == null) {
             Timber.d("user unlogined, do nothing");
             return;
@@ -191,13 +209,22 @@ public abstract class BasePresenter<V extends BaseMvp.View>
                 mMyPreferencesManager.setNumOfAttemptsToAutoSync(curNumOfAttempts + 1);
             }
 
-            //TODO increment unsynced score to sync it later
+            //increment unsynced score to sync it later
+            mMyPreferencesManager.addUnsyncedScore(totalScoreToAdd);
 
             return;
         }
 
-        //TODO increment scoreInFirebase
-        //TODO we should set zero as unsynced score only in onSuccess callbak, to not loose some score from broken connection
+        //increment scoreInFirebase
+        mApiClient.incrementScoreInFirebaseObservable(totalScoreToAdd).subscribe(
+                newTotalScore -> Timber.d("new total score is: %s", newTotalScore),
+                e -> {
+                    Timber.e(e, "error while increment userCore from action");
+                    getView().showError(e);
+                    //increment unsynced score to sync it later
+                    mMyPreferencesManager.addUnsyncedScore(totalScoreToAdd);
+                }
+        );
     }
 
     private int getTotalScoreToAddFromAction(@ScoreAction String action) {

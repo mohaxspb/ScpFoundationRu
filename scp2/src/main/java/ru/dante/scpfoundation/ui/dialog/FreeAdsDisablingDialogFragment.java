@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
@@ -150,7 +149,6 @@ public class FreeAdsDisablingDialogFragment extends DialogFragment {
                 }
             }
         }
-        //TODO add more options
 
         FreeAdsDisableRecyclerAdapter adapter = new FreeAdsDisableRecyclerAdapter();
         adapter.setData(data);
@@ -172,32 +170,31 @@ public class FreeAdsDisablingDialogFragment extends DialogFragment {
                     Toast.makeText(getActivity(), R.string.need_vk_group_access, Toast.LENGTH_LONG).show();
                     return;
                 }
-                mApiClient.joinVkGroup(((VkGroupToJoin) data1).id)
-                        .subscribe(
-                                result -> {
-                                    if (result) {
-                                        Timber.d("Successful group join");
-                                        mMyPreferenceManager.setVkGroupJoined(((VkGroupToJoin) data1).id);
-                                        mMyPreferenceManager.applyAwardVkGroupJoined();
+                mApiClient.joinVkGroup(((VkGroupToJoin) data1).id).subscribe(
+                        result -> {
+                            if (result) {
+                                Timber.d("Successful group join");
+                                mMyPreferenceManager.setVkGroupJoined(((VkGroupToJoin) data1).id);
+                                mMyPreferenceManager.applyAwardVkGroupJoined();
 
-                                        long numOfMillis = FirebaseRemoteConfig.getInstance()
-                                                .getLong(Constants.Firebase.RemoteConfigKeys.FREE_VK_GROUPS_JOIN_REWARD);
-                                        long hours = numOfMillis / 1000 / 60 / 60;
+                                long numOfMillis = FirebaseRemoteConfig.getInstance()
+                                        .getLong(Constants.Firebase.RemoteConfigKeys.FREE_VK_GROUPS_JOIN_REWARD);
+                                long hours = numOfMillis / 1000 / 60 / 60;
 
-                                        showNotificationSimple(getActivity(), getString(R.string.ads_reward_gained, hours), getString(R.string.thanks_for_supporting_us));
+                                showNotificationSimple(getActivity(), getString(R.string.ads_reward_gained, hours), getString(R.string.thanks_for_supporting_us));
 
-                                        Bundle bundle = new Bundle();
-                                        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "group" + ((VkGroupToJoin) data1).id);
-                                        FirebaseAnalytics.getInstance(getActivity()).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
-                                    } else {
-                                        Timber.e("error group join");
-                                    }
-                                },
-                                error -> {
-                                    Timber.e(error, "error while join group");
-                                    Toast.makeText(getActivity(), error.getMessage(), Toast.LENGTH_LONG).show();
-                                }
-                        );
+                                Bundle bundle = new Bundle();
+                                bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "group" + ((VkGroupToJoin) data1).id);
+                                FirebaseAnalytics.getInstance(getActivity()).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+                            } else {
+                                Timber.e("error group join");
+                            }
+                        },
+                        error -> {
+                            Timber.e(error, "error while join group");
+                            Toast.makeText(getActivity(), error.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                );
             } else {
                 Timber.wtf("Unexpected type!");
             }

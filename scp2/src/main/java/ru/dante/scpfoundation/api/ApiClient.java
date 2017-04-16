@@ -1140,9 +1140,9 @@ public class ApiClient {
     }
 
     /**
-     * @param score score to add to user
+     * @param scoreToAdd score to add to user
      */
-    public Observable<Integer> updateScoreInFirebaseObservable(int score) {
+    public Observable<Integer> incrementScoreInFirebaseObservable(int scoreToAdd) {
         return Observable.create(subscriber -> {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             if (firebaseUser != null) {
@@ -1159,7 +1159,7 @@ public class ApiClient {
                                     return Transaction.success(mutableData);
                                 }
 
-                                p = p + score;
+                                p = p + scoreToAdd;
 
                                 // Set value and report transaction success
                                 mutableData.setValue(p);

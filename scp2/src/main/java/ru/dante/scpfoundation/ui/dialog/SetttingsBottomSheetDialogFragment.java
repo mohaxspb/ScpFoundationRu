@@ -245,7 +245,7 @@ public class SetttingsBottomSheetDialogFragment
             showSnackBarWithAction(Constants.Firebase.CallToActionReason.SYNC_NEED_AUTH);
             return;
         }
-        getBaseActivity().createPresenter().syncArticles(true);
+        getBaseActivity().createPresenter().syncData(true);
         dismiss();
     }
 

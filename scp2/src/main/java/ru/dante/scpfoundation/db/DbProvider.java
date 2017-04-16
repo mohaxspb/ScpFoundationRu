@@ -698,6 +698,10 @@ public class DbProvider {
                 .first();
     }
 
+    /**
+     *
+     * @return observable that emits num of updated articles
+     */
     public Observable<Integer> setArticlesSynced(List<Article> articles, boolean synced) {
         Timber.d("setArticlesSynced size: %s, new state: %s", articles.size(), synced);
         List<String> urls = new ArrayList<>();
