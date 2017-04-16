@@ -699,7 +699,6 @@ public class DbProvider {
     }
 
     /**
-     *
      * @return observable that emits num of updated articles
      */
     public Observable<Integer> setArticlesSynced(List<Article> articles, boolean synced) {
@@ -725,6 +724,30 @@ public class DbProvider {
                 },
                 error -> {
                     subscriber.onError(error);
+                    mRealm.close();
+                })
+        );
+    }
+
+    public Observable<Integer> updateUserScore(int totalScore) {
+        Timber.d("updateUserScore: %s", totalScore);
+        return Observable.create(subscriber -> mRealm.executeTransactionAsync(
+                realm -> {
+                    //check if we have app in db and update
+                    User user = realm.where(User.class).findFirst();
+                    if (user != null) {
+                        user.score = totalScore;
+                    } else {
+                        subscriber.onError(new IllegalStateException("No user to increment score"));
+                    }
+                },
+                () -> {
+                    subscriber.onNext(totalScore);
+                    subscriber.onCompleted();
+                    mRealm.close();
+                },
+                e -> {
+                    subscriber.onError(e);
                     mRealm.close();
                 })
         );

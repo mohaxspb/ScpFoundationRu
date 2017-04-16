@@ -140,9 +140,19 @@ public abstract class BasePresenter<V extends BaseMvp.View>
                 .flatMap(updatedArticles -> {
                     int unsyncedScore = mMyPreferencesManager.getNumOfUnsyncedScore();
                     if (unsyncedScore == 0) {
-                        return Observable.just(new Pair<>(updatedArticles, 0));
+                        if (updatedArticles == 0) {
+                            //no need to update something
+                            return Observable.just(new Pair<>(updatedArticles, unsyncedScore));
+                        } else {
+                            //getScore from firebase and update it in Realm
+                            return mApiClient.getUserScoreFromFirebase()
+                                    .flatMap(firebaseUserScore -> mDbProviderFactory.getDbProvider().updateUserScore(firebaseUserScore))
+                                    .flatMap(totalScore -> Observable.just(new Pair<>(updatedArticles, unsyncedScore)));
+                        }
                     } else {
                         return mApiClient.incrementScoreInFirebaseObservable(unsyncedScore)
+                                //update score in realm
+                                .flatMap(newTotalScore -> mDbProviderFactory.getDbProvider().updateUserScore(newTotalScore))
                                 .flatMap(newTotalScore -> Observable.just(new Pair<>(updatedArticles, unsyncedScore)));
                     }
                 })
@@ -153,6 +163,7 @@ public abstract class BasePresenter<V extends BaseMvp.View>
                             Timber.d("articles saved to firebase: %s", data);
                             if (showResultMessage) {
                                 if (data.first == 0 && data.second == 0) {
+                                    //TODO add plurals support
                                     getView().showMessage(R.string.all_data_already_synced);
                                 } else {
                                     getView().showMessage(MyApplication.getAppInstance()
@@ -173,8 +184,6 @@ public abstract class BasePresenter<V extends BaseMvp.View>
                             dbProvider.close();
                         }
                 );
-
-        //TODO update user score in realm from firebase value
     }
 
     /**

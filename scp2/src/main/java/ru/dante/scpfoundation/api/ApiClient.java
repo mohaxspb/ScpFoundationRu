@@ -1141,6 +1141,7 @@ public class ApiClient {
 
     /**
      * @param scoreToAdd score to add to user
+     * @return Observable, that emits user total score
      */
     public Observable<Integer> incrementScoreInFirebaseObservable(int scoreToAdd) {
         return Observable.create(subscriber -> {
@@ -1168,7 +1169,7 @@ public class ApiClient {
 
                             @Override
                             public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
-                                if(databaseError==null) {
+                                if (databaseError == null) {
                                     Timber.d("onComplete: %s", dataSnapshot.getValue());
                                     subscriber.onNext(dataSnapshot.getValue(Integer.class));
                                     subscriber.onCompleted();
@@ -1281,6 +1282,33 @@ public class ApiClient {
                     subscriber.onNext(articles);
                     subscriber.onCompleted();
                 } else {
+                    subscriber.onError(databaseError.toException());
+                }
+            });
+        });
+    }
+
+    public Observable<Integer> getUserScoreFromFirebase() {
+        return Observable.create(subscriber -> {
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (firebaseUser == null) {
+                subscriber.onError(new IllegalArgumentException("firebase user is null"));
+                return;
+            }
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference reference = database.getReference()
+                    .child(Constants.Firebase.Refs.USERS)
+                    .child(firebaseUser.getUid())
+                    .child(Constants.Firebase.Refs.SCORE);
+            reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    subscriber.onNext(dataSnapshot.getValue(Integer.class));
+                    subscriber.onCompleted();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
                     subscriber.onError(databaseError.toException());
                 }
             });
