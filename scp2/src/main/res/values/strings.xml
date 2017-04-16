@@ -147,7 +147,7 @@
     <string name="sync">Синхронизировать</string>
     <string name="subscribe">Подписаться</string>
     <string name="error_while_all_data_sync">Не удалось сохранить данные в облако</string>
-    <string name="all_data_sync_success">Все данные сохранены с облако! Сохранено %d статей, добавлено %d очков.</string>
+    <string name="all_data_sync_success">Все данные сохранены с облако! Сохранено %1$d статей, добавлено %2$d очков.</string>
     <string name="sync_need_auth">Требуется авторизация</string>
     <string name="authorize">Авторизоваться</string>
     <string name="settings_data_sync">Сохранение статей в облако</string>
