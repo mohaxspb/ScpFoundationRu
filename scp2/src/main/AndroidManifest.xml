@@ -43,13 +43,16 @@
         <activity android:name=".ui.activity.GalleryActivity"/>
 
         <activity
-            android:name=".ui.activity.LicenceActivity">
+            android:name=".ui.activity.SplashActivity"
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <activity android:name=".ui.activity.LicenceActivity"/>
 
         <!--service-->
         <service android:name="ru.dante.scpfoundation.service.DownloadAllService"/>
