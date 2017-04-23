@@ -8,6 +8,7 @@ import ru.dante.scpfoundation.di.module.NetModule;
 import ru.dante.scpfoundation.di.module.NotificationModule;
 import ru.dante.scpfoundation.di.module.PresentersModule;
 import ru.dante.scpfoundation.di.module.StorageModule;
+import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.monetization.util.MyAdListener;
 import ru.dante.scpfoundation.monetization.util.MySkippableVideoCallbacks;
 import ru.dante.scpfoundation.receivers.AppInstallReceiver;

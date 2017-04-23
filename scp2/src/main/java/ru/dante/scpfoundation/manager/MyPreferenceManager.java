@@ -5,9 +5,19 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+import com.google.gson.Gson;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.inject.Inject;
 
 import ru.dante.scpfoundation.Constants;
+import ru.dante.scpfoundation.MyApplication;
+import ru.dante.scpfoundation.monetization.model.VkGroupToJoin;
+import ru.dante.scpfoundation.monetization.model.VkGroupsToJoinResponse;
 import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
+import timber.log.Timber;
 
 /**
  * Created by y.kuchanov on 22.12.16.
@@ -43,12 +53,16 @@ public class MyPreferenceManager {
         String AUTO_SYNC_ATTEMPTS = "AUTO_SYNC_ATTEMPTS";
         //        String VK_GROUP_APP_JOINED = "VK_GROUP_APP_JOINED";
         String UNSYNCED_SCORE = "UNSYNCED_SCORE";
+        String UNSYNCED_VK_GROUPS = "UNSYNCED_VK_GROUPS";
     }
+
+    private Gson mGson;
 
     private SharedPreferences mPreferences;
 
-    public MyPreferenceManager(Context context) {
+    public MyPreferenceManager(Context context, Gson gson) {
         mPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        mGson = gson;
     }
 
     public void setIsNightMode(boolean isInNightMode) {
@@ -249,6 +263,29 @@ public class MyPreferenceManager {
     public void addUnsyncedScore(int scoreToAdd) {
         int newTotalScore = getNumOfUnsyncedScore() + scoreToAdd;
         mPreferences.edit().putInt(Keys.UNSYNCED_SCORE, newTotalScore).apply();
+    }
+
+    public void addUnsyncedVkGroup(String id) {
+        VkGroupsToJoinResponse data = getUnsyncedVkGroupsJson();
+        if (data == null) {
+            data = new VkGroupsToJoinResponse();
+            data.items = new ArrayList<>();
+        }
+        VkGroupToJoin vkGroupToJoin = new VkGroupToJoin(id);
+        if (!data.items.contains(vkGroupToJoin)) {
+            data.items.add(new VkGroupToJoin(id));
+            mPreferences.edit().putString(Keys.UNSYNCED_VK_GROUPS, mGson.toJson(data)).apply();
+        }
+    }
+
+    public VkGroupsToJoinResponse getUnsyncedVkGroupsJson() {
+        VkGroupsToJoinResponse data = null;
+        try {
+            data = mGson.fromJson(mPreferences.getString(Keys.UNSYNCED_VK_GROUPS, ""), VkGroupsToJoinResponse.class);
+        } catch (Exception e) {
+            Timber.e(e);
+        }
+        return data;
     }
 
     public void setNumOfUnsyncedScore(int totalScore) {

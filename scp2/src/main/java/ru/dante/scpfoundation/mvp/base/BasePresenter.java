@@ -187,13 +187,13 @@ public abstract class BasePresenter<V extends BaseMvp.View>
     }
 
     /**
-     * check if user loged in,
+     * check if user logged in,
      * calculate final score to add value from modificators,
      * if user do not have subscription we increment unsynced score
      * if user has subscription we increment score in firebase
      */
     @Override
-    public void updateUserScoreFromAction(@ScoreAction String action) {
+    public void updateUserScoreFromAction(@ScoreAction String action, String id) {
         Timber.d("updateUserScore: %s", action);
 
         if (FirebaseAuth.getInstance().getCurrentUser() == null) {
@@ -219,7 +219,31 @@ public abstract class BasePresenter<V extends BaseMvp.View>
             }
 
             //increment unsynced score to sync it later
-            mMyPreferencesManager.addUnsyncedScore(totalScoreToAdd);
+            switch (action){
+                case ScoreAction.FAVORITE:
+                    mMyPreferencesManager.addUnsyncedScore(totalScoreToAdd);
+                    break;
+                case ScoreAction.READ:
+                    mMyPreferencesManager.addUnsyncedScore(totalScoreToAdd);
+                    break;
+                case ScoreAction.INTERSTITIAL_SHOWN:
+                    mMyPreferencesManager.addUnsyncedScore(totalScoreToAdd);
+                    break;
+                case ScoreAction.REWARDED_VIDEO:
+                    mMyPreferencesManager.addUnsyncedScore(totalScoreToAdd);
+                    break;
+                case ScoreAction.VK_GROUP:
+                    mMyPreferencesManager.addUnsyncedVkGroup(id, totalScoreToAdd);
+                    break;
+                case ScoreAction.OUR_APP:
+                    mMyPreferencesManager.addUnsyncedScoreForApp(id, totalScoreToAdd);
+                    break;
+                case ScoreAction.NONE:
+                    mMyPreferencesManager.addUnsyncedScore(totalScoreToAdd);
+                    break;
+                default:
+                    throw new RuntimeException("unexpected score action");
+            }
 
             return;
         }
@@ -251,14 +275,14 @@ public abstract class BasePresenter<V extends BaseMvp.View>
             case ScoreAction.INTERSTITIAL_SHOWN:
                 score = remoteConfig.getLong(Constants.Firebase.RemoteConfigKeys.SCORE_ACTION_INTERSTITIAL_SHOWN);
                 break;
+            case ScoreAction.REWARDED_VIDEO:
+                score = remoteConfig.getLong(Constants.Firebase.RemoteConfigKeys.SCORE_ACTION_REWARDED_VIDEO);
+                break;
             case ScoreAction.VK_GROUP:
                 score = remoteConfig.getLong(Constants.Firebase.RemoteConfigKeys.SCORE_ACTION_VK_GROUP);
                 break;
             case ScoreAction.OUR_APP:
                 score = remoteConfig.getLong(Constants.Firebase.RemoteConfigKeys.SCORE_ACTION_OUR_APP);
-                break;
-            case ScoreAction.REWARDED_VIDEO:
-                score = remoteConfig.getLong(Constants.Firebase.RemoteConfigKeys.SCORE_ACTION_REWARDED_VIDEO);
                 break;
             case ScoreAction.NONE:
                 score = remoteConfig.getLong(Constants.Firebase.RemoteConfigKeys.SCORE_ACTION_NONE);

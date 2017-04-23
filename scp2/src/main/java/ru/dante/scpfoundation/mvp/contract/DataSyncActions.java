@@ -30,5 +30,7 @@ public interface DataSyncActions {
 
     void syncData(boolean showResultMessage);
 
-    void updateUserScoreFromAction(@ScoreAction String action);
+//    void updateUserScoreFromAction(@ScoreAction String action);
+
+    void updateUserScoreFromAction(@ScoreAction String action, String id);
 }
