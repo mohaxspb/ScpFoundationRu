@@ -1,10 +1,7 @@
 package ru.dante.scpfoundation.mvp.base;
 
-import android.os.Bundle;
 import android.support.v4.util.Pair;
-import android.widget.Toast;
 
-import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.hannesdorfmann.mosby.mvp.MvpNullObjectBasePresenter;
@@ -18,7 +15,6 @@ import ru.dante.scpfoundation.db.DbProviderFactory;
 import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.db.model.User;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
-import ru.dante.scpfoundation.monetization.model.VkGroupToJoin;
 import ru.dante.scpfoundation.mvp.contract.LoginActions;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -192,82 +188,13 @@ public abstract class BasePresenter<V extends BaseMvp.View>
                 );
     }
 
-    public void joinVkGroup(String id){
-        Timber.d("joinVkGroup: %s", id);
-        mApiClient
-                .joinVkGroup(id)
-                .subscribe(
-                        result -> {
-                            if (result) {
-                                Timber.d("Successful group join");
-                                mMyPreferenceManager.setVkGroupJoined(((VkGroupToJoin) data1).id);
-                                mMyPreferenceManager.applyAwardVkGroupJoined();
-
-                                long numOfMillis = FirebaseRemoteConfig.getInstance()
-                                        .getLong(Constants.Firebase.RemoteConfigKeys.FREE_VK_GROUPS_JOIN_REWARD);
-                                long hours = numOfMillis / 1000 / 60 / 60;
-
-                                showNotificationSimple(getActivity(), getString(R.string.ads_reward_gained, hours), getString(R.string.thanks_for_supporting_us));
-
-                                Bundle bundle = new Bundle();
-                                bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "group" + ((VkGroupToJoin) data1).id);
-                                FirebaseAnalytics.getInstance(getActivity()).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
-                            } else {
-                                Timber.e("error group join");
-                            }
-                        },
-                        error -> {
-                            Timber.e(error, "error while join group");
-                            Toast.makeText(getActivity(), error.getMessage(), Toast.LENGTH_LONG).show();
-                        }
-                );
-
-        int totalScoreToAdd = getTotalScoreToAddFromAction(ScoreAction.VK_GROUP);
-
-        if (!mMyPreferencesManager.isHasSubscription()) {
-            long curNumOfAttempts = mMyPreferencesManager.getNumOfAttemptsToAutoSync();
-            long maxNumOfAttempts = FirebaseRemoteConfig.getInstance()
-                    .getLong(Constants.Firebase.RemoteConfigKeys.NUM_OF_SYNC_ATTEMPTS_BEFORE_CALL_TO_ACTION);
-
-            Timber.d("does not have subscription, so no auto sync: %s/%s", curNumOfAttempts, maxNumOfAttempts);
-
-            if (curNumOfAttempts >= maxNumOfAttempts) {
-                //show call to action
-                mMyPreferencesManager.setNumOfAttemptsToAutoSync(0);
-                getView().showSnackBarWithAction(Constants.Firebase.CallToActionReason.ENABLE_AUTO_SYNC);
-            } else {
-                mMyPreferencesManager.setNumOfAttemptsToAutoSync(curNumOfAttempts + 1);
-            }
-
-            //increment unsynced score to sync it later
-            mMyPreferencesManager.addUnsyncedVkGroup(id);
-            return;
-        }
-
-        //increment scoreInFirebase
-        mApiClient
-                .isUserJoinedVkGroup(id)
-                .flatMap(isUserJoinedVkGroup -> isUserJoinedVkGroup ?
-                        Observable.empty() :
-                        mApiClient.incrementScoreInFirebaseObservable(totalScoreToAdd)
-                                .flatMap(newTotalScore -> mApiClient.addJoinedVkGroup(id).flatMap(aVoid -> Observable.just(newTotalScore)))
-                )
-                .subscribe(
-                        newTotalScore -> Timber.d("new total score is: %s", newTotalScore),
-                        e -> {
-                            Timber.e(e, "error while increment userCore from action");
-                            getView().showError(e);
-                            //increment unsynced score to sync it later
-                            mMyPreferencesManager.addUnsyncedScore(totalScoreToAdd);
-                        }
-                );
-    }
-
     /**
      * check if user logged in,
      * calculate final score to add value from modificators,
      * if user do not have subscription we increment unsynced score
      * if user has subscription we increment score in firebase
+     * while incrementing we check if user already received score from group
+     * and if so - do not increment it
      */
     @Override
     public void updateUserScoreForVkGroup(String id) {
@@ -278,7 +205,9 @@ public abstract class BasePresenter<V extends BaseMvp.View>
             return;
         }
 
-        int totalScoreToAdd = getTotalScoreToAddFromAction(ScoreAction.VK_GROUP);
+        @ScoreAction
+        String action = ScoreAction.VK_GROUP;
+        int totalScoreToAdd = getTotalScoreToAddFromAction(action);
 
         if (!mMyPreferencesManager.isHasSubscription()) {
             long curNumOfAttempts = mMyPreferencesManager.getNumOfAttemptsToAutoSync();
@@ -314,9 +243,14 @@ public abstract class BasePresenter<V extends BaseMvp.View>
                             Timber.e(e, "error while increment userCore from action");
                             getView().showError(e);
                             //increment unsynced score to sync it later
-                            mMyPreferencesManager.addUnsyncedScore(totalScoreToAdd);
+                            mMyPreferencesManager.addUnsyncedVkGroup(id);
                         }
                 );
+    }
+
+    @Override
+    public void updateUserScoreForApp(String id) {
+        //TODO
     }
 
     private int getTotalScoreToAddFromAction(@ScoreAction String action) {
@@ -352,13 +286,19 @@ public abstract class BasePresenter<V extends BaseMvp.View>
 
         double subscriptionModificator = remoteConfig.getDouble(Constants.Firebase.RemoteConfigKeys.SCORE_MULTIPLIER_SUBSCRIPTION);
         double vkGroupAppModificator = remoteConfig.getDouble(Constants.Firebase.RemoteConfigKeys.SCORE_MULTIPLIER_VK_GROUP_APP);
+        Timber.d("subscriptionModificator/vkGroupAppModificator: %s/%s", subscriptionModificator, vkGroupAppModificator);
 
         boolean hasSubscriptionModificator = mMyPreferencesManager.isHasSubscription();
         boolean hasVkGroupAppModificator = mMyPreferencesManager.isVkGroupAppJoined();
+        Timber.d("hasSubscriptionModificator/hasVkGroupAppModificator: %s/%s", hasSubscriptionModificator, hasVkGroupAppModificator);
 
         subscriptionModificator = hasSubscriptionModificator ? subscriptionModificator : 1;
         vkGroupAppModificator = hasVkGroupAppModificator ? vkGroupAppModificator : 1;
+        Timber.d("subscriptionModificator/vkGroupAppModificator: %s/%s", subscriptionModificator, vkGroupAppModificator);
         //check if user has subs and joined vk group to add multilplier
-        return (int) (score * subscriptionModificator * vkGroupAppModificator);
+
+        int totalScoreToAdd = (int) (score * subscriptionModificator * vkGroupAppModificator);
+        Timber.d("totalScoreToAdd: %s", totalScoreToAdd);
+        return totalScoreToAdd;
     }
 }

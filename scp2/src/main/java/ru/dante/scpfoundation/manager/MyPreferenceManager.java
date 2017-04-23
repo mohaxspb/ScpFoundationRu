@@ -230,10 +230,6 @@ public class MyPreferenceManager {
         mPreferences.edit().putString(Keys.USER_UID, uid).apply();
     }
 
-//    public String getUserId() {
-//        return mPreferences.getString(Keys.USER_UID, "");
-//    }
-
     //subscription
     public void setHasSubscription(boolean hasSubscription) {
         mPreferences.edit().putBoolean(Keys.HAS_SUBSCRIPTION, hasSubscription).apply();
@@ -241,7 +237,7 @@ public class MyPreferenceManager {
 
     public boolean isHasSubscription() {
         return mPreferences.getBoolean(Keys.HAS_SUBSCRIPTION, false);
-//        // test
+////         test
 //        return true;
     }
 

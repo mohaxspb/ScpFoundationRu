@@ -1388,7 +1388,7 @@ public class ApiClient {
             DatabaseReference reference = database.getReference()
                     .child(Constants.Firebase.Refs.USERS)
                     .child(firebaseUser.getUid())
-                    .child(Constants.Firebase.Refs.APPS)
+                    .child(Constants.Firebase.Refs.VK_GROUPS)
                     .child(id);
             reference.setValue(new VkGroupToJoin(id), (databaseError, databaseReference) -> {
                 if (databaseError == null) {
