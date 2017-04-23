@@ -23,8 +23,8 @@ import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
-import ru.dante.scpfoundation.monetization.model.OurApplication;
-import ru.dante.scpfoundation.monetization.model.OurApplicationsResponse;
+import ru.dante.scpfoundation.monetization.model.ApplicationsResponse;
+import ru.dante.scpfoundation.monetization.model.PlayMarketApplication;
 import ru.dante.scpfoundation.ui.activity.MainActivity;
 import timber.log.Timber;
 
@@ -48,17 +48,17 @@ public class AppInstallReceiver extends BroadcastReceiver {
         Timber.d("intent data: %s", packageName);
 
         initRemoteConfig();
-        List<OurApplication> applications;
+        List<PlayMarketApplication> applications;
         try {
             applications = mGson.fromJson(FirebaseRemoteConfig.getInstance().
-                    getString(Constants.Firebase.RemoteConfigKeys.APPS_TO_INSTALL_JSON), OurApplicationsResponse.class)
+                    getString(Constants.Firebase.RemoteConfigKeys.APPS_TO_INSTALL_JSON), ApplicationsResponse.class)
                     .items;
         } catch (Exception e) {
             Timber.e(e);
             return;
         }
 
-        if (!mMyPreferenceManager.isAppInstalledForPackage(packageName) && applications.contains(new OurApplication(packageName))) {
+        if (!mMyPreferenceManager.isAppInstalledForPackage(packageName) && applications.contains(new PlayMarketApplication(packageName))) {
             mMyPreferenceManager.setAppInstalledForPackage(packageName);
             mMyPreferenceManager.applyAwardForAppInstall();
 

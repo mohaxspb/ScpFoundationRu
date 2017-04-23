@@ -30,7 +30,7 @@ public interface DataSyncActions {
 
     void syncData(boolean showResultMessage);
 
-//    void updateUserScoreFromAction(@ScoreAction String action);
+    void updateUserScoreForVkGroup(String id);
 
-    void updateUserScoreFromAction(@ScoreAction String action, String id);
+    void updateUserScoreForApp(String id);
 }

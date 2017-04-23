@@ -7,13 +7,13 @@ import java.util.List;
  * <p>
  * for pacanskiypublic
  */
-public class OurApplicationsResponse {
+public class ApplicationsResponse {
 
-    public List<OurApplication> items;
+    public List<PlayMarketApplication> items;
 
     @Override
     public String toString() {
-        return "OurApplicationsResponse{" +
+        return "ApplicationsResponse{" +
                 "items=" + items +
                 '}';
     }

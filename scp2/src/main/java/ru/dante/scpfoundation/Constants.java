@@ -44,6 +44,8 @@ public interface Constants {
             String USERS = "users";
             String ARTICLES = "articles";
             String SCORE = "score";
+            String VK_GROUPS = "vkGroups";
+            String APPS = "apps";
         }
 
         int REQUEST_INVITE = 1024;

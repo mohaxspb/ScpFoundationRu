@@ -10,7 +10,7 @@ import com.bumptech.glide.Glide;
 import butterknife.BindView;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.monetization.model.BaseModel;
-import ru.dante.scpfoundation.monetization.model.OurApplication;
+import ru.dante.scpfoundation.monetization.model.PlayMarketApplication;
 import ru.dante.scpfoundation.ui.adapter.BaseAdapterClickListener;
 
 /**
@@ -35,7 +35,7 @@ public class OurApplicationHolder extends BaseHolder<BaseModel, BaseAdapterClick
     public void bind(BaseModel data) {
         super.bind(data);
 
-        OurApplication application = (OurApplication) data;
+        PlayMarketApplication application = (PlayMarketApplication) data;
 
         Context context = itemView.getContext();
 

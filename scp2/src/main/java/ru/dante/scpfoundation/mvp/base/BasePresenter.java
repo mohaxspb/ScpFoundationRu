@@ -1,7 +1,10 @@
 package ru.dante.scpfoundation.mvp.base;
 
+import android.os.Bundle;
 import android.support.v4.util.Pair;
+import android.widget.Toast;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.hannesdorfmann.mosby.mvp.MvpNullObjectBasePresenter;
@@ -15,6 +18,7 @@ import ru.dante.scpfoundation.db.DbProviderFactory;
 import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.db.model.User;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
+import ru.dante.scpfoundation.monetization.model.VkGroupToJoin;
 import ru.dante.scpfoundation.mvp.contract.LoginActions;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -99,11 +103,12 @@ public abstract class BasePresenter<V extends BaseMvp.View>
         int totalScoreToAdd = getTotalScoreToAddFromAction(action);
 
         //update score for articles, that is not in firebase, than write/update them
-        mApiClient.getArticleFromFirebase(article)
+        mApiClient
+                .getArticleFromFirebase(article)
                 .flatMap(articleInFirebase -> articleInFirebase == null ?
                         mApiClient.incrementScoreInFirebaseObservable(totalScoreToAdd)
                                 //score will be added to firebase user object
-                                .flatMap(addedScore -> Observable.just(article))
+                                .flatMap(newTotalScore -> Observable.just(article))
                         : Observable.just(article))
                 .flatMap(article1 -> mApiClient.writeArticleToFirebase(article1))
                 .flatMap(article1 -> mDbProviderFactory.getDbProvider().setArticleSynced(article1, true))
@@ -156,6 +161,7 @@ public abstract class BasePresenter<V extends BaseMvp.View>
                                 .flatMap(newTotalScore -> Observable.just(new Pair<>(updatedArticles, unsyncedScore)));
                     }
                 })
+                //TODO add unsynced score for vkGroups and apps
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -186,22 +192,37 @@ public abstract class BasePresenter<V extends BaseMvp.View>
                 );
     }
 
-    /**
-     * check if user logged in,
-     * calculate final score to add value from modificators,
-     * if user do not have subscription we increment unsynced score
-     * if user has subscription we increment score in firebase
-     */
-    @Override
-    public void updateUserScoreFromAction(@ScoreAction String action, String id) {
-        Timber.d("updateUserScore: %s", action);
+    public void joinVkGroup(String id){
+        Timber.d("joinVkGroup: %s", id);
+        mApiClient
+                .joinVkGroup(id)
+                .subscribe(
+                        result -> {
+                            if (result) {
+                                Timber.d("Successful group join");
+                                mMyPreferenceManager.setVkGroupJoined(((VkGroupToJoin) data1).id);
+                                mMyPreferenceManager.applyAwardVkGroupJoined();
 
-        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
-            Timber.d("user unlogined, do nothing");
-            return;
-        }
+                                long numOfMillis = FirebaseRemoteConfig.getInstance()
+                                        .getLong(Constants.Firebase.RemoteConfigKeys.FREE_VK_GROUPS_JOIN_REWARD);
+                                long hours = numOfMillis / 1000 / 60 / 60;
 
-        int totalScoreToAdd = getTotalScoreToAddFromAction(action);
+                                showNotificationSimple(getActivity(), getString(R.string.ads_reward_gained, hours), getString(R.string.thanks_for_supporting_us));
+
+                                Bundle bundle = new Bundle();
+                                bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "group" + ((VkGroupToJoin) data1).id);
+                                FirebaseAnalytics.getInstance(getActivity()).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+                            } else {
+                                Timber.e("error group join");
+                            }
+                        },
+                        error -> {
+                            Timber.e(error, "error while join group");
+                            Toast.makeText(getActivity(), error.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                );
+
+        int totalScoreToAdd = getTotalScoreToAddFromAction(ScoreAction.VK_GROUP);
 
         if (!mMyPreferencesManager.isHasSubscription()) {
             long curNumOfAttempts = mMyPreferencesManager.getNumOfAttemptsToAutoSync();
@@ -219,45 +240,83 @@ public abstract class BasePresenter<V extends BaseMvp.View>
             }
 
             //increment unsynced score to sync it later
-            switch (action){
-                case ScoreAction.FAVORITE:
-                    mMyPreferencesManager.addUnsyncedScore(totalScoreToAdd);
-                    break;
-                case ScoreAction.READ:
-                    mMyPreferencesManager.addUnsyncedScore(totalScoreToAdd);
-                    break;
-                case ScoreAction.INTERSTITIAL_SHOWN:
-                    mMyPreferencesManager.addUnsyncedScore(totalScoreToAdd);
-                    break;
-                case ScoreAction.REWARDED_VIDEO:
-                    mMyPreferencesManager.addUnsyncedScore(totalScoreToAdd);
-                    break;
-                case ScoreAction.VK_GROUP:
-                    mMyPreferencesManager.addUnsyncedVkGroup(id, totalScoreToAdd);
-                    break;
-                case ScoreAction.OUR_APP:
-                    mMyPreferencesManager.addUnsyncedScoreForApp(id, totalScoreToAdd);
-                    break;
-                case ScoreAction.NONE:
-                    mMyPreferencesManager.addUnsyncedScore(totalScoreToAdd);
-                    break;
-                default:
-                    throw new RuntimeException("unexpected score action");
-            }
-
+            mMyPreferencesManager.addUnsyncedVkGroup(id);
             return;
         }
 
         //increment scoreInFirebase
-        mApiClient.incrementScoreInFirebaseObservable(totalScoreToAdd).subscribe(
-                newTotalScore -> Timber.d("new total score is: %s", newTotalScore),
-                e -> {
-                    Timber.e(e, "error while increment userCore from action");
-                    getView().showError(e);
-                    //increment unsynced score to sync it later
-                    mMyPreferencesManager.addUnsyncedScore(totalScoreToAdd);
-                }
-        );
+        mApiClient
+                .isUserJoinedVkGroup(id)
+                .flatMap(isUserJoinedVkGroup -> isUserJoinedVkGroup ?
+                        Observable.empty() :
+                        mApiClient.incrementScoreInFirebaseObservable(totalScoreToAdd)
+                                .flatMap(newTotalScore -> mApiClient.addJoinedVkGroup(id).flatMap(aVoid -> Observable.just(newTotalScore)))
+                )
+                .subscribe(
+                        newTotalScore -> Timber.d("new total score is: %s", newTotalScore),
+                        e -> {
+                            Timber.e(e, "error while increment userCore from action");
+                            getView().showError(e);
+                            //increment unsynced score to sync it later
+                            mMyPreferencesManager.addUnsyncedScore(totalScoreToAdd);
+                        }
+                );
+    }
+
+    /**
+     * check if user logged in,
+     * calculate final score to add value from modificators,
+     * if user do not have subscription we increment unsynced score
+     * if user has subscription we increment score in firebase
+     */
+    @Override
+    public void updateUserScoreForVkGroup(String id) {
+        Timber.d("updateUserScore: %s", id);
+
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            Timber.d("user unlogined, do nothing");
+            return;
+        }
+
+        int totalScoreToAdd = getTotalScoreToAddFromAction(ScoreAction.VK_GROUP);
+
+        if (!mMyPreferencesManager.isHasSubscription()) {
+            long curNumOfAttempts = mMyPreferencesManager.getNumOfAttemptsToAutoSync();
+            long maxNumOfAttempts = FirebaseRemoteConfig.getInstance()
+                    .getLong(Constants.Firebase.RemoteConfigKeys.NUM_OF_SYNC_ATTEMPTS_BEFORE_CALL_TO_ACTION);
+
+            Timber.d("does not have subscription, so no auto sync: %s/%s", curNumOfAttempts, maxNumOfAttempts);
+
+            if (curNumOfAttempts >= maxNumOfAttempts) {
+                //show call to action
+                mMyPreferencesManager.setNumOfAttemptsToAutoSync(0);
+                getView().showSnackBarWithAction(Constants.Firebase.CallToActionReason.ENABLE_AUTO_SYNC);
+            } else {
+                mMyPreferencesManager.setNumOfAttemptsToAutoSync(curNumOfAttempts + 1);
+            }
+
+            //increment unsynced score to sync it later
+            mMyPreferencesManager.addUnsyncedVkGroup(id);
+            return;
+        }
+
+        //increment scoreInFirebase
+        mApiClient
+                .isUserJoinedVkGroup(id)
+                .flatMap(isUserJoinedVkGroup -> isUserJoinedVkGroup ?
+                        Observable.empty() :
+                        mApiClient.incrementScoreInFirebaseObservable(totalScoreToAdd)
+                                .flatMap(newTotalScore -> mApiClient.addJoinedVkGroup(id).flatMap(aVoid -> Observable.just(newTotalScore)))
+                )
+                .subscribe(
+                        newTotalScore -> Timber.d("new total score is: %s", newTotalScore),
+                        e -> {
+                            Timber.e(e, "error while increment userCore from action");
+                            getView().showError(e);
+                            //increment unsynced score to sync it later
+                            mMyPreferencesManager.addUnsyncedScore(totalScoreToAdd);
+                        }
+                );
     }
 
     private int getTotalScoreToAddFromAction(@ScoreAction String action) {

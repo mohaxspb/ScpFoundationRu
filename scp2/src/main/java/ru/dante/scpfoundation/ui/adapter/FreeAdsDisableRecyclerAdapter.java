@@ -8,7 +8,7 @@ import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.monetization.model.AppInstallHeader;
 import ru.dante.scpfoundation.monetization.model.AppInviteModel;
 import ru.dante.scpfoundation.monetization.model.BaseModel;
-import ru.dante.scpfoundation.monetization.model.OurApplication;
+import ru.dante.scpfoundation.monetization.model.PlayMarketApplication;
 import ru.dante.scpfoundation.monetization.model.RewardedVideo;
 import ru.dante.scpfoundation.monetization.model.VkGroupToJoin;
 import ru.dante.scpfoundation.ui.holder.AppInstallHeaderHolder;
@@ -73,7 +73,7 @@ public class FreeAdsDisableRecyclerAdapter extends BaseRecyclerAdapter<
         BaseModel baseModel = mData.get(position);
         if (baseModel instanceof AppInviteModel) {
             return TYPE_INVITE;
-        } else if (baseModel instanceof OurApplication) {
+        } else if (baseModel instanceof PlayMarketApplication) {
             return TYPE_APP_TO_INSTALL;
         } else if (baseModel instanceof RewardedVideo) {
             return TYPE_REWARDED_VIDEO;

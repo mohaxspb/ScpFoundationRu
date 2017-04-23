@@ -63,6 +63,8 @@ import ru.dante.scpfoundation.db.model.RealmString;
 import ru.dante.scpfoundation.db.model.User;
 import ru.dante.scpfoundation.db.model.VkImage;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
+import ru.dante.scpfoundation.monetization.model.PlayMarketApplication;
+import ru.dante.scpfoundation.monetization.model.VkGroupToJoin;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -1309,6 +1311,90 @@ public class ApiClient {
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
+                    subscriber.onError(databaseError.toException());
+                }
+            });
+        });
+    }
+
+    public Observable<Boolean> isUserJoinedVkGroup(String id) {
+        return Observable.create(subscriber -> {
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (firebaseUser == null) {
+                subscriber.onError(new IllegalArgumentException("firebase user is null"));
+                return;
+            }
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference reference = database.getReference()
+                    .child(Constants.Firebase.Refs.USERS)
+                    .child(firebaseUser.getUid())
+                    .child(Constants.Firebase.Refs.VK_GROUPS)
+                    .child(id);
+            reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    VkGroupToJoin data = dataSnapshot.getValue(VkGroupToJoin.class);
+                    Timber.d("dataSnapshot.getValue(): %s", data);
+                    subscriber.onNext(data != null);
+                    subscriber.onCompleted();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    subscriber.onError(databaseError.toException());
+                }
+            });
+        });
+    }
+
+    public Observable<Boolean> isUserInstallApp(String id) {
+        return Observable.create(subscriber -> {
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (firebaseUser == null) {
+                subscriber.onError(new IllegalArgumentException("firebase user is null"));
+                return;
+            }
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference reference = database.getReference()
+                    .child(Constants.Firebase.Refs.USERS)
+                    .child(firebaseUser.getUid())
+                    .child(Constants.Firebase.Refs.APPS)
+                    .child(id);
+            reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    PlayMarketApplication data = dataSnapshot.getValue(PlayMarketApplication.class);
+                    Timber.d("dataSnapshot.getValue(): %s", data);
+                    subscriber.onNext(data != null);
+                    subscriber.onCompleted();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    subscriber.onError(databaseError.toException());
+                }
+            });
+        });
+    }
+
+    public Observable<Void> addJoinedVkGroup(String id) {
+        return Observable.create(subscriber -> {
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (firebaseUser == null) {
+                subscriber.onError(new IllegalArgumentException("firebase user is null"));
+                return;
+            }
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference reference = database.getReference()
+                    .child(Constants.Firebase.Refs.USERS)
+                    .child(firebaseUser.getUid())
+                    .child(Constants.Firebase.Refs.APPS)
+                    .child(id);
+            reference.setValue(new VkGroupToJoin(id), (databaseError, databaseReference) -> {
+                if (databaseError == null) {
+                    subscriber.onNext(null);
+                    subscriber.onCompleted();
+                } else {
                     subscriber.onError(databaseError.toException());
                 }
             });

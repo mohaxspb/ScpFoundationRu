@@ -8,12 +8,10 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
-import java.util.List;
-
-import javax.inject.Inject;
 
 import ru.dante.scpfoundation.Constants;
-import ru.dante.scpfoundation.MyApplication;
+import ru.dante.scpfoundation.monetization.model.ApplicationsResponse;
+import ru.dante.scpfoundation.monetization.model.PlayMarketApplication;
 import ru.dante.scpfoundation.monetization.model.VkGroupToJoin;
 import ru.dante.scpfoundation.monetization.model.VkGroupsToJoinResponse;
 import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
@@ -54,6 +52,7 @@ public class MyPreferenceManager {
         //        String VK_GROUP_APP_JOINED = "VK_GROUP_APP_JOINED";
         String UNSYNCED_SCORE = "UNSYNCED_SCORE";
         String UNSYNCED_VK_GROUPS = "UNSYNCED_VK_GROUPS";
+        String UNSYNCED_APPS = "UNSYNCED_APPS";
     }
 
     private Gson mGson;
@@ -271,17 +270,48 @@ public class MyPreferenceManager {
             data = new VkGroupsToJoinResponse();
             data.items = new ArrayList<>();
         }
-        VkGroupToJoin vkGroupToJoin = new VkGroupToJoin(id);
-        if (!data.items.contains(vkGroupToJoin)) {
-            data.items.add(new VkGroupToJoin(id));
+        VkGroupToJoin item = new VkGroupToJoin(id);
+        if (!data.items.contains(item)) {
+            data.items.add(item);
             mPreferences.edit().putString(Keys.UNSYNCED_VK_GROUPS, mGson.toJson(data)).apply();
         }
+    }
+
+    public void deleteUnsyncedVkGroups() {
+        mPreferences.edit().remove(Keys.UNSYNCED_VK_GROUPS).apply();
     }
 
     public VkGroupsToJoinResponse getUnsyncedVkGroupsJson() {
         VkGroupsToJoinResponse data = null;
         try {
-            data = mGson.fromJson(mPreferences.getString(Keys.UNSYNCED_VK_GROUPS, ""), VkGroupsToJoinResponse.class);
+            data = mGson.fromJson(mPreferences.getString(Keys.UNSYNCED_VK_GROUPS, null), VkGroupsToJoinResponse.class);
+        } catch (Exception e) {
+            Timber.e(e);
+        }
+        return data;
+    }
+
+    public void addUnsyncedApp(String id) {
+        ApplicationsResponse data = getUnsyncedAppsJson();
+        if (data == null) {
+            data = new ApplicationsResponse();
+            data.items = new ArrayList<>();
+        }
+        PlayMarketApplication item = new PlayMarketApplication(id);
+        if (!data.items.contains(item)) {
+            data.items.add(item);
+            mPreferences.edit().putString(Keys.UNSYNCED_APPS, mGson.toJson(data)).apply();
+        }
+    }
+
+    public void deleteUnsyncedApps() {
+        mPreferences.edit().remove(Keys.UNSYNCED_APPS).apply();
+    }
+
+    public ApplicationsResponse getUnsyncedAppsJson() {
+        ApplicationsResponse data = null;
+        try {
+            data = mGson.fromJson(mPreferences.getString(Keys.UNSYNCED_APPS, null), ApplicationsResponse.class);
         } catch (Exception e) {
             Timber.e(e);
         }
