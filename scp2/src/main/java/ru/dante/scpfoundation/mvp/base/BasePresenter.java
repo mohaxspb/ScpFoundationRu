@@ -64,7 +64,7 @@ public abstract class BasePresenter<V extends BaseMvp.View>
 
     @Override
     public void onUserChanged(User user) {
-        //empty implemetation
+        //empty implementation
     }
 
     @Override

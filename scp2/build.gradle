@@ -91,7 +91,6 @@ android {
                     "yandexMetricaApiKey," +
                     "adMobAppId," +
                     "adsBannerIdInterstitial," +
-                    "adsBannerIdRewarded," +
                     "vkSdkAppId," +
                     "firebaseUri," +
                     "vpsApiAddress" +
