@@ -41,6 +41,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="@dimen/defaultMargin"
+            android:linksClickable="true"
+            android:autoLink="web"
             tools:text="test test test test test test test test test test test test test test test test"
             android:textColor="?newArticlesTextColor"
             android:textSize="16sp"
