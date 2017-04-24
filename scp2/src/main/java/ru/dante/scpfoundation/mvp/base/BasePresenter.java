@@ -1,8 +1,6 @@
 package ru.dante.scpfoundation.mvp.base;
 
-import android.support.annotation.StringRes;
 import android.support.v4.util.Pair;
-import android.text.TextUtils;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
@@ -17,6 +15,7 @@ import ru.dante.scpfoundation.db.DbProviderFactory;
 import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.db.model.User;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
+import ru.dante.scpfoundation.monetization.model.ApplicationsResponse;
 import ru.dante.scpfoundation.monetization.model.VkGroupsToJoinResponse;
 import ru.dante.scpfoundation.mvp.contract.LoginActions;
 import rx.Observable;
@@ -138,6 +137,9 @@ public abstract class BasePresenter<V extends BaseMvp.View>
         dbProvider.getUnsyncedArticlesManaged()
                 .doOnNext(articles -> Timber.d("articles: %s", articles))
                 .flatMap(articles -> articles.isEmpty() ? Observable.just(0) :
+                        //TODO need to calculate and add score for firstly synced articles
+                        //caclulate how many new articles we add and return it to calculate hoe much score we should add
+                        //I think that this can be done via calculate initial childs of ARTICLE ref minus result childs of ARTICLE ref
                         mApiClient.writeArticlesToFirebase(articles)
                                 .flatMap(writeArticles -> mDbProviderFactory.getDbProvider().setArticlesSynced(writeArticles, true)))
                 //also increment user score from unsynced score
@@ -160,34 +162,73 @@ public abstract class BasePresenter<V extends BaseMvp.View>
                                 .flatMap(newTotalScore -> Observable.just(new Pair<>(updatedArticles, unsyncedScore)));
                     }
                 })
-                //TODO add unsynced score for vkGroups and apps
-                .flatMap(artsAndScore -> {
+                //add unsynced score for vkGroups
+                .flatMap(artsAndScoreAdded -> {
                     VkGroupsToJoinResponse unsyncedScore = mMyPreferencesManager.getUnsyncedVkGroupsJson();
-                    @ScoreAction
-                    String action = ScoreAction.VK_GROUP;
                     if (unsyncedScore == null) {
                         //no need to update something
-                        return Observable.just(artsAndScore);
+                        return Observable.just(artsAndScoreAdded);
                     } else {
-                        //TODO get unistalledAppsThat we must to sync
+                        //get unjoined vk groups that we must sync
+                        @ScoreAction
+                        String action = ScoreAction.VK_GROUP;
+                        int actionScore = getTotalScoreToAddFromAction(action, mMyPreferencesManager);
                         return Observable.from(unsyncedScore.items)
-                                .flatMap(vkGroupToJoin -> mApiClient.isUserJoinedVkGroup(vkGroupToJoin.id)
+                                .map(vkGroupToJoin -> vkGroupToJoin.id)
+                                .doOnNext(id -> Timber.d("vkGroup id to check: %s", id))
+                                .flatMap(vkGroupToJoinId -> mApiClient.isUserJoinedVkGroup(vkGroupToJoinId)
                                         .flatMap(isUserJoinedVkGroup -> isUserJoinedVkGroup ?
                                                 Observable.empty() :
-                                                mApiClient.incrementScoreInFirebaseObservable(getTotalScoreToAddFromAction(action, mMyPreferencesManager))
-                                                        .flatMap(newTotalScore -> mApiClient.addJoinedVkGroup(vkGroupToJoin.id).flatMap(aVoid -> Observable.just(newTotalScore)))
-                                        ))
-                        return mApiClient.incrementScoreInFirebaseObservable(unsyncedScore)
-                                //update score in realm
-                                .flatMap(newTotalScore -> mDbProviderFactory.getDbProvider().updateUserScore(newTotalScore))
-                                .flatMap(newTotalScore -> Observable.just(new Pair<>(updatedArticles, unsyncedScore)));
+                                                //TODO add error handling
+                                                mApiClient.incrementScoreInFirebaseObservable(actionScore)
+                                                        .flatMap(newTotalScore -> mDbProviderFactory.getDbProvider().updateUserScore(newTotalScore))
+                                                        .flatMap(newTotalScore -> mApiClient.addJoinedVkGroup(vkGroupToJoinId).flatMap(aVoid -> Observable.just(actionScore)))))
+                                .toList()
+                                .flatMap(integers -> {
+                                    mMyPreferencesManager.deleteUnsyncedVkGroups();
+                                    return Observable.just(new Pair<>(
+                                            artsAndScoreAdded.first,
+                                            artsAndScoreAdded.second + actionScore * integers.size())
+                                    );
+                                });
+                    }
+                })
+                //add unsynced score for apps
+                .flatMap(artsAndScoreAdded -> {
+                    ApplicationsResponse unsyncedScore = mMyPreferencesManager.getUnsyncedAppsJson();
+                    if (unsyncedScore == null) {
+                        //no need to update something
+                        return Observable.just(artsAndScoreAdded);
+                    } else {
+                        //get uninstalled apps that we must sync
+                        @ScoreAction
+                        String action = ScoreAction.OUR_APP;
+                        int actionScore = getTotalScoreToAddFromAction(action, mMyPreferencesManager);
+                        return Observable.from(unsyncedScore.items)
+                                .map(item -> item.id)
+                                .doOnNext(id -> Timber.d("application id to check: %s", id))
+                                .flatMap(itemId -> mApiClient.isUserInstallApp(itemId)
+                                        .flatMap(isUserInstallApp -> isUserInstallApp ?
+                                                Observable.empty() :
+                                                //TODO add error handling
+                                                mApiClient.incrementScoreInFirebaseObservable(actionScore)
+                                                        .flatMap(newTotalScore -> mDbProviderFactory.getDbProvider().updateUserScore(newTotalScore))
+                                                        .flatMap(newTotalScore -> mApiClient.addInstalledApp(itemId).flatMap(aVoid -> Observable.just(actionScore)))))
+                                .toList()
+                                .flatMap(integers -> {
+                                    mMyPreferencesManager.deleteUnsyncedApps();
+                                    return Observable.just(new Pair<>(
+                                            artsAndScoreAdded.first,
+                                            artsAndScoreAdded.second + actionScore * integers.size())
+                                    );
+                                });
                     }
                 })
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         data -> {
-                            Timber.d("articles saved to firebase: %s", data);
+                            Timber.d("articles saved to firebase/score added: %s/%s", data.first, data.second);
                             if (showResultMessage) {
                                 if (data.first == 0 && data.second == 0) {
                                     //TODO add plurals support

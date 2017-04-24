@@ -111,7 +111,7 @@ public class AppInstallReceiver extends BroadcastReceiver {
             }
 
             //increment unsynced score to sync it later
-            mMyPreferencesManager.addUnsyncedVkGroup(packageName);
+            mMyPreferencesManager.addUnsyncedApp(packageName);
             return;
         }
 

@@ -1251,6 +1251,8 @@ public class ApiClient {
     }
 
     public Observable<List<Article>> writeArticlesToFirebase(List<Article> articles) {
+        //TODO caclulate how many new articles we add and return it to calculate hoe much score we should add
+        //I think that this can be done via calculate initial childs of ARTICLE ref minus result childs of ARTICLE ref
         return Observable.create(subscriber -> {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             if (firebaseUser == null) {
@@ -1319,6 +1321,7 @@ public class ApiClient {
     }
 
     public Observable<Boolean> isUserJoinedVkGroup(String id) {
+        Timber.d("isUserJoinedVkGroup id: %s", id);
         return Observable.create(subscriber -> {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             if (firebaseUser == null) {
