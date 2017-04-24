@@ -18,6 +18,9 @@ public class PlayMarketApplication extends BaseModel {
         this.id = id;
     }
 
+    public PlayMarketApplication() {
+    }
+
     @Override
     public String toString() {
         return "PlayMarketApplication{" +

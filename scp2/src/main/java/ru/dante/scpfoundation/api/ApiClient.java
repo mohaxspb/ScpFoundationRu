@@ -76,6 +76,7 @@ import timber.log.Timber;
  * for scp_ru
  */
 public class ApiClient {
+
     private final MyPreferenceManager mPreferencesManager;
     private final OkHttpClient mOkHttpClient;
     private Gson mGson;
@@ -1347,7 +1348,34 @@ public class ApiClient {
         });
     }
 
-    public Observable<Boolean> isUserInstallApp(String id) {
+    public Observable<Void> addJoinedVkGroup(String id) {
+        return Observable.create(subscriber -> {
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (firebaseUser == null) {
+                subscriber.onError(new IllegalArgumentException("firebase user is null"));
+                return;
+            }
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference reference = database.getReference()
+                    .child(Constants.Firebase.Refs.USERS)
+                    .child(firebaseUser.getUid())
+                    .child(Constants.Firebase.Refs.VK_GROUPS)
+                    .child(id);
+            reference.setValue(new VkGroupToJoin(id), (databaseError, databaseReference) -> {
+                if (databaseError == null) {
+                    subscriber.onNext(null);
+                    subscriber.onCompleted();
+                } else {
+                    subscriber.onError(databaseError.toException());
+                }
+            });
+        });
+    }
+
+    public Observable<Boolean> isUserInstallApp(String packageNameWithDots) {
+        //as firebase can't have dots in ref path we must replace it...
+        final String id = packageNameWithDots.replaceAll("\\.", "____");
+        Timber.d("id: %s", id);
         return Observable.create(subscriber -> {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             if (firebaseUser == null) {
@@ -1377,7 +1405,9 @@ public class ApiClient {
         });
     }
 
-    public Observable<Void> addJoinedVkGroup(String id) {
+    public Observable<Void> addInstalledApp(String packageNameWithDots) {
+        //as firebase can't have dots in ref path we must replace it...
+        final String id = packageNameWithDots.replaceAll("\\.", "____");
         return Observable.create(subscriber -> {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             if (firebaseUser == null) {
@@ -1388,9 +1418,9 @@ public class ApiClient {
             DatabaseReference reference = database.getReference()
                     .child(Constants.Firebase.Refs.USERS)
                     .child(firebaseUser.getUid())
-                    .child(Constants.Firebase.Refs.VK_GROUPS)
+                    .child(Constants.Firebase.Refs.APPS)
                     .child(id);
-            reference.setValue(new VkGroupToJoin(id), (databaseError, databaseReference) -> {
+            reference.setValue(new PlayMarketApplication(id), (databaseError, databaseReference) -> {
                 if (databaseError == null) {
                     subscriber.onNext(null);
                     subscriber.onCompleted();

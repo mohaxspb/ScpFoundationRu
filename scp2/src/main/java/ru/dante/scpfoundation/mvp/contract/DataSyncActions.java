@@ -32,5 +32,5 @@ public interface DataSyncActions {
 
     void updateUserScoreForVkGroup(String id);
 
-    void updateUserScoreForApp(String id);
+//    void updateUserScoreForApp(String id);
 }

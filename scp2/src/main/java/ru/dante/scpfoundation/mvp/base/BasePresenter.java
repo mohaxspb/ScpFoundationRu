@@ -96,7 +96,7 @@ public abstract class BasePresenter<V extends BaseMvp.View>
         String action = article.isInReaden ? ScoreAction.READ :
                 article.isInFavorite != Article.ORDER_NONE ? ScoreAction.FAVORITE : ScoreAction.NONE;
 
-        int totalScoreToAdd = getTotalScoreToAddFromAction(action);
+        int totalScoreToAdd = getTotalScoreToAddFromAction(action, mMyPreferencesManager);
 
         //update score for articles, that is not in firebase, than write/update them
         mApiClient
@@ -207,7 +207,7 @@ public abstract class BasePresenter<V extends BaseMvp.View>
 
         @ScoreAction
         String action = ScoreAction.VK_GROUP;
-        int totalScoreToAdd = getTotalScoreToAddFromAction(action);
+        int totalScoreToAdd = getTotalScoreToAddFromAction(action, mMyPreferencesManager);
 
         if (!mMyPreferencesManager.isHasSubscription()) {
             long curNumOfAttempts = mMyPreferencesManager.getNumOfAttemptsToAutoSync();
@@ -248,12 +248,7 @@ public abstract class BasePresenter<V extends BaseMvp.View>
                 );
     }
 
-    @Override
-    public void updateUserScoreForApp(String id) {
-        //TODO
-    }
-
-    private int getTotalScoreToAddFromAction(@ScoreAction String action) {
+    public static int getTotalScoreToAddFromAction(@ScoreAction String action, MyPreferenceManager mMyPreferencesManager) {
         long score;
 
         //switch by action to get initial score value

@@ -18,6 +18,9 @@ public class VkGroupToJoin extends BaseModel {
         this.id = id;
     }
 
+    public VkGroupToJoin() {
+    }
+
     @Override
     public String toString() {
         return "VkGroupToJoin{" +

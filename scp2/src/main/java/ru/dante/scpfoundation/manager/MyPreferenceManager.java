@@ -237,7 +237,7 @@ public class MyPreferenceManager {
 
     public boolean isHasSubscription() {
         return mPreferences.getBoolean(Keys.HAS_SUBSCRIPTION, false);
-////         test
+////        FI XME test
 //        return true;
     }
 
