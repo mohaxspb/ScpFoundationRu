@@ -1,6 +1,8 @@
 package ru.dante.scpfoundation.mvp.base;
 
+import android.support.annotation.StringRes;
 import android.support.v4.util.Pair;
+import android.text.TextUtils;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
@@ -15,6 +17,7 @@ import ru.dante.scpfoundation.db.DbProviderFactory;
 import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.db.model.User;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
+import ru.dante.scpfoundation.monetization.model.VkGroupsToJoinResponse;
 import ru.dante.scpfoundation.mvp.contract.LoginActions;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -158,6 +161,28 @@ public abstract class BasePresenter<V extends BaseMvp.View>
                     }
                 })
                 //TODO add unsynced score for vkGroups and apps
+                .flatMap(artsAndScore -> {
+                    VkGroupsToJoinResponse unsyncedScore = mMyPreferencesManager.getUnsyncedVkGroupsJson();
+                    @ScoreAction
+                    String action = ScoreAction.VK_GROUP;
+                    if (unsyncedScore == null) {
+                        //no need to update something
+                        return Observable.just(artsAndScore);
+                    } else {
+                        //TODO get unistalledAppsThat we must to sync
+                        return Observable.from(unsyncedScore.items)
+                                .flatMap(vkGroupToJoin -> mApiClient.isUserJoinedVkGroup(vkGroupToJoin.id)
+                                        .flatMap(isUserJoinedVkGroup -> isUserJoinedVkGroup ?
+                                                Observable.empty() :
+                                                mApiClient.incrementScoreInFirebaseObservable(getTotalScoreToAddFromAction(action, mMyPreferencesManager))
+                                                        .flatMap(newTotalScore -> mApiClient.addJoinedVkGroup(vkGroupToJoin.id).flatMap(aVoid -> Observable.just(newTotalScore)))
+                                        ))
+                        return mApiClient.incrementScoreInFirebaseObservable(unsyncedScore)
+                                //update score in realm
+                                .flatMap(newTotalScore -> mDbProviderFactory.getDbProvider().updateUserScore(newTotalScore))
+                                .flatMap(newTotalScore -> Observable.just(new Pair<>(updatedArticles, unsyncedScore)));
+                    }
+                })
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
