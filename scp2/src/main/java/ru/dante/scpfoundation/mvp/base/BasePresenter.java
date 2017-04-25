@@ -153,31 +153,35 @@ public abstract class BasePresenter<V extends BaseMvp.View>
                                             .flatMap(articleInFirebase -> articleInFirebase == null ?
                                                     mApiClient.incrementScoreInFirebaseObservable(totalScoreToAdd)
                                                             .flatMap(firebaseUserScore -> mDbProviderFactory.getDbProvider().updateUserScore(firebaseUserScore))
-                                                            .flatMap(integer -> Observable.just(article))
-                                                    : Observable.just(article))
-                                            .flatMap(article1 -> mApiClient.writeArticleToFirebase(article1))
-                                            .flatMap(article1 -> mDbProviderFactory.getDbProvider().setArticleSynced(article1, true));
+                                                            .flatMap(integer -> Observable.just((new Pair<>(article, totalScoreToAdd))))
+                                                    : Observable.just(new Pair<>(article, 0)))
+                                            .flatMap(articleAndScore -> mApiClient.writeArticleToFirebase(articleAndScore.first).flatMap(article1 -> Observable.just(articleAndScore)))
+                                            .flatMap(articleAndScore -> mDbProviderFactory.getDbProvider().setArticleSynced(articleAndScore.first, true).flatMap(article1 -> Observable.just(articleAndScore)));
                                 })
-                                .count())
+                                .toList()
+                                .flatMap(articleAndScores -> {
+                                    int totalAddedScore = 0;
+                                    for (Pair<Article, Integer> articleAndScore : articleAndScores) {
+                                        totalAddedScore += articleAndScore.second;
+                                    }
+                                    return Observable.just(new Pair<>(articleAndScores.size(), totalAddedScore));
+                                })
+                )
                 //also increment user score from unsynced score
-                .flatMap(updatedArticles -> {
-                    Timber.d("num of updated articles: %s", updatedArticles);
+                .flatMap(articlesCountAndAddedScore -> {
+                    Timber.d("num of updated articles/added score: %s/%s", articlesCountAndAddedScore.first, articlesCountAndAddedScore.second);
                     int unsyncedScore = mMyPreferencesManager.getNumOfUnsyncedScore();
                     if (unsyncedScore == 0) {
-                        if (updatedArticles == 0) {
-                            //no need to update something
-                            return Observable.just(new Pair<>(updatedArticles, unsyncedScore));
-                        } else {
-                            //getScore from firebase and update it in Realm
-                            return mApiClient.getUserScoreFromFirebase()
-                                    .flatMap(firebaseUserScore -> mDbProviderFactory.getDbProvider().updateUserScore(firebaseUserScore))
-                                    .flatMap(totalScore -> Observable.just(new Pair<>(updatedArticles, unsyncedScore)));
-                        }
+                        //getScore from firebase and update it in Realm
+                        //as there can be situation, where we have nothing to sync except of score
+                        //added from another device
+                        return mApiClient.getUserScoreFromFirebase()
+                                .flatMap(firebaseUserScore -> mDbProviderFactory.getDbProvider().updateUserScore(firebaseUserScore))
+                                .flatMap(totalScore -> Observable.just(new Pair<>(articlesCountAndAddedScore.first, articlesCountAndAddedScore.second)));
                     } else {
                         return mApiClient.incrementScoreInFirebaseObservable(unsyncedScore)
-                                //update score in realm
                                 .flatMap(newTotalScore -> mDbProviderFactory.getDbProvider().updateUserScore(newTotalScore))
-                                .flatMap(newTotalScore -> Observable.just(new Pair<>(updatedArticles, unsyncedScore)));
+                                .flatMap(newTotalScore -> Observable.just(new Pair<>(articlesCountAndAddedScore.first, articlesCountAndAddedScore.second + unsyncedScore)));
                     }
                 })
                 //add unsynced score for vkGroups
@@ -250,9 +254,9 @@ public abstract class BasePresenter<V extends BaseMvp.View>
                             if (showResultMessage) {
                                 if (data.first == 0 && data.second == 0) {
                                     //TODO add plurals support
-                                    getView().showMessage(R.string.all_data_already_synced);
+                                    getView().showMessageLong(R.string.all_data_already_synced);
                                 } else {
-                                    getView().showMessage(MyApplication.getAppInstance()
+                                    getView().showMessageLong(MyApplication.getAppInstance()
                                             .getString(R.string.all_data_sync_success, data.first, data.second));
                                 }
                             }
@@ -265,7 +269,8 @@ public abstract class BasePresenter<V extends BaseMvp.View>
                         e -> {
                             Timber.e(e);
                             if (showResultMessage) {
-                                getView().showMessage(R.string.error_while_all_data_sync);
+                                String errorMessage = e.getMessage() != null ? e.getMessage() : e.toString();
+                                getView().showMessage(MyApplication.getAppInstance().getString(R.string.error_while_all_data_sync, errorMessage));
                             }
                             dbProvider.close();
                         }

@@ -494,6 +494,16 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
     }
 
     @Override
+    public void showMessageLong(String message) {
+        Snackbar.make(mRoot, message, Snackbar.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void showMessageLong(@StringRes int message) {
+        showMessageLong(getString(message));
+    }
+
+    @Override
     public void showProgressDialog(String title) {
         mProgressDialog = new MaterialDialog.Builder(this)
                 .progress(true, 0)

@@ -656,9 +656,11 @@ public class DbProvider {
 
     public Observable<Article> setArticleSynced(Article article, boolean synced) {
         Timber.d("setArticleSynced url: %s, newState: %s", article.url, synced);
+        boolean managed = article.isManaged();
+        String url = article.url;
         return Observable.create(subscriber -> mRealm.executeTransactionAsync(
                 realm -> {
-                    Article articleInDb = realm.where(Article.class).equalTo(Article.FIELD_URL, article.url).findFirst();
+                    Article articleInDb = realm.where(Article.class).equalTo(Article.FIELD_URL, url).findFirst();
                     if (articleInDb != null) {
                         articleInDb.synced = synced ? Article.SYNCED_OK : Article.SYNCED_NEED;
                     } else {
@@ -666,14 +668,16 @@ public class DbProvider {
                     }
                 },
                 () -> {
-                    article.synced = synced ? Article.SYNCED_OK : Article.SYNCED_NEED;
+                    if (!managed) {
+                        article.synced = synced ? Article.SYNCED_OK : Article.SYNCED_NEED;
+                    }
                     subscriber.onNext(article);
                     subscriber.onCompleted();
                     mRealm.close();
                 },
-                error -> {
+                e -> {
                     mRealm.close();
-                    subscriber.onError(error);
+                    subscriber.onError(e);
                 })
         );
     }
