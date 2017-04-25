@@ -136,14 +136,32 @@ public abstract class BasePresenter<V extends BaseMvp.View>
         DbProvider dbProvider = mDbProviderFactory.getDbProvider();
         dbProvider.getUnsyncedArticlesManaged()
                 .doOnNext(articles -> Timber.d("articles: %s", articles))
-                .flatMap(articles -> articles.isEmpty() ? Observable.just(0) :
+                .flatMap(articles -> articles.isEmpty() ? Observable.just(new Pair<>(0, 0)) :
                         //TODO need to calculate and add score for firstly synced articles
-                        //caclulate how many new articles we add and return it to calculate hoe much score we should add
+                        //caclulate how many new articles we add and return it to calculate hoц much score we should add
                         //I think that this can be done via calculate initial childs of ARTICLE ref minus result childs of ARTICLE ref
-                        mApiClient.writeArticlesToFirebase(articles)
-                                .flatMap(writeArticles -> mDbProviderFactory.getDbProvider().setArticlesSynced(writeArticles, true)))
+                        Observable.from(articles)
+                                .flatMap(article -> {
+                                    @ScoreAction
+                                    String action = article.isInReaden ? ScoreAction.READ :
+                                            article.isInFavorite != Article.ORDER_NONE ? ScoreAction.FAVORITE : ScoreAction.NONE;
+
+                                    int totalScoreToAdd = getTotalScoreToAddFromAction(action, mMyPreferencesManager);
+
+                                    return mApiClient
+                                            .getArticleFromFirebase(article)
+                                            .flatMap(articleInFirebase -> articleInFirebase == null ?
+                                                    mApiClient.incrementScoreInFirebaseObservable(totalScoreToAdd)
+                                                            .flatMap(firebaseUserScore -> mDbProviderFactory.getDbProvider().updateUserScore(firebaseUserScore))
+                                                            .flatMap(integer -> Observable.just(article))
+                                                    : Observable.just(article))
+                                            .flatMap(article1 -> mApiClient.writeArticleToFirebase(article1))
+                                            .flatMap(article1 -> mDbProviderFactory.getDbProvider().setArticleSynced(article1, true));
+                                })
+                                .count())
                 //also increment user score from unsynced score
                 .flatMap(updatedArticles -> {
+                    Timber.d("num of updated articles: %s", updatedArticles);
                     int unsyncedScore = mMyPreferencesManager.getNumOfUnsyncedScore();
                     if (unsyncedScore == 0) {
                         if (updatedArticles == 0) {
