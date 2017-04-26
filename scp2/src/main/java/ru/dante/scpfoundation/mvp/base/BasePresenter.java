@@ -337,6 +337,57 @@ public abstract class BasePresenter<V extends BaseMvp.View>
                 );
     }
 
+    /**
+     * check if user logged in,
+     * calculate final score to add value from modificators,
+     * if user do not have subscription we increment unsynced score
+     * if user has subscription we increment score in firebase
+     * while incrementing we check if user already received score from group
+     * and if so - do not increment it
+     */
+    @Override
+    public void updateUserScoreForScoreAction(@ScoreAction String action) {
+        Timber.d("updateUserScore: %s", action);
+
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            Timber.d("user unlogined, do nothing");
+            return;
+        }
+
+        int totalScoreToAdd = getTotalScoreToAddFromAction(action, mMyPreferencesManager);
+
+        if (!mMyPreferencesManager.isHasSubscription()) {
+            long curNumOfAttempts = mMyPreferencesManager.getNumOfAttemptsToAutoSync();
+            long maxNumOfAttempts = FirebaseRemoteConfig.getInstance()
+                    .getLong(Constants.Firebase.RemoteConfigKeys.NUM_OF_SYNC_ATTEMPTS_BEFORE_CALL_TO_ACTION);
+
+            Timber.d("does not have subscription, so no auto sync: %s/%s", curNumOfAttempts, maxNumOfAttempts);
+
+            if (curNumOfAttempts >= maxNumOfAttempts) {
+                //show call to action
+                mMyPreferencesManager.setNumOfAttemptsToAutoSync(0);
+                getView().showSnackBarWithAction(Constants.Firebase.CallToActionReason.ENABLE_AUTO_SYNC);
+            } else {
+                mMyPreferencesManager.setNumOfAttemptsToAutoSync(curNumOfAttempts + 1);
+            }
+
+            //increment unsynced score to sync it later
+            mMyPreferencesManager.addUnsyncedScore(totalScoreToAdd);
+            return;
+        }
+
+        //increment scoreInFirebase
+        mApiClient.incrementScoreInFirebaseObservable(totalScoreToAdd).subscribe(
+                newTotalScore -> Timber.d("new total score is: %s", newTotalScore),
+                e -> {
+                    Timber.e(e, "error while increment userCore from action");
+                    getView().showError(e);
+                    //increment unsynced score to sync it later
+                    mMyPreferencesManager.addUnsyncedScore(totalScoreToAdd);
+                }
+        );
+    }
+
     public static int getTotalScoreToAddFromAction(@ScoreAction String action, MyPreferenceManager mMyPreferencesManager) {
         long score;
 
