@@ -1,14 +1,20 @@
 package ru.dante.scpfoundation.ui.activity;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -31,8 +37,11 @@ import ru.dante.scpfoundation.ui.adapter.ImagesPagerAdapter;
 import ru.dante.scpfoundation.ui.base.BaseDrawerActivity;
 import ru.dante.scpfoundation.ui.fragment.FragmentMaterialsAll;
 import ru.dante.scpfoundation.util.IntentUtils;
+import ru.dante.scpfoundation.util.StorageUtils;
 import ru.dante.scpfoundation.util.SystemUtils;
 import timber.log.Timber;
+
+import static ru.dante.scpfoundation.util.IntentUtils.MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE;
 
 public class GalleryActivity
         extends BaseDrawerActivity<GalleryScreenMvp.View, GalleryScreenMvp.Presenter>
@@ -244,6 +253,25 @@ public class GalleryActivity
                 }
                 List<RealmString> allUrls = mAdapter.getData().get(mViewPager.getCurrentItem()).allUrls;
                 IntentUtils.shareUrl(allUrls.get(allUrls.size() - 1).getVal());
+                return true;
+            case R.id.save_image:
+                Bitmap image = mAdapter.getImage();
+                if (image == null)
+                    return true;
+                int permissionCheck = ContextCompat.checkSelfPermission(
+                        this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+                    if (StorageUtils.saveImageToGallery(this, image))
+                        Toast.makeText(GalleryActivity.this,
+                                R.string.image_saved, Toast.LENGTH_SHORT).show();
+                    else
+                        Toast.makeText(GalleryActivity.this,
+                                R.string.image_saving_error, Toast.LENGTH_SHORT).show();
+                } else {
+                    ActivityCompat.requestPermissions(
+                            this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
