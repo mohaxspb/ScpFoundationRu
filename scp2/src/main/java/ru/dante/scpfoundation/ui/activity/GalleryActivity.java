@@ -11,6 +11,8 @@ import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -34,6 +36,7 @@ import ru.dante.scpfoundation.monetization.util.MyAdListener;
 import ru.dante.scpfoundation.mvp.base.MonetizationActions;
 import ru.dante.scpfoundation.mvp.contract.GalleryScreenMvp;
 import ru.dante.scpfoundation.ui.adapter.ImagesPagerAdapter;
+import ru.dante.scpfoundation.ui.adapter.RecyclerAdapterImages;
 import ru.dante.scpfoundation.ui.base.BaseDrawerActivity;
 import ru.dante.scpfoundation.ui.fragment.FragmentMaterialsAll;
 import ru.dante.scpfoundation.util.IntentUtils;
@@ -51,6 +54,8 @@ public class GalleryActivity
 
     @BindView(R.id.viewPager)
     ViewPager mViewPager;
+    @BindView(R.id.recyclerView)
+    RecyclerView mRecyclerView;
     @BindView(R.id.progressCenter)
     View mProgressContainer;
     @BindView(R.id.placeHolder)
@@ -62,6 +67,7 @@ public class GalleryActivity
     AdView mAdView;
 
     private ImagesPagerAdapter mAdapter;
+    private RecyclerAdapterImages mRecyclerAdapter;
 
     public static void startActivity(Context context) {
         Timber.d("startActivity");
@@ -107,6 +113,11 @@ public class GalleryActivity
         mAdapter = new ImagesPagerAdapter();
         mViewPager.setAdapter(mAdapter);
 
+        mRecyclerAdapter = new RecyclerAdapterImages();
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(
+                this, LinearLayoutManager.HORIZONTAL, false));
+        mRecyclerView.setAdapter(mRecyclerAdapter);
+
         //ads
         initAds();
 
@@ -128,6 +139,7 @@ public class GalleryActivity
 
         if (mPresenter.getData() != null) {
             mAdapter.setData(mPresenter.getData());
+            mRecyclerAdapter.setData(mPresenter.getData());
         } else {
             mPresenter.getDataFromDb();
             mPresenter.updateData();
@@ -282,6 +294,7 @@ public class GalleryActivity
     public void showData(List<VkImage> data) {
         Timber.d("showData: %s", data.size());
         mAdapter.setData(data);
+        mRecyclerAdapter.setData(data);
     }
 
     @Override
