@@ -182,6 +182,10 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
                     }
             );
 
+            headerViewHolder.levelUp.setOnClickListener(view -> {
+                showError(new IllegalStateException("not implemented"));
+            });
+
             headerViewHolder.inapp.setOnClickListener(view -> {
                 BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
                 subsDF.show(getSupportFragmentManager(), subsDF.getTag());

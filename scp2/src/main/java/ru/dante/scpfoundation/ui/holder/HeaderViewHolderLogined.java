@@ -17,6 +17,8 @@ public class HeaderViewHolderLogined {
 
     @BindView(R.id.level)
     public TextView level;
+    @BindView(R.id.levelUp)
+    public ImageView levelUp;
     @BindView(R.id.name)
     public TextView name;
     @BindView(R.id.avatar)
