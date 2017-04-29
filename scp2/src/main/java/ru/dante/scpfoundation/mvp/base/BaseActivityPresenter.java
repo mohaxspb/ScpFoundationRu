@@ -47,11 +47,12 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
             // User is signed out
             Timber.d("onAuthStateChanged: signed_out");
 
-            listenToArticlesInFirebase(false);
+            listenToChangesInFirebase(false);
         }
     };
 
     private DatabaseReference mFirebaseArticlesRef;
+    private DatabaseReference mFirebaseScoreRef;
 
     private ValueEventListener articlesChangeListener = new ValueEventListener() {
         @Override
@@ -66,6 +67,28 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
                         .saveArticlesFromFirebase(new ArrayList<>(map.values()))
                         .subscribe(
                                 result -> Timber.d("articles in realm updated!"),
+                                Timber::e
+                        );
+            }
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+            Timber.e(databaseError.toException());
+        }
+    };
+
+    private ValueEventListener scoreChangeListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            Timber.d("score in user changed!");
+            Integer score = dataSnapshot.getValue(Integer.class);
+
+            if (score != null) {
+                mDbProviderFactory.getDbProvider()
+                        .updateUserScore(score)
+                        .subscribe(
+                                result -> Timber.d("score in realm updated!"),
                                 Timber::e
                         );
             }
@@ -174,6 +197,7 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
 
     @Override
     public void logoutUser() {
+        Timber.d("logoutUser");
         mDbProviderFactory.getDbProvider().logout().subscribe(
                 result -> {
                     Timber.d("logout successful");
@@ -188,7 +212,7 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
         mAuth.addAuthStateListener(mAuthListener);
 
         if (mMyPreferencesManager.isHasSubscription()) {
-            listenToArticlesInFirebase(true);
+            listenToChangesInFirebase(true);
         }
     }
 
@@ -196,13 +220,12 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
     public void onActivityStopped() {
         mAuth.removeAuthStateListener(mAuthListener);
 
-        listenToArticlesInFirebase(false);
+        listenToChangesInFirebase(false);
     }
 
-    private void listenToArticlesInFirebase(boolean listen) {
-        Timber.d("listenToArticlesInFirebase: %s", listen);
+    private void listenToChangesInFirebase(boolean listen) {
+        Timber.d("listenToChangesInFirebase: %s", listen);
         if (listen) {
-//            if (!TextUtils.isEmpty(mMyPreferencesManager.getUserId())) {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             if (firebaseUser != null && !TextUtils.isEmpty(firebaseUser.getUid())) {
                 if (mFirebaseArticlesRef != null) {
@@ -210,19 +233,34 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
                 }
                 mFirebaseArticlesRef = FirebaseDatabase.getInstance().getReference()
                         .child(Constants.Firebase.Refs.USERS)
-//                        .child(mMyPreferencesManager.getUserId())
                         .child(firebaseUser.getUid())
                         .child(Constants.Firebase.Refs.ARTICLES);
 
                 mFirebaseArticlesRef.addValueEventListener(articlesChangeListener);
+
+                if (mFirebaseScoreRef != null) {
+                    mFirebaseScoreRef.removeEventListener(scoreChangeListener);
+                }
+                mFirebaseScoreRef = FirebaseDatabase.getInstance().getReference()
+                        .child(Constants.Firebase.Refs.USERS)
+                        .child(firebaseUser.getUid())
+                        .child(Constants.Firebase.Refs.SCORE);
+
+                mFirebaseScoreRef.addValueEventListener(scoreChangeListener);
             } else {
                 if (mFirebaseArticlesRef != null) {
                     mFirebaseArticlesRef.removeEventListener(articlesChangeListener);
+                }
+                if (mFirebaseScoreRef != null) {
+                    mFirebaseScoreRef.removeEventListener(scoreChangeListener);
                 }
             }
         } else {
             if (mFirebaseArticlesRef != null) {
                 mFirebaseArticlesRef.removeEventListener(articlesChangeListener);
+            }
+            if (mFirebaseScoreRef != null) {
+                mFirebaseScoreRef.removeEventListener(scoreChangeListener);
             }
         }
     }
@@ -230,7 +268,6 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
     @Override
     public void deleteAllData() {
         Timber.d("deleteAllData");
-
         mDbProviderFactory.getDbProvider().deleteAllArticlesText().subscribe(
                 aVoid -> {
                     logoutUser();
