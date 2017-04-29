@@ -18,18 +18,21 @@ import ru.dante.scpfoundation.db.model.User;
 public class FirebaseObjectUser {
 
     public String uid;
+
     public String fullName;
 
     public String avatar;
 
     public String email;
 
+    public int score;
+
     public List<SocialProviderModel> socialProviders;
 
     public Map<String, ArticleInFirebase> articles;
 
     public User toRealmUser() {
-        return new User(uid, fullName, avatar, email, new RealmList<SocialProviderModel>() {{
+        return new User(uid, fullName, avatar, email, score, new RealmList<SocialProviderModel>() {{
             addAll(socialProviders);
         }});
     }

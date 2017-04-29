@@ -80,6 +80,7 @@ public interface Constants {
             String SCORE_ACTION_OUR_APP = "score_action_our_app";
             String SCORE_ACTION_REWARDED_VIDEO = "score_action_rewarded_video";
             String SCORE_ACTION_NONE = "score_action_none";
+            String LEVELS_JSON = "levels_json";
         }
 
         interface Analitics {

@@ -28,12 +28,14 @@ public class User extends RealmObject {
             String fullName,
             String avatar,
             String email,
+            int score,
             RealmList<SocialProviderModel> socialProviders
     ) {
         this.uid = uid;
         this.fullName = fullName;
         this.avatar = avatar;
         this.email = email;
+        this.score = score;
         this.socialProviders = socialProviders;
     }
 

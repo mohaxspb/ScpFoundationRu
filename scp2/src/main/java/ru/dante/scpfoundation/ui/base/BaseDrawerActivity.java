@@ -1,9 +1,12 @@
 package ru.dante.scpfoundation.ui.base;
 
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.NavigationView;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -14,11 +17,17 @@ import android.view.View;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+import com.google.gson.Gson;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.R;
+import ru.dante.scpfoundation.api.model.remoteconfig.LevelsJson;
 import ru.dante.scpfoundation.db.model.User;
 import ru.dante.scpfoundation.mvp.contract.DrawerMvp;
 import ru.dante.scpfoundation.ui.activity.ArticleActivity;
@@ -38,6 +47,9 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
 
     private static final String STATE_CUR_DRAWER_ITEM_ID = "STATE_CUR_DRAWER_ITEM_ID";
     protected static final int SELECTED_DRAWER_ITEM_NONE = -1;
+
+    @Inject
+    Gson mGson;
 
     @BindView(R.id.root)
     protected DrawerLayout mDrawerLayout;
@@ -198,7 +210,70 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
             headerViewHolder.name.setText(user.fullName);
             Glide.with(this)
                     .load(user.avatar)
-                    .into(headerViewHolder.avatar);
+                    .asBitmap()
+                    .centerCrop()
+                    .into(new BitmapImageViewTarget(headerViewHolder.avatar) {
+                        @Override
+                        protected void setResource(Bitmap resource) {
+                            RoundedBitmapDrawable circularBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), resource);
+                            circularBitmapDrawable.setCircular(true);
+                            headerViewHolder.avatar.setImageDrawable(circularBitmapDrawable);
+                        }
+                    });
+
+//            headerViewHolder.circleProgress.setValue(50);
+            //score and level
+            String levelsJsonString = FirebaseRemoteConfig.getInstance().getString(Constants.Firebase.RemoteConfigKeys.LEVELS_JSON);
+            LevelsJson levelsJson = mGson.fromJson(levelsJsonString, LevelsJson.class);
+            if (levelsJson != null) {
+//                List<LevelsJson.Level> levelsReversed = new ArrayList<>(levelsJson.levels);
+//                Collections.reverse(levelsReversed);
+//                for (int i = 0; i < levelsReversed.size(); i++) {
+//                    LevelsJson.Level level = levelsReversed.get(i);
+//                    if (user.score < level.score) {
+//                        continue;
+//                    } else {
+//                        int levelNum = level.id;
+//                        int nextLevelScore = levelsJson.levels.indexOf(level) == levelsJson.levels.size() - 1 ? user.score : levelsReversed.get(i - 1).score;
+//                        String levelTitle = level.title;
+//
+//                        headerViewHolder.circleProgress.setMaxValue(nextLevelScore);
+//                        headerViewHolder.circleProgress.setValue(user.score);
+//                        headerViewHolder.level.setText(levelTitle);
+//                        headerViewHolder.levelNum.setText(String.valueOf(levelNum));
+//                    }
+//                }
+
+                for (int i = 0; i < levelsJson.levels.size(); i++) {
+                    LevelsJson.Level level = levelsJson.levels.get(i);
+                    if (user.score < level.score) {
+                        LevelsJson.Level prevLevel = levelsJson.levels.get(i - 1);
+
+                        int levelNum = prevLevel.id;
+                        String levelTitle = prevLevel.title;
+
+//                        int nextLevelScore = levelsJson.levels.indexOf(level) == levelsJson.levels.size() - 1 ? user.score : levelsJson.levels.get(i + 1).score;
+                        int nextLevelScore = level.score;
+
+                        int max = nextLevelScore - prevLevel.score;
+                        int value = user.score - prevLevel.score;
+                        headerViewHolder.circleProgress.setMaxValue(max);
+                        headerViewHolder.circleProgress.setValue(value);
+
+                        headerViewHolder.level.setText(levelTitle);
+                        headerViewHolder.levelNum.setText(String.valueOf(levelNum));
+
+                        break;
+                    } else if (i == levelsJson.levels.size() - 1) {
+                        //so max level reached
+                        headerViewHolder.circleProgress.setMaxValue(level.score);
+                        headerViewHolder.circleProgress.setValue(level.score);
+
+                        headerViewHolder.level.setText(level.title);
+                        headerViewHolder.levelNum.setText(String.valueOf(level.id));
+                    }
+                }
+            }
         } else {
             for (int i = 0; i < mNavigationView.getHeaderCount(); i++) {
                 mNavigationView.removeHeaderView(mNavigationView.getHeaderView(i));
