@@ -152,6 +152,8 @@
     <string name="authorize">Авторизоваться</string>
     <string name="settings_data_sync">Сохранение статей в облако</string>
     <string name="all_data_already_synced">Данные уже синхронизированы, дополнительных действий не требуется.</string>
+    <string name="profile_score_info">У вас %1$d очков. До следующего уровня %2$d очков</string>
+    <string name="profile_score_info_max_level">У вас %1$d очков. У вас максимальный уровень допуска!</string>
 
     <!--Shortcuts android 7.1-->
     <string name="new_short">Новые</string>

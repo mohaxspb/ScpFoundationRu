@@ -221,29 +221,10 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
                         }
                     });
 
-//            headerViewHolder.circleProgress.setValue(50);
             //score and level
             String levelsJsonString = FirebaseRemoteConfig.getInstance().getString(Constants.Firebase.RemoteConfigKeys.LEVELS_JSON);
             LevelsJson levelsJson = mGson.fromJson(levelsJsonString, LevelsJson.class);
             if (levelsJson != null) {
-//                List<LevelsJson.Level> levelsReversed = new ArrayList<>(levelsJson.levels);
-//                Collections.reverse(levelsReversed);
-//                for (int i = 0; i < levelsReversed.size(); i++) {
-//                    LevelsJson.Level level = levelsReversed.get(i);
-//                    if (user.score < level.score) {
-//                        continue;
-//                    } else {
-//                        int levelNum = level.id;
-//                        int nextLevelScore = levelsJson.levels.indexOf(level) == levelsJson.levels.size() - 1 ? user.score : levelsReversed.get(i - 1).score;
-//                        String levelTitle = level.title;
-//
-//                        headerViewHolder.circleProgress.setMaxValue(nextLevelScore);
-//                        headerViewHolder.circleProgress.setValue(user.score);
-//                        headerViewHolder.level.setText(levelTitle);
-//                        headerViewHolder.levelNum.setText(String.valueOf(levelNum));
-//                    }
-//                }
-
                 for (int i = 0; i < levelsJson.levels.size(); i++) {
                     LevelsJson.Level level = levelsJson.levels.get(i);
                     if (user.score < level.score) {
@@ -252,7 +233,6 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
                         int levelNum = prevLevel.id;
                         String levelTitle = prevLevel.title;
 
-//                        int nextLevelScore = levelsJson.levels.indexOf(level) == levelsJson.levels.size() - 1 ? user.score : levelsJson.levels.get(i + 1).score;
                         int nextLevelScore = level.score;
 
                         int max = nextLevelScore - prevLevel.score;
@@ -263,6 +243,8 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
                         headerViewHolder.level.setText(levelTitle);
                         headerViewHolder.levelNum.setText(String.valueOf(levelNum));
 
+                        headerViewHolder.avatar.setOnClickListener(view ->
+                                showMessageLong(getString(R.string.profile_score_info, user.score, max - value)));
                         break;
                     } else if (i == levelsJson.levels.size() - 1) {
                         //so max level reached
@@ -271,6 +253,9 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
 
                         headerViewHolder.level.setText(level.title);
                         headerViewHolder.levelNum.setText(String.valueOf(level.id));
+
+                        headerViewHolder.avatar.setOnClickListener(view ->
+                                showMessageLong(getString(R.string.profile_score_info_max_level, user.score)));
                     }
                 }
             }
