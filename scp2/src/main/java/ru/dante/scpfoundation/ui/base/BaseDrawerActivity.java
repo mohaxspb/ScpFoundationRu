@@ -368,7 +368,7 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
                             mMyPreferenceManager.setHasLevelUpInapp(true);
                             //TODO add 10 000 score
 //                            mPresenter.sco
-                            updateUser(mPresenter.getUser());
+//                            updateUser(mPresenter.getUser());
                         }
                     }
                 } catch (JSONException e) {

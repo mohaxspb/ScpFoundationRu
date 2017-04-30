@@ -226,11 +226,6 @@ public class MyPreferenceManager {
                 FirebaseRemoteConfig.getInstance().getLong(Constants.Firebase.RemoteConfigKeys.FREE_VK_GROUPS_JOIN_REWARD)));
     }
 
-    //user
-    public void setUserId(String uid) {
-        mPreferences.edit().putString(Keys.USER_UID, uid).apply();
-    }
-
     //subscription
     public void setHasSubscription(boolean hasSubscription) {
         mPreferences.edit().putBoolean(Keys.HAS_SUBSCRIPTION, hasSubscription).apply();

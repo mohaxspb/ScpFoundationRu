@@ -43,6 +43,7 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
         if (firebaseUser != null) {
             // User is signed in
             Timber.d("onAuthStateChanged:signed_in: %s", firebaseUser.getUid());
+            listenToChangesInFirebase(mMyPreferencesManager.isHasSubscription());
         } else {
             // User is signed out
             Timber.d("onAuthStateChanged: signed_out");
@@ -177,7 +178,6 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
                 .subscribe(
                         userInRealm -> {
                             Timber.d("user saved");
-                            mMyPreferencesManager.setUserId(userInRealm.uid);
                             getView().dismissProgressDialog();
                             getView().showMessage(MyApplication.getAppInstance()
                                     .getString(R.string.on_user_logined,
@@ -199,10 +199,7 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
     public void logoutUser() {
         Timber.d("logoutUser");
         mDbProviderFactory.getDbProvider().logout().subscribe(
-                result -> {
-                    Timber.d("logout successful");
-                    mMyPreferencesManager.setUserId("");
-                },
+                result -> Timber.d("logout successful"),
                 error -> Timber.e(error, "error while logout user")
         );
     }
@@ -211,9 +208,7 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
     public void onActivityStarted() {
         mAuth.addAuthStateListener(mAuthListener);
 
-        if (mMyPreferencesManager.isHasSubscription()) {
-            listenToChangesInFirebase(true);
-        }
+        listenToChangesInFirebase(mMyPreferencesManager.isHasSubscription());
     }
 
     @Override
