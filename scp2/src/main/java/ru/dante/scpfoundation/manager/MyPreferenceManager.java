@@ -53,6 +53,7 @@ public class MyPreferenceManager {
         String UNSYNCED_SCORE = "UNSYNCED_SCORE";
         String UNSYNCED_VK_GROUPS = "UNSYNCED_VK_GROUPS";
         String UNSYNCED_APPS = "UNSYNCED_APPS";
+        String HAS_LEVEL_UP_INAPP = "HAS_LEVEL_UP_INAPP";
     }
 
     private Gson mGson;
@@ -237,6 +238,16 @@ public class MyPreferenceManager {
 
     public boolean isHasSubscription() {
         return mPreferences.getBoolean(Keys.HAS_SUBSCRIPTION, false);
+////       FIX ME test
+//        return true;
+    }
+
+    public void setHasLevelUpInapp(boolean hasSubscription) {
+        mPreferences.edit().putBoolean(Keys.HAS_LEVEL_UP_INAPP, hasSubscription).apply();
+    }
+
+    public boolean isHasLevelUpInapp() {
+        return mPreferences.getBoolean(Keys.HAS_LEVEL_UP_INAPP, false);
 ////       FIX ME test
 //        return true;
     }

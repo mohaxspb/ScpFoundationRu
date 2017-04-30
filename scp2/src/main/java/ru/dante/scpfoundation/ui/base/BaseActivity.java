@@ -96,8 +96,6 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
     @Inject
     protected MyNotificationManager mMyNotificationManager;
 
-    protected FirebaseAnalytics mFirebaseAnalytics;
-
     //inapps and ads
     private IInAppBillingService mService;
     private List<Item> mOwnedMarketItems = new ArrayList<>();
@@ -138,8 +136,6 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
 
         //ads
         initAds();
-        //analitics
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         //remote config
         initAndUpdateRemoteConfig();
 
@@ -201,7 +197,7 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
 
                 Bundle bundle = new Bundle();
                 bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.EventType.REWARD_GAINED);
-                mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+                FirebaseAnalytics.getInstance(BaseActivity.this).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
 
                 @DataSyncActions.ScoreAction
                 String action = DataSyncActions.ScoreAction.REWARDED_VIDEO;
@@ -224,7 +220,7 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
         //analitics
         Bundle bundle = new Bundle();
         bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.EventType.REWARD_REQUESTED);
-        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+        FirebaseAnalytics.getInstance(BaseActivity.this).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
 
         if (mMyPreferenceManager.isRewardedDescriptionShown()) {
             showRewardedVideo();
@@ -312,7 +308,7 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
 
                     Bundle bundle = new Bundle();
                     bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.SNACK_BAR);
-                    mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+                    FirebaseAnalytics.getInstance(BaseActivity.this).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
                 });
                 break;
             case ENABLE_FONTS:
@@ -335,7 +331,7 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
 
                     Bundle bundle = new Bundle();
                     bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.AUTO_SYNC_SNACKBAR);
-                    mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+                    FirebaseAnalytics.getInstance(BaseActivity.this).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
                 });
                 break;
             case SYNC_NEED_AUTH:
@@ -558,7 +554,7 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
 
                 Bundle bundle = new Bundle();
                 bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.MENU);
-                mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+                FirebaseAnalytics.getInstance(BaseActivity.this).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
                 return true;
             case R.id.night_mode_item:
                 mMyPreferenceManager.setIsNightMode(!mMyPreferenceManager.isNightMode());
