@@ -25,6 +25,7 @@ import ru.dante.scpfoundation.ui.adapter.RecyclerAdapterListArticles;
 import ru.dante.scpfoundation.ui.adapter.RecyclerAdapterSubscriptions;
 import ru.dante.scpfoundation.ui.adapter.SettingsSpinnerAdapter;
 import ru.dante.scpfoundation.ui.dialog.FreeAdsDisablingDialogFragment;
+import ru.dante.scpfoundation.ui.dialog.LeaderboardDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.NewVersionDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
@@ -111,6 +112,8 @@ public interface AppComponent {
     void inject(SubscriptionsFragmentDialog dialogFragment);
 
     void inject(FreeAdsDisablingDialogFragment dialogFragment);
+
+    void inject(LeaderboardDialogFragment dialogFragment);
 
     void inject(SetttingsBottomSheetDialogFragment bottomSheetDialogFragment);
 

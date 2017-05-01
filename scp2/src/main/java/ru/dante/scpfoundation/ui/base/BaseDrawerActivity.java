@@ -11,6 +11,7 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v4.view.GravityCompat;
@@ -44,6 +45,7 @@ import ru.dante.scpfoundation.db.model.User;
 import ru.dante.scpfoundation.monetization.util.InappHelper;
 import ru.dante.scpfoundation.mvp.contract.DrawerMvp;
 import ru.dante.scpfoundation.ui.activity.ArticleActivity;
+import ru.dante.scpfoundation.ui.dialog.LeaderboardDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
 import ru.dante.scpfoundation.ui.holder.HeaderViewHolderLogined;
 import ru.dante.scpfoundation.ui.holder.HeaderViewHolderUnlogined;
@@ -297,8 +299,11 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
                         headerViewHolder.level.setText(levelTitle);
                         headerViewHolder.levelNum.setText(String.valueOf(levelNum));
 
-                        headerViewHolder.avatar.setOnClickListener(view ->
-                                showMessageLong(getString(R.string.profile_score_info, user.score, max - value)));
+                        headerViewHolder.avatar.setOnClickListener(view -> {
+                            showMessageLong(getString(R.string.profile_score_info, user.score, max - value));
+                            DialogFragment dialogFragment = LeaderboardDialogFragment.newInstance();
+                            dialogFragment.show(getSupportFragmentManager(), LeaderboardDialogFragment.TAG);
+                        });
                         break;
                     } else if (i == levelsJson.levels.size() - 1) {
                         //so max level reached
@@ -308,8 +313,11 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
                         headerViewHolder.level.setText(level.title);
                         headerViewHolder.levelNum.setText(String.valueOf(level.id));
 
-                        headerViewHolder.avatar.setOnClickListener(view ->
-                                showMessageLong(getString(R.string.profile_score_info_max_level, user.score)));
+                        headerViewHolder.avatar.setOnClickListener(view -> {
+                            showMessageLong(getString(R.string.profile_score_info_max_level, user.score));
+                            DialogFragment dialogFragment = LeaderboardDialogFragment.newInstance();
+                            dialogFragment.show(getSupportFragmentManager(), LeaderboardDialogFragment.TAG);
+                        });
                     }
                 }
             } else {
