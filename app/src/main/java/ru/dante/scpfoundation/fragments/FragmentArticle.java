@@ -37,6 +37,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import ru.dante.scpfoundation.Article;
 import ru.dante.scpfoundation.R;
@@ -61,15 +62,15 @@ public class FragmentArticle extends Fragment implements DownloadArticle.SetArti
     private static final String KEY_TABS_TEXT = "KEY_TABS_TEXT";
     private static final String KEY_CURRENT_SELECTED_TAB = "KEY_CURRENT_SELECTED_TAB";
 
-    RecyclerView recyclerView;
-    String url;
-    String artTitle;
-    Article article;
+    private RecyclerView recyclerView;
+    private String url;
+    private String artTitle;
+    private Article article;
     public String LOG = FragmentArticle.class.getSimpleName();
     private ImageView loadingIndicator;
     private boolean hasTabs = false;
-    ArrayList<String> tabsTitles = new ArrayList<>();
-    ArrayList<String> tabsText = new ArrayList<>();
+    List<String> tabsTitles = new ArrayList<>();
+    List<String> tabsText = new ArrayList<>();
     int currentSelectedTab = 0;
     TabLayout tabLayout;
     Context ctx;
@@ -92,8 +93,8 @@ public class FragmentArticle extends Fragment implements DownloadArticle.SetArti
         outState.putString("title", artTitle);
         outState.putParcelable(Article.KEY_ARTICLE, article);
         outState.putBoolean(KEY_HAS_TABS, hasTabs);
-        outState.putStringArrayList(KEY_TABS_TITLE, tabsTitles);
-        outState.putStringArrayList(KEY_TABS_TEXT, tabsText);
+        outState.putStringArrayList(KEY_TABS_TITLE, (ArrayList<String>) tabsTitles);
+        outState.putStringArrayList(KEY_TABS_TEXT, (ArrayList<String>) tabsText);
         outState.putInt(KEY_CURRENT_SELECTED_TAB, currentSelectedTab);
     }
 

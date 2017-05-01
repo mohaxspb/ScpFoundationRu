@@ -16,6 +16,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:orientation="horizontal"
+        android:paddingBottom="@dimen/defaultMarginSmall"
         tools:ignore="UseCompoundDrawables"
         >
 

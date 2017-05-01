@@ -223,7 +223,7 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
             );
 
             headerViewHolder.levelUp.setOnClickListener(view -> {
-                showError(new IllegalStateException("not implemented"));
+//                showError(new IllegalStateException("not implemented"));
                 InappHelper.getInappsListToBuyObserveble(view.getContext(), getIInAppBillingService()).subscribe(
                         items -> new MaterialDialog.Builder(view.getContext())
                                 .title(R.string.dialog_level_up_title)
@@ -371,7 +371,7 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
                     } else {
                         if (sku.equals(BuildConfig.INAPP_SKUS[0])) {
                             //levelUp 5
-                            mMyPreferenceManager.setHasLevelUpInapp(true);
+//                            mMyPreferenceManager.setHasLevelUpInapp(true);
                             //add 10 000 score
                             mPresenter.updateUserScoreForInapp(sku);
                         }

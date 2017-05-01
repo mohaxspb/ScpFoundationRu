@@ -24,6 +24,11 @@ import timber.log.Timber;
  */
 public class MyPreferenceManager {
 
+    /**
+     * check if user joined app vk group each 2 hours
+     */
+    private static final long PERIOD_BETWEEN_APP_VK_GROUP_JOINED_CHECK_IN_MILLIS = 1000 * 60 * 60 * 2;
+
     public interface Keys {
         String NIGHT_MODE = "NIGHT_MODE";
         String TEXT_SCALE_UI = "TEXT_SCALE_UI";
@@ -45,7 +50,7 @@ public class MyPreferenceManager {
         String DESIGN_FONT_PATH = "DESIGN_FONT_PATH";
         String PACKAGE_INSTALLED = "PACKAGE_INSTALLED";
         String VK_GROUP_JOINED = "VK_GROUP_JOINED";
-        String USER_UID = "USER_UID";
+//        String USER_UID = "USER_UID";
         String HAS_SUBSCRIPTION = "HAS_SUBSCRIPTION";
         String APP_IS_CRACKED = "APP_IS_CRACKED";
         String AUTO_SYNC_ATTEMPTS = "AUTO_SYNC_ATTEMPTS";
@@ -53,7 +58,9 @@ public class MyPreferenceManager {
         String UNSYNCED_SCORE = "UNSYNCED_SCORE";
         String UNSYNCED_VK_GROUPS = "UNSYNCED_VK_GROUPS";
         String UNSYNCED_APPS = "UNSYNCED_APPS";
-        String HAS_LEVEL_UP_INAPP = "HAS_LEVEL_UP_INAPP";
+//        String HAS_LEVEL_UP_INAPP = "HAS_LEVEL_UP_INAPP";
+        String APP_VK_GROUP_JOINED_LAST_TIME_CHECKED = "APP_VK_GROUP_JOINED_LAST_TIME_CHECKED";
+        String APP_VK_GROUP_JOINED = "APP_VK_GROUP_JOINED";
     }
 
     private Gson mGson;
@@ -219,6 +226,17 @@ public class MyPreferenceManager {
 
     public void setVkGroupJoined(String id) {
         mPreferences.edit().putBoolean(Keys.VK_GROUP_JOINED + id, true).apply();
+        if (id.equals(FirebaseRemoteConfig.getInstance().getString(Constants.Firebase.RemoteConfigKeys.VK_APP_GROUP_ID))) {
+            setAppVkGroupJoined(true);
+        }
+    }
+
+    public boolean isAppVkGroupJoined() {
+        return mPreferences.getBoolean(Keys.APP_VK_GROUP_JOINED, false);
+    }
+
+    public void setAppVkGroupJoined(boolean joined) {
+        mPreferences.edit().putBoolean(Keys.APP_VK_GROUP_JOINED, joined).apply();
     }
 
     public void applyAwardVkGroupJoined() {
@@ -237,16 +255,6 @@ public class MyPreferenceManager {
 //        return true;
     }
 
-    public void setHasLevelUpInapp(boolean hasSubscription) {
-        mPreferences.edit().putBoolean(Keys.HAS_LEVEL_UP_INAPP, hasSubscription).apply();
-    }
-
-    public boolean isHasLevelUpInapp() {
-        return mPreferences.getBoolean(Keys.HAS_LEVEL_UP_INAPP, false);
-////       FIX ME test
-//        return true;
-    }
-
     //auto sync
     public void setNumOfAttemptsToAutoSync(long numOfAttemptsToAutoSync) {
         mPreferences.edit().putLong(Keys.AUTO_SYNC_ATTEMPTS, numOfAttemptsToAutoSync).apply();
@@ -254,11 +262,6 @@ public class MyPreferenceManager {
 
     public long getNumOfAttemptsToAutoSync() {
         return mPreferences.getLong(Keys.AUTO_SYNC_ATTEMPTS, 0);
-    }
-
-    public boolean isVkGroupAppJoined() {
-        String appVkGroupId = FirebaseRemoteConfig.getInstance().getString(Constants.Firebase.RemoteConfigKeys.VK_APP_GROUP_ID);
-        return isVkGroupJoined(appVkGroupId);
     }
 
     public void addUnsyncedScore(int scoreToAdd) {
@@ -326,6 +329,22 @@ public class MyPreferenceManager {
 
     public int getNumOfUnsyncedScore() {
         return mPreferences.getInt(Keys.UNSYNCED_SCORE, 0);
+    }
+
+    public void setLastTimeAppVkGroupJoinedChecked(long timeInMillis) {
+        mPreferences.edit().putLong(Keys.APP_VK_GROUP_JOINED_LAST_TIME_CHECKED, timeInMillis).apply();
+    }
+
+    private long getLastTimeAppVkGroupJoinedChecked() {
+        long timeFromLastShow = mPreferences.getLong(Keys.APP_VK_GROUP_JOINED_LAST_TIME_CHECKED, 0);
+        if (timeFromLastShow == 0) {
+            setLastTimeAdsShows(System.currentTimeMillis());
+        }
+        return timeFromLastShow;
+    }
+
+    public boolean isTimeToCheckAppVkGroupJoined() {
+        return System.currentTimeMillis() - getLastTimeAppVkGroupJoinedChecked() >= PERIOD_BETWEEN_APP_VK_GROUP_JOINED_CHECK_IN_MILLIS;
     }
 
     // secure

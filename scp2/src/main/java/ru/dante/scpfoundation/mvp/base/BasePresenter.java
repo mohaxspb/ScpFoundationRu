@@ -5,6 +5,7 @@ import android.support.v4.util.Pair;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.hannesdorfmann.mosby.mvp.MvpNullObjectBasePresenter;
+import com.vk.sdk.VKSdk;
 
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
@@ -428,6 +429,20 @@ public abstract class BasePresenter<V extends BaseMvp.View>
                 );
     }
 
+    @Override
+    public void checkIfUserJoinedAppVkGroup() {
+        Timber.d("checkIfUserJoinedAppVkGroup");
+        if (!VKSdk.isLoggedIn() || !mMyPreferencesManager.isTimeToCheckAppVkGroupJoined()) {
+            return;
+        }
+        mMyPreferencesManager.setLastTimeAppVkGroupJoinedChecked(System.currentTimeMillis());
+        String appVkGroupId = FirebaseRemoteConfig.getInstance().getString(Constants.Firebase.RemoteConfigKeys.VK_APP_GROUP_ID);
+        mApiClient.isUserJoinedVkGroup(appVkGroupId).subscribe(
+                isJoinedAppVkGroup -> mMyPreferencesManager.setAppVkGroupJoined(isJoinedAppVkGroup),
+                Timber::e
+        );
+    }
+
     public static int getTotalScoreToAddFromAction(@ScoreAction String action, MyPreferenceManager mMyPreferencesManager) {
         long score;
 
@@ -464,7 +479,7 @@ public abstract class BasePresenter<V extends BaseMvp.View>
         Timber.d("subscriptionModificator/vkGroupAppModificator: %s/%s", subscriptionModificator, vkGroupAppModificator);
 
         boolean hasSubscriptionModificator = mMyPreferencesManager.isHasSubscription();
-        boolean hasVkGroupAppModificator = mMyPreferencesManager.isVkGroupAppJoined();
+        boolean hasVkGroupAppModificator = mMyPreferencesManager.isAppVkGroupJoined();
         Timber.d("hasSubscriptionModificator/hasVkGroupAppModificator: %s/%s", hasSubscriptionModificator, hasVkGroupAppModificator);
 
         subscriptionModificator = hasSubscriptionModificator ? subscriptionModificator : 1;

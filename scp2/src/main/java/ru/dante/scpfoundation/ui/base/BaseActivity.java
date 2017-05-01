@@ -422,6 +422,8 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
                 },
                 e -> Timber.e(e, "error while getting owned items")
         );
+        //also check if user joined app vk group
+        mPresenter.checkIfUserJoinedAppVkGroup();
     }
 
     @Override
