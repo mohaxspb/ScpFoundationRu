@@ -388,6 +388,46 @@ public abstract class BasePresenter<V extends BaseMvp.View>
         );
     }
 
+    @Override
+    public void updateUserScoreForInapp(String sku) {
+        Timber.d("updateUserScore: %s", sku);
+
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            Timber.d("user unlogined, do nothing");
+            return;
+        }
+
+        //increment scoreInFirebase
+        int totalScoreToAdd;
+
+        switch (sku) {
+            case "level_up_to_5":
+                totalScoreToAdd = 10000;
+                break;
+            default:
+                throw new IllegalArgumentException("unexpected sku");
+        }
+
+        mApiClient
+                .isUserGainedSkoreFromInapp(sku)
+                .flatMap(isUserGainedScoreFromInapp -> isUserGainedScoreFromInapp ?
+                        Observable.empty() :
+                        mApiClient
+                                .incrementScoreInFirebaseObservable(totalScoreToAdd)
+                                .flatMap(newTotalScore -> mApiClient.addRewardedInapp(sku).flatMap(aVoid -> mDbProviderFactory.getDbProvider().updateUserScore(newTotalScore)))
+                )
+                //TODO need to realiz it as we realize vk groups and apps - write inapps to json and check if we need to add score for it
+                .subscribe(
+                        newTotalScore -> Timber.d("new total score is: %s", newTotalScore),
+                        e -> {
+                            Timber.e(e, "error while increment userCore from inapp");
+                            getView().showError(e);
+                            //increment unsynced score to sync it later
+                            mMyPreferencesManager.addUnsyncedScore(totalScoreToAdd);
+                        }
+                );
+    }
+
     public static int getTotalScoreToAddFromAction(@ScoreAction String action, MyPreferenceManager mMyPreferencesManager) {
         long score;
 

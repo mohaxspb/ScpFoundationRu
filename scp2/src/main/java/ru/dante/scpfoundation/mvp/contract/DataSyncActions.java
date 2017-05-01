@@ -33,4 +33,6 @@ public interface DataSyncActions {
     void updateUserScoreForVkGroup(String id);
 
     void updateUserScoreForScoreAction(@ScoreAction String action);
+
+    void updateUserScoreForInapp(String sku);
 }
