@@ -261,18 +261,20 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
     }
 
     @Override
-    public void deleteAllData() {
-        Timber.d("deleteAllData");
-        mDbProviderFactory.getDbProvider().deleteAllArticlesText().subscribe(
-                aVoid -> {
-                    logoutUser();
-                    getView().dismissProgressDialog();
-                },
-                e -> {
-                    Timber.e(e);
-                    logoutUser();
-                    getView().dismissProgressDialog();
-                }
-        );
+    public void reactOnCrackEvent() {
+        Timber.d("reactOnCrackEvent");
+        //TODO
+//        mDbProviderFactory.getDbProvider().deleteAllArticlesText().subscribe(
+//                aVoid -> {
+//                    logoutUser();
+//                    getView().dismissProgressDialog();
+//                },
+//                e -> {
+//                    Timber.e(e);
+//                    logoutUser();
+//                    getView().dismissProgressDialog();
+//                }
+//        );
+
     }
 }

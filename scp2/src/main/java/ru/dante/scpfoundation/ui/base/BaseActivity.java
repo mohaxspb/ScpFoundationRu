@@ -399,6 +399,7 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
 
     @Override
     public void updateOwnedMarketItems() {
+        Timber.d("updateOwnedMarketItems");
         InappHelper.getOwnedInappsObserveble(this, mService).subscribe(
                 items -> {
                     Timber.d("market items: %s", items);
@@ -413,7 +414,7 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
                             mMyPreferenceManager.setLastTimeAdsShows(0);
 
                             showMessage(R.string.app_cracked);
-                            mPresenter.deleteAllData();
+                            mPresenter.reactOnCrackEvent();
                         }
                     } else {
                         mMyPreferenceManager.setHasSubscription(false);

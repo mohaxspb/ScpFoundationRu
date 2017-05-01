@@ -315,8 +315,14 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
             } else {
                 Timber.e("levelsJson is null");
             }
-            if(mMyPreferenceManager.isHasLevelUpInapp()){
+            if (mMyPreferenceManager.isAppCracked()) {
+                headerViewHolder.circleProgress.setMaxValue(42);
+                headerViewHolder.circleProgress.setValue(0);
 
+                headerViewHolder.level.setText(R.string.cracked_level_title);
+                headerViewHolder.levelNum.setText(String.valueOf(-1));
+
+                headerViewHolder.avatar.setOnClickListener(view -> showMessage(R.string.cracked_avatar_message));
             }
         } else {
             for (int i = 0; i < mNavigationView.getHeaderCount(); i++) {
@@ -366,9 +372,8 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
                         if (sku.equals(BuildConfig.INAPP_SKUS[0])) {
                             //levelUp 5
                             mMyPreferenceManager.setHasLevelUpInapp(true);
-                            //TODO add 10 000 score
-//                            mPresenter.sco
-//                            updateUser(mPresenter.getUser());
+                            //add 10 000 score
+                            mPresenter.updateUserScoreForInapp(sku);
                         }
                     }
                 } catch (JSONException e) {

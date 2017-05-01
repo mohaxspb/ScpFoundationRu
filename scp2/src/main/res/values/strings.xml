@@ -139,7 +139,7 @@
     <string name="login_in_progress_custom_token">Запрашиваю пароль на сервере Фонда</string>
     <string name="error_while_sync">Не удалось сохранить статью в облаке</string>
     <string name="sync_fav_success">Статья синхронизирована</string>
-    <string name="app_cracked">Зарегистрирована попытка взлома базы данных Фонда. Данные будут удалены.</string>
+    <string name="app_cracked">Зарегистрирована попытка взлома базы данных Фонда. Карантинный режим активирован.</string>
     <string name="deleting_data">Удаляю секретные данные…</string>
     <string name="auto_sync_disabled">Автоматическая синхронизация отключена</string>
     <string name="turn_on">Включить</string>
@@ -161,4 +161,6 @@
     <string name="dialog_level_up_title">Получение 5 уровня допуска</string>
     <string name="dialog_level_up_content">Внимание персонал! Уровень допуска это чисто декоративная надпись. Она не позволит вам видеть удалённые данные и получить доступ к каким-то скрытым материалам. Вы получите лишь 2 вещи: надпись \"5 уровень допуска\" и моральное удовлетворение от поддержки разработчиков, которые трудятся для улучшения приложения)</string>
     <string name="dialog_level_up_ok_text">Я понял!</string>
+    <string name="cracked_level_title">Класс D</string>
+    <string name="cracked_avatar_message">Попытка взлома Фонда зарегистрирована, протокол ██████ приведён в действие</string>
 </resources>
