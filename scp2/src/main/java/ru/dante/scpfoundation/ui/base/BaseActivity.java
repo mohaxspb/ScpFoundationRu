@@ -420,7 +420,7 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
                         mMyPreferenceManager.setHasSubscription(false);
                     }
                 },
-                error -> Timber.e(error, "error while getting owned items")
+                e -> Timber.e(e, "error while getting owned items")
         );
     }
 

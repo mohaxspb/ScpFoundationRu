@@ -416,7 +416,7 @@ public abstract class BasePresenter<V extends BaseMvp.View>
                                 .incrementScoreInFirebaseObservable(totalScoreToAdd)
                                 .flatMap(newTotalScore -> mApiClient.addRewardedInapp(sku).flatMap(aVoid -> mDbProviderFactory.getDbProvider().updateUserScore(newTotalScore)))
                 )
-                //TODO need to realiz it as we realize vk groups and apps - write inapps to json and check if we need to add score for it
+                //TODO need to realize it as we realize vk groups and apps - write inapps to json and check if we need to add score for it
                 .subscribe(
                         newTotalScore -> Timber.d("new total score is: %s", newTotalScore),
                         e -> {

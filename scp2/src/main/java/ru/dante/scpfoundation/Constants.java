@@ -47,6 +47,7 @@ public interface Constants {
             String VK_GROUPS = "vkGroups";
             String APPS = "apps";
             String INAPP = "inapp";
+            String CRACKED = "cracked";
         }
 
         int REQUEST_INVITE = 1024;

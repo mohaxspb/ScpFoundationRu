@@ -1487,4 +1487,27 @@ public class ApiClient {
             });
         });
     }
+
+    public Observable<Void> setCrackedInFirebase() {
+        return Observable.create(subscriber -> {
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (firebaseUser == null) {
+                subscriber.onError(new IllegalArgumentException("firebase user is null"));
+                return;
+            }
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference reference = database.getReference()
+                    .child(Constants.Firebase.Refs.USERS)
+                    .child(firebaseUser.getUid())
+                    .child(Constants.Firebase.Refs.CRACKED);
+            reference.setValue(true, (databaseError, databaseReference) -> {
+                if (databaseError == null) {
+                    subscriber.onNext(null);
+                    subscriber.onCompleted();
+                } else {
+                    subscriber.onError(databaseError.toException());
+                }
+            });
+        });
+    }
 }

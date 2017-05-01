@@ -263,18 +263,19 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
     @Override
     public void reactOnCrackEvent() {
         Timber.d("reactOnCrackEvent");
-        //TODO
-//        mDbProviderFactory.getDbProvider().deleteAllArticlesText().subscribe(
-//                aVoid -> {
-//                    logoutUser();
-//                    getView().dismissProgressDialog();
-//                },
-//                e -> {
-//                    Timber.e(e);
-//                    logoutUser();
-//                    getView().dismissProgressDialog();
-//                }
-//        );
+        mApiClient.setCrackedInFirebase()
+                .onErrorResumeNext(e -> Observable.just(null))
+                .flatMap(aVoid -> mDbProviderFactory.getDbProvider().updateUserScore(0))
+                .subscribe(
+                        newTotalScore -> {
+                            Timber.d("reactOnCrackEvent onNext");
+                            getView().dismissProgressDialog();
+                        },
+                        e -> {
+                            Timber.e(e, "reactOnCrackEvent onError");
+                            getView().dismissProgressDialog();
+                        }
+                );
 
     }
 }
