@@ -1,15 +1,11 @@
 package ru.dante.scpfoundation.ui.activity;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -43,8 +39,6 @@ import ru.dante.scpfoundation.util.IntentUtils;
 import ru.dante.scpfoundation.util.StorageUtils;
 import ru.dante.scpfoundation.util.SystemUtils;
 import timber.log.Timber;
-
-import static ru.dante.scpfoundation.util.IntentUtils.MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE;
 
 public class GalleryActivity
         extends BaseDrawerActivity<GalleryScreenMvp.View, GalleryScreenMvp.Presenter>
@@ -270,20 +264,12 @@ public class GalleryActivity
                 Bitmap image = mAdapter.getImage();
                 if (image == null)
                     return true;
-                int permissionCheck = ContextCompat.checkSelfPermission(
-                        this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-                if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
-                    if (StorageUtils.saveImageToGallery(this, image))
-                        Toast.makeText(GalleryActivity.this,
-                                R.string.image_saved, Toast.LENGTH_SHORT).show();
-                    else
-                        Toast.makeText(GalleryActivity.this,
-                                R.string.image_saving_error, Toast.LENGTH_SHORT).show();
-                } else {
-                    ActivityCompat.requestPermissions(
-                            this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                            MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
-                }
+                if (StorageUtils.saveImageToGallery(this, image))
+                    Toast.makeText(GalleryActivity.this,
+                            R.string.image_saved, Toast.LENGTH_SHORT).show();
+                else
+                    Toast.makeText(GalleryActivity.this,
+                            R.string.image_saving_error, Toast.LENGTH_SHORT).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
