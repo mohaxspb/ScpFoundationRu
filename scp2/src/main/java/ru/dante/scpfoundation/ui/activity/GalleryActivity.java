@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -50,6 +51,8 @@ public class GalleryActivity
     ViewPager mViewPager;
     @BindView(R.id.recyclerView)
     RecyclerView mRecyclerView;
+    @BindView(R.id.bottomSheet)
+    View mBottomSheet;
     @BindView(R.id.progressCenter)
     View mProgressContainer;
     @BindView(R.id.placeHolder)
@@ -62,6 +65,7 @@ public class GalleryActivity
 
     private ImagesPagerAdapter mAdapter;
     private RecyclerAdapterImages mRecyclerAdapter;
+    private BottomSheetBehavior mBottomSheetBehavior;
 
     public static void startActivity(Context context) {
         Timber.d("startActivity");
@@ -121,6 +125,8 @@ public class GalleryActivity
                 }
             }
         });
+
+        mBottomSheetBehavior = BottomSheetBehavior.from(mBottomSheet);
 
         mRecyclerAdapter = new RecyclerAdapterImages();
         mRecyclerView.setLayoutManager(new LinearLayoutManager(
