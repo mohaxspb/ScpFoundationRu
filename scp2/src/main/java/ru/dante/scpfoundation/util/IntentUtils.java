@@ -69,13 +69,15 @@ public class IntentUtils {
 
             String pathofBmp = MediaStore.Images.Media.insertImage(activity.getContentResolver(), bitmap, "Вжух и " + text, null);
             Uri bmpUri = Uri.parse(pathofBmp);
+            String fullMessage = MyApplication.getAppInstance().getString(
+                    R.string.share_link_text,
+                    text,
+                    MyApplication.getAppInstance().getPackageName()
+            );
             final Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
             shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             shareIntent.putExtra(Intent.EXTRA_STREAM, bmpUri);
-            String appPackageName = activity.getPackageName();
-            shareIntent.putExtra(Intent.EXTRA_TEXT,
-                    "Отправлено из приложения \"Вжух!\"\n"
-                            + "https://play.google.com/store/apps/details?id=" + appPackageName);
+            shareIntent.putExtra(Intent.EXTRA_TEXT, fullMessage);
             shareIntent.setType("image/png");
 
             activity.startActivity(shareIntent);
@@ -90,13 +92,15 @@ public class IntentUtils {
         if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
             String pathofBmp = MediaStore.Images.Media.insertImage(activity.getContentResolver(), bitmap, "Вжух и " + text, null);
             Uri bmpUri = Uri.parse(pathofBmp);
+            String fullMessage = MyApplication.getAppInstance().getString(
+                    R.string.share_link_text,
+                    text,
+                    MyApplication.getAppInstance().getPackageName()
+            );
             final Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
             shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             shareIntent.putExtra(Intent.EXTRA_STREAM, bmpUri);
-            String appPackageName = activity.getPackageName();
-            shareIntent.putExtra(Intent.EXTRA_TEXT,
-                    "Отправлено из приложения \"Вжух!\"\n"
-                            + "https://play.google.com/store/apps/details?id=" + appPackageName);
+            shareIntent.putExtra(Intent.EXTRA_TEXT, fullMessage);
             shareIntent.setType("image/png");
 
             activity.startActivity(shareIntent);

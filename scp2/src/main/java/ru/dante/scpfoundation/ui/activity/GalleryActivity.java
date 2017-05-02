@@ -15,6 +15,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.Target;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
@@ -263,19 +266,33 @@ public class GalleryActivity
                 if (mAdapter.getData().isEmpty()) {
                     return true;
                 }
-                List<RealmString> allUrls = mAdapter.getData().get(mViewPager.getCurrentItem()).allUrls;
-                IntentUtils.shareUrl(allUrls.get(allUrls.size() - 1).getVal());
+                mAdapter.downloadImage(GalleryActivity.this, mViewPager.getCurrentItem(),
+                new SimpleTarget<Bitmap>(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) {
+                    @Override
+                    public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
+                        List<RealmString> allUrls =
+                                mAdapter.getData().get(mViewPager.getCurrentItem()).allUrls;
+                        IntentUtils.shareBitmapWithText(
+                                GalleryActivity.this, allUrls.get(allUrls.size() - 1).getVal(), resource);
+                    }
+                });
                 return true;
             case R.id.save_image:
-                Bitmap image = mAdapter.getImage();
-                if (image == null)
+                if (mAdapter.getData().isEmpty()) {
                     return true;
-                if (StorageUtils.saveImageToGallery(this, image))
-                    Toast.makeText(GalleryActivity.this,
-                            R.string.image_saved, Toast.LENGTH_SHORT).show();
-                else
-                    Toast.makeText(GalleryActivity.this,
-                            R.string.image_saving_error, Toast.LENGTH_SHORT).show();
+                }
+                mAdapter.downloadImage(GalleryActivity.this, mViewPager.getCurrentItem(),
+                        new SimpleTarget<Bitmap>(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) {
+                            @Override
+                            public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
+                                if (StorageUtils.saveImageToGallery(GalleryActivity.this, resource))
+                                    Toast.makeText(GalleryActivity.this,
+                                            R.string.image_saved, Toast.LENGTH_SHORT).show();
+                                else
+                                    Toast.makeText(GalleryActivity.this,
+                                            R.string.image_saving_error, Toast.LENGTH_SHORT).show();
+                            }
+                        });
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

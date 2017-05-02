@@ -152,6 +152,7 @@
     <string name="authorize">Авторизоваться</string>
     <string name="settings_data_sync">Сохранение статей в облако</string>
     <string name="all_data_already_synced">Данные уже синхронизированы, дополнительных действий не требуется.</string>
+    <string name="image_loading">Изображение загружается…</string>
     <string name="image_saved">Изображение сохранено</string>
     <string name="image_saving_error">Произошла ошибка при сохранении изображения</string>
 
