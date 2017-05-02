@@ -4,6 +4,7 @@ package ru.dante.scpfoundation.ui.adapter;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.v4.view.PagerAdapter;
 import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
@@ -12,10 +13,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.Target;
 
 import java.util.ArrayList;
@@ -42,11 +45,21 @@ public class ImagesPagerAdapter extends PagerAdapter {
         return mData;
     }
 
+    public void downloadImage(Context context, int position, SimpleTarget<Bitmap> target) {
+        Toast.makeText(context, R.string.image_loading, Toast.LENGTH_SHORT).show();
+        String url = mData.get(position).allUrls.get(mData.get(position).allUrls.size() - 1).getVal();
+        Glide.with(context)
+                .load(url)
+                .asBitmap()
+                .into(target);
+    }
+
     public void setData(List<VkImage> urls) {
         mData = urls;
         notifyDataSetChanged();
     }
 
+    private ImageView mImageView;
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
         Context context = container.getContext();
@@ -56,7 +69,7 @@ public class ImagesPagerAdapter extends PagerAdapter {
 
         //image
         View itemView;
-        ImageView imageView;
+
         ProgressBar progressBar;
         CardView cardView;
         TextView description;
@@ -65,7 +78,7 @@ public class ImagesPagerAdapter extends PagerAdapter {
         if (position == 0) {
             itemView.setAlpha(1f);
         }
-        imageView = ButterKnife.findById(itemView, R.id.image);
+        mImageView = ButterKnife.findById(itemView, R.id.image);
         progressBar = ButterKnife.findById(itemView, R.id.progressCenter);
         progressBar.setVisibility(View.VISIBLE);
         progressBar.setAlpha(1f);
@@ -75,7 +88,7 @@ public class ImagesPagerAdapter extends PagerAdapter {
 
         description.setText(mData.get(position).description);
 
-        PhotoViewAttacher attacher = new PhotoViewAttacher(imageView);
+        PhotoViewAttacher attacher = new PhotoViewAttacher(mImageView);
         attacher.setOnPhotoTapListener(new PhotoViewAttacher.OnPhotoTapListener() {
             @Override
             public void onPhotoTap(View view, float x, float y) {
@@ -91,7 +104,7 @@ public class ImagesPagerAdapter extends PagerAdapter {
         String url = mData.get(position).allUrls.get(mData.get(position).allUrls.size() - 1).getVal();
         Timber.d("url: %s", url);
         //remove delay
-        Glide.clear(imageView);
+        Glide.clear(mImageView);
         Glide.with(context)
                 .load(url)
                 .fitCenter()
@@ -121,7 +134,7 @@ public class ImagesPagerAdapter extends PagerAdapter {
                         return false;
                     }
                 })
-                .into(imageView);
+                .into(mImageView);
 
         container.addView(itemView);
 
