@@ -106,15 +106,6 @@ public class GalleryActivity
         }
         mAdapter = new ImagesPagerAdapter();
         mViewPager.setAdapter(mAdapter);
-
-        mRecyclerAdapter = new RecyclerAdapterImages();
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(
-                this, LinearLayoutManager.HORIZONTAL, false));
-        mRecyclerView.setAdapter(mRecyclerAdapter);
-
-        //ads
-        initAds();
-
         mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
@@ -130,6 +121,15 @@ public class GalleryActivity
                 }
             }
         });
+
+        mRecyclerAdapter = new RecyclerAdapterImages();
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(
+                this, LinearLayoutManager.HORIZONTAL, false));
+        mRecyclerView.setAdapter(mRecyclerAdapter);
+        mRecyclerAdapter.setImageClickListener((position, v) -> mViewPager.setCurrentItem(position));
+
+        //ads
+        initAds();
 
         if (mPresenter.getData() != null) {
             mAdapter.setData(mPresenter.getData());

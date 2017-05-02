@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
@@ -20,10 +19,7 @@ import butterknife.ButterKnife;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.db.model.VkImage;
-import ru.dante.scpfoundation.ui.util.SetTextViewHTML;
 import ru.dante.scpfoundation.util.AttributeGetter;
-import ru.dante.scpfoundation.util.DialogUtils;
-import ru.dante.scpfoundation.util.DimensionUtils;
 
 /**
  * Created by Ivan Semkin on 4/27/2017.
@@ -32,10 +28,10 @@ public class RecyclerAdapterImages extends RecyclerView.Adapter<RecyclerView.Vie
 
     private List<VkImage> mVkImages;
 
-    private SetTextViewHTML.TextItemsClickListener mImageItemsClickListener;
+    private ImageClickListener mImageClickListener;
 
-    public void setImageItemsClickListener(SetTextViewHTML.TextItemsClickListener imageItemsClickListener) {
-        mImageItemsClickListener = imageItemsClickListener;
+    public void setImageClickListener(ImageClickListener imageClickListener) {
+        mImageClickListener = imageClickListener;
     }
 
     public RecyclerAdapterImages() {
@@ -68,6 +64,10 @@ public class RecyclerAdapterImages extends RecyclerView.Adapter<RecyclerView.Vie
             return -1;
     }
 
+    public interface ImageClickListener {
+        void onItemClick(int position, View v);
+    }
+
     class ViewHolderImage extends RecyclerView.ViewHolder {
         @BindView(R.id.image)
         ImageView imageView;
@@ -94,7 +94,8 @@ public class RecyclerAdapterImages extends RecyclerView.Adapter<RecyclerView.Vie
 
                         @Override
                         public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                            imageView.setOnClickListener(v -> DialogUtils.showImageDialog(context, imageUrl));
+                            imageView.setOnClickListener(
+                                    v -> mImageClickListener.onItemClick(getAdapterPosition(), imageView));
                             return false;
                         }
                     })
