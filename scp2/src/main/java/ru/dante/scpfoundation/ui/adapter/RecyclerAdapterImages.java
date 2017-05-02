@@ -50,7 +50,7 @@ public class RecyclerAdapterImages extends RecyclerView.Adapter<RecyclerView.Vie
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         RecyclerView.ViewHolder viewHolder;
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_r_img, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_small_img, parent, false);
         viewHolder = new ViewHolderImage(view);
         return viewHolder;
     }
@@ -62,14 +62,15 @@ public class RecyclerAdapterImages extends RecyclerView.Adapter<RecyclerView.Vie
 
     @Override
     public int getItemCount() {
-        return mVkImages.size();
+        if(mVkImages != null)
+            return mVkImages.size();
+        else
+            return -1;
     }
 
     class ViewHolderImage extends RecyclerView.ViewHolder {
         @BindView(R.id.image)
         ImageView imageView;
-        @BindView(R.id.title)
-        TextView titleTextView;
 
         ViewHolderImage(View itemView) {
             super(itemView);
@@ -79,13 +80,12 @@ public class RecyclerAdapterImages extends RecyclerView.Adapter<RecyclerView.Vie
         void bind(VkImage vkImage) {
             Context context = itemView.getContext();
             String imageUrl = vkImage.allUrls.get(vkImage.allUrls.size() - 1).getVal();
-            // String imageUrl = imageTag == null ? null : imageTag.attr("src");
 
             Glide.with(context)
                     .load(imageUrl)
                     .error(AttributeGetter.getDrawableId(context, R.attr.iconEmptyImage))
-                    .fitCenter()
                     .crossFade()
+                    .centerCrop()
                     .listener(new RequestListener<String, GlideDrawable>() {
                         @Override
                         public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
@@ -94,25 +94,11 @@ public class RecyclerAdapterImages extends RecyclerView.Adapter<RecyclerView.Vie
 
                         @Override
                         public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                            int width = resource.getIntrinsicWidth();
-                            int height = resource.getIntrinsicHeight();
-
-                            float multiplier = (float) width / height;
-                            width = DimensionUtils.getScreenWidth();
-                            height = (int) (width / multiplier);
-
-                            imageView.getLayoutParams().width = width;
-                            imageView.getLayoutParams().height = height;
-
-                            imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-
                             imageView.setOnClickListener(v -> DialogUtils.showImageDialog(context, imageUrl));
                             return false;
                         }
                     })
                     .into(imageView);
-
-            titleTextView.setText("zaloopka");
         }
     }
 }
