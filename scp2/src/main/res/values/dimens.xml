@@ -7,7 +7,7 @@
     <dimen name="defaultMargin">16dp</dimen>
     <dimen name="defaultMarginSmall">8dp</dimen>
 
-    <dimen name="bottomSheetSize">20dp</dimen>
+    <dimen name="bottomSheetSize">30dp</dimen>
 
     <dimen name="text_size_large">25sp</dimen>
     <dimen name="text_size_primary">21sp</dimen>

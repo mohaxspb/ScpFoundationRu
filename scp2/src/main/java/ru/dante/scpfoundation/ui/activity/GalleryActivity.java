@@ -30,7 +30,6 @@ import ru.dante.scpfoundation.BuildConfig;
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
-import ru.dante.scpfoundation.db.model.RealmString;
 import ru.dante.scpfoundation.db.model.VkImage;
 import ru.dante.scpfoundation.monetization.util.MyAdListener;
 import ru.dante.scpfoundation.mvp.base.MonetizationActions;
@@ -270,10 +269,8 @@ public class GalleryActivity
                 new SimpleTarget<Bitmap>(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) {
                     @Override
                     public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
-                        List<RealmString> allUrls =
-                                mAdapter.getData().get(mViewPager.getCurrentItem()).allUrls;
-                        IntentUtils.shareBitmapWithText(
-                                GalleryActivity.this, allUrls.get(allUrls.size() - 1).getVal(), resource);
+                        String desc = mAdapter.getData().get(mViewPager.getCurrentItem()).description;
+                        IntentUtils.shareBitmapWithText(GalleryActivity.this, desc, resource);
                     }
                 });
                 return true;
@@ -285,7 +282,7 @@ public class GalleryActivity
                         new SimpleTarget<Bitmap>(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) {
                             @Override
                             public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
-                                if (StorageUtils.saveImageToGallery(GalleryActivity.this, resource))
+                                if (StorageUtils.saveImageToGallery(GalleryActivity.this, resource) != null)
                                     Toast.makeText(GalleryActivity.this,
                                             R.string.image_saved, Toast.LENGTH_SHORT).show();
                                 else
