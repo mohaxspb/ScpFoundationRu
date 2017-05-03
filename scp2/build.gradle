@@ -73,8 +73,8 @@ android {
             resValue('string', 'ad_unit_id_interstitial', apiKeysProperties.get("adsBannerIdInterstitial"))
             buildConfigField('String', 'AD_UNIT_ID_INTERSTITIAL', '"' + apiKeysProperties.get("adsBannerIdInterstitial") + '"')
 
-            resValue('string', 'ad_unit_id_rewarded', apiKeysProperties.get("adsBannerIdRewarded"))
-            buildConfigField('String', 'AD_UNIT_ID_REWARDED', '"' + apiKeysProperties.get("adsBannerIdRewarded") + '"')
+//            resValue('string', 'ad_unit_id_rewarded', apiKeysProperties.get("adsBannerIdRewarded"))
+//            buildConfigField('String', 'AD_UNIT_ID_REWARDED', '"' + apiKeysProperties.get("adsBannerIdRewarded") + '"')
 
             resValue('integer', 'com_vk_sdk_AppId', apiKeysProperties.get("vkSdkAppId"))
             buildConfigField('int', 'VK_SDK_APP_ID', apiKeysProperties.get("vkSdkAppId"))
