@@ -1,7 +1,5 @@
 package ru.dante.scpfoundation.api.model.firebase;
 
-import ru.dante.scpfoundation.db.model.Article;
-
 /**
  * Created by mohax on 26.03.2017.
  * <p>
@@ -23,6 +21,7 @@ public class ArticleInFirebase {
         this.updated = updated;
     }
 
+    @SuppressWarnings("unused")
     public ArticleInFirebase() {
     }
 
