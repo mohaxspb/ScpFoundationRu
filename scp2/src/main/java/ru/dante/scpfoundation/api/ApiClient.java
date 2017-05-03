@@ -247,16 +247,22 @@ public class ApiClient {
             }
             try {
                 Document doc = Jsoup.parse(responseBody);
-                Element pageContent = doc.getElementsByClass("list-pages-box").first();
+                Element pageContent = doc.getElementById("page-content");
                 if (pageContent == null) {
+                    subscriber.onError(new ScpParseException(MyApplication.getAppInstance().getString(R.string.error_parse)));
+                    return;
+                }
+                Element listPagesBox = pageContent.getElementsByClass("list-pages-box").first();
+                if (listPagesBox == null) {
                     subscriber.onError(new ScpParseException(MyApplication.getAppInstance().getString(R.string.error_parse)));
                     return;
                 }
 
                 List<Article> articles = new ArrayList<>();
-                ArrayList<Element> listOfElements = pageContent.getElementsByClass("list-pages-item");
-                for (int i = 0; i < listOfElements.size(); i++) {
-                    Element tagP = listOfElements.get(i).getElementsByTag("p").first();
+                List<Element> listOfElements = listPagesBox.getElementsByClass("list-pages-item");
+                for (Element element : listOfElements) {
+//                    Timber.d("element: %s", element);
+                    Element tagP = element.getElementsByTag("p").first();
                     Element tagA = tagP.getElementsByTag("a").first();
                     String title = tagP.text().substring(0, tagP.text().indexOf(", рейтинг"));
                     String url = BuildConfig.BASE_API_URL + tagA.attr("href");
