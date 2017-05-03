@@ -41,4 +41,12 @@
         tools:ignore="AlwaysShowAction"
         />
 
+    <item
+        android:id="@+id/save_image"
+        android:icon="@drawable/ic_save_white_24dp"
+        android:title="@string/download"
+        app:showAsAction="always"
+        tools:ignore="AlwaysShowAction"
+        />
+
 </menu>

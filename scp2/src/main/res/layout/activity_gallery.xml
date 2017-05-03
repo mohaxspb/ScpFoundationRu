@@ -9,79 +9,105 @@
     android:fitsSystemWindows="true"
     >
 
-    <LinearLayout
-        android:id="@+id/banner_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
-        android:orientation="vertical"
-        >
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolBar"
+        <RelativeLayout
+            android:id="@+id/banner_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?toolbarBackgroundGradient"
-            />
-
-        <FrameLayout
-            android:id="@+id/content"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:background="?windowbackgroundOverrided"
+            android:layout_height="match_parent"
             android:fitsSystemWindows="true"
+            android:orientation="vertical"
             >
 
-            <android.support.v4.view.ViewPager
-                android:id="@+id/viewPager"
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolBar"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?toolbarBackgroundGradient"
                 />
 
             <FrameLayout
-                android:id="@+id/progressContainer"
+                android:id="@+id/content"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="?windowBackgroundDark"
-                android:visibility="gone"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/toolBar"
+                android:background="?windowbackgroundOverrided"
+                android:fitsSystemWindows="true"
+                android:layout_above="@+id/banner"
                 >
 
-                <ProgressBar
-                    android:id="@+id/progressCenter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:indeterminate="true"
+                <android.support.v4.view.ViewPager
+                    android:id="@+id/viewPager"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     />
+
+                <FrameLayout
+                    android:id="@+id/progressContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="?windowBackgroundDark"
+                    android:visibility="gone"
+                    >
+
+                    <ProgressBar
+                        android:id="@+id/progressCenter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:indeterminate="true"
+                        />
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/placeHolder"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="?windowBackgroundDark"
+                    android:visibility="gone"
+                    >
+
+                    <Button
+                        android:id="@+id/refresh"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/refresh"
+                        />
+                </FrameLayout>
             </FrameLayout>
 
-            <FrameLayout
-                android:id="@+id/placeHolder"
+            <android.support.design.widget.CoordinatorLayout
+                android:id="@+id/bottomSheetContainer"
+                android:layout_height="wrap_content"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="?windowBackgroundDark"
-                android:visibility="gone"
+                android:layout_above="@+id/banner"
                 >
 
-                <Button
-                    android:id="@+id/refresh"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:id="@+id/bottomSheet"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/refresh"
-                    />
-            </FrameLayout>
-        </FrameLayout>
+                    app:behavior_peekHeight="@dimen/bottomSheetSize"
+                    app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
+                    >
 
-        <com.google.android.gms.ads.AdView
-            android:id="@+id/banner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            ads:adSize="SMART_BANNER"
-            ads:adUnitId="@string/ad_unit_id_gallery_banner"
-            />
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/recyclerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="100dp"
+                        android:scrollbars="horizontal"
+                        />
+                </LinearLayout>
+            </android.support.design.widget.CoordinatorLayout>
 
-    </LinearLayout>
+            <com.google.android.gms.ads.AdView
+                android:id="@+id/banner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                ads:adSize="SMART_BANNER"
+                ads:adUnitId="@string/ad_unit_id_gallery_banner"
+                />
+
+        </RelativeLayout>
 
     <android.support.design.widget.NavigationView
         android:id="@+id/navigationView"
