@@ -165,4 +165,16 @@
     <string name="dialog_level_up_ok_text">Я понял!</string>
     <string name="cracked_level_title">Класс D</string>
     <string name="cracked_avatar_message">Попытка взлома Фонда зарегистрирована, протокол ██████ активирован.</string>
+    <string name="leaderboard_dialog_title">Рейтинг агентов</string>
+    <string name="refreshed">Обновлено в %s</string>
+    <string name="progress_leaderboard">Связываюсь с отделом кадров Фонда…</string>
+
+    <plurals name="plurals_score">
+        <item quantity="zero">%1$d очков</item>
+        <item quantity="one">%1$d очко</item>
+        <item quantity="two">%1$d очка</item>
+        <item quantity="few">%1$d очка</item>
+        <item quantity="many">%1$d очков</item>
+        <item quantity="other">%1$d очков</item>
+    </plurals>
 </resources>

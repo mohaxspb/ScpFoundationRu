@@ -6,40 +6,42 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
-import javax.inject.Inject;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
-import ru.dante.scpfoundation.api.ApiClient;
 import ru.dante.scpfoundation.api.model.response.LeaderBoardResponse;
-import ru.dante.scpfoundation.manager.MyPreferenceManager;
-import ru.dante.scpfoundation.ui.adapter.FreeAdsDisableRecyclerAdapter;
-import ru.dante.scpfoundation.ui.base.BaseActivity;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+import ru.dante.scpfoundation.ui.adapter.LeaderboardRecyclerAdapter;
 import timber.log.Timber;
 
 public class LeaderboardDialogFragment extends DialogFragment {
 
     public static final String TAG = LeaderboardDialogFragment.class.getSimpleName();
+    private static final String EXTRA_LEADERBOARD_RESPONSE = "EXTRA_LEADERBOARD_RESPONSE";
 
-    @Inject
-    ApiClient mApiClient;
-    @Inject
-    protected MyPreferenceManager mMyPreferenceManager;
+    private LeaderBoardResponse mLeaderBoardResponse;
 
-    public static DialogFragment newInstance() {
-        return new LeaderboardDialogFragment();
+    public static DialogFragment newInstance(LeaderBoardResponse leaderBoardResponse) {
+        DialogFragment dialogFragment = new LeaderboardDialogFragment();
+        Bundle args = new Bundle();
+        args.putSerializable(EXTRA_LEADERBOARD_RESPONSE, leaderBoardResponse);
+        dialogFragment.setArguments(args);
+        return dialogFragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         MyApplication.getAppComponent().inject(this);
+
+        mLeaderBoardResponse = (LeaderBoardResponse) getArguments().getSerializable(EXTRA_LEADERBOARD_RESPONSE);
     }
 
     @NonNull
@@ -48,12 +50,22 @@ public class LeaderboardDialogFragment extends DialogFragment {
         Timber.d("onCreateDialog");
         final MaterialDialog dialog;
 
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(mLeaderBoardResponse.lastUpdated);
+        calendar.setTimeZone(TimeZone.getTimeZone(mLeaderBoardResponse.timeZone));
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss zzzz", Locale.getDefault());
+        String refreshed = simpleDateFormat.format(calendar.getTime());
+
         MaterialDialog.Builder dialogTextSizeBuilder = new MaterialDialog.Builder(getActivity());
         dialogTextSizeBuilder
-                .title(R.string.dialog_free_ads_disable_title)
+                .title(R.string.leaderboard_dialog_title)
+                .content(getString(R.string.refreshed, refreshed))
                 .positiveText(android.R.string.cancel);
 
-        FreeAdsDisableRecyclerAdapter adapter = new FreeAdsDisableRecyclerAdapter();
+        LeaderboardRecyclerAdapter adapter = new LeaderboardRecyclerAdapter();
+        adapter.setItemClickListener(data -> Timber.d("onUserClicked: %s", data));
+        Collections.sort(mLeaderBoardResponse.users, (user1, user) -> user.score - user1.score);
+        adapter.setData(mLeaderBoardResponse.users);
 
         dialogTextSizeBuilder.adapter(adapter, new LinearLayoutManager(getActivity()));
 
@@ -63,33 +75,5 @@ public class LeaderboardDialogFragment extends DialogFragment {
         dialog.getRecyclerView().setAdapter(adapter);
 
         return dialog;
-    }
-
-    protected BaseActivity getBaseActivity() {
-        return (BaseActivity) getActivity();
-    }
-
-    private void getLeaderboard() {
-        mApiClient.getLeaderboard()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        leaderBoardResponse -> {
-                            Timber.d("getLeaderboard onNext: %s", leaderBoardResponse);
-                            updateData(leaderBoardResponse);
-                        },
-                        e -> {
-                            Timber.e(e);
-                            showError(e);
-                        }
-                );
-    }
-
-    private void updateData(LeaderBoardResponse leaderBoardResponse) {
-
-    }
-
-    private void showError(Throwable e) {
-        Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
     }
 }

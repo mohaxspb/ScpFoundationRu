@@ -44,6 +44,7 @@ public class FirebaseObjectUser {
                 ", fullName='" + fullName + '\'' +
                 ", avatar='" + avatar + '\'' +
                 ", email='" + email + '\'' +
+                ", score=" + score +
                 ", socialProviders=" + socialProviders +
                 ", articles=" + articles +
                 '}';

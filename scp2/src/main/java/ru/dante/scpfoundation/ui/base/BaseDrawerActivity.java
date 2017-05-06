@@ -41,6 +41,7 @@ import ru.dante.scpfoundation.BuildConfig;
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.api.model.remoteconfig.LevelsJson;
+import ru.dante.scpfoundation.api.model.response.LeaderBoardResponse;
 import ru.dante.scpfoundation.db.model.User;
 import ru.dante.scpfoundation.monetization.util.InappHelper;
 import ru.dante.scpfoundation.mvp.contract.DrawerMvp;
@@ -301,8 +302,7 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
 
                         headerViewHolder.avatar.setOnClickListener(view -> {
                             showMessageLong(getString(R.string.profile_score_info, user.score, max - value));
-                            DialogFragment dialogFragment = LeaderboardDialogFragment.newInstance();
-                            dialogFragment.show(getSupportFragmentManager(), LeaderboardDialogFragment.TAG);
+                            mPresenter.onAvatarClicked();
                         });
                         break;
                     } else if (i == levelsJson.levels.size() - 1) {
@@ -315,8 +315,7 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
 
                         headerViewHolder.avatar.setOnClickListener(view -> {
                             showMessageLong(getString(R.string.profile_score_info_max_level, user.score));
-                            DialogFragment dialogFragment = LeaderboardDialogFragment.newInstance();
-                            dialogFragment.show(getSupportFragmentManager(), LeaderboardDialogFragment.TAG);
+                            mPresenter.onAvatarClicked();
                         });
                     }
                 }
@@ -349,6 +348,12 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
                     .positiveText(android.R.string.ok)
                     .show());
         }
+    }
+
+    @Override
+    public void showLeaderboard(LeaderBoardResponse leaderBoardResponse) {
+        DialogFragment dialogFragment = LeaderboardDialogFragment.newInstance(leaderBoardResponse);
+        dialogFragment.show(getSupportFragmentManager(), LeaderboardDialogFragment.TAG);
     }
 
     @Override

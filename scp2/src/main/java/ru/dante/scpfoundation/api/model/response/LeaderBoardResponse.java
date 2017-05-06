@@ -2,8 +2,8 @@ package ru.dante.scpfoundation.api.model.response;
 
 import com.google.gson.annotations.Expose;
 
+import java.io.Serializable;
 import java.util.List;
-import java.util.TimeZone;
 
 import ru.dante.scpfoundation.api.model.firebase.FirebaseObjectUser;
 
@@ -12,7 +12,7 @@ import ru.dante.scpfoundation.api.model.firebase.FirebaseObjectUser;
  * <p>
  * for scp-ru
  */
-public class LeaderBoardResponse {
+public class LeaderBoardResponse implements Serializable {
 
     @Expose
     public long lastUpdated;
