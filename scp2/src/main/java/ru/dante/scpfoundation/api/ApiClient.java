@@ -56,6 +56,7 @@ import ru.dante.scpfoundation.api.error.ScpNoSearchResultsException;
 import ru.dante.scpfoundation.api.error.ScpParseException;
 import ru.dante.scpfoundation.api.model.firebase.ArticleInFirebase;
 import ru.dante.scpfoundation.api.model.firebase.FirebaseObjectUser;
+import ru.dante.scpfoundation.api.model.response.LeaderBoardResponse;
 import ru.dante.scpfoundation.api.model.response.VkGalleryResponse;
 import ru.dante.scpfoundation.api.model.response.VkGroupJoinResponse;
 import ru.dante.scpfoundation.db.model.Article;
@@ -81,10 +82,13 @@ public class ApiClient {
     private final OkHttpClient mOkHttpClient;
     private Gson mGson;
 
+    private VpsServer mVpsServer;
+
     public ApiClient(OkHttpClient okHttpClient, Retrofit retrofit, MyPreferenceManager preferencesManager, Gson gson) {
         mPreferencesManager = preferencesManager;
         mOkHttpClient = okHttpClient;
         mGson = gson;
+        mVpsServer = retrofit.create(VpsServer.class);
     }
 
     private <T> Observable<T> bindWithUtils(Observable<T> observable) {
@@ -1515,5 +1519,9 @@ public class ApiClient {
                 }
             });
         });
+    }
+
+    public Observable<LeaderBoardResponse> getLeaderboard() {
+        return bindWithUtils(mVpsServer.getLeaderboard());
     }
 }
