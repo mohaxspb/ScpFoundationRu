@@ -1,7 +1,5 @@
 package ru.dante.scpfoundation.mvp.base;
 
-import java.util.Collections;
-
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.api.ApiClient;
 import ru.dante.scpfoundation.db.DbProviderFactory;
@@ -54,10 +52,6 @@ public abstract class BaseDrawerPresenter<V extends DrawerMvp.View>
         Timber.d("onAvatarClicked");
         getView().showProgressDialog(R.string.progress_leaderboard);
         mApiClient.getLeaderboard()
-//                .map(leaderBoardResponse -> {
-//                    Collections.sort(leaderBoardResponse.users, (user1, user) -> user1.score - user.score);
-//                    return leaderBoardResponse;
-//                })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(

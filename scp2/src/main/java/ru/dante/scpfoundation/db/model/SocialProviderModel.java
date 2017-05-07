@@ -12,7 +12,10 @@ import ru.dante.scpfoundation.Constants;
  * <p>
  * for scp_ru
  */
-public class SocialProviderModel extends RealmObject implements Serializable{
+public class SocialProviderModel extends RealmObject implements Serializable {
+
+    public static final String FIELD_PROVIDER = "provider";
+    public static final String FIELD_ID = "id";
 
     public String provider;
 
@@ -26,8 +29,8 @@ public class SocialProviderModel extends RealmObject implements Serializable{
     public SocialProviderModel() {
     }
 
-    public static SocialProviderModel getSocialProviderModelForProvider(Constants.Firebase.SocialProvider provider){
-        switch (provider){
+    public static SocialProviderModel getSocialProviderModelForProvider(Constants.Firebase.SocialProvider provider) {
+        switch (provider) {
             case VK:
                 return new SocialProviderModel(provider.name(), VKAccessToken.currentToken().userId);
             default:
