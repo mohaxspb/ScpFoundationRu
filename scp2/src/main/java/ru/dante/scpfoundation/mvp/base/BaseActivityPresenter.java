@@ -10,6 +10,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
+import com.vk.sdk.VKSdk;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -49,6 +50,12 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
             Timber.d("onAuthStateChanged: signed_out");
 
             listenToChangesInFirebase(false);
+
+            if(VKSdk.isLoggedIn()){
+                //this can be after update to 1.1.x.x+ (have vk login and do not have firebase one)
+                //so we can show popup with info and let user relogin
+                getView().showNeedReloginPopup();
+            }
         }
     };
 

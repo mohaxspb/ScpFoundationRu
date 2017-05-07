@@ -169,6 +169,15 @@
     <string name="refreshed">Обновлено в %s</string>
     <string name="progress_leaderboard">Связываюсь с отделом кадров Фонда…</string>
     <string name="level">%d уровень</string>
+    <string name="need_relogin_dialog_title">Требуется повторная авторизация</string>
+    <string name="need_relogin_dialog_content">Внимание персонал! В связи с приказом [ДАННЫЕ УДАЛЕНЫ] требуется повторная авторизация. После повторной авторизации ваши данные будут сохраняться в облаке и более не потеряются. Также ваши достижения на должности агента Фонда будут заноситься в таблицу рекордов. Внимание! В случае выхода из аккаунта все несинхронизированные данные будут потеряны! Будьте внимательны и регулярно синхронизируйте ваши данные.</string>
+    <string name="i_read_and_accept">Я прочитал и понял</string>
+    <string name="relogin">Авторизоваться</string>
+    <string name="relogin_dialog_title">Повторная авторизация</string>
+    <string name="relogin_dialog_content">Авторизоваться повторно сейчас? Вы можете сделать это позже из левого меню (кнопка под кнопкой выхода из профиля)</string>
+    <string name="warning">Внимание!</string>
+    <string name="dialog_logout_content">При выходе из аккаунта все избранные и прочитанные статьи будут сброшены! Убедитесь, что вы всё синхронизировали. Синхронизацию можно произвести в Настройках.</string>
+    <string name="logout">Выйти</string>
 
     <plurals name="plurals_score">
         <item quantity="zero">%1$d очков</item>

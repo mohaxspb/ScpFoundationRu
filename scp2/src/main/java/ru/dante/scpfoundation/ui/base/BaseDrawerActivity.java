@@ -30,6 +30,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.gson.Gson;
+import com.vk.sdk.VKSdk;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -219,11 +220,26 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
 
             HeaderViewHolderLogined headerViewHolder = new HeaderViewHolderLogined(headerLogined);
 
-            headerViewHolder.logout.setOnClickListener(view -> {
+            headerViewHolder.logout.setOnClickListener(view -> new MaterialDialog.Builder(BaseDrawerActivity.this)
+                    .title(R.string.warning)
+                    .content(R.string.dialog_logout_content)
+                    .negativeText(R.string.close)
+                    .onNegative((dialog, which) -> dialog.dismiss())
+                    .positiveText(R.string.logout)
+                    .onPositive((dialog, which) -> {
+                        dialog.dismiss();
                         mPresenter.logoutUser();
                         mDrawerLayout.closeDrawer(GravityCompat.START);
-                    }
+                    })
+                    .show()
             );
+
+            if (VKSdk.isLoggedIn() && FirebaseAuth.getInstance().getCurrentUser() == null) {
+                headerViewHolder.relogin.setVisibility(View.VISIBLE);
+                headerViewHolder.relogin.setOnClickListener(view -> showNeedReloginPopup());
+            } else {
+                headerViewHolder.relogin.setVisibility(View.GONE);
+            }
 
             headerViewHolder.levelUp.setOnClickListener(view -> {
 //                showError(new IllegalStateException("not implemented"));
