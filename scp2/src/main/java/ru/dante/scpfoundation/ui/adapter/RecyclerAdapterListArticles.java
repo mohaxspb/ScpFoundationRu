@@ -128,7 +128,8 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
 
     @Override
     public int getItemCount() {
-        return mData == null || !((RealmResults<Article>)mData).isValid()? 0 : mData.size();
+//        return mData == null || !((RealmResults<Article>)mData).isValid()? 0 : mData.size();
+        return mData == null || ((mData instanceof RealmResults) && !((RealmResults<Article>) mData).isValid()) ? 0 : mData.size();
     }
 
     public void setArticleClickListener(ArticleClickListener articleClickListener) {
