@@ -1,7 +1,5 @@
 package ru.dante.scpfoundation.db.model;
 
-import java.util.ArrayList;
-
 import io.realm.RealmList;
 import io.realm.RealmObject;
 
@@ -11,6 +9,11 @@ import io.realm.RealmObject;
  * for scp_ru
  */
 public class User extends RealmObject {
+
+    public static final String FIELD_SCORE = "score";
+    public static final String FIELD_UID = "uid";
+    public static final String FIELD_SOCIAL_PROVIDERS= "socialProviders";
+    public static final String FIELD_EMAIL= "email";
 
     public String uid;
     public String fullName;
