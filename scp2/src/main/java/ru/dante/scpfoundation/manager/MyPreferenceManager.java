@@ -5,9 +5,17 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+import com.google.gson.Gson;
+
+import java.util.ArrayList;
 
 import ru.dante.scpfoundation.Constants;
+import ru.dante.scpfoundation.monetization.model.ApplicationsResponse;
+import ru.dante.scpfoundation.monetization.model.PlayMarketApplication;
+import ru.dante.scpfoundation.monetization.model.VkGroupToJoin;
+import ru.dante.scpfoundation.monetization.model.VkGroupsToJoinResponse;
 import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
+import timber.log.Timber;
 
 /**
  * Created by y.kuchanov on 22.12.16.
@@ -15,6 +23,11 @@ import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
  * for scp_ru
  */
 public class MyPreferenceManager {
+
+    /**
+     * check if user joined app vk group each 2 hours
+     */
+    private static final long PERIOD_BETWEEN_APP_VK_GROUP_JOINED_CHECK_IN_MILLIS = 1000 * 60 * 60 * 2;
 
     public interface Keys {
         String NIGHT_MODE = "NIGHT_MODE";
@@ -37,16 +50,26 @@ public class MyPreferenceManager {
         String DESIGN_FONT_PATH = "DESIGN_FONT_PATH";
         String PACKAGE_INSTALLED = "PACKAGE_INSTALLED";
         String VK_GROUP_JOINED = "VK_GROUP_JOINED";
-        String USER_UID = "USER_UID";
+//        String USER_UID = "USER_UID";
         String HAS_SUBSCRIPTION = "HAS_SUBSCRIPTION";
         String APP_IS_CRACKED = "APP_IS_CRACKED";
         String AUTO_SYNC_ATTEMPTS = "AUTO_SYNC_ATTEMPTS";
+        //        String VK_GROUP_APP_JOINED = "VK_GROUP_APP_JOINED";
+        String UNSYNCED_SCORE = "UNSYNCED_SCORE";
+        String UNSYNCED_VK_GROUPS = "UNSYNCED_VK_GROUPS";
+        String UNSYNCED_APPS = "UNSYNCED_APPS";
+//        String HAS_LEVEL_UP_INAPP = "HAS_LEVEL_UP_INAPP";
+        String APP_VK_GROUP_JOINED_LAST_TIME_CHECKED = "APP_VK_GROUP_JOINED_LAST_TIME_CHECKED";
+        String APP_VK_GROUP_JOINED = "APP_VK_GROUP_JOINED";
     }
+
+    private Gson mGson;
 
     private SharedPreferences mPreferences;
 
-    public MyPreferenceManager(Context context) {
+    public MyPreferenceManager(Context context, Gson gson) {
         mPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        mGson = gson;
     }
 
     public void setIsNightMode(boolean isInNightMode) {
@@ -98,13 +121,13 @@ public class MyPreferenceManager {
     }
 
     //new arts notifications
-    public int getNotificationPeriodInMinutes() {
+    int getNotificationPeriodInMinutes() {
         return mPreferences.getInt(Keys.NOTIFICATION_PERIOD, 60);
     }
 
-    public void setNotificationPeriodInMinutes(int minutes) {
-        mPreferences.edit().putInt(Keys.NOTIFICATION_PERIOD, minutes).apply();
-    }
+//    public void setNotificationPeriodInMinutes(int minutes) {
+//        mPreferences.edit().putInt(Keys.NOTIFICATION_PERIOD, minutes).apply();
+//    }
 
     public boolean isNotificationEnabled() {
         return mPreferences.getBoolean(Keys.NOTIFICATION_IS_ON, true);
@@ -203,20 +226,22 @@ public class MyPreferenceManager {
 
     public void setVkGroupJoined(String id) {
         mPreferences.edit().putBoolean(Keys.VK_GROUP_JOINED + id, true).apply();
+        if (id.equals(FirebaseRemoteConfig.getInstance().getString(Constants.Firebase.RemoteConfigKeys.VK_APP_GROUP_ID))) {
+            setAppVkGroupJoined(true);
+        }
+    }
+
+    public boolean isAppVkGroupJoined() {
+        return mPreferences.getBoolean(Keys.APP_VK_GROUP_JOINED, false);
+    }
+
+    public void setAppVkGroupJoined(boolean joined) {
+        mPreferences.edit().putBoolean(Keys.APP_VK_GROUP_JOINED, joined).apply();
     }
 
     public void applyAwardVkGroupJoined() {
         setLastTimeAdsShows((System.currentTimeMillis() +
                 FirebaseRemoteConfig.getInstance().getLong(Constants.Firebase.RemoteConfigKeys.FREE_VK_GROUPS_JOIN_REWARD)));
-    }
-
-    //user
-    public void setUserId(String uid) {
-        mPreferences.edit().putString(Keys.USER_UID, uid).apply();
-    }
-
-    public String getUserId() {
-        return mPreferences.getString(Keys.USER_UID, "");
     }
 
     //subscription
@@ -226,6 +251,8 @@ public class MyPreferenceManager {
 
     public boolean isHasSubscription() {
         return mPreferences.getBoolean(Keys.HAS_SUBSCRIPTION, false);
+////       FIX ME test
+//        return true;
     }
 
     //auto sync
@@ -237,7 +264,90 @@ public class MyPreferenceManager {
         return mPreferences.getLong(Keys.AUTO_SYNC_ATTEMPTS, 0);
     }
 
-    //secure
+    public void addUnsyncedScore(int scoreToAdd) {
+        int newTotalScore = getNumOfUnsyncedScore() + scoreToAdd;
+        mPreferences.edit().putInt(Keys.UNSYNCED_SCORE, newTotalScore).apply();
+    }
+
+    public void addUnsyncedVkGroup(String id) {
+        VkGroupsToJoinResponse data = getUnsyncedVkGroupsJson();
+        if (data == null) {
+            data = new VkGroupsToJoinResponse();
+            data.items = new ArrayList<>();
+        }
+        VkGroupToJoin item = new VkGroupToJoin(id);
+        if (!data.items.contains(item)) {
+            data.items.add(item);
+            mPreferences.edit().putString(Keys.UNSYNCED_VK_GROUPS, mGson.toJson(data)).apply();
+        }
+    }
+
+    public void deleteUnsyncedVkGroups() {
+        mPreferences.edit().remove(Keys.UNSYNCED_VK_GROUPS).apply();
+    }
+
+    public VkGroupsToJoinResponse getUnsyncedVkGroupsJson() {
+        VkGroupsToJoinResponse data = null;
+        try {
+            data = mGson.fromJson(mPreferences.getString(Keys.UNSYNCED_VK_GROUPS, null), VkGroupsToJoinResponse.class);
+        } catch (Exception e) {
+            Timber.e(e);
+        }
+        return data;
+    }
+
+    public void addUnsyncedApp(String id) {
+        ApplicationsResponse data = getUnsyncedAppsJson();
+        if (data == null) {
+            data = new ApplicationsResponse();
+            data.items = new ArrayList<>();
+        }
+        PlayMarketApplication item = new PlayMarketApplication(id);
+        if (!data.items.contains(item)) {
+            data.items.add(item);
+            mPreferences.edit().putString(Keys.UNSYNCED_APPS, mGson.toJson(data)).apply();
+        }
+    }
+
+    public void deleteUnsyncedApps() {
+        mPreferences.edit().remove(Keys.UNSYNCED_APPS).apply();
+    }
+
+    public ApplicationsResponse getUnsyncedAppsJson() {
+        ApplicationsResponse data = null;
+        try {
+            data = mGson.fromJson(mPreferences.getString(Keys.UNSYNCED_APPS, null), ApplicationsResponse.class);
+        } catch (Exception e) {
+            Timber.e(e);
+        }
+        return data;
+    }
+
+    public void setNumOfUnsyncedScore(int totalScore) {
+        mPreferences.edit().putInt(Keys.UNSYNCED_SCORE, totalScore).apply();
+    }
+
+    public int getNumOfUnsyncedScore() {
+        return mPreferences.getInt(Keys.UNSYNCED_SCORE, 0);
+    }
+
+    public void setLastTimeAppVkGroupJoinedChecked(long timeInMillis) {
+        mPreferences.edit().putLong(Keys.APP_VK_GROUP_JOINED_LAST_TIME_CHECKED, timeInMillis).apply();
+    }
+
+    private long getLastTimeAppVkGroupJoinedChecked() {
+        long timeFromLastShow = mPreferences.getLong(Keys.APP_VK_GROUP_JOINED_LAST_TIME_CHECKED, 0);
+        if (timeFromLastShow == 0) {
+            setLastTimeAdsShows(System.currentTimeMillis());
+        }
+        return timeFromLastShow;
+    }
+
+    public boolean isTimeToCheckAppVkGroupJoined() {
+        return System.currentTimeMillis() - getLastTimeAppVkGroupJoinedChecked() >= PERIOD_BETWEEN_APP_VK_GROUP_JOINED_CHECK_IN_MILLIS;
+    }
+
+    // secure
     public boolean isAppCracked() {
         return mPreferences.getBoolean(Keys.APP_IS_CRACKED, false);
     }

@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 
+import com.google.gson.Gson;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -31,8 +33,8 @@ public class StorageModule {
     @Provides
     @NonNull
     @Singleton
-    MyPreferenceManager providesPreferencesManager(@NonNull Context context) {
-        return new MyPreferenceManager(context);
+    MyPreferenceManager providesPreferencesManager(@NonNull Context context, Gson gson) {
+        return new MyPreferenceManager(context, gson);
     }
 
     @Provides

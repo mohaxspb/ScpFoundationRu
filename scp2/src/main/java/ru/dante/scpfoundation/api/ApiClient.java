@@ -11,6 +11,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.vk.sdk.VKAccessToken;
@@ -54,6 +56,7 @@ import ru.dante.scpfoundation.api.error.ScpNoSearchResultsException;
 import ru.dante.scpfoundation.api.error.ScpParseException;
 import ru.dante.scpfoundation.api.model.firebase.ArticleInFirebase;
 import ru.dante.scpfoundation.api.model.firebase.FirebaseObjectUser;
+import ru.dante.scpfoundation.api.model.response.LeaderBoardResponse;
 import ru.dante.scpfoundation.api.model.response.VkGalleryResponse;
 import ru.dante.scpfoundation.api.model.response.VkGroupJoinResponse;
 import ru.dante.scpfoundation.db.model.Article;
@@ -61,6 +64,8 @@ import ru.dante.scpfoundation.db.model.RealmString;
 import ru.dante.scpfoundation.db.model.User;
 import ru.dante.scpfoundation.db.model.VkImage;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
+import ru.dante.scpfoundation.monetization.model.PlayMarketApplication;
+import ru.dante.scpfoundation.monetization.model.VkGroupToJoin;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -72,14 +77,18 @@ import timber.log.Timber;
  * for scp_ru
  */
 public class ApiClient {
+
     private final MyPreferenceManager mPreferencesManager;
     private final OkHttpClient mOkHttpClient;
     private Gson mGson;
+
+    private VpsServer mVpsServer;
 
     public ApiClient(OkHttpClient okHttpClient, Retrofit retrofit, MyPreferenceManager preferencesManager, Gson gson) {
         mPreferencesManager = preferencesManager;
         mOkHttpClient = okHttpClient;
         mGson = gson;
+        mVpsServer = retrofit.create(VpsServer.class);
     }
 
     private <T> Observable<T> bindWithUtils(Observable<T> observable) {
@@ -1143,6 +1152,52 @@ public class ApiClient {
         });
     }
 
+    /**
+     * @param scoreToAdd score to add to user
+     * @return Observable, that emits user total score
+     */
+    public Observable<Integer> incrementScoreInFirebaseObservable(int scoreToAdd) {
+        return Observable.create(subscriber -> {
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (firebaseUser != null) {
+                //add, not rewrite
+                FirebaseDatabase.getInstance()
+                        .getReference(Constants.Firebase.Refs.USERS)
+                        .child(firebaseUser.getUid())
+                        .child(Constants.Firebase.Refs.SCORE)
+                        .runTransaction(new Transaction.Handler() {
+                            @Override
+                            public Transaction.Result doTransaction(MutableData mutableData) {
+                                Integer p = mutableData.getValue(Integer.class);
+                                if (p == null) {
+                                    return Transaction.success(mutableData);
+                                }
+
+                                p = p + scoreToAdd;
+
+                                // Set value and report transaction success
+                                mutableData.setValue(p);
+                                return Transaction.success(mutableData);
+                            }
+
+                            @Override
+                            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+                                if (databaseError == null) {
+                                    Timber.d("onComplete: %s", dataSnapshot.getValue());
+                                    subscriber.onNext(dataSnapshot.getValue(Integer.class));
+                                    subscriber.onCompleted();
+                                } else {
+                                    Timber.e(databaseError.toException(), "onComplete with error: %s", databaseError.toString());
+                                    subscriber.onError(databaseError.toException());
+                                }
+                            }
+                        });
+            } else {
+                subscriber.onError(new IllegalStateException("firebase user is null"));
+            }
+        });
+    }
+
     public Observable<Article> writeArticleToFirebase(Article article) {
         return Observable.create(subscriber -> {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -1176,7 +1231,38 @@ public class ApiClient {
         });
     }
 
+    public Observable<ArticleInFirebase> getArticleFromFirebase(Article article) {
+        return Observable.create(subscriber -> {
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (firebaseUser == null) {
+                subscriber.onError(new IllegalArgumentException("firebase user is null"));
+                return;
+            }
+            String url = article.url.replace(BuildConfig.BASE_API_URL, "");
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference reference = database.getReference()
+                    .child(Constants.Firebase.Refs.USERS)
+                    .child(firebaseUser.getUid())
+                    .child(Constants.Firebase.Refs.ARTICLES)
+                    .child(url);
+            reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    subscriber.onNext(dataSnapshot.getValue(ArticleInFirebase.class));
+                    subscriber.onCompleted();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    subscriber.onError(databaseError.toException());
+                }
+            });
+        });
+    }
+
     public Observable<List<Article>> writeArticlesToFirebase(List<Article> articles) {
+        //TODO caclulate how many new articles we add and return it to calculate hoe much score we should add
+        //I think that this can be done via calculate initial childs of ARTICLE ref minus result childs of ARTICLE ref
         return Observable.create(subscriber -> {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             if (firebaseUser == null) {
@@ -1215,5 +1301,227 @@ public class ApiClient {
                 }
             });
         });
+    }
+
+    public Observable<Integer> getUserScoreFromFirebase() {
+        return Observable.create(subscriber -> {
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (firebaseUser == null) {
+                subscriber.onError(new IllegalArgumentException("firebase user is null"));
+                return;
+            }
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference reference = database.getReference()
+                    .child(Constants.Firebase.Refs.USERS)
+                    .child(firebaseUser.getUid())
+                    .child(Constants.Firebase.Refs.SCORE);
+            reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    subscriber.onNext(dataSnapshot.getValue(Integer.class));
+                    subscriber.onCompleted();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    subscriber.onError(databaseError.toException());
+                }
+            });
+        });
+    }
+
+    public Observable<Boolean> isUserJoinedVkGroup(String id) {
+        Timber.d("isUserJoinedVkGroup id: %s", id);
+        return Observable.create(subscriber -> {
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (firebaseUser == null) {
+                subscriber.onError(new IllegalArgumentException("firebase user is null"));
+                return;
+            }
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference reference = database.getReference()
+                    .child(Constants.Firebase.Refs.USERS)
+                    .child(firebaseUser.getUid())
+                    .child(Constants.Firebase.Refs.VK_GROUPS)
+                    .child(id);
+            reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    VkGroupToJoin data = dataSnapshot.getValue(VkGroupToJoin.class);
+                    Timber.d("dataSnapshot.getValue(): %s", data);
+                    subscriber.onNext(data != null);
+                    subscriber.onCompleted();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    subscriber.onError(databaseError.toException());
+                }
+            });
+        });
+    }
+
+    public Observable<Void> addJoinedVkGroup(String id) {
+        return Observable.create(subscriber -> {
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (firebaseUser == null) {
+                subscriber.onError(new IllegalArgumentException("firebase user is null"));
+                return;
+            }
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference reference = database.getReference()
+                    .child(Constants.Firebase.Refs.USERS)
+                    .child(firebaseUser.getUid())
+                    .child(Constants.Firebase.Refs.VK_GROUPS)
+                    .child(id);
+            reference.setValue(new VkGroupToJoin(id), (databaseError, databaseReference) -> {
+                if (databaseError == null) {
+                    subscriber.onNext(null);
+                    subscriber.onCompleted();
+                } else {
+                    subscriber.onError(databaseError.toException());
+                }
+            });
+        });
+    }
+
+    public Observable<Boolean> isUserInstallApp(String packageNameWithDots) {
+        //as firebase can't have dots in ref path we must replace it...
+        final String id = packageNameWithDots.replaceAll("\\.", "____");
+        Timber.d("id: %s", id);
+        return Observable.create(subscriber -> {
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (firebaseUser == null) {
+                subscriber.onError(new IllegalArgumentException("firebase user is null"));
+                return;
+            }
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference reference = database.getReference()
+                    .child(Constants.Firebase.Refs.USERS)
+                    .child(firebaseUser.getUid())
+                    .child(Constants.Firebase.Refs.APPS)
+                    .child(id);
+            reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    PlayMarketApplication data = dataSnapshot.getValue(PlayMarketApplication.class);
+                    Timber.d("dataSnapshot.getValue(): %s", data);
+                    subscriber.onNext(data != null);
+                    subscriber.onCompleted();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    subscriber.onError(databaseError.toException());
+                }
+            });
+        });
+    }
+
+    public Observable<Void> addInstalledApp(String packageNameWithDots) {
+        //as firebase can't have dots in ref path we must replace it...
+        final String id = packageNameWithDots.replaceAll("\\.", "____");
+        return Observable.create(subscriber -> {
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (firebaseUser == null) {
+                subscriber.onError(new IllegalArgumentException("firebase user is null"));
+                return;
+            }
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference reference = database.getReference()
+                    .child(Constants.Firebase.Refs.USERS)
+                    .child(firebaseUser.getUid())
+                    .child(Constants.Firebase.Refs.APPS)
+                    .child(id);
+            reference.setValue(new PlayMarketApplication(id), (databaseError, databaseReference) -> {
+                if (databaseError == null) {
+                    subscriber.onNext(null);
+                    subscriber.onCompleted();
+                } else {
+                    subscriber.onError(databaseError.toException());
+                }
+            });
+        });
+    }
+
+    public Observable<Boolean> isUserGainedSkoreFromInapp(String sku) {
+        return Observable.create(subscriber -> {
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (firebaseUser == null) {
+                subscriber.onError(new IllegalArgumentException("firebase user is null"));
+                return;
+            }
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference reference = database.getReference()
+                    .child(Constants.Firebase.Refs.USERS)
+                    .child(firebaseUser.getUid())
+                    .child(Constants.Firebase.Refs.INAPP)
+                    .child(sku);
+            reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    PlayMarketApplication data = dataSnapshot.getValue(PlayMarketApplication.class);
+                    Timber.d("dataSnapshot.getValue(): %s", data);
+                    subscriber.onNext(data != null);
+                    subscriber.onCompleted();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    subscriber.onError(databaseError.toException());
+                }
+            });
+        });
+    }
+
+    public Observable<Void> addRewardedInapp(String sku) {
+        return Observable.create(subscriber -> {
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (firebaseUser == null) {
+                subscriber.onError(new IllegalArgumentException("firebase user is null"));
+                return;
+            }
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference reference = database.getReference()
+                    .child(Constants.Firebase.Refs.USERS)
+                    .child(firebaseUser.getUid())
+                    .child(Constants.Firebase.Refs.INAPP)
+                    .child(sku);
+            reference.setValue(true, (databaseError, databaseReference) -> {
+                if (databaseError == null) {
+                    subscriber.onNext(null);
+                    subscriber.onCompleted();
+                } else {
+                    subscriber.onError(databaseError.toException());
+                }
+            });
+        });
+    }
+
+    public Observable<Void> setCrackedInFirebase() {
+        return Observable.create(subscriber -> {
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (firebaseUser == null) {
+                subscriber.onError(new IllegalArgumentException("firebase user is null"));
+                return;
+            }
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference reference = database.getReference()
+                    .child(Constants.Firebase.Refs.USERS)
+                    .child(firebaseUser.getUid())
+                    .child(Constants.Firebase.Refs.CRACKED);
+            reference.setValue(true, (databaseError, databaseReference) -> {
+                if (databaseError == null) {
+                    subscriber.onNext(null);
+                    subscriber.onCompleted();
+                } else {
+                    subscriber.onError(databaseError.toException());
+                }
+            });
+        });
+    }
+
+    public Observable<LeaderBoardResponse> getLeaderboard() {
+        return bindWithUtils(mVpsServer.getLeaderboard());
     }
 }

@@ -19,6 +19,6 @@ public interface BaseActivityMvp {
 
         void onActivityStopped();
 
-        void deleteAllData();
+        void reactOnCrackEvent();
     }
 }

@@ -6,8 +6,6 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
-import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -15,13 +13,13 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.RealmResults;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.db.model.Article;
@@ -29,7 +27,6 @@ import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
 import ru.dante.scpfoundation.util.AttributeGetter;
 import ru.dante.scpfoundation.util.DateUtils;
-import timber.log.Timber;
 import uk.co.chrisjenx.calligraphy.CalligraphyUtils;
 
 /**
@@ -46,7 +43,7 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
     @Inject
     MyPreferenceManager mMyPreferenceManager;
 
-    private List<Article> mData = new ArrayList<>();
+    private List<Article> mData;// = new ArrayList<>();
 
     private ArticleClickListener mArticleClickListener;
     private boolean shouldShowPopupOnFavoriteClick;
@@ -57,16 +54,16 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
     }
 
     public void setData(List<Article> data) {
-//        mData = data;
-        int previousCount = mData.size();
+        mData = data;
+//        int previousCount = mData.size();
 
 //        notifyItemRangeRemoved(0, previousCount);
 
-        mData.clear();
-        mData.addAll(data);
+//        mData.clear();
+//        mData.addAll(data);
 
 //        notifyItemRangeInserted(0, mData.size());
-        Timber.d("previousCount/mData.size(): %s/%s", previousCount, mData.size());
+//        Timber.d("previousCount/mData.size(): %s/%s", previousCount, mData.size());
 
 //        notifyItemRangeChanged(0, mData.size());
         notifyDataSetChanged();
@@ -131,7 +128,7 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
 
     @Override
     public int getItemCount() {
-        return mData == null ? 0 : mData.size();
+        return mData == null || !((RealmResults<Article>)mData).isValid()? 0 : mData.size();
     }
 
     public void setArticleClickListener(ArticleClickListener articleClickListener) {

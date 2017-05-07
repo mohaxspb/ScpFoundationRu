@@ -48,10 +48,6 @@ public abstract class BaseBottomSheetDialogFragment extends BottomSheetDialogFra
     }
 
     protected BaseActivity getBaseActivity() {
-//        Timber.d("getActivity().class: %s", getActivity().getClass().getSimpleName());
-//        if (!(getActivity() instanceof BaseActivity)) {
-//            throw new RuntimeException("Activity must implement BaseActivity");
-//        }
         return (BaseActivity) getActivity();
     }
 

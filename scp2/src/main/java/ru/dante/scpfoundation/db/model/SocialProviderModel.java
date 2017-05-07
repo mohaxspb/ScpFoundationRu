@@ -2,6 +2,8 @@ package ru.dante.scpfoundation.db.model;
 
 import com.vk.sdk.VKAccessToken;
 
+import java.io.Serializable;
+
 import io.realm.RealmObject;
 import ru.dante.scpfoundation.Constants;
 
@@ -10,7 +12,7 @@ import ru.dante.scpfoundation.Constants;
  * <p>
  * for scp_ru
  */
-public class SocialProviderModel extends RealmObject {
+public class SocialProviderModel extends RealmObject implements Serializable{
 
     public String provider;
 

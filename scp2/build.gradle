@@ -8,7 +8,7 @@ apply plugin: 'me.tatarka.retrolambda'
 apply from: '../versioning.gradle'
 
 ext.supportLibraryVersion = '25.3.1'
-ext.googleLibraryVersion = '10.2.1'
+ext.googleLibraryVersion = '10.2.4'
 
 android {
     compileSdkVersion 25
@@ -54,6 +54,7 @@ android {
 
             buildConfigField('String[]', 'OLD_SKUS', marketSkusProperties.get("marketSkusOld"))
             buildConfigField('String[]', 'VER_2_SKUS', marketSkusProperties.get("marketSkusVer2"))
+            buildConfigField('String[]', 'INAPP_SKUS', marketSkusProperties.get("marketSkusInapp"))
         } else {
             throw new GradleException("You need to have marketSkus.properties file in root of project with " +
                     "marketSkusOld," +
@@ -91,7 +92,6 @@ android {
                     "yandexMetricaApiKey," +
                     "adMobAppId," +
                     "adsBannerIdInterstitial," +
-                    "adsBannerIdRewarded," +
                     "vkSdkAppId," +
                     "firebaseUri," +
                     "vpsApiAddress" +
@@ -218,6 +218,8 @@ dependencies {
     compile 'com.github.techery:properratingbar:0.0.5'
     //recyclerView fast scroller
     compile 'xyz.danoz:recyclerviewfastscroller:0.1.3'
+    //circular progress
+    compile 'com.github.jakob-grabner:Circle-Progress-View:v1.3'
 }
 
 apply plugin: 'com.google.gms.google-services'

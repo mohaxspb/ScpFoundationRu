@@ -26,7 +26,7 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
         extends BasePresenter<V>
         implements BaseArticlesListMvp.Presenter<V> {
 
-    protected List<Article> mData;
+    protected RealmResults<Article> mData;
 
     BaseListArticlesPresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
         super(myPreferencesManager, dbProviderFactory, apiClient);
@@ -51,11 +51,17 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
         getView().enableSwipeRefresh(false);
 
         getDbObservable()
-//                .subscribeOn(AndroidSchedulers.mainThread())
-//                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         data -> {
+                            //check if realm is closed and resubscribe, by calling getDataFromDb
+                            if (!data.isValid()) {
+                                Timber.e("data is not valid, so unsubscribe and restart observable");
+                                mData = null;
+                                getView().updateData(mData);
+                                getDataFromDb();
+                                return;
+                            }
                             Timber.d("getDataFromDb data.size(): %s", data.size());
                             mData = data;
 //                            getView().showCenterProgress(false);
@@ -73,12 +79,13 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
                             getView().showError(e);
                         }
                 );
+
     }
 
     @Override
     public void getDataFromApi(int offset) {
         Timber.d("getDataFromApi with offset: %s", offset);
-        if (mData != null && !mData.isEmpty()) {
+        if (mData != null && mData.isValid() && !mData.isEmpty()) {
             getView().showCenterProgress(false);
             if (offset != 0) {
                 getView().enableSwipeRefresh(true);
@@ -94,6 +101,11 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
 
             getView().showCenterProgress(true);
         }
+
+        if (mData != null && !mData.isValid()) {
+            getDataFromDb();
+        }
+
         getApiObservable(offset)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -129,6 +141,9 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
 
     @Override
     public void toggleFavoriteState(Article article) {
+        if (!article.isValid()) {
+            return;
+        }
         Timber.d("toggleFavoriteState: %s", article);
         mDbProviderFactory.getDbProvider().toggleFavorite(article.url)
                 .subscribeOn(AndroidSchedulers.mainThread())
@@ -139,18 +154,24 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
 
     @Override
     public void toggleReadState(Article article) {
+        if (!article.isValid()) {
+            return;
+        }
         Timber.d("toggleReadState: %s", article);
         mDbProviderFactory.getDbProvider().toggleReaden(article.url)
                 .flatMap(articleUrl -> mDbProviderFactory.getDbProvider().getUnmanagedArticleAsyncOnes(articleUrl))
                 .flatMap(article1 -> mDbProviderFactory.getDbProvider().setArticleSynced(article1, false))
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(getToggleReadenSubscriber());
+                .subscribe(getToggleReadSubscriber());
     }
 
     //TODO think if we need to manage state of loading during confChanges
     @Override
     public void toggleOfflineState(Article article) {
+        if (!article.isValid()) {
+            return;
+        }
         Timber.d("toggleOfflineState: %s", article.url);
         if (article.text == null) {
             mApiClient.getArticle(article.url)
@@ -195,7 +216,7 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
     }
 
     @Override
-    public Subscriber<Article> getToggleReadenSubscriber() {
+    public Subscriber<Article> getToggleReadSubscriber() {
         return new Subscriber<Article>() {
             @Override
             public void onCompleted() {

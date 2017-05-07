@@ -11,7 +11,6 @@ import butterknife.BindView;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.monetization.model.BaseModel;
-import ru.dante.scpfoundation.monetization.model.OurApplication;
 import ru.dante.scpfoundation.monetization.model.VkGroupToJoin;
 import ru.dante.scpfoundation.ui.adapter.BaseAdapterClickListener;
 

@@ -19,13 +19,23 @@ public class User extends RealmObject {
 
     public String email;
 
+    public int score;
+
     public RealmList<SocialProviderModel> socialProviders;
 
-    public User(String uid, String fullName, String avatar, String email, RealmList<SocialProviderModel> socialProviders) {
+    public User(
+            String uid,
+            String fullName,
+            String avatar,
+            String email,
+            int score,
+            RealmList<SocialProviderModel> socialProviders
+    ) {
         this.uid = uid;
         this.fullName = fullName;
         this.avatar = avatar;
         this.email = email;
+        this.score = score;
         this.socialProviders = socialProviders;
     }
 
@@ -39,7 +49,8 @@ public class User extends RealmObject {
                 ", fullName='" + fullName + '\'' +
                 ", avatar='" + avatar + '\'' +
                 ", email='" + email + '\'' +
-                ", socialProviders='" + new ArrayList<>(socialProviders) + '\'' +
+                ", score=" + score +
+                ", socialProviders=" + socialProviders +
                 '}';
     }
 }

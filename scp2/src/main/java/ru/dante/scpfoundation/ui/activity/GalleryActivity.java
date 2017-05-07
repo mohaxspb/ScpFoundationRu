@@ -33,6 +33,7 @@ import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.db.model.VkImage;
 import ru.dante.scpfoundation.monetization.util.MyAdListener;
 import ru.dante.scpfoundation.mvp.base.MonetizationActions;
+import ru.dante.scpfoundation.mvp.contract.DataSyncActions;
 import ru.dante.scpfoundation.mvp.contract.GalleryScreenMvp;
 import ru.dante.scpfoundation.ui.adapter.ImagesPagerAdapter;
 import ru.dante.scpfoundation.ui.adapter.RecyclerAdapterImages;
@@ -105,6 +106,10 @@ public class GalleryActivity
         if (getIntent().hasExtra(EXTRA_SHOW_DISABLE_ADS)) {
             showSnackBarWithAction(Constants.Firebase.CallToActionReason.REMOVE_ADS);
             getIntent().removeExtra(EXTRA_SHOW_DISABLE_ADS);
+
+            @DataSyncActions.ScoreAction
+            String action = DataSyncActions.ScoreAction.INTERSTITIAL_SHOWN;
+            mPresenter.updateUserScoreForScoreAction(action);
         }
 
         if (mToolbar != null) {
@@ -115,11 +120,14 @@ public class GalleryActivity
         mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                if (position %  FirebaseRemoteConfig.getInstance()
+                if (position % FirebaseRemoteConfig.getInstance()
                         .getLong(Constants.Firebase.RemoteConfigKeys.NUM_OF_GALLERY_PHOTOS_BETWEEN_INTERSITIAL) == 0) {
                     showInterstitial(new MyAdListener() {
                         @Override
                         public void onAdClosed() {
+                            @DataSyncActions.ScoreAction
+                            String action = DataSyncActions.ScoreAction.INTERSTITIAL_SHOWN;
+                            mPresenter.updateUserScoreForScoreAction(action);
                             showSnackBarWithAction(Constants.Firebase.CallToActionReason.REMOVE_ADS);
                             requestNewInterstitial();
                         }

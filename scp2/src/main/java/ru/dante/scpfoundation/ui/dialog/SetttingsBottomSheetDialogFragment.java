@@ -245,7 +245,7 @@ public class SetttingsBottomSheetDialogFragment
             showSnackBarWithAction(Constants.Firebase.CallToActionReason.SYNC_NEED_AUTH);
             return;
         }
-        getBaseActivity().createPresenter().syncArticles(true);
+        getBaseActivity().createPresenter().syncData(true);
         dismiss();
     }
 
@@ -270,15 +270,13 @@ public class SetttingsBottomSheetDialogFragment
     @Override
     public void onResume() {
         super.onResume();
-        PreferenceManager.getDefaultSharedPreferences(getActivity())
-                .registerOnSharedPreferenceChangeListener(this);
+        PreferenceManager.getDefaultSharedPreferences(getActivity()).registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        PreferenceManager.getDefaultSharedPreferences(getActivity())
-                .unregisterOnSharedPreferenceChangeListener(this);
+        PreferenceManager.getDefaultSharedPreferences(getActivity()).unregisterOnSharedPreferenceChangeListener(this);
     }
 
     @Override

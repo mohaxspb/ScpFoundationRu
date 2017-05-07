@@ -62,6 +62,7 @@ import ru.dante.scpfoundation.monetization.util.MyNonSkippableVideoCallbacks;
 import ru.dante.scpfoundation.monetization.util.MySkippableVideoCallbacks;
 import ru.dante.scpfoundation.mvp.base.BaseActivityMvp;
 import ru.dante.scpfoundation.mvp.base.MonetizationActions;
+import ru.dante.scpfoundation.mvp.contract.DataSyncActions;
 import ru.dante.scpfoundation.ui.dialog.NewVersionDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
@@ -94,8 +95,6 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
     protected MyPreferenceManager mMyPreferenceManager;
     @Inject
     protected MyNotificationManager mMyNotificationManager;
-
-    protected FirebaseAnalytics mFirebaseAnalytics;
 
     //inapps and ads
     private IInAppBillingService mService;
@@ -137,8 +136,6 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
 
         //ads
         initAds();
-        //analitics
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         //remote config
         initAndUpdateRemoteConfig();
 
@@ -189,7 +186,6 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
         }
         Appodeal.initialize(this, appKey, Appodeal.NON_SKIPPABLE_VIDEO | Appodeal.SKIPPABLE_VIDEO);
         Appodeal.setNonSkippableVideoCallbacks(new MyNonSkippableVideoCallbacks() {
-
             @Override
             public void onNonSkippableVideoFinished() {
                 super.onNonSkippableVideoFinished();
@@ -201,10 +197,22 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
 
                 Bundle bundle = new Bundle();
                 bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.EventType.REWARD_GAINED);
-                mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+                FirebaseAnalytics.getInstance(BaseActivity.this).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+
+                @DataSyncActions.ScoreAction
+                String action = DataSyncActions.ScoreAction.REWARDED_VIDEO;
+                mPresenter.updateUserScoreForScoreAction(action);
             }
         });
-        Appodeal.setSkippableVideoCallbacks(new MySkippableVideoCallbacks());
+        Appodeal.setSkippableVideoCallbacks(new MySkippableVideoCallbacks() {
+            @Override
+            public void onSkippableVideoFinished() {
+                super.onSkippableVideoFinished();
+                @DataSyncActions.ScoreAction
+                String action = DataSyncActions.ScoreAction.REWARDED_VIDEO;
+                mPresenter.updateUserScoreForScoreAction(action);
+            }
+        });
     }
 
     @Override
@@ -212,7 +220,7 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
         //analitics
         Bundle bundle = new Bundle();
         bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.EventType.REWARD_REQUESTED);
-        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+        FirebaseAnalytics.getInstance(BaseActivity.this).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
 
         if (mMyPreferenceManager.isRewardedDescriptionShown()) {
             showRewardedVideo();
@@ -261,6 +269,10 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
             public void onAdClosed() {
                 super.onAdClosed();
                 showSnackBarWithAction(Constants.Firebase.CallToActionReason.REMOVE_ADS);
+
+                @DataSyncActions.ScoreAction
+                String action = DataSyncActions.ScoreAction.INTERSTITIAL_SHOWN;
+                mPresenter.updateUserScoreForScoreAction(action);
             }
         };
         showInterstitial(adListener, true);
@@ -273,8 +285,10 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
     @Override
     public void showInterstitial(MyAdListener adListener, boolean showVideoIfNeedAndCan) {
         if (mMyPreferenceManager.isTimeToShowVideoInsteadOfInterstitial() && Appodeal.isLoaded(Appodeal.SKIPPABLE_VIDEO)) {
+            //TODO we should redirect user to desired activity...
             Appodeal.show(this, Appodeal.SKIPPABLE_VIDEO);
         } else {
+            //add score in activity, that will be shown from close callback of listener
             mInterstitialAd.setAdListener(adListener);
             mInterstitialAd.show();
         }
@@ -294,7 +308,7 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
 
                     Bundle bundle = new Bundle();
                     bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.SNACK_BAR);
-                    mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+                    FirebaseAnalytics.getInstance(BaseActivity.this).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
                 });
                 break;
             case ENABLE_FONTS:
@@ -317,7 +331,7 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
 
                     Bundle bundle = new Bundle();
                     bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.AUTO_SYNC_SNACKBAR);
-                    mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+                    FirebaseAnalytics.getInstance(BaseActivity.this).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
                 });
                 break;
             case SYNC_NEED_AUTH:
@@ -385,6 +399,7 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
 
     @Override
     public void updateOwnedMarketItems() {
+        Timber.d("updateOwnedMarketItems");
         InappHelper.getOwnedInappsObserveble(this, mService).subscribe(
                 items -> {
                     Timber.d("market items: %s", items);
@@ -399,14 +414,16 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
                             mMyPreferenceManager.setLastTimeAdsShows(0);
 
                             showMessage(R.string.app_cracked);
-                            mPresenter.deleteAllData();
+                            mPresenter.reactOnCrackEvent();
                         }
                     } else {
                         mMyPreferenceManager.setHasSubscription(false);
                     }
                 },
-                error -> Timber.e(error, "error while getting owned items")
+                e -> Timber.e(e, "error while getting owned items")
         );
+        //also check if user joined app vk group
+        mPresenter.checkIfUserJoinedAppVkGroup();
     }
 
     @Override
@@ -494,6 +511,16 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
     }
 
     @Override
+    public void showMessageLong(String message) {
+        Snackbar.make(mRoot, message, Snackbar.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void showMessageLong(@StringRes int message) {
+        showMessageLong(getString(message));
+    }
+
+    @Override
     public void showProgressDialog(String title) {
         mProgressDialog = new MaterialDialog.Builder(this)
                 .progress(true, 0)
@@ -530,7 +557,7 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
 
                 Bundle bundle = new Bundle();
                 bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.MENU);
-                mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+                FirebaseAnalytics.getInstance(BaseActivity.this).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
                 return true;
             case R.id.night_mode_item:
                 mMyPreferenceManager.setIsNightMode(!mMyPreferenceManager.isNightMode());

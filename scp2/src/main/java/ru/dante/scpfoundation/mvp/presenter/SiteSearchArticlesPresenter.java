@@ -115,7 +115,7 @@ public class SiteSearchArticlesPresenter
     }
 
     @Override
-    public Subscriber<Article> getToggleReadenSubscriber() {
+    public Subscriber<Article> getToggleReadSubscriber() {
         return new Subscriber<Article>() {
             @Override
             public void onCompleted() {

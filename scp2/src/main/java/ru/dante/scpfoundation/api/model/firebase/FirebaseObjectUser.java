@@ -1,5 +1,6 @@
 package ru.dante.scpfoundation.api.model.firebase;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -15,21 +16,24 @@ import ru.dante.scpfoundation.db.model.User;
  * We need it as Realm stores List as RealmList, but firebase uses ArrayList
  * so we need to convert types...
  */
-public class FirebaseObjectUser {
+public class FirebaseObjectUser implements Serializable{
 
     public String uid;
+
     public String fullName;
 
     public String avatar;
 
     public String email;
 
+    public int score;
+
     public List<SocialProviderModel> socialProviders;
 
     public Map<String, ArticleInFirebase> articles;
 
     public User toRealmUser() {
-        return new User(uid, fullName, avatar, email, new RealmList<SocialProviderModel>() {{
+        return new User(uid, fullName, avatar, email, score, new RealmList<SocialProviderModel>() {{
             addAll(socialProviders);
         }});
     }
@@ -41,6 +45,7 @@ public class FirebaseObjectUser {
                 ", fullName='" + fullName + '\'' +
                 ", avatar='" + avatar + '\'' +
                 ", email='" + email + '\'' +
+                ", score=" + score +
                 ", socialProviders=" + socialProviders +
                 ", articles=" + articles +
                 '}';

@@ -1,5 +1,8 @@
 package ru.dante.scpfoundation.mvp.base;
 
+import java.util.Collections;
+
+import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.api.ApiClient;
 import ru.dante.scpfoundation.db.DbProviderFactory;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
@@ -44,5 +47,30 @@ public abstract class BaseDrawerPresenter<V extends DrawerMvp.View>
     public void onNavigationItemClicked(int id) {
         Timber.d("onNavigationItemClicked: %s", id);
         //nothing to do
+    }
+
+    @Override
+    public void onAvatarClicked() {
+        Timber.d("onAvatarClicked");
+        getView().showProgressDialog(R.string.progress_leaderboard);
+        mApiClient.getLeaderboard()
+//                .map(leaderBoardResponse -> {
+//                    Collections.sort(leaderBoardResponse.users, (user1, user) -> user1.score - user.score);
+//                    return leaderBoardResponse;
+//                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        leaderBoardResponse -> {
+                            Timber.d("getLeaderboard onNext: %s", leaderBoardResponse);
+                            getView().dismissProgressDialog();
+                            getView().showLeaderboard(leaderBoardResponse);
+                        },
+                        e -> {
+                            Timber.e(e);
+                            getView().dismissProgressDialog();
+                            getView().showError(e);
+                        }
+                );
     }
 }

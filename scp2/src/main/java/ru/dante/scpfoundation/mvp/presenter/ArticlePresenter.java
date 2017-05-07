@@ -66,8 +66,7 @@ public class ArticlePresenter
                     getView().showCenterProgress(false);
                     getView().enableSwipeRefresh(true);
                     getView().showError(error);
-                },
-                () -> Timber.d("getDataFromDb onCompleted")
+                }
         );
     }
 
@@ -85,8 +84,8 @@ public class ArticlePresenter
                             getView().showCenterProgress(false);
                             getView().enableSwipeRefresh(true);
                             getView().showSwipeProgress(false);
-                        }
-                        , error -> {
+                        },
+                        error -> {
                             Timber.e(error);
                             getView().showError(error);
 

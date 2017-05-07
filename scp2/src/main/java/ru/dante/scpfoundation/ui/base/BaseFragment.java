@@ -159,7 +159,6 @@ public abstract class BaseFragment<V extends BaseMvp.View, P extends BaseMvp.Pre
 
     @Override
     public void showMessage(String message) {
-//        Timber.d("showMessage: %s", message);
         if (!isAdded()) {
             return;
         }
@@ -168,11 +167,26 @@ public abstract class BaseFragment<V extends BaseMvp.View, P extends BaseMvp.Pre
 
     @Override
     public void showMessage(@StringRes int message) {
-//        Timber.d("showMessage: %s", message);
         if (!isAdded()) {
             return;
         }
         showMessage(getString(message));
+    }
+
+    @Override
+    public void showMessageLong(String message) {
+        if (!isAdded()) {
+            return;
+        }
+        Snackbar.make(mRoot, message, Snackbar.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void showMessageLong(@StringRes int message) {
+        if (!isAdded()) {
+            return;
+        }
+        showMessageLong(getString(message));
     }
 
     @Override

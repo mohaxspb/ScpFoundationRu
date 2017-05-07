@@ -17,6 +17,7 @@ import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.monetization.util.MyAdListener;
 import ru.dante.scpfoundation.mvp.base.MonetizationActions;
 import ru.dante.scpfoundation.mvp.contract.ArticleScreenMvp;
+import ru.dante.scpfoundation.mvp.contract.DataSyncActions;
 import ru.dante.scpfoundation.ui.adapter.ArticlesPagerAdapter;
 import ru.dante.scpfoundation.ui.base.BaseDrawerActivity;
 import ru.dante.scpfoundation.ui.dialog.TextSizeDialogFragment;
@@ -110,6 +111,10 @@ public class ArticleActivity
         if (getIntent().hasExtra(EXTRA_SHOW_DISABLE_ADS)) {
             showSnackBarWithAction(Constants.Firebase.CallToActionReason.REMOVE_ADS);
             getIntent().removeExtra(EXTRA_SHOW_DISABLE_ADS);
+
+            @DataSyncActions.ScoreAction
+            String action = DataSyncActions.ScoreAction.INTERSTITIAL_SHOWN;
+            mPresenter.updateUserScoreForScoreAction(action);
         }
     }
 

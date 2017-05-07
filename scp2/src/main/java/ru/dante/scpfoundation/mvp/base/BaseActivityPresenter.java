@@ -43,15 +43,17 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
         if (firebaseUser != null) {
             // User is signed in
             Timber.d("onAuthStateChanged:signed_in: %s", firebaseUser.getUid());
+            listenToChangesInFirebase(mMyPreferencesManager.isHasSubscription());
         } else {
             // User is signed out
             Timber.d("onAuthStateChanged: signed_out");
 
-            listenToArticlesInFirebase(false);
+            listenToChangesInFirebase(false);
         }
     };
 
     private DatabaseReference mFirebaseArticlesRef;
+    private DatabaseReference mFirebaseScoreRef;
 
     private ValueEventListener articlesChangeListener = new ValueEventListener() {
         @Override
@@ -66,6 +68,28 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
                         .saveArticlesFromFirebase(new ArrayList<>(map.values()))
                         .subscribe(
                                 result -> Timber.d("articles in realm updated!"),
+                                Timber::e
+                        );
+            }
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+            Timber.e(databaseError.toException());
+        }
+    };
+
+    private ValueEventListener scoreChangeListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            Timber.d("score in user changed!");
+            Integer score = dataSnapshot.getValue(Integer.class);
+
+            if (score != null) {
+                mDbProviderFactory.getDbProvider()
+                        .updateUserScore(score)
+                        .subscribe(
+                                result -> Timber.d("score in realm updated!"),
                                 Timber::e
                         );
             }
@@ -154,7 +178,6 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
                 .subscribe(
                         userInRealm -> {
                             Timber.d("user saved");
-                            mMyPreferencesManager.setUserId(userInRealm.uid);
                             getView().dismissProgressDialog();
                             getView().showMessage(MyApplication.getAppInstance()
                                     .getString(R.string.on_user_logined,
@@ -174,11 +197,9 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
 
     @Override
     public void logoutUser() {
+        Timber.d("logoutUser");
         mDbProviderFactory.getDbProvider().logout().subscribe(
-                result -> {
-                    Timber.d("logout successful");
-                    mMyPreferencesManager.setUserId("");
-                },
+                result -> Timber.d("logout successful"),
                 error -> Timber.e(error, "error while logout user")
         );
     }
@@ -187,22 +208,19 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
     public void onActivityStarted() {
         mAuth.addAuthStateListener(mAuthListener);
 
-        if (mMyPreferencesManager.isHasSubscription()) {
-            listenToArticlesInFirebase(true);
-        }
+        listenToChangesInFirebase(mMyPreferencesManager.isHasSubscription());
     }
 
     @Override
     public void onActivityStopped() {
         mAuth.removeAuthStateListener(mAuthListener);
 
-        listenToArticlesInFirebase(false);
+        listenToChangesInFirebase(false);
     }
 
-    private void listenToArticlesInFirebase(boolean listen) {
-        Timber.d("listenToArticlesInFirebase: %s", listen);
+    private void listenToChangesInFirebase(boolean listen) {
+        Timber.d("listenToChangesInFirebase: %s", listen);
         if (listen) {
-//            if (!TextUtils.isEmpty(mMyPreferencesManager.getUserId())) {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             if (firebaseUser != null && !TextUtils.isEmpty(firebaseUser.getUid())) {
                 if (mFirebaseArticlesRef != null) {
@@ -210,37 +228,54 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
                 }
                 mFirebaseArticlesRef = FirebaseDatabase.getInstance().getReference()
                         .child(Constants.Firebase.Refs.USERS)
-//                        .child(mMyPreferencesManager.getUserId())
                         .child(firebaseUser.getUid())
                         .child(Constants.Firebase.Refs.ARTICLES);
 
                 mFirebaseArticlesRef.addValueEventListener(articlesChangeListener);
+
+                if (mFirebaseScoreRef != null) {
+                    mFirebaseScoreRef.removeEventListener(scoreChangeListener);
+                }
+                mFirebaseScoreRef = FirebaseDatabase.getInstance().getReference()
+                        .child(Constants.Firebase.Refs.USERS)
+                        .child(firebaseUser.getUid())
+                        .child(Constants.Firebase.Refs.SCORE);
+
+                mFirebaseScoreRef.addValueEventListener(scoreChangeListener);
             } else {
                 if (mFirebaseArticlesRef != null) {
                     mFirebaseArticlesRef.removeEventListener(articlesChangeListener);
+                }
+                if (mFirebaseScoreRef != null) {
+                    mFirebaseScoreRef.removeEventListener(scoreChangeListener);
                 }
             }
         } else {
             if (mFirebaseArticlesRef != null) {
                 mFirebaseArticlesRef.removeEventListener(articlesChangeListener);
             }
+            if (mFirebaseScoreRef != null) {
+                mFirebaseScoreRef.removeEventListener(scoreChangeListener);
+            }
         }
     }
 
     @Override
-    public void deleteAllData() {
-        Timber.d("deleteAllData");
+    public void reactOnCrackEvent() {
+        Timber.d("reactOnCrackEvent");
+        mApiClient.setCrackedInFirebase()
+                .onErrorResumeNext(e -> Observable.just(null))
+                .flatMap(aVoid -> mDbProviderFactory.getDbProvider().updateUserScore(0))
+                .subscribe(
+                        newTotalScore -> {
+                            Timber.d("reactOnCrackEvent onNext");
+                            getView().dismissProgressDialog();
+                        },
+                        e -> {
+                            Timber.e(e, "reactOnCrackEvent onError");
+                            getView().dismissProgressDialog();
+                        }
+                );
 
-        mDbProviderFactory.getDbProvider().deleteAllArticlesText().subscribe(
-                aVoid -> {
-                    logoutUser();
-                    getView().dismissProgressDialog();
-                },
-                e -> {
-                    Timber.e(e);
-                    logoutUser();
-                    getView().dismissProgressDialog();
-                }
-        );
     }
 }

@@ -1,5 +1,5 @@
 <resources>
-    <dimen name="headerHeight">164dp</dimen>
+    <dimen name="headerHeight">200dp</dimen>
     <dimen name="textSizeExampleTextViewHeight">48dp</dimen>
     <dimen name="listImageHeight">200dp</dimen>
 

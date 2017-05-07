@@ -22,6 +22,10 @@ public interface BaseMvp {
 
         void showMessage(@StringRes int message);
 
+        void showMessageLong(String message);
+
+        void showMessageLong(@StringRes int message);
+
         void showError(Throwable throwable);
 
         void showProgressDialog(String title);

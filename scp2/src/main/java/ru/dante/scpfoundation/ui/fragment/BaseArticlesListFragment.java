@@ -125,13 +125,10 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
 
     @Override
     public void updateData(List<Article> data) {
-        Timber.d("updateData size: %s", data.size());
+        Timber.d("updateData size: %s", data == null ? "data is null" : data.size());
         if (!isAdded()) {
             return;
         }
-//        if (!data.isEmpty()) {
-//            showCenterProgress(false);
-//        }
         getAdapter().setData(data);
         resetOnScrollListener();
     }

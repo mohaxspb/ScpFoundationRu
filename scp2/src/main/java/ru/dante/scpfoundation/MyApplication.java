@@ -88,7 +88,7 @@ public class MyApplication extends MultiDexApplication {
 
         //secure
         if(SecureUtils.checkIfPackageChanged(this) || SecureUtils.checkLuckyPatcher(this)){
-            MyPreferenceManager myPreferenceManager = new MyPreferenceManager(this);
+            MyPreferenceManager myPreferenceManager = new MyPreferenceManager(this, null);
             myPreferenceManager.setAppCracked(true);
         }
     }
