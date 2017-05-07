@@ -656,27 +656,32 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
     @Override
     public void showNeedReloginPopup() {
         Timber.d("showNeedReloginPopup");
-        new MaterialDialog.Builder(this)
+
+        final MaterialDialog authDialog = new MaterialDialog.Builder(this)
+                .title(R.string.relogin_dialog_title)
+                .content(R.string.relogin_dialog_content)
+//                .cancelable(true)
+                .positiveText(R.string.relogin)
+                .onPositive((dialog, which) -> {
+                    dialog.dismiss();
+                    startLogin(Constants.Firebase.SocialProvider.VK);
+                })
+                .negativeText(R.string.close)
+                .onNegative((dialog1, which1) -> dialog1.dismiss())
+                .build();
+
+        final MaterialDialog dialogInfo = new MaterialDialog.Builder(this)
                 .title(R.string.need_relogin_dialog_title)
                 .content(R.string.need_relogin_dialog_content)
-                .cancelable(false)
+//                .cancelable(false)
                 .positiveText(R.string.i_read_and_accept)
                 .onPositive((dialog, which) -> {
                     dialog.dismiss();
-                    new MaterialDialog.Builder(this)
-                            .title(R.string.relogin_dialog_title)
-                            .content(R.string.relogin_dialog_content)
-                            .cancelable(false)
-                            .positiveText(R.string.relogin)
-                            .onPositive((dialog1, which1) -> {
-                                dialog1.dismiss();
-                                startLogin(Constants.Firebase.SocialProvider.VK);
-                            })
-                            .negativeText(R.string.close)
-                            .onNegative((dialog1, which1) -> dialog1.dismiss())
-                            .show();
+                    authDialog.show();
                 })
-                .show();
+                .build();
+
+        dialogInfo.show();
     }
 
     private void initAndUpdateRemoteConfig() {

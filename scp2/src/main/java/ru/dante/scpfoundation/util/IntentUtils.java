@@ -79,6 +79,10 @@ public class IntentUtils {
 
     public static void shareBitmapWithText(AppCompatActivity activity, String text, Bitmap bitmap) {
         String pathOfBmp = StorageUtils.saveImageToGallery(activity, bitmap);
+        if (pathOfBmp == null) {
+            Toast.makeText(activity, R.string.error_getting_path_to_image, Toast.LENGTH_SHORT).show();
+            return;
+        }
         Uri bmpUri = Uri.parse(pathOfBmp);
         String fullMessage = MyApplication.getAppInstance().getString(
                 R.string.share_link_text,

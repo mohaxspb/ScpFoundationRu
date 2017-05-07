@@ -28,6 +28,7 @@ public class MyPreferenceManager {
      * check if user joined app vk group each 2 hours
      */
     private static final long PERIOD_BETWEEN_APP_VK_GROUP_JOINED_CHECK_IN_MILLIS = 1000 * 60 * 60 * 2;
+    private static final long PERIOD_BETWEEN_NEED_RELOGIN_POPUP_IN_MILLIS = 1000 * 60 * 5;
 
     public interface Keys {
         String NIGHT_MODE = "NIGHT_MODE";
@@ -50,7 +51,7 @@ public class MyPreferenceManager {
         String DESIGN_FONT_PATH = "DESIGN_FONT_PATH";
         String PACKAGE_INSTALLED = "PACKAGE_INSTALLED";
         String VK_GROUP_JOINED = "VK_GROUP_JOINED";
-//        String USER_UID = "USER_UID";
+        //        String USER_UID = "USER_UID";
         String HAS_SUBSCRIPTION = "HAS_SUBSCRIPTION";
         String APP_IS_CRACKED = "APP_IS_CRACKED";
         String AUTO_SYNC_ATTEMPTS = "AUTO_SYNC_ATTEMPTS";
@@ -58,9 +59,10 @@ public class MyPreferenceManager {
         String UNSYNCED_SCORE = "UNSYNCED_SCORE";
         String UNSYNCED_VK_GROUPS = "UNSYNCED_VK_GROUPS";
         String UNSYNCED_APPS = "UNSYNCED_APPS";
-//        String HAS_LEVEL_UP_INAPP = "HAS_LEVEL_UP_INAPP";
+        //        String HAS_LEVEL_UP_INAPP = "HAS_LEVEL_UP_INAPP";
         String APP_VK_GROUP_JOINED_LAST_TIME_CHECKED = "APP_VK_GROUP_JOINED_LAST_TIME_CHECKED";
         String APP_VK_GROUP_JOINED = "APP_VK_GROUP_JOINED";
+        String NEED_RELOGIN_POPUP_LAST_TIME_CHECKED = "NEED_RELOGIN_POPUP_LAST_TIME_CHECKED";
     }
 
     private Gson mGson;
@@ -345,6 +347,22 @@ public class MyPreferenceManager {
 
     public boolean isTimeToCheckAppVkGroupJoined() {
         return System.currentTimeMillis() - getLastTimeAppVkGroupJoinedChecked() >= PERIOD_BETWEEN_APP_VK_GROUP_JOINED_CHECK_IN_MILLIS;
+    }
+
+    public void setLastTimeNeedReloginPopupShown(long timeInMillis) {
+        mPreferences.edit().putLong(Keys.NEED_RELOGIN_POPUP_LAST_TIME_CHECKED, timeInMillis).apply();
+    }
+
+    private long getLastTimeNeedReloginPopupShown() {
+        long timeFromLastShow = mPreferences.getLong(Keys.NEED_RELOGIN_POPUP_LAST_TIME_CHECKED, 0);
+        if (timeFromLastShow == 0) {
+            setLastTimeAdsShows(System.currentTimeMillis());
+        }
+        return timeFromLastShow;
+    }
+
+    public boolean isTimeToShowNeedReloginPopup() {
+        return System.currentTimeMillis() - getLastTimeNeedReloginPopupShown() >= PERIOD_BETWEEN_NEED_RELOGIN_POPUP_IN_MILLIS;
     }
 
     // secure

@@ -51,10 +51,13 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
 
             listenToChangesInFirebase(false);
 
-            if(VKSdk.isLoggedIn()){
+            if (VKSdk.isLoggedIn()) {
                 //this can be after update to 1.1.x.x+ (have vk login and do not have firebase one)
                 //so we can show popup with info and let user relogin
-                getView().showNeedReloginPopup();
+                if (mMyPreferencesManager.isTimeToShowNeedReloginPopup()) {
+                    mMyPreferencesManager.setLastTimeNeedReloginPopupShown(System.currentTimeMillis());
+                    getView().showNeedReloginPopup();
+                }
             }
         }
     };
