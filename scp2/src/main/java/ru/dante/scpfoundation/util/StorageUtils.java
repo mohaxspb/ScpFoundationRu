@@ -14,8 +14,9 @@ import static ru.dante.scpfoundation.util.IntentUtils.MY_PERMISSIONS_REQUEST_WRI
 
 /**
  * Created by Ivan Semkin on 4/27/2017.
+ *
+ * for scp_ru
  */
-
 public class StorageUtils {
     public static String saveImageToGallery(Activity activity, Bitmap image) {
         int permissionCheck = ContextCompat.checkSelfPermission(

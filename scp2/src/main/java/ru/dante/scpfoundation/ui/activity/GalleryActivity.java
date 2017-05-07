@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -68,7 +67,6 @@ public class GalleryActivity
 
     private ImagesPagerAdapter mAdapter;
     private RecyclerAdapterImages mRecyclerAdapter;
-    private BottomSheetBehavior mBottomSheetBehavior;
 
     public static void startActivity(Context context) {
         Timber.d("startActivity");
@@ -136,11 +134,8 @@ public class GalleryActivity
             }
         });
 
-        mBottomSheetBehavior = BottomSheetBehavior.from(mBottomSheet);
-
         mRecyclerAdapter = new RecyclerAdapterImages();
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(
-                this, LinearLayoutManager.HORIZONTAL, false));
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         mRecyclerView.setAdapter(mRecyclerAdapter);
         mRecyclerAdapter.setImageClickListener((position, v) -> mViewPager.setCurrentItem(position));
 
@@ -274,13 +269,13 @@ public class GalleryActivity
                     return true;
                 }
                 mAdapter.downloadImage(GalleryActivity.this, mViewPager.getCurrentItem(),
-                new SimpleTarget<Bitmap>(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) {
-                    @Override
-                    public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
-                        String desc = mAdapter.getData().get(mViewPager.getCurrentItem()).description;
-                        IntentUtils.shareBitmapWithText(GalleryActivity.this, desc, resource);
-                    }
-                });
+                        new SimpleTarget<Bitmap>(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) {
+                            @Override
+                            public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
+                                String desc = mAdapter.getData().get(mViewPager.getCurrentItem()).description;
+                                IntentUtils.shareBitmapWithText(GalleryActivity.this, desc, resource);
+                            }
+                        });
                 return true;
             case R.id.save_image:
                 if (mAdapter.getData().isEmpty()) {
@@ -290,12 +285,11 @@ public class GalleryActivity
                         new SimpleTarget<Bitmap>(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) {
                             @Override
                             public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
-                                if (StorageUtils.saveImageToGallery(GalleryActivity.this, resource) != null)
-                                    Toast.makeText(GalleryActivity.this,
-                                            R.string.image_saved, Toast.LENGTH_SHORT).show();
-                                else
-                                    Toast.makeText(GalleryActivity.this,
-                                            R.string.image_saving_error, Toast.LENGTH_SHORT).show();
+                                if (StorageUtils.saveImageToGallery(GalleryActivity.this, resource) != null) {
+                                    Toast.makeText(GalleryActivity.this, R.string.image_saved, Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(GalleryActivity.this, R.string.image_saving_error, Toast.LENGTH_SHORT).show();
+                                }
                             }
                         });
                 return true;

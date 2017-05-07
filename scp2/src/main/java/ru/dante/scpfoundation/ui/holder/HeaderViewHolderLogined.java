@@ -30,6 +30,8 @@ public class HeaderViewHolderLogined {
     public TextView levelNum;
     @BindView(R.id.logout)
     public View logout;
+    @BindView(R.id.relogin)
+    public View relogin;
     @BindView(R.id.inapp)
     public View inapp;
 

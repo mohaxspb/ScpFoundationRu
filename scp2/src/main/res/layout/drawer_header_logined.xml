@@ -123,6 +123,19 @@
         />
 
     <ImageView
+        android:id="@+id/relogin"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_toStartOf="@id/logout"
+        android:tint="@color/material_red_500"
+        android:layout_alignBottom="@id/avatarContainer"
+        android:layout_marginRight="@dimen/defaultMargin"
+        android:background="?selectableItemBackgroundBorderless"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/ic_new_releases"
+        />
+
+    <ImageView
         android:id="@+id/inapp"
         android:layout_width="50dp"
         android:layout_height="50dp"

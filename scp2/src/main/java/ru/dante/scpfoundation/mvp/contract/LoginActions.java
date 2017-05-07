@@ -15,6 +15,8 @@ public interface LoginActions {
         void startLogin(Constants.Firebase.SocialProvider provider);
 
         void updateUser(User user);
+
+        void showNeedReloginPopup();
     }
 
     interface Presenter {

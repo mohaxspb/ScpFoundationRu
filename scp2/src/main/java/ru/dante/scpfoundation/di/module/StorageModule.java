@@ -7,6 +7,8 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
 
+import java.util.Locale;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -65,7 +67,14 @@ public class StorageModule {
                         .addField(SocialProviderModel.FIELD_ID, String.class);
 
                 schema.get(Article.class.getSimpleName())
-                        .addField(Article.FIELD_SYNCED, int.class);
+                        .addField(Article.FIELD_SYNCED, int.class)
+                        .transform(obj -> {
+                            boolean isInFavorite = obj.getLong(Article.FIELD_IS_IN_FAVORITE) != Article.ORDER_NONE;
+                            boolean isInRead = obj.getBoolean(Article.FIELD_IS_IN_READEN);
+                            if (isInFavorite || isInRead) {
+                                obj.set(Article.FIELD_SYNCED, Article.SYNCED_NEED);
+                            }
+                        });
 
                 schema.get(User.class.getSimpleName())
                         .addField(User.FIELD_SCORE, int.class)
@@ -80,6 +89,9 @@ public class StorageModule {
             }
 
             //TODO add new if blocks if schema changed
+            if (oldVersion < newVersion) {
+                throw new IllegalStateException(String.format(Locale.ENGLISH, "Migration missing from v%d to v%d", oldVersion, newVersion));
+            }
         };
     }
 
