@@ -14,7 +14,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:paddingStart="@dimen/defaultMarginSmall"
+        android:paddingStart="@dimen/defaultMargin"
         android:textSize="24sp"
         tools:ignore="RtlSymmetry"
         tools:text="1"
@@ -34,7 +34,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_weight="1"
+        android:layout_weight="4"
         android:orientation="vertical"
         >
 
@@ -42,7 +42,8 @@
             android:id="@+id/name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            android:paddingTop="@dimen/defaultMarginSmall"
+            android:textSize="14sp"
             tools:text="Yuri"
             />
 
@@ -50,7 +51,9 @@
             android:id="@+id/level"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="14sp"
+            android:paddingBottom="@dimen/defaultMarginSmall"
+            android:paddingTop="@dimen/defaultMarginSmall"
+            android:textSize="12sp"
             tools:text="5 access level"
             />
     </LinearLayout>
@@ -60,9 +63,13 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_weight="1"
-        android:padding="@dimen/defaultMarginSmall"
-        android:textSize="22sp"
+        android:layout_weight="3"
+        android:gravity="end"
+        android:paddingTop="@dimen/defaultMarginSmall"
+        android:paddingBottom="@dimen/defaultMarginSmall"
+        android:paddingStart="@dimen/defaultMarginSmall"
+        android:paddingEnd="@dimen/defaultMargin"
+        android:textSize="20sp"
         tools:text="15545"
         />
 

@@ -279,48 +279,40 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
                     });
 
             //score and level
-            String levelsJsonString = FirebaseRemoteConfig.getInstance().getString(Constants.Firebase.RemoteConfigKeys.LEVELS_JSON);
-            LevelsJson levelsJson = mGson.fromJson(levelsJsonString, LevelsJson.class);
-            if (levelsJson != null) {
-                for (int i = 0; i < levelsJson.levels.size(); i++) {
-                    LevelsJson.Level level = levelsJson.levels.get(i);
-                    if (user.score < level.score) {
-                        LevelsJson.Level prevLevel = levelsJson.levels.get(i - 1);
+            LevelsJson.Level level = LevelsJson.getLevelForScore(user.score);
+            if (level.id == LevelsJson.MAX_LEVEL_ID) {
+                headerViewHolder.circleProgress.setMaxValue(level.score);
+                headerViewHolder.circleProgress.setValue(level.score);
 
-                        int levelNum = prevLevel.id;
-                        String levelTitle = prevLevel.title;
+                headerViewHolder.level.setText(level.title);
+                headerViewHolder.levelNum.setText(String.valueOf(level.id));
 
-                        int nextLevelScore = level.score;
-
-                        int max = nextLevelScore - prevLevel.score;
-                        int value = user.score - prevLevel.score;
-                        headerViewHolder.circleProgress.setMaxValue(max);
-                        headerViewHolder.circleProgress.setValue(value);
-
-                        headerViewHolder.level.setText(levelTitle);
-                        headerViewHolder.levelNum.setText(String.valueOf(levelNum));
-
-                        headerViewHolder.avatar.setOnClickListener(view -> {
-                            showMessageLong(getString(R.string.profile_score_info, user.score, max - value));
-                            mPresenter.onAvatarClicked();
-                        });
-                        break;
-                    } else if (i == levelsJson.levels.size() - 1) {
-                        //so max level reached
-                        headerViewHolder.circleProgress.setMaxValue(level.score);
-                        headerViewHolder.circleProgress.setValue(level.score);
-
-                        headerViewHolder.level.setText(level.title);
-                        headerViewHolder.levelNum.setText(String.valueOf(level.id));
-
-                        headerViewHolder.avatar.setOnClickListener(view -> {
-                            showMessageLong(getString(R.string.profile_score_info_max_level, user.score));
-                            mPresenter.onAvatarClicked();
-                        });
-                    }
-                }
+                headerViewHolder.avatar.setOnClickListener(view -> {
+                    showMessageLong(getString(R.string.profile_score_info_max_level, user.score));
+                    mPresenter.onAvatarClicked();
+                });
             } else {
-                Timber.e("levelsJson is null");
+                String levelsJsonString = FirebaseRemoteConfig.getInstance().getString(Constants.Firebase.RemoteConfigKeys.LEVELS_JSON);
+                LevelsJson levelsJson = mGson.fromJson(levelsJsonString, LevelsJson.class);
+                LevelsJson.Level prevLevel = levelsJson.levels.get(level.id - 1);
+
+                int levelNum = prevLevel.id;
+                String levelTitle = prevLevel.title;
+
+                int nextLevelScore = level.score;
+
+                int max = nextLevelScore - prevLevel.score;
+                int value = user.score - prevLevel.score;
+                headerViewHolder.circleProgress.setMaxValue(max);
+                headerViewHolder.circleProgress.setValue(value);
+
+                headerViewHolder.level.setText(levelTitle);
+                headerViewHolder.levelNum.setText(String.valueOf(levelNum));
+
+                headerViewHolder.avatar.setOnClickListener(view -> {
+                    showMessageLong(getString(R.string.profile_score_info, user.score, max - value));
+                    mPresenter.onAvatarClicked();
+                });
             }
             if (mMyPreferenceManager.isAppCracked()) {
                 headerViewHolder.circleProgress.setMaxValue(42);

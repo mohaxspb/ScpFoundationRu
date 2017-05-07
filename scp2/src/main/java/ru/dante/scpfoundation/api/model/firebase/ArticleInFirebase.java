@@ -1,11 +1,13 @@
 package ru.dante.scpfoundation.api.model.firebase;
 
+import java.io.Serializable;
+
 /**
  * Created by mohax on 26.03.2017.
  * <p>
  * for scp_ru
  */
-public class ArticleInFirebase {
+public class ArticleInFirebase implements Serializable {
 
     public boolean isFavorite;
     public boolean isRead;

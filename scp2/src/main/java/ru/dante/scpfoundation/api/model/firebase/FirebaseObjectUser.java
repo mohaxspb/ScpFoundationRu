@@ -1,5 +1,6 @@
 package ru.dante.scpfoundation.api.model.firebase;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -15,7 +16,7 @@ import ru.dante.scpfoundation.db.model.User;
  * We need it as Realm stores List as RealmList, but firebase uses ArrayList
  * so we need to convert types...
  */
-public class FirebaseObjectUser {
+public class FirebaseObjectUser implements Serializable{
 
     public String uid;
 

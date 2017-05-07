@@ -168,6 +168,7 @@
     <string name="leaderboard_dialog_title">Рейтинг агентов</string>
     <string name="refreshed">Обновлено в %s</string>
     <string name="progress_leaderboard">Связываюсь с отделом кадров Фонда…</string>
+    <string name="level">%d уровень</string>
 
     <plurals name="plurals_score">
         <item quantity="zero">%1$d очков</item>

@@ -16,6 +16,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.api.model.firebase.FirebaseObjectUser;
+import ru.dante.scpfoundation.api.model.remoteconfig.LevelsJson;
 import ru.dante.scpfoundation.ui.adapter.LeaderboardRecyclerAdapter;
 
 /**
@@ -54,8 +55,8 @@ public class LeaderboardHolder extends RecyclerView.ViewHolder {
 //        score.setText(score.getContext().getResources().getQuantityString(R.plurals.plurals_score, data.score, data.score));
         score.setText(String.valueOf(data.score));
 
-        //TODO
-//        level.setText();
+        LevelsJson.Level userLevel = LevelsJson.getLevelForScore(data.score);
+        level.setText(context.getString(R.string.level, userLevel.id));
 
         Glide.with(image.getContext())
                 .load(data.avatar)
