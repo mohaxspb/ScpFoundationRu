@@ -165,18 +165,23 @@ public class DownloadAllService extends Service {
                 downloadObjects(Constants.Urls.OBJECTS_RU, Article.FIELD_IS_IN_OBJECTS_RU);
                 break;
             case TYPE_EXPERIMETS:
+                downloadObjects(Constants.Urls.PROTOCOLS, Article.FIELD_IS_IN_EXPERIMETS);
                 break;
             case TYPE_OTHER:
+                downloadObjects(Constants.Urls.OTHERS, Article.FIELD_IS_IN_OTHER);
                 break;
             case TYPE_INCIDENTS:
+                downloadObjects(Constants.Urls.INCEDENTS, Article.FIELD_IS_IN_INCIDENTS);
                 break;
             case TYPE_INTERVIEWS:
+                downloadObjects(Constants.Urls.INTERVIEWS, Article.FIELD_IS_IN_INTERVIEWS);
                 break;
             case TYPE_ARCHIVE:
+                downloadObjects(Constants.Urls.ARCHIVE, Article.FIELD_IS_IN_ARCHIVE);
                 break;
             case TYPE_JOKES:
+                downloadObjects(Constants.Urls.JOKES, Article.FIELD_IS_IN_JOKES);
                 break;
-
             case TYPE_ALL:
                 downloadAll();
                 break;
@@ -293,11 +298,29 @@ public class DownloadAllService extends Service {
 
     private void downloadObjects(String link, String dbField) {
         showNotificationDownloadList();
-        //download list
+        //download lists
+        Observable<List<Article>> articlesObservable;
+        switch (link) {
+            case Constants.Urls.ARCHIVE:
+                articlesObservable = mApiClient.getMaterialsArchiveArticles();
+                break;
+            case Constants.Urls.JOKES:
+                articlesObservable = mApiClient.getMaterialsJokesArticles();
+                break;
+            case Constants.Urls.OBJECTS_1:
+            case Constants.Urls.OBJECTS_2:
+            case Constants.Urls.OBJECTS_3:
+            case Constants.Urls.OBJECTS_RU:
+                articlesObservable = mApiClient.getObjectsArticles(link);
+                break;
+            default:
+                articlesObservable = mApiClient.getMaterialsArticles(link);
+                break;
+        }
 
         //just for test use just n elements
 //        final int testMaxProgress = 8;
-        Subscription subscription = mApiClient.getObjectsArticles(link)
+        Subscription subscription = articlesObservable
                 .doOnNext(articles -> mMaxProgress = articles.size())
                 // just for test use just n elements
 //                .doOnNext(articles -> mMaxProgress = testMaxProgress)

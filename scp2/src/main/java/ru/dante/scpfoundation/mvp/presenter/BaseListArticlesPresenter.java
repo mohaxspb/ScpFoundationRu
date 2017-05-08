@@ -27,6 +27,7 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
         implements BaseArticlesListMvp.Presenter<V> {
 
     protected RealmResults<Article> mData;
+    private boolean isLoading;
 
     BaseListArticlesPresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
         super(myPreferencesManager, dbProviderFactory, apiClient);
@@ -66,7 +67,9 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
                             mData = data;
 //                            getView().showCenterProgress(false);
                             if (mData.isEmpty()) {
-                                getView().enableSwipeRefresh(true);
+                                getView().enableSwipeRefresh(!isLoading);
+                                getView().updateData(mData);
+                                getView().showCenterProgress(isLoading);
                             } else {
                                 getView().showCenterProgress(false);
                                 getView().updateData(mData);
@@ -106,6 +109,8 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
             getDataFromDb();
         }
 
+        isLoading = true;
+
         getApiObservable(offset)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -114,13 +119,18 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
                         data -> {
                             Timber.d("getDataFromApi load data size: %s and offset: %s", data.first, data.second);
 
+                            isLoading = false;
+
                             getView().enableSwipeRefresh(true);
                             getView().showSwipeProgress(false);
                             getView().showBottomProgress(false);
                             getView().showCenterProgress(false);
-                        }
-                        , error -> {
+                        },
+                        error -> {
                             Timber.e(error);
+
+                            isLoading = false;
+
                             getView().showError(error);
 
                             getView().enableSwipeRefresh(true);
