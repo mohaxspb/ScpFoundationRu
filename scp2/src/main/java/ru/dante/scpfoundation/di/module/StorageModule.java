@@ -108,7 +108,7 @@ public class StorageModule {
     @Provides
     @NonNull
     @Singleton
-    DbProviderFactory providesDbProviderFactory(@NonNull RealmConfiguration configuration) {
-        return new DbProviderFactory(configuration);
+    DbProviderFactory providesDbProviderFactory(@NonNull RealmConfiguration configuration, @NonNull MyPreferenceManager preferenceManager) {
+        return new DbProviderFactory(configuration, preferenceManager);
     }
 }

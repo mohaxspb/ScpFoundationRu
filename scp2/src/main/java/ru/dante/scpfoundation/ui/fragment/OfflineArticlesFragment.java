@@ -8,12 +8,10 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
-import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.mvp.contract.OfflineArticles;
 import ru.dante.scpfoundation.service.DownloadAllService;
-import ru.dante.scpfoundation.ui.base.BaseActivity;
 import timber.log.Timber;
 
 /**

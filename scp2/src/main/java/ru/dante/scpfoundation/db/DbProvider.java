@@ -3,6 +3,7 @@ package ru.dante.scpfoundation.db;
 import android.util.Pair;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.vk.sdk.VKSdk;
 
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import ru.dante.scpfoundation.db.error.ScpNoArticleForIdError;
 import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.db.model.User;
 import ru.dante.scpfoundation.db.model.VkImage;
+import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import rx.Observable;
 import timber.log.Timber;
 
@@ -27,10 +29,13 @@ import timber.log.Timber;
  * for TappAwards
  */
 public class DbProvider {
-    private Realm mRealm;
 
-    DbProvider() {
+    private Realm mRealm;
+    private MyPreferenceManager mMyPreferenceManager;
+
+    DbProvider(MyPreferenceManager myPreferenceManager) {
         mRealm = Realm.getDefaultInstance();
+        mMyPreferenceManager = myPreferenceManager;
     }
 
     public void close() {
@@ -350,6 +355,43 @@ public class DbProvider {
     public Observable<Article> saveArticle(Article article) {
         return Observable.create(subscriber -> mRealm.executeTransactionAsync(
                 realm -> {
+                    //if not have subscription
+                    //check if we have limit in downloads
+                    //if so - delete one article to save this
+                    if (!mMyPreferenceManager.isHasSubscription()) {
+                        FirebaseRemoteConfig config = FirebaseRemoteConfig.getInstance();
+                        if (!config.getBoolean(Constants.Firebase.RemoteConfigKeys.DOWNLOAD_ALL_ENABLED_FOR_FREE)) {
+                            long numOfArtsInDb = realm.where(Article.class)
+                                    .notEqualTo(Article.FIELD_TEXT, (String) null)
+                                    //remove articles from main activity
+                                    .notEqualTo(Article.FIELD_URL, Constants.Urls.ABOUT_SCP)
+                                    .notEqualTo(Article.FIELD_URL, Constants.Urls.NEWS)
+                                    .notEqualTo(Article.FIELD_URL, Constants.Urls.STORIES)
+                                    .count();
+                            Timber.d("numOfArtsInDb: %s", numOfArtsInDb);
+                            long limit = config.getLong(Constants.Firebase.RemoteConfigKeys.DOWNLOAD_FREE_ARTICLES_LIMIT);
+                            Timber.d("limit: %s", limit);
+                            if (numOfArtsInDb + 1 > limit) {
+                                int numOfArtsToDelete = (int) (numOfArtsInDb + 1 - limit);
+                                Timber.d("numOfArtsToDelete: %s", numOfArtsToDelete);
+                                for (int i = 0; i < numOfArtsToDelete; i++) {
+                                    RealmResults<Article> articlesToDelete = realm.where(Article.class)
+                                            .notEqualTo(Article.FIELD_TEXT, (String) null)
+                                            .notEqualTo(Article.FIELD_URL, article.url)
+                                            //remove articles from main activity
+                                            .notEqualTo(Article.FIELD_URL, Constants.Urls.ABOUT_SCP)
+                                            .notEqualTo(Article.FIELD_URL, Constants.Urls.NEWS)
+                                            .notEqualTo(Article.FIELD_URL, Constants.Urls.STORIES)
+                                            .findAllSorted(Article.FIELD_LOCAL_UPDATE_TIME_STAMP, Sort.ASCENDING);
+                                    if (!articlesToDelete.isEmpty()) {
+                                        Timber.d("delete text for: %s", articlesToDelete.first().title);
+                                        articlesToDelete.first().text = null;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     //check if we have app in db and update
                     Article applicationInDb = realm.where(Article.class)
                             .equalTo(Article.FIELD_URL, article.url)

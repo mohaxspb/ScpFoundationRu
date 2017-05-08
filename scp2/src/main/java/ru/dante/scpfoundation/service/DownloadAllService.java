@@ -12,6 +12,8 @@ import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Pair;
 
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
@@ -34,7 +36,17 @@ import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
-import static ru.dante.scpfoundation.service.DownloadAllService.DownloadType.*;
+import static ru.dante.scpfoundation.service.DownloadAllService.DownloadType.TYPE_1;
+import static ru.dante.scpfoundation.service.DownloadAllService.DownloadType.TYPE_2;
+import static ru.dante.scpfoundation.service.DownloadAllService.DownloadType.TYPE_3;
+import static ru.dante.scpfoundation.service.DownloadAllService.DownloadType.TYPE_ALL;
+import static ru.dante.scpfoundation.service.DownloadAllService.DownloadType.TYPE_ARCHIVE;
+import static ru.dante.scpfoundation.service.DownloadAllService.DownloadType.TYPE_EXPERIMETS;
+import static ru.dante.scpfoundation.service.DownloadAllService.DownloadType.TYPE_INCIDENTS;
+import static ru.dante.scpfoundation.service.DownloadAllService.DownloadType.TYPE_INTERVIEWS;
+import static ru.dante.scpfoundation.service.DownloadAllService.DownloadType.TYPE_JOKES;
+import static ru.dante.scpfoundation.service.DownloadAllService.DownloadType.TYPE_OTHER;
+import static ru.dante.scpfoundation.service.DownloadAllService.DownloadType.TYPE_RU;
 
 /**
  * Created by mohax on 11.01.2017.
@@ -198,7 +210,7 @@ public class DownloadAllService extends Service {
         Subscription subscription = mApiClient.getRecentArticlesPageCount()
                 .doOnNext(pageCount -> {
                     mMaxProgress = pageCount;
-//                    //test value
+                    //test value
 //                    mMaxProgress = 3;
                 })
                 .doOnError(throwable -> showNotificationSimple(
@@ -222,14 +234,28 @@ public class DownloadAllService extends Service {
                         })
                         .onExceptionResumeNext(Observable.empty()))
                 .toList()
-                .doOnNext(pageCount -> {
-                    mCurProgress = 0;
-                    mMaxProgress = pageCount.size();
-//                    //test value
-//                    mMaxProgress = 30;
-                })
 //                //test value
 //                .flatMap(list -> Observable.just(list.subList(0, mMaxProgress)))
+                .map(articles -> {
+                    mCurProgress = 0;
+                    mMaxProgress = articles.size();
+                    //if not have subscription
+                    //check if we have limit in downloads
+                    //if so - set maxProgress to limit
+                    //and use sub string of articles
+                    if (!mMyPreferenceManager.isHasSubscription()) {
+                        FirebaseRemoteConfig config = FirebaseRemoteConfig.getInstance();
+                        if (!config.getBoolean(Constants.Firebase.RemoteConfigKeys.DOWNLOAD_ALL_ENABLED_FOR_FREE)) {
+                            long limit = config.getLong(Constants.Firebase.RemoteConfigKeys.DOWNLOAD_FREE_ARTICLES_LIMIT);
+                            mMaxProgress = (int) limit;
+
+                            if (articles.size() > mMaxProgress) {
+                                articles = articles.subList(0, mMaxProgress);
+                            }
+                        }
+                    }
+                    return articles;
+                })
                 .flatMap(Observable::from)
                 //TODO refactor it - from here code is equal to objects one
                 .filter(article -> {
@@ -321,7 +347,25 @@ public class DownloadAllService extends Service {
         //just for test use just n elements
 //        final int testMaxProgress = 8;
         Subscription subscription = articlesObservable
-                .doOnNext(articles -> mMaxProgress = articles.size())
+                .map(articles -> {
+                    mMaxProgress = articles.size();
+                    //if not have subscription
+                    //check if we have limit in downloads
+                    //if so - set maxProgress to limit
+                    //and use sub string of articles
+                    if (!mMyPreferenceManager.isHasSubscription()) {
+                        FirebaseRemoteConfig config = FirebaseRemoteConfig.getInstance();
+                        if (!config.getBoolean(Constants.Firebase.RemoteConfigKeys.DOWNLOAD_ALL_ENABLED_FOR_FREE)) {
+                            long limit = config.getLong(Constants.Firebase.RemoteConfigKeys.DOWNLOAD_FREE_ARTICLES_LIMIT);
+                            mMaxProgress = (int) limit;
+
+                            if (articles.size() > mMaxProgress) {
+                                articles = articles.subList(0, mMaxProgress);
+                            }
+                        }
+                    }
+                    return articles;
+                })
                 // just for test use just n elements
 //                .doOnNext(articles -> mMaxProgress = testMaxProgress)
                 .doOnError(throwable -> showNotificationSimple(
@@ -386,8 +430,8 @@ public class DownloadAllService extends Service {
                 .subscribe(
                         article -> showNotificationDownloadProgress(getString(R.string.download_objects_title),
                                 mCurProgress, mMaxProgress, mNumOfErrors),
-                        error -> {
-                            Timber.e(error, "error download objects");
+                        e -> {
+                            Timber.e(e, "error download objects");
                             stopDownloadAndRemoveNotif();
                         },
                         () -> {
