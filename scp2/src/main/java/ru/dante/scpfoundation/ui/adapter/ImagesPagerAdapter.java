@@ -59,7 +59,6 @@ public class ImagesPagerAdapter extends PagerAdapter {
         notifyDataSetChanged();
     }
 
-    private ImageView mImageView;
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
         Context context = container.getContext();
@@ -78,7 +77,7 @@ public class ImagesPagerAdapter extends PagerAdapter {
         if (position == 0) {
             itemView.setAlpha(1f);
         }
-        mImageView = ButterKnife.findById(itemView, R.id.image);
+        ImageView imageView = ButterKnife.findById(itemView, R.id.image);
         progressBar = ButterKnife.findById(itemView, R.id.progressCenter);
         progressBar.setVisibility(View.VISIBLE);
         progressBar.setAlpha(1f);
@@ -88,7 +87,7 @@ public class ImagesPagerAdapter extends PagerAdapter {
 
         description.setText(mData.get(position).description);
 
-        PhotoViewAttacher attacher = new PhotoViewAttacher(mImageView);
+        PhotoViewAttacher attacher = new PhotoViewAttacher(imageView);
         attacher.setOnPhotoTapListener(new PhotoViewAttacher.OnPhotoTapListener() {
             @Override
             public void onPhotoTap(View view, float x, float y) {
@@ -104,7 +103,7 @@ public class ImagesPagerAdapter extends PagerAdapter {
         String url = mData.get(position).allUrls.get(mData.get(position).allUrls.size() - 1).getVal();
         Timber.d("url: %s", url);
         //remove delay
-        Glide.clear(mImageView);
+        Glide.clear(imageView);
         Glide.with(context)
                 .load(url)
                 .fitCenter()
@@ -134,7 +133,7 @@ public class ImagesPagerAdapter extends PagerAdapter {
                         return false;
                     }
                 })
-                .into(mImageView);
+                .into(imageView);
 
         container.addView(itemView);
 

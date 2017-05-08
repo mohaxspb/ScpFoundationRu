@@ -54,6 +54,12 @@
         app:showAsAction="never"
         />
     <item
+        android:id="@+id/faq"
+        android:icon="@drawable/ic_help_outline_white_24dp"
+        android:title="@string/faq"
+        app:showAsAction="never"
+        />
+    <item
         android:id="@+id/info"
         android:icon="@drawable/ic_info_outline"
         android:title="@string/app_info"
