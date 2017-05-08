@@ -1,15 +1,19 @@
 package ru.dante.scpfoundation.ui.fragment;
 
+import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
+import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.mvp.contract.OfflineArticles;
 import ru.dante.scpfoundation.service.DownloadAllService;
+import ru.dante.scpfoundation.ui.base.BaseActivity;
 import timber.log.Timber;
 
 /**
@@ -147,6 +151,11 @@ public class OfflineArticlesFragment
                         default:
                             throw new IllegalArgumentException("unexpected type: " + dialog.getSelectedIndex());
                     }
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, type);
+                    FirebaseAnalytics.getInstance(getActivity()).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+
                     DownloadAllService.startDownloadWithType(getActivity(), type);
                     dialog.dismiss();
                 })
