@@ -74,7 +74,15 @@ public class OfflineArticlesFragment
     public static final int TYPE_OBJ_2 = 1;
     public static final int TYPE_OBJ_3 = 2;
     public static final int TYPE_OBJ_RU = 3;
-    public static final int TYPE_ALL = 4;
+
+    public static final int TYPE_EXPERIMETS = 4;
+    public static final int TYPE_OTHER = 5;
+    public static final int TYPE_INCIDENTS = 6;
+    public static final int TYPE_INTERVIEWS = 7;
+    public static final int TYPE_ARCHIVE = 8;
+    public static final int TYPE_JOKES = 9;
+
+    public static final int TYPE_ALL = 10;
 
     @Override
     public void showDownloadDialog() {
@@ -115,10 +123,29 @@ public class OfflineArticlesFragment
                         case TYPE_OBJ_RU:
                             type = DownloadAllService.DownloadType.TYPE_RU;
                             break;
-                        default:
+                        case TYPE_EXPERIMETS:
+                            type = DownloadAllService.DownloadType.TYPE_EXPERIMETS;
+                            break;
+                        case TYPE_OTHER:
+                            type = DownloadAllService.DownloadType.TYPE_OTHER;
+                            break;
+                        case TYPE_INCIDENTS:
+                            type = DownloadAllService.DownloadType.TYPE_INCIDENTS;
+                            break;
+                        case TYPE_INTERVIEWS:
+                            type = DownloadAllService.DownloadType.TYPE_INTERVIEWS;
+                            break;
+                        case TYPE_ARCHIVE:
+                            type = DownloadAllService.DownloadType.TYPE_ARCHIVE;
+                            break;
+                        case TYPE_JOKES:
+                            type = DownloadAllService.DownloadType.TYPE_JOKES;
+                            break;
                         case TYPE_ALL:
                             type = DownloadAllService.DownloadType.TYPE_ALL;
                             break;
+                        default:
+                            throw new IllegalArgumentException("unexpected type: " + dialog.getSelectedIndex());
                     }
                     DownloadAllService.startDownloadWithType(getActivity(), type);
                     dialog.dismiss();

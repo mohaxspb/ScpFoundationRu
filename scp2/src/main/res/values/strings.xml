@@ -117,6 +117,14 @@
         <item>Объекты II</item>
         <item>Объекты III</item>
         <item>Объекты RU</item>
+
+        <item>Протоколы экспериментов</item>
+        <item>Отчёты об инцидентах</item>
+        <item>Интервью с очевидцами</item>
+        <item>Шуточные SCP</item>
+        <item>Архивные SCP</item>
+        <item>Прочие материалы</item>
+
         <item>Все</item>
     </string-array>
 

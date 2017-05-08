@@ -113,6 +113,11 @@ public abstract class BaseListArticlesWithSearchFragment
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
+
+        if (!isAdded()) {
+            return;
+        }
+
         SearchView searchView = new SearchView(getActivity());
         searchView.setQueryHint(Html.fromHtml("<font color = #ffffff>" + getResources().getString(R.string.search_hint) + "</font>"));
 
@@ -140,6 +145,9 @@ public abstract class BaseListArticlesWithSearchFragment
 
         if (!TextUtils.isEmpty(mSearchQuery)) {
             searchView.post(() -> {
+                if (!isAdded()) {
+                    return;
+                }
                 searchView.onActionViewExpanded();
                 searchView.setQuery(mSavedQuery, false);
             });
