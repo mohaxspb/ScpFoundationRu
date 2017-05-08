@@ -591,10 +591,32 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
             case R.id.menuItemDownloadAll:
                 showDownloadDialog();
                 return true;
+            case R.id.faq:
+                showFaqDialog();
+                return true;
             default:
                 Timber.wtf("unexpected id: %s", item.getItemId());
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void showFaqDialog() {
+        new MaterialDialog.Builder(this)
+                .title(R.string.faq)
+                .positiveText(R.string.close)
+                .items(R.array.fag_items)
+                .alwaysCallSingleChoiceCallback()
+                .itemsCallback((dialog, itemView, position, text) -> {
+                    Timber.d("itemsCallback: %s", text);
+                    new MaterialDialog.Builder(this)
+                            .title(text)
+                            .content(getResources().getStringArray(R.array.fag_items_content)[position])
+                            .positiveText(R.string.close)
+                            .build()
+                            .show();
+                })
+                .build()
+                .show();
     }
 
     @Override

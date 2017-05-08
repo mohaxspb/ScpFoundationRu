@@ -74,13 +74,15 @@ public class ReceiverTimer extends BroadcastReceiver {
                         .saveRecentArticlesList(newArticles, Constants.Api.ZERO_OFFSET)
                         .flatMap(savedArts -> Observable.just(newArticles)))
                 .subscribe(
-                        result -> {
-                            sendNotification(context, result);
-                        }
-                        , error -> Timber.e(error, "error while getRecentArts"));
+                        result -> sendNotification(context, result),
+                        error -> Timber.e(error, "error while getRecentArts"));
     }
 
     public void sendNotification(Context ctx, List<Article> dataFromWeb) {
+        if (dataFromWeb.isEmpty()) {
+            Timber.d("no new articles");
+            return;
+        }
         // Use NotificationCompat.Builder to set up our notification.
         NotificationCompat.Builder builder = new NotificationCompat.Builder(ctx);
 

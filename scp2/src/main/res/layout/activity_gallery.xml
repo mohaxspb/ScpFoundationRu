@@ -9,7 +9,7 @@
     android:fitsSystemWindows="true"
     >
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/banner_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -27,9 +27,8 @@
         <FrameLayout
             android:id="@+id/content"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/banner"
-            android:layout_below="@id/toolBar"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:background="?windowbackgroundOverrided"
             android:fitsSystemWindows="true"
             >
@@ -72,42 +71,41 @@
                     android:text="@string/refresh"
                     />
             </FrameLayout>
-        </FrameLayout>
 
-        <android.support.design.widget.CoordinatorLayout
-            android:id="@+id/bottomSheetContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/banner"
-            >
-
-            <LinearLayout
-                android:id="@+id/bottomSheet"
+            <android.support.design.widget.CoordinatorLayout
+                android:id="@+id/bottomSheetContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:behavior_peekHeight="@dimen/bottomSheetSize"
-                app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
+                android:layout_gravity="bottom"
                 >
 
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/recyclerView"
+                <LinearLayout
+                    android:id="@+id/bottomSheet"
                     android:layout_width="match_parent"
-                    android:layout_height="100dp"
-                    android:scrollbars="horizontal"
-                    />
-            </LinearLayout>
-        </android.support.design.widget.CoordinatorLayout>
+                    android:layout_height="wrap_content"
+                    app:behavior_peekHeight="@dimen/bottomSheetSize"
+                    app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
+                    >
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/recyclerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="100dp"
+                        android:scrollbars="horizontal"
+                        />
+                </LinearLayout>
+            </android.support.design.widget.CoordinatorLayout>
+        </FrameLayout>
 
         <com.google.android.gms.ads.AdView
             android:id="@+id/banner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
             ads:adSize="SMART_BANNER"
             ads:adUnitId="@string/ad_unit_id_gallery_banner"
             />
 
-    </RelativeLayout>
+    </LinearLayout>
 
     <android.support.design.widget.NavigationView
         android:id="@+id/navigationView"

@@ -23,6 +23,8 @@ import ru.dante.scpfoundation.util.AttributeGetter;
 
 /**
  * Created by Ivan Semkin on 4/27/2017.
+ * <p>
+ * for scp_ru
  */
 public class RecyclerAdapterImages extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -58,7 +60,7 @@ public class RecyclerAdapterImages extends RecyclerView.Adapter<RecyclerView.Vie
 
     @Override
     public int getItemCount() {
-        if(mVkImages != null)
+        if (mVkImages != null)
             return mVkImages.size();
         else
             return -1;
@@ -94,8 +96,7 @@ public class RecyclerAdapterImages extends RecyclerView.Adapter<RecyclerView.Vie
 
                         @Override
                         public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                            imageView.setOnClickListener(
-                                    v -> mImageClickListener.onItemClick(getAdapterPosition(), imageView));
+                            imageView.setOnClickListener(v -> mImageClickListener.onItemClick(getAdapterPosition(), imageView));
                             return false;
                         }
                     })
