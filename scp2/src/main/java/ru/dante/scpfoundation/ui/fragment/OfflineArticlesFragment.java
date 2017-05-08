@@ -1,6 +1,8 @@
 package ru.dante.scpfoundation.ui.fragment;
 
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -54,6 +56,13 @@ public class OfflineArticlesFragment
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        //remove as we already have one here
+        menu.findItem(R.id.menuItemDownloadAll).setVisible(false);
     }
 
     @Override
