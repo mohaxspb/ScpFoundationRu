@@ -31,8 +31,7 @@ import ru.dante.scpfoundation.ui.adapter.RecyclerAdapterListArticlesWithSearch;
  *
  * @see <a href="http://stackoverflow.com/a/28732909/3212712">restore search view state</a>
  */
-public abstract class BaseListArticlesWithSearchFragment
-        <V extends BaseArticlesListMvp.View, P extends BaseArticlesListMvp.Presenter<V>>
+public abstract class BaseListArticlesWithSearchFragment<V extends BaseArticlesListMvp.View, P extends BaseArticlesListMvp.Presenter<V>>
         extends BaseArticlesListFragment<V, P> {
 
     private static final String EXTRA_SEARCH_QUERY = "EXTRA_SEARCH_QUERY";

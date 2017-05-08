@@ -188,4 +188,15 @@
             }
         </value>
     </entry>
+    <!--download all-->
+    <entry>
+        <key>download_all_enabled_for_free</key>
+        <!--fix me test-->
+        <!--<value>false</value>-->
+        <value>true</value>
+    </entry>
+    <entry>
+        <key>download_free_articles_limit</key>
+        <value>10</value>
+    </entry>
 </defaultsMap>

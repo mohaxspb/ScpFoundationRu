@@ -1,10 +1,14 @@
 package ru.dante.scpfoundation.ui.fragment;
 
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
@@ -52,6 +56,13 @@ public class OfflineArticlesFragment
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        //remove as we already have one here
+        menu.findItem(R.id.menuItemDownloadAll).setVisible(false);
     }
 
     @Override
@@ -147,6 +158,11 @@ public class OfflineArticlesFragment
                         default:
                             throw new IllegalArgumentException("unexpected type: " + dialog.getSelectedIndex());
                     }
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, type);
+                    FirebaseAnalytics.getInstance(getActivity()).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+
                     DownloadAllService.startDownloadWithType(getActivity(), type);
                     dialog.dismiss();
                 })
