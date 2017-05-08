@@ -61,14 +61,13 @@ public class InappHelper {
         });
     }
 
-    public static Observable<List<Subscription>> getInappsListToBuyObserveble(Context context, IInAppBillingService mInAppBillingService) {
+    public static Observable<List<Subscription>> getSubsListToBuyObserveble(Context context, IInAppBillingService mInAppBillingService) {
         return Observable.create(subscriber -> {
             try {
                 //get all subs detailed info
                 List<Subscription> allSubscriptions = new ArrayList<>();
                 List<String> skuList = new ArrayList<>();
                 //get it from build config
-//                    Collections.addAll(skuList, BuildConfig.OLD_SKUS);
                 Collections.addAll(skuList, BuildConfig.VER_2_SKUS);
                 Timber.d("skuList: %s", skuList);
 
@@ -100,6 +99,48 @@ public class InappHelper {
                 }
             } catch (RemoteException | JSONException e) {
                 Timber.e(e);
+                subscriber.onError(e);
+            }
+        });
+    }
+
+    public static Observable<List<Subscription>> getInappsListToBuyObserveble(Context context, IInAppBillingService mInAppBillingService) {
+        return Observable.create(subscriber -> {
+            try {
+                //get all subs detailed info
+                List<Subscription> allSubscriptions = new ArrayList<>();
+                List<String> skuList = new ArrayList<>();
+                //get it from build config
+                Collections.addAll(skuList, BuildConfig.INAPP_SKUS);
+                Timber.d("skuList: %s", skuList);
+
+                Bundle querySkus = new Bundle();
+                querySkus.putStringArrayList("ITEM_ID_LIST", (ArrayList<String>) skuList);
+                Bundle skuDetails = mInAppBillingService.getSkuDetails(3, context.getPackageName(), "inapp", querySkus);
+                Timber.d("skuDetails: %s", skuDetails);
+                if (skuDetails.getInt("RESPONSE_CODE") == 0) {
+                    List<String> responseList = skuDetails.getStringArrayList("DETAILS_LIST");
+                    if (responseList == null) {
+                        subscriber.onError(new IllegalStateException("responseList is null while get subs details"));
+                        return;
+                    }
+
+                    for (String thisResponse : responseList) {
+//                            Timber.d(thisResponse);
+                        JSONObject object = new JSONObject(thisResponse);
+                        String sku = object.getString("productId");
+                        String price = object.getString("price");
+                        String title = object.getString("title");
+                        allSubscriptions.add(new Subscription(sku, price, title));
+                    }
+                    Collections.sort(allSubscriptions, Subscription.COMPARATOR_PRICE);
+
+                    subscriber.onNext(allSubscriptions);
+                    subscriber.onCompleted();
+                } else {
+                    subscriber.onError(new IllegalStateException("ownedItemsBundle.getInt(\"RESPONSE_CODE\") is not 0"));
+                }
+            } catch (RemoteException | JSONException e) {
                 subscriber.onError(e);
             }
         });

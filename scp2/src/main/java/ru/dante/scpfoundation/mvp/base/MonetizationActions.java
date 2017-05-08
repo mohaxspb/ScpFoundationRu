@@ -16,7 +16,7 @@ public interface MonetizationActions {
 
     void showInterstitial();
 
-    void showInterstitial(MyAdListener adListener);
+    void showInterstitial(MyAdListener adListener, boolean showVideoIfNeedAndCan);
 
     boolean isTimeToShowAds();
 

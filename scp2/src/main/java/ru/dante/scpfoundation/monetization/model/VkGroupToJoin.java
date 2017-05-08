@@ -6,6 +6,7 @@ package ru.dante.scpfoundation.monetization.model;
  * for pacanskiypublic
  */
 public class VkGroupToJoin extends BaseModel {
+
     public String id;
     public String name;
     public String description;
@@ -15,6 +16,9 @@ public class VkGroupToJoin extends BaseModel {
      */
     public VkGroupToJoin(String id) {
         this.id = id;
+    }
+
+    public VkGroupToJoin() {
     }
 
     @Override
@@ -35,7 +39,6 @@ public class VkGroupToJoin extends BaseModel {
         VkGroupToJoin that = (VkGroupToJoin) o;
 
         return id.equals(that.id);
-
     }
 
     @Override

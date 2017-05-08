@@ -5,7 +5,8 @@ package ru.dante.scpfoundation.monetization.model;
  * <p>
  * for pacanskiypublic
  */
-public class OurApplication extends BaseModel {
+public class PlayMarketApplication extends BaseModel {
+
     public String id;
     public String name;
     public String description;
@@ -13,13 +14,16 @@ public class OurApplication extends BaseModel {
     /**
      * use it to check lists for containing app with specifik package
      */
-    public OurApplication(String id) {
+    public PlayMarketApplication(String id) {
         this.id = id;
+    }
+
+    public PlayMarketApplication() {
     }
 
     @Override
     public String toString() {
-        return "OurApplication{" +
+        return "PlayMarketApplication{" +
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
@@ -32,10 +36,9 @@ public class OurApplication extends BaseModel {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        OurApplication that = (OurApplication) o;
+        PlayMarketApplication that = (PlayMarketApplication) o;
 
         return id.equals(that.id);
-
     }
 
     @Override

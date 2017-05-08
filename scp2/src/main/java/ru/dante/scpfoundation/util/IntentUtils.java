@@ -1,6 +1,5 @@
 package ru.dante.scpfoundation.util;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -8,10 +7,7 @@ import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.net.Uri;
-import android.provider.MediaStore;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
@@ -60,50 +56,46 @@ public class IntentUtils {
     }
 
     public static void shareViewWithText(AppCompatActivity activity, String text, View viewToShare) {
-        int permissionCheck = ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
-            Bitmap bitmap = Bitmap.createBitmap(viewToShare.getWidth(), viewToShare.getHeight(),
-                    Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(bitmap);
-            viewToShare.draw(canvas);
+        Bitmap bitmap = Bitmap.createBitmap(viewToShare.getWidth(), viewToShare.getHeight(),
+                Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        viewToShare.draw(canvas);
 
-            String pathofBmp = MediaStore.Images.Media.insertImage(activity.getContentResolver(), bitmap, "Вжух и " + text, null);
-            Uri bmpUri = Uri.parse(pathofBmp);
-            final Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
-            shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            shareIntent.putExtra(Intent.EXTRA_STREAM, bmpUri);
-            String appPackageName = activity.getPackageName();
-            shareIntent.putExtra(Intent.EXTRA_TEXT,
-                    "Отправлено из приложения \"Вжух!\"\n"
-                            + "https://play.google.com/store/apps/details?id=" + appPackageName);
-            shareIntent.setType("image/png");
+        String pathOfBmp = StorageUtils.saveImageToGallery(activity, bitmap);
+        Uri bmpUri = Uri.parse(pathOfBmp);
+        String fullMessage = MyApplication.getAppInstance().getString(
+                R.string.share_link_text,
+                text,
+                MyApplication.getAppInstance().getPackageName()
+        );
+        final Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
+        shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        shareIntent.putExtra(Intent.EXTRA_STREAM, bmpUri);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, fullMessage);
+        shareIntent.setType("image/png");
 
-            activity.startActivity(shareIntent);
-        } else {
-            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
-        }
+        activity.startActivity(shareIntent);
     }
 
     public static void shareBitmapWithText(AppCompatActivity activity, String text, Bitmap bitmap) {
-        int permissionCheck = ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
-            String pathofBmp = MediaStore.Images.Media.insertImage(activity.getContentResolver(), bitmap, "Вжух и " + text, null);
-            Uri bmpUri = Uri.parse(pathofBmp);
-            final Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
-            shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            shareIntent.putExtra(Intent.EXTRA_STREAM, bmpUri);
-            String appPackageName = activity.getPackageName();
-            shareIntent.putExtra(Intent.EXTRA_TEXT,
-                    "Отправлено из приложения \"Вжух!\"\n"
-                            + "https://play.google.com/store/apps/details?id=" + appPackageName);
-            shareIntent.setType("image/png");
-
-            activity.startActivity(shareIntent);
-        } else {
-            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+        String pathOfBmp = StorageUtils.saveImageToGallery(activity, bitmap);
+        if (pathOfBmp == null) {
+            Toast.makeText(activity, R.string.error_getting_path_to_image, Toast.LENGTH_SHORT).show();
+            return;
         }
+        Uri bmpUri = Uri.parse(pathOfBmp);
+        String fullMessage = MyApplication.getAppInstance().getString(
+                R.string.share_link_text,
+                text,
+                MyApplication.getAppInstance().getPackageName()
+        );
+        final Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
+        shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        shareIntent.putExtra(Intent.EXTRA_STREAM, bmpUri);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, fullMessage);
+        shareIntent.setType("image/png");
+
+        activity.startActivity(shareIntent);
     }
 
     public static void firebaseInvite(FragmentActivity activity) {

@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialogFragment;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.MenuItem;
@@ -114,6 +113,14 @@ public class MainActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        if ("ru.dante.scpfoundation.open.NEW".equals(getIntent().getAction())) {
+            mCurrentSelectedDrawerItemId = (R.id.mostRecentArticles);
+        } else if ("ru.dante.scpfoundation.open.FAVORITES".equals(getIntent().getAction())) {
+            mCurrentSelectedDrawerItemId = (R.id.favorite);
+        } else if ("ru.dante.scpfoundation.open.RANDOM".equals(getIntent().getAction())) {
+            mCurrentSelectedDrawerItemId = (R.id.random_page);
+        }
 
         if (getIntent().hasExtra(EXTRA_LINK)) {
             setDrawerItemFromIntent();

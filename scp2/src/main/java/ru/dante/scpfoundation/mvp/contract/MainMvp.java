@@ -1,7 +1,5 @@
 package ru.dante.scpfoundation.mvp.contract;
 
-import ru.dante.scpfoundation.mvp.base.DrawerMvp;
-
 /**
  * Created by y.kuchanov on 21.12.16.
  *

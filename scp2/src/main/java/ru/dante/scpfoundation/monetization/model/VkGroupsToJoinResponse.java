@@ -13,7 +13,7 @@ public class VkGroupsToJoinResponse {
 
     @Override
     public String toString() {
-        return "OurApplicationsResponse{" +
+        return "ApplicationsResponse{" +
                 "items=" + items +
                 '}';
     }

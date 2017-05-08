@@ -31,8 +31,7 @@ import ru.dante.scpfoundation.ui.adapter.RecyclerAdapterListArticlesWithSearch;
  *
  * @see <a href="http://stackoverflow.com/a/28732909/3212712">restore search view state</a>
  */
-public abstract class BaseListArticlesWithSearchFragment
-        <V extends BaseArticlesListMvp.View, P extends BaseArticlesListMvp.Presenter<V>>
+public abstract class BaseListArticlesWithSearchFragment<V extends BaseArticlesListMvp.View, P extends BaseArticlesListMvp.Presenter<V>>
         extends BaseArticlesListFragment<V, P> {
 
     private static final String EXTRA_SEARCH_QUERY = "EXTRA_SEARCH_QUERY";
@@ -64,12 +63,12 @@ public abstract class BaseListArticlesWithSearchFragment
 
             @Override
             public void toggleReadenState(Article article) {
-                mPresenter.toggleReadenState(article.url);
+                mPresenter.toggleReadState(article);
             }
 
             @Override
             public void toggleFavoriteState(Article article) {
-                mPresenter.toggleFavoriteState(article.url);
+                mPresenter.toggleFavoriteState(article);
             }
 
             @Override
@@ -113,6 +112,11 @@ public abstract class BaseListArticlesWithSearchFragment
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
+
+        if (!isAdded()) {
+            return;
+        }
+
         SearchView searchView = new SearchView(getActivity());
         searchView.setQueryHint(Html.fromHtml("<font color = #ffffff>" + getResources().getString(R.string.search_hint) + "</font>"));
 
@@ -126,6 +130,8 @@ public abstract class BaseListArticlesWithSearchFragment
             public boolean onQueryTextChange(String newText) {
                 mSearchQuery = newText;
                 mAdapter.sortArticles(newText);
+//                mAdapter.notifyItemRangeChanged(0, mAdapter.getItemCount());
+//                mRecyclerView.invalidate();
                 return true;
             }
         });
@@ -138,6 +144,9 @@ public abstract class BaseListArticlesWithSearchFragment
 
         if (!TextUtils.isEmpty(mSearchQuery)) {
             searchView.post(() -> {
+                if (!isAdded()) {
+                    return;
+                }
                 searchView.onActionViewExpanded();
                 searchView.setQuery(mSavedQuery, false);
             });

@@ -142,7 +142,7 @@ public class NetModule {
     Retrofit providesRetrofit(@NonNull OkHttpClient okHttpClient, @NonNull Converter.Factory converterFactory,
                               @NonNull CallAdapter.Factory callAdapterFactory) {
         return new Retrofit.Builder()
-                .baseUrl(BuildConfig.BASE_API_URL)
+                .baseUrl(BuildConfig.TOOLS_API_URL)
                 .client(okHttpClient)
                 .addConverterFactory(converterFactory)
                 .addCallAdapterFactory(callAdapterFactory)

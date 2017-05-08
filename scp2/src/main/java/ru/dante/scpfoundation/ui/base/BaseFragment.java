@@ -1,8 +1,11 @@
 package ru.dante.scpfoundation.ui.base;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -10,6 +13,7 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.hannesdorfmann.mosby.mvp.MvpFragment;
 
 import java.io.IOException;
@@ -19,6 +23,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.api.error.ScpParseException;
 import ru.dante.scpfoundation.manager.MyNotificationManager;
@@ -41,6 +46,7 @@ public abstract class BaseFragment<V extends BaseMvp.View, P extends BaseMvp.Pre
 
     @Inject
     protected P mPresenter;
+    private MaterialDialog mProgressDialog;
 
     @NonNull
     @Override
@@ -49,7 +55,7 @@ public abstract class BaseFragment<V extends BaseMvp.View, P extends BaseMvp.Pre
     }
 
     @BindView(R.id.root)
-    protected View root;
+    protected View mRoot;
 
     protected abstract int getLayoutResId();
 
@@ -116,8 +122,29 @@ public abstract class BaseFragment<V extends BaseMvp.View, P extends BaseMvp.Pre
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        if (this instanceof SharedPreferences.OnSharedPreferenceChangeListener) {
+            PreferenceManager.getDefaultSharedPreferences(getActivity())
+                    .registerOnSharedPreferenceChangeListener(
+                            (SharedPreferences.OnSharedPreferenceChangeListener) this
+                    );
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (this instanceof SharedPreferences.OnSharedPreferenceChangeListener) {
+            PreferenceManager.getDefaultSharedPreferences(getActivity())
+                    .unregisterOnSharedPreferenceChangeListener(
+                            (SharedPreferences.OnSharedPreferenceChangeListener) this
+                    );
+        }
+    }
+
+    @Override
     public void showError(Throwable throwable) {
-        Timber.e(throwable, "showError");
         if (!isAdded()) {
             return;
         }
@@ -127,6 +154,81 @@ public abstract class BaseFragment<V extends BaseMvp.View, P extends BaseMvp.Pre
         } else if (throwable instanceof ScpParseException) {
             message = getString(R.string.error_parse);
         }
-        Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(mRoot, message, Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showMessage(String message) {
+        if (!isAdded()) {
+            return;
+        }
+        Snackbar.make(mRoot, message, Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showMessage(@StringRes int message) {
+        if (!isAdded()) {
+            return;
+        }
+        showMessage(getString(message));
+    }
+
+    @Override
+    public void showMessageLong(String message) {
+        if (!isAdded()) {
+            return;
+        }
+        Snackbar.make(mRoot, message, Snackbar.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void showMessageLong(@StringRes int message) {
+        if (!isAdded()) {
+            return;
+        }
+        showMessageLong(getString(message));
+    }
+
+    @Override
+    public void showProgressDialog(String title) {
+        if (!isAdded()) {
+            return;
+        }
+        mProgressDialog = new MaterialDialog.Builder(getActivity())
+                .progress(true, 0)
+                .title(title)
+                .cancelable(false)
+                .show();
+    }
+
+    @Override
+    public void showProgressDialog(@StringRes int title) {
+        if (!isAdded()) {
+            return;
+        }
+        showProgressDialog(getString(title));
+    }
+
+    @Override
+    public void dismissProgressDialog() {
+        if (!isAdded()) {
+            return;
+        }
+        if (mProgressDialog == null || !mProgressDialog.isShowing()) {
+            return;
+        }
+        mProgressDialog.dismiss();
+    }
+
+    protected BaseActivity getBaseActivity() {
+        if (!(getActivity() instanceof BaseActivity)) {
+            throw new RuntimeException("Activity must extend BaseActivity");
+        }
+        return (BaseActivity) getActivity();
+    }
+
+    @Override
+    public void showSnackBarWithAction(Constants.Firebase.CallToActionReason reason) {
+        getBaseActivity().showSnackBarWithAction(reason);
     }
 }

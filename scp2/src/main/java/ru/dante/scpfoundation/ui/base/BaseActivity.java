@@ -13,6 +13,7 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
@@ -22,10 +23,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.vending.billing.IInAppBillingService;
 import com.appodeal.ads.Appodeal;
-import com.appodeal.ads.utils.Log;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
@@ -35,15 +36,9 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.hannesdorfmann.mosby.mvp.MvpActivity;
 import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKCallback;
+import com.vk.sdk.VKScope;
 import com.vk.sdk.VKSdk;
-import com.vk.sdk.api.VKApi;
-import com.vk.sdk.api.VKApiConst;
 import com.vk.sdk.api.VKError;
-import com.vk.sdk.api.VKParameters;
-import com.vk.sdk.api.VKRequest;
-import com.vk.sdk.api.VKResponse;
-import com.vk.sdk.api.model.VKApiUser;
-import com.vk.sdk.api.model.VKList;
 import com.yandex.metrica.YandexMetrica;
 
 import java.lang.reflect.Method;
@@ -66,12 +61,15 @@ import ru.dante.scpfoundation.monetization.util.InappHelper;
 import ru.dante.scpfoundation.monetization.util.MyAdListener;
 import ru.dante.scpfoundation.monetization.util.MyNonSkippableVideoCallbacks;
 import ru.dante.scpfoundation.monetization.util.MySkippableVideoCallbacks;
-import ru.dante.scpfoundation.mvp.base.BaseMvp;
+import ru.dante.scpfoundation.mvp.base.BaseActivityMvp;
 import ru.dante.scpfoundation.mvp.base.MonetizationActions;
+import ru.dante.scpfoundation.mvp.contract.DataSyncActions;
+import ru.dante.scpfoundation.service.DownloadAllService;
 import ru.dante.scpfoundation.ui.dialog.NewVersionDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
 import ru.dante.scpfoundation.ui.dialog.TextSizeDialogFragment;
+import ru.dante.scpfoundation.util.SecureUtils;
 import ru.dante.scpfoundation.util.SystemUtils;
 import timber.log.Timber;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
@@ -81,9 +79,9 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
  * <p>
  * for scp_ru
  */
-public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Presenter<V>>
+public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends BaseActivityMvp.Presenter<V>>
         extends MvpActivity<V, P>
-        implements BaseMvp.View, MonetizationActions, SharedPreferences.OnSharedPreferenceChangeListener {
+        implements BaseActivityMvp.View, MonetizationActions, SharedPreferences.OnSharedPreferenceChangeListener {
 
     @BindView(R.id.root)
     protected View mRoot;
@@ -100,12 +98,27 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
     @Inject
     protected MyNotificationManager mMyNotificationManager;
 
-    protected FirebaseAnalytics mFirebaseAnalytics;
-
     //inapps and ads
     private IInAppBillingService mService;
     private List<Item> mOwnedMarketItems = new ArrayList<>();
     private InterstitialAd mInterstitialAd;
+    private MaterialDialog mProgressDialog;
+
+    //download all consts
+    //TODO need to refactor it and use one enum here and in service
+    public static final int TYPE_OBJ_1 = 0;
+    public static final int TYPE_OBJ_2 = 1;
+    public static final int TYPE_OBJ_3 = 2;
+    public static final int TYPE_OBJ_RU = 3;
+
+    public static final int TYPE_EXPERIMETS = 4;
+    public static final int TYPE_OTHER = 5;
+    public static final int TYPE_INCIDENTS = 6;
+    public static final int TYPE_INTERVIEWS = 7;
+    public static final int TYPE_ARCHIVE = 8;
+    public static final int TYPE_JOKES = 9;
+
+    public static final int TYPE_ALL = 10;
 
     @NonNull
     @Override
@@ -115,6 +128,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Timber.d("onCreate");
         callInjections();
         if (mMyPreferenceManager.isNightMode()) {
             setTheme(R.style.SCP_Theme_Dark);
@@ -126,9 +140,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
         setContentView(getLayoutResId());
         ButterKnife.bind(this);
 
-        if (mToolbar != null) {
-            setSupportActionBar(mToolbar);
-        }
+        setSupportActionBar(mToolbar);
 
         mPresenter.onCreate();
 
@@ -142,12 +154,35 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
 
         //ads
         initAds();
-        //analitics
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         //remote config
         initAndUpdateRemoteConfig();
 
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void startLogin(Constants.Firebase.SocialProvider provider) {
+        switch (provider) {
+            case VK:
+                VKSdk.login(this, VKScope.EMAIL, VKScope.GROUPS);
+                break;
+            default:
+                throw new RuntimeException("unexpected provider");
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        //unsubscribe from firebase;
+        mPresenter.onActivityStopped();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //unsubscribe from firebase;
+        mPresenter.onActivityStarted();
     }
 
     @Override
@@ -165,11 +200,10 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
         Appodeal.confirm(Appodeal.SKIPPABLE_VIDEO);
         if (BuildConfig.DEBUG) {
             Appodeal.setTesting(true);
-            Appodeal.setLogLevel(Log.LogLevel.debug);
+//            Appodeal.setLogLevel(Log.LogLevel.debug);
         }
         Appodeal.initialize(this, appKey, Appodeal.NON_SKIPPABLE_VIDEO | Appodeal.SKIPPABLE_VIDEO);
         Appodeal.setNonSkippableVideoCallbacks(new MyNonSkippableVideoCallbacks() {
-
             @Override
             public void onNonSkippableVideoFinished() {
                 super.onNonSkippableVideoFinished();
@@ -177,14 +211,26 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
                 long numOfMillis = FirebaseRemoteConfig.getInstance()
                         .getLong(Constants.Firebase.RemoteConfigKeys.REWARDED_VIDEO_COOLDOWN_IN_MILLIS);
                 long hours = numOfMillis / 1000 / 60 / 60;
-                Snackbar.make(mRoot, getString(R.string.ads_reward_gained, hours), Snackbar.LENGTH_LONG).show();
+                showMessage(getString(R.string.ads_reward_gained, hours));
 
                 Bundle bundle = new Bundle();
                 bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.EventType.REWARD_GAINED);
-                mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+                FirebaseAnalytics.getInstance(BaseActivity.this).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+
+                @DataSyncActions.ScoreAction
+                String action = DataSyncActions.ScoreAction.REWARDED_VIDEO;
+                mPresenter.updateUserScoreForScoreAction(action);
             }
         });
-        Appodeal.setSkippableVideoCallbacks(new MySkippableVideoCallbacks());
+        Appodeal.setSkippableVideoCallbacks(new MySkippableVideoCallbacks() {
+            @Override
+            public void onSkippableVideoFinished() {
+                super.onSkippableVideoFinished();
+                @DataSyncActions.ScoreAction
+                String action = DataSyncActions.ScoreAction.REWARDED_VIDEO;
+                mPresenter.updateUserScoreForScoreAction(action);
+            }
+        });
     }
 
     @Override
@@ -192,7 +238,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
         //analitics
         Bundle bundle = new Bundle();
         bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.EventType.REWARD_REQUESTED);
-        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+        FirebaseAnalytics.getInstance(BaseActivity.this).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
 
         if (mMyPreferenceManager.isRewardedDescriptionShown()) {
             showRewardedVideo();
@@ -214,7 +260,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
         if (Appodeal.isLoaded(Appodeal.NON_SKIPPABLE_VIDEO)) {
             Appodeal.show(this, Appodeal.NON_SKIPPABLE_VIDEO);
         } else {
-            Snackbar.make(mRoot, R.string.reward_not_loaded_yet, Snackbar.LENGTH_SHORT).show();
+            showMessage(R.string.reward_not_loaded_yet);
         }
     }
 
@@ -232,7 +278,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
     }
 
     /**
-     * ads adsListener with showing SnackBar after ads closing and calles {@link #showInterstitial(MyAdListener)}
+     * ads adsListener with showing SnackBar after ads closing and calles {@link MonetizationActions#showInterstitial(MyAdListener, boolean)}
      */
     @Override
     public void showInterstitial() {
@@ -240,21 +286,14 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
             @Override
             public void onAdClosed() {
                 super.onAdClosed();
-                Snackbar snackbar = Snackbar.make(mRoot, R.string.remove_ads, Snackbar.LENGTH_LONG);
-                snackbar.setAction(R.string.yes_bliad, v -> {
-                    snackbar.dismiss();
-                    BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
-                    subsDF.show(getSupportFragmentManager(), subsDF.getTag());
+                showSnackBarWithAction(Constants.Firebase.CallToActionReason.REMOVE_ADS);
 
-                    Bundle bundle = new Bundle();
-                    bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.SNACK_BAR);
-                    mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
-                });
-                snackbar.setActionTextColor(ContextCompat.getColor(BaseActivity.this, R.color.material_green_500));
-                snackbar.show();
+                @DataSyncActions.ScoreAction
+                String action = DataSyncActions.ScoreAction.INTERSTITIAL_SHOWN;
+                mPresenter.updateUserScoreForScoreAction(action);
             }
         };
-        showInterstitial(adListener);
+        showInterstitial(adListener, true);
     }
 
     /**
@@ -262,13 +301,69 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
      * and it's ready and shows rewarded video or interstitial
      */
     @Override
-    public void showInterstitial(MyAdListener adListener) {
+    public void showInterstitial(MyAdListener adListener, boolean showVideoIfNeedAndCan) {
         if (mMyPreferenceManager.isTimeToShowVideoInsteadOfInterstitial() && Appodeal.isLoaded(Appodeal.SKIPPABLE_VIDEO)) {
+            //TODO we should redirect user to desired activity...
             Appodeal.show(this, Appodeal.SKIPPABLE_VIDEO);
         } else {
+            //add score in activity, that will be shown from close callback of listener
             mInterstitialAd.setAdListener(adListener);
             mInterstitialAd.show();
         }
+    }
+
+    @Override
+    public void showSnackBarWithAction(Constants.Firebase.CallToActionReason reason) {
+        Timber.d("showSnackBarWithAction: %s", reason);
+        Snackbar snackbar;
+        switch (reason) {
+            case REMOVE_ADS:
+                snackbar = Snackbar.make(mRoot, R.string.remove_ads, Snackbar.LENGTH_LONG);
+                snackbar.setAction(R.string.yes_bliad, v -> {
+                    snackbar.dismiss();
+                    BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
+                    subsDF.show(getSupportFragmentManager(), subsDF.getTag());
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.SNACK_BAR);
+                    FirebaseAnalytics.getInstance(BaseActivity.this).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+                });
+                break;
+            case ENABLE_FONTS:
+                snackbar = Snackbar.make(mRoot, R.string.only_premium, Snackbar.LENGTH_LONG);
+                snackbar.setAction(R.string.activate, action -> {
+                    BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
+                    subsDF.show(getSupportFragmentManager(), subsDF.getTag());
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.FONT);
+                    FirebaseAnalytics.getInstance(this).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+                });
+                break;
+            case ENABLE_AUTO_SYNC:
+                snackbar = Snackbar.make(mRoot, R.string.auto_sync_disabled, Snackbar.LENGTH_LONG);
+                snackbar.setAction(R.string.turn_on, v -> {
+                    snackbar.dismiss();
+                    BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
+                    subsDF.show(getSupportFragmentManager(), subsDF.getTag());
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.AUTO_SYNC_SNACKBAR);
+                    FirebaseAnalytics.getInstance(BaseActivity.this).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+                });
+                break;
+            case SYNC_NEED_AUTH:
+                snackbar = Snackbar.make(mRoot, R.string.sync_need_auth, Snackbar.LENGTH_LONG);
+                snackbar.setAction(R.string.authorize, v -> {
+                    snackbar.dismiss();
+                    startLogin(Constants.Firebase.SocialProvider.VK);
+                });
+                break;
+            default:
+                throw new IllegalArgumentException("unexpected callToActionReason");
+        }
+        snackbar.setActionTextColor(ContextCompat.getColor(BaseActivity.this, R.color.material_green_500));
+        snackbar.show();
     }
 
     @Override
@@ -322,14 +417,31 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
 
     @Override
     public void updateOwnedMarketItems() {
-        InappHelper.getOwnedInappsObserveble(this, mService)
-                .subscribe(
-                        items -> {
-                            Timber.d("market items: %s", items);
-                            mOwnedMarketItems = items;
-                            supportInvalidateOptionsMenu();
-                        },
-                        error -> Timber.e(error, "errror while getting owned items"));
+        Timber.d("updateOwnedMarketItems");
+        InappHelper.getOwnedInappsObserveble(this, mService).subscribe(
+                items -> {
+                    Timber.d("market items: %s", items);
+                    mOwnedMarketItems = items;
+                    supportInvalidateOptionsMenu();
+                    if (!mOwnedMarketItems.isEmpty()) {
+                        if (!SecureUtils.checkIfPackageChanged(this) && !SecureUtils.checkLuckyPatcher(this)) {
+                            mMyPreferenceManager.setHasSubscription(true);
+                        } else {
+                            mMyPreferenceManager.setHasSubscription(false);
+                            mMyPreferenceManager.setAppCracked(true);
+                            mMyPreferenceManager.setLastTimeAdsShows(0);
+
+                            showMessage(R.string.app_cracked);
+                            mPresenter.reactOnCrackEvent();
+                        }
+                    } else {
+                        mMyPreferenceManager.setHasSubscription(false);
+                    }
+                },
+                e -> Timber.e(e, "error while getting owned items")
+        );
+        //also check if user joined app vk group
+        mPresenter.checkIfUserJoinedAppVkGroup();
     }
 
     @Override
@@ -403,8 +515,49 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
 
     @Override
     public void showError(Throwable throwable) {
-        //TODO switch errors types
-        Snackbar.make(mRoot, throwable.getMessage(), Snackbar.LENGTH_SHORT);
+        Snackbar.make(mRoot, throwable.getMessage(), Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showMessage(String message) {
+        Snackbar.make(mRoot, message, Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showMessage(@StringRes int message) {
+        showMessage(getString(message));
+    }
+
+    @Override
+    public void showMessageLong(String message) {
+        Snackbar.make(mRoot, message, Snackbar.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void showMessageLong(@StringRes int message) {
+        showMessageLong(getString(message));
+    }
+
+    @Override
+    public void showProgressDialog(String title) {
+        mProgressDialog = new MaterialDialog.Builder(this)
+                .progress(true, 0)
+                .title(title)
+                .cancelable(false)
+                .show();
+    }
+
+    @Override
+    public void showProgressDialog(@StringRes int title) {
+        showProgressDialog(getString(title));
+    }
+
+    @Override
+    public void dismissProgressDialog() {
+        if (mProgressDialog == null || !mProgressDialog.isShowing()) {
+            return;
+        }
+        mProgressDialog.dismiss();
     }
 
     @Override
@@ -422,7 +575,7 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
 
                 Bundle bundle = new Bundle();
                 bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.MENU);
-                mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+                FirebaseAnalytics.getInstance(BaseActivity.this).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
                 return true;
             case R.id.night_mode_item:
                 mMyPreferenceManager.setIsNightMode(!mMyPreferenceManager.isNightMode());
@@ -435,10 +588,35 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
                 DialogFragment dialogFragment = NewVersionDialogFragment.newInstance(getString(R.string.app_info));
                 dialogFragment.show(getFragmentManager(), NewVersionDialogFragment.TAG);
                 return true;
+            case R.id.menuItemDownloadAll:
+                showDownloadDialog();
+                return true;
+            case R.id.faq:
+                showFaqDialog();
+                return true;
             default:
                 Timber.wtf("unexpected id: %s", item.getItemId());
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void showFaqDialog() {
+        new MaterialDialog.Builder(this)
+                .title(R.string.faq)
+                .positiveText(R.string.close)
+                .items(R.array.fag_items)
+                .alwaysCallSingleChoiceCallback()
+                .itemsCallback((dialog, itemView, position, text) -> {
+                    Timber.d("itemsCallback: %s", text);
+                    new MaterialDialog.Builder(this)
+                            .title(text)
+                            .content(getResources().getStringArray(R.array.fag_items_content)[position])
+                            .positiveText(R.string.close)
+                            .build()
+                            .show();
+                })
+                .build()
+                .show();
     }
 
     @Override
@@ -495,33 +673,10 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
                 //Пользователь успешно авторизовался
                 Timber.d("Auth successfull: %s", vkAccessToken.email);
                 if (vkAccessToken.email != null) {
-                    VKApi.users().get(VKParameters.from(VKApiConst.FIELDS, "photo_200")).executeWithListener(new VKRequest.VKRequestListener() {
-                        @Override
-                        public void onComplete(VKResponse response) {
-                            //noinspection unchecked
-                            VKApiUser vkApiUser = ((VKList<VKApiUser>) response.parsedModel).get(0);
-                            Timber.d("User name %s %s", vkApiUser.first_name, vkApiUser.last_name);
-
-                            User user = new User();
-                            user.network = User.NetworkType.VK;
-                            user.fullName = vkApiUser.first_name + " " + vkApiUser.last_name;
-                            user.firstName = vkApiUser.first_name;
-                            user.lastName = vkApiUser.last_name;
-                            user.avatar = vkApiUser.photo_200;
-
-                            mPresenter.onUserLogined(user);
-                        }
-
-                        @Override
-                        public void onError(VKError error) {
-                            super.onError(error);
-                            Toast.makeText(BaseActivity.this, error.errorMessage, Toast.LENGTH_SHORT).show();
-                        }
-                    });
-
+                    mPresenter.startFirebaseLogin(Constants.Firebase.SocialProvider.VK);
                 } else {
                     Toast.makeText(BaseActivity.this, R.string.error_login_no_email, Toast.LENGTH_SHORT).show();
-                    VKSdk.logout();
+                    mPresenter.logoutUser();
                 }
             }
 
@@ -534,6 +689,133 @@ public abstract class BaseActivity<V extends BaseMvp.View, P extends BaseMvp.Pre
         })) {
             super.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    public void showDownloadDialog() {
+        MaterialDialog materialDialog;
+        materialDialog = new MaterialDialog.Builder(this)
+                .title(R.string.download_all_title)
+                .items(R.array.download_types)
+                .itemsCallbackSingleChoice(-1, (dialog, itemView, which, text) -> {
+                    Timber.d("which: %s, text: %s", which, text);
+                    if (!DownloadAllService.isRunning()) {
+                        dialog.getActionButton(DialogAction.POSITIVE).setEnabled(true);
+                    }
+                    return true;
+                })
+                .alwaysCallSingleChoiceCallback()
+                .positiveText(R.string.download)
+                .negativeText(R.string.cancel)
+                .autoDismiss(false)
+                .onNegative((dialog, which) -> {
+                    Timber.i("onNegative clicked");
+                    dialog.dismiss();
+                })
+                .onPositive((dialog, which) -> {
+                    Timber.d("onPositive clicked");
+                    Timber.d("dialog.getSelectedIndex(): %s", dialog.getSelectedIndex());
+                    @DownloadAllService.DownloadType
+                    String type;
+                    switch (dialog.getSelectedIndex()) {
+                        case TYPE_OBJ_1:
+                            type = DownloadAllService.DownloadType.TYPE_1;
+                            break;
+                        case TYPE_OBJ_2:
+                            type = DownloadAllService.DownloadType.TYPE_2;
+                            break;
+                        case TYPE_OBJ_3:
+                            type = DownloadAllService.DownloadType.TYPE_3;
+                            break;
+                        case TYPE_OBJ_RU:
+                            type = DownloadAllService.DownloadType.TYPE_RU;
+                            break;
+                        case TYPE_EXPERIMETS:
+                            type = DownloadAllService.DownloadType.TYPE_EXPERIMETS;
+                            break;
+                        case TYPE_OTHER:
+                            type = DownloadAllService.DownloadType.TYPE_OTHER;
+                            break;
+                        case TYPE_INCIDENTS:
+                            type = DownloadAllService.DownloadType.TYPE_INCIDENTS;
+                            break;
+                        case TYPE_INTERVIEWS:
+                            type = DownloadAllService.DownloadType.TYPE_INTERVIEWS;
+                            break;
+                        case TYPE_ARCHIVE:
+                            type = DownloadAllService.DownloadType.TYPE_ARCHIVE;
+                            break;
+                        case TYPE_JOKES:
+                            type = DownloadAllService.DownloadType.TYPE_JOKES;
+                            break;
+                        case TYPE_ALL:
+                            type = DownloadAllService.DownloadType.TYPE_ALL;
+                            break;
+                        default:
+                            throw new IllegalArgumentException("unexpected type: " + dialog.getSelectedIndex());
+                    }
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, type);
+                    FirebaseAnalytics.getInstance(this).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+
+                    DownloadAllService.startDownloadWithType(this, type);
+                    dialog.dismiss();
+                })
+                .neutralText(R.string.stop_download)
+                .onNeutral((dialog, which) -> {
+                    Timber.d("onNeutral clicked");
+                    DownloadAllService.stopDownload(this);
+                    dialog.dismiss();
+                })
+                .build();
+
+        materialDialog.getActionButton(DialogAction.POSITIVE).setEnabled(false);
+
+        if (DownloadAllService.isRunning()) {
+            materialDialog.getActionButton(DialogAction.NEUTRAL).setEnabled(true);
+        } else {
+            materialDialog.getActionButton(DialogAction.NEUTRAL).setEnabled(false);
+        }
+
+        materialDialog.getRecyclerView().setOverScrollMode(View.OVER_SCROLL_NEVER);
+
+        materialDialog.show();
+    }
+
+    @Override
+    public void updateUser(User user) {
+        //nothing to do here
+    }
+
+    @Override
+    public void showNeedReloginPopup() {
+        Timber.d("showNeedReloginPopup");
+
+        final MaterialDialog authDialog = new MaterialDialog.Builder(this)
+                .title(R.string.relogin_dialog_title)
+                .content(R.string.relogin_dialog_content)
+//                .cancelable(true)
+                .positiveText(R.string.relogin)
+                .onPositive((dialog, which) -> {
+                    dialog.dismiss();
+                    startLogin(Constants.Firebase.SocialProvider.VK);
+                })
+                .negativeText(R.string.close)
+                .onNegative((dialog1, which1) -> dialog1.dismiss())
+                .build();
+
+        final MaterialDialog dialogInfo = new MaterialDialog.Builder(this)
+                .title(R.string.need_relogin_dialog_title)
+                .content(R.string.need_relogin_dialog_content)
+//                .cancelable(false)
+                .positiveText(R.string.i_read_and_accept)
+                .onPositive((dialog, which) -> {
+                    dialog.dismiss();
+                    authDialog.show();
+                })
+                .build();
+
+        dialogInfo.show();
     }
 
     private void initAndUpdateRemoteConfig() {

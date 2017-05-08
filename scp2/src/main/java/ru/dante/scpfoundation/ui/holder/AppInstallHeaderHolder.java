@@ -7,7 +7,6 @@ import butterknife.BindView;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.monetization.model.BaseModel;
 import ru.dante.scpfoundation.ui.adapter.BaseAdapterClickListener;
-import ru.dante.scpfoundation.util.DimensionUtils;
 
 /**
  * Created by mohax on 25.02.2017.

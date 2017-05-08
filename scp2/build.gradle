@@ -7,8 +7,8 @@ apply plugin: 'me.tatarka.retrolambda'
 //which must be in format major, minor, patch, where patch goes from 0 to 99
 apply from: '../versioning.gradle'
 
-ext.supportLibraryVersion = '25.2.0'
-ext.googleLibraryVersion = '10.2.0'
+ext.supportLibraryVersion = '25.3.1'
+ext.googleLibraryVersion = '10.2.4'
 
 android {
     compileSdkVersion 25
@@ -37,6 +37,8 @@ android {
         buildConfigField('int', 'TIMEOUT_SECONDS_READ', '60')
         buildConfigField('int', 'TIMEOUT_SECONDS_WRITE', '60')
 
+        buildConfigField('int', 'REALM_VERSION', '1')
+
         //play market refuses not hardcoded strings as intent filter
         resValue('string', 'receiver_action_timer', '"ru.dante.scpfoundation.receivers.ReceiverTimer"')
 //        manifestPlaceholders = [receiver_action_timer: "ru.dante.scpfoundation.receivers.ReceiverTimer"]
@@ -54,9 +56,12 @@ android {
 
             buildConfigField('String[]', 'OLD_SKUS', marketSkusProperties.get("marketSkusOld"))
             buildConfigField('String[]', 'VER_2_SKUS', marketSkusProperties.get("marketSkusVer2"))
+            buildConfigField('String[]', 'INAPP_SKUS', marketSkusProperties.get("marketSkusInapp"))
         } else {
-            buildConfigField('String[]', 'OLD_SKUS', '{"","",""}')
-            buildConfigField('String[]', 'VER_2_SKUS', '{"","",""}')
+            throw new GradleException("You need to have marketSkus.properties file in root of project with " +
+                    "marketSkusOld," +
+                    "marketSkusVer2," +
+                    " variables to build project")
         }
         //set API keys from secret file or with default values
         if (rootProject.file('apiKeys.properties').exists()) {
@@ -73,26 +78,26 @@ android {
             resValue('string', 'ad_unit_id_interstitial', apiKeysProperties.get("adsBannerIdInterstitial"))
             buildConfigField('String', 'AD_UNIT_ID_INTERSTITIAL', '"' + apiKeysProperties.get("adsBannerIdInterstitial") + '"')
 
-//            resValue('string', 'ad_unit_id_rewarded', apiKeysProperties.get("adsBannerIdRewarded"))
-//            buildConfigField('String', 'AD_UNIT_ID_REWARDED', '"' + apiKeysProperties.get("adsBannerIdRewarded") + '"')
+            resValue('string', 'ad_unit_id_gallery_banner', apiKeysProperties.get("adsBannerIdGallery"))
+            buildConfigField('String', 'AD_UNIT_ID_GALLERY_BANNER', '"' + apiKeysProperties.get("adsBannerIdGallery") + '"')
 
             resValue('integer', 'com_vk_sdk_AppId', apiKeysProperties.get("vkSdkAppId"))
             buildConfigField('int', 'VK_SDK_APP_ID', apiKeysProperties.get("vkSdkAppId"))
+
+            resValue('string', 'firebase_db_url', apiKeysProperties.get("firebaseUri"))
+            buildConfigField('String', 'FIREBASE_DB_URL', '"' + apiKeysProperties.get("firebaseUri") + '"')
+
+            resValue('string', 'tools_api_url', apiKeysProperties.get("vpsApiAddress"))
+            buildConfigField('String', 'TOOLS_API_URL', '"' + apiKeysProperties.get("vpsApiAddress") + '"')
         } else {
-            resValue('string', 'yandex_metrica_api_key', 'null')
-            buildConfigField('String', 'YANDEX_METRICA_API_KEY', 'null')
-
-            resValue('string', 'ads_app_id', 'null')
-            buildConfigField('String', 'ADS_APP_ID', 'null')
-
-            resValue('string', 'ad_unit_id_interstitial', 'null')
-            buildConfigField('String', 'AD_UNIT_ID_INTERSTITIAL', 'null')
-
-            resValue('string', 'ad_unit_id_rewarded', 'null')
-            buildConfigField('String', 'AD_UNIT_ID_REWARDED', 'null')
-
-            resValue('integer', 'com_vk_sdk_AppId', 'null')
-            buildConfigField('int', 'VK_SDK_APP_ID', 'null')
+            throw new GradleException("You need to have apiKeys.properties file in root of project with " +
+                    "yandexMetricaApiKey," +
+                    "adMobAppId," +
+                    "adsBannerIdInterstitial," +
+                    "vkSdkAppId," +
+                    "firebaseUri," +
+                    "vpsApiAddress" +
+                    " variables to build project")
         }
 
         // Enabling multidex support.
@@ -155,6 +160,8 @@ dependencies {
     compile "com.android.support:design:$supportLibraryVersion"
     compile "com.android.support:cardview-v7:$supportLibraryVersion"
     compile "com.android.support:support-annotations:$supportLibraryVersion"
+    compile "com.android.support:animated-vector-drawable:$supportLibraryVersion"
+    compile "com.android.support:support-v13:$supportLibraryVersion"
     //multidex to support more than 65K methods
     compile 'com.android.support:multidex:1.0.1'
     //rx
@@ -200,6 +207,8 @@ dependencies {
     compile "com.google.firebase:firebase-analytics:$googleLibraryVersion"
     compile "com.google.firebase:firebase-invites:$googleLibraryVersion"
     compile "com.google.firebase:firebase-ads:$googleLibraryVersion"
+    compile "com.google.firebase:firebase-database:$googleLibraryVersion"
+    compile "com.google.firebase:firebase-auth:$googleLibraryVersion"
     //appodeal
     compile project(':cheetah-mobile-3.4.7')
     compile "com.google.android.gms:play-services-ads:$googleLibraryVersion"
@@ -211,6 +220,8 @@ dependencies {
     compile 'com.github.techery:properratingbar:0.0.5'
     //recyclerView fast scroller
     compile 'xyz.danoz:recyclerviewfastscroller:0.1.3'
+    //circular progress
+    compile 'com.github.jakob-grabner:Circle-Progress-View:v1.3'
 }
 
 apply plugin: 'com.google.gms.google-services'

@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
@@ -35,9 +34,9 @@ import ru.dante.scpfoundation.api.ApiClient;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.monetization.model.AppInstallHeader;
 import ru.dante.scpfoundation.monetization.model.AppInviteModel;
+import ru.dante.scpfoundation.monetization.model.ApplicationsResponse;
 import ru.dante.scpfoundation.monetization.model.BaseModel;
-import ru.dante.scpfoundation.monetization.model.OurApplication;
-import ru.dante.scpfoundation.monetization.model.OurApplicationsResponse;
+import ru.dante.scpfoundation.monetization.model.PlayMarketApplication;
 import ru.dante.scpfoundation.monetization.model.RewardedVideo;
 import ru.dante.scpfoundation.monetization.model.VkGroupToJoin;
 import ru.dante.scpfoundation.monetization.model.VkGroupsToJoinResponse;
@@ -96,15 +95,15 @@ public class FreeAdsDisablingDialogFragment extends DialogFragment {
         if (config.getBoolean(Constants.Firebase.RemoteConfigKeys.FREE_APPS_INSTALL_ENABLED)) {
             String jsonString = config.getString(Constants.Firebase.RemoteConfigKeys.APPS_TO_INSTALL_JSON);
 
-            List<OurApplication> applications = null;
+            List<PlayMarketApplication> applications = null;
             try {
-                applications = mGson.fromJson(jsonString, OurApplicationsResponse.class).items;
+                applications = mGson.fromJson(jsonString, ApplicationsResponse.class).items;
             } catch (Exception e) {
                 Timber.e(e);
             }
             if (applications != null) {
-                List<OurApplication> availableAppsToInstall = new ArrayList<>();
-                for (OurApplication application : applications) {
+                List<PlayMarketApplication> availableAppsToInstall = new ArrayList<>();
+                for (PlayMarketApplication application : applications) {
                     if (mMyPreferenceManager.isAppInstalledForPackage(application.id)) {
                         continue;
                     }
@@ -150,7 +149,6 @@ public class FreeAdsDisablingDialogFragment extends DialogFragment {
                 }
             }
         }
-        //TODO add more options
 
         FreeAdsDisableRecyclerAdapter adapter = new FreeAdsDisableRecyclerAdapter();
         adapter.setData(data);
@@ -158,13 +156,14 @@ public class FreeAdsDisablingDialogFragment extends DialogFragment {
             Timber.d("Clicked data: %s", data1);
             if (data1 instanceof AppInviteModel) {
                 IntentUtils.firebaseInvite(getActivity());
-            } else if (data1 instanceof OurApplication) {
-                IntentUtils.tryOpenPlayMarket(getActivity(), ((OurApplication) data1).id);
+            } else if (data1 instanceof PlayMarketApplication) {
+                IntentUtils.tryOpenPlayMarket(getActivity(), ((PlayMarketApplication) data1).id);
             } else if (data1 instanceof RewardedVideo) {
                 dismiss();
                 getBaseActivity().startRewardedVideoFlow();
             } else if (data1 instanceof VkGroupToJoin) {
-                Timber.d("VkGroupToJoin: %s", ((VkGroupToJoin) data1).id);
+                String vkGroupId = ((VkGroupToJoin) data1).id;
+                Timber.d("VkGroupToJoin: %s", vkGroupId);
                 if (!VKSdk.isLoggedIn()) {
                     VKSdk.login(getActivity(), VKScope.EMAIL, VKScope.GROUPS);
                     return;
@@ -172,32 +171,37 @@ public class FreeAdsDisablingDialogFragment extends DialogFragment {
                     Toast.makeText(getActivity(), R.string.need_vk_group_access, Toast.LENGTH_LONG).show();
                     return;
                 }
-                mApiClient.joinVkGroup(((VkGroupToJoin) data1).id)
-                        .subscribe(
-                                result -> {
-                                    if (result) {
-                                        Timber.d("Successful group join");
-                                        mMyPreferenceManager.setVkGroupJoined(((VkGroupToJoin) data1).id);
-                                        mMyPreferenceManager.applyAwardVkGroupJoined();
+                mApiClient.joinVkGroup(vkGroupId).subscribe(
+                        result -> {
+                            if (result) {
+                                Timber.d("Successful group join");
+                                mMyPreferenceManager.setVkGroupJoined(vkGroupId);
+                                mMyPreferenceManager.applyAwardVkGroupJoined();
 
-                                        long numOfMillis = FirebaseRemoteConfig.getInstance()
-                                                .getLong(Constants.Firebase.RemoteConfigKeys.FREE_VK_GROUPS_JOIN_REWARD);
-                                        long hours = numOfMillis / 1000 / 60 / 60;
+                                long numOfMillis = FirebaseRemoteConfig.getInstance()
+                                        .getLong(Constants.Firebase.RemoteConfigKeys.FREE_VK_GROUPS_JOIN_REWARD);
+                                long hours = numOfMillis / 1000 / 60 / 60;
 
-                                        showNotificationSimple(getActivity(), getString(R.string.ads_reward_gained, hours), getString(R.string.thanks_for_supporting_us));
+                                getBaseActivity().createPresenter().updateUserScoreForVkGroup(vkGroupId);
 
-                                        Bundle bundle = new Bundle();
-                                        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "group" + ((VkGroupToJoin) data1).id);
-                                        FirebaseAnalytics.getInstance(getActivity()).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
-                                    } else {
-                                        Timber.e("error group join");
-                                    }
-                                },
-                                error -> {
-                                    Timber.e(error, "error while join group");
-                                    Toast.makeText(getActivity(), error.getMessage(), Toast.LENGTH_LONG).show();
-                                }
-                        );
+                                showNotificationSimple(getActivity(), getString(R.string.ads_reward_gained, hours), getString(R.string.thanks_for_supporting_us));
+
+                                data.remove(data1);
+                                adapter.notifyDataSetChanged();
+
+                                Bundle bundle = new Bundle();
+                                bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "group" + vkGroupId);
+                                FirebaseAnalytics.getInstance(getActivity()).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+
+                            } else {
+                                Timber.e("error group join");
+                            }
+                        },
+                        e -> {
+                            Timber.e(e, "error while join group");
+                            Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                );
             } else {
                 Timber.wtf("Unexpected type!");
             }

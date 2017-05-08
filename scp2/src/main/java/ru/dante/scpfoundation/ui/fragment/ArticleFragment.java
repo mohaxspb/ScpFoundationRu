@@ -3,9 +3,7 @@ package ru.dante.scpfoundation.ui.fragment;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -36,6 +34,7 @@ import ru.dante.scpfoundation.ui.activity.ArticleActivity;
 import ru.dante.scpfoundation.ui.activity.MainActivity;
 import ru.dante.scpfoundation.ui.adapter.RecyclerAdapterArticle;
 import ru.dante.scpfoundation.ui.base.BaseFragment;
+import ru.dante.scpfoundation.ui.util.ReachBottomRecyclerScrollListener;
 import ru.dante.scpfoundation.ui.util.SetTextViewHTML;
 import ru.dante.scpfoundation.util.DialogUtils;
 import timber.log.Timber;
@@ -172,15 +171,7 @@ public class ArticleFragment
         super.setUserVisibleHint(isVisibleToUser);
 //        Timber.d("setUserVisibleHint url: %s, isVisibleToUser: %b", url, isVisibleToUser);
         if (isVisibleToUser && mArticle != null) {
-            if (getActivity() instanceof ToolbarStateSetter) {
-                if (mArticle.title != null) {
-                    ((ToolbarStateSetter) getActivity()).setTitle(mArticle.title);
-                }
-                ((ToolbarStateSetter) getActivity()).setFavoriteState(mArticle.isInFavorite != Article.ORDER_NONE);
-                if (mArticle.text != null && !mArticle.isInReaden) {
-                    mPresenter.setArticleIsReaden(mArticle.url);
-                }
-            }
+            updateActivityMenuState();
         }
     }
 
@@ -196,15 +187,7 @@ public class ArticleFragment
         }
 //        Timber.d("setUserVisibleHint url: %s, value: %b", url, getUserVisibleHint());
         if (getUserVisibleHint()) {
-            if (getActivity() instanceof ToolbarStateSetter) {
-                if (mArticle.title != null) {
-                    ((ToolbarStateSetter) getActivity()).setTitle(mArticle.title);
-                }
-                ((ToolbarStateSetter) getActivity()).setFavoriteState(mArticle.isInFavorite != Article.ORDER_NONE);
-                if (mArticle.text != null && !mArticle.isInReaden) {
-                    mPresenter.setArticleIsReaden(mArticle.url);
-                }
-            }
+            updateActivityMenuState();
         }
         if (mArticle.hasTabs) {
             tabLayout.clearOnTabSelectedListeners();
@@ -248,6 +231,25 @@ public class ArticleFragment
         } else {
             tabLayout.setVisibility(View.GONE);
             mAdapter.setData(mArticle);
+        }
+
+        mRecyclerView.addOnScrollListener(new ReachBottomRecyclerScrollListener() {
+            @Override
+            public void onBottomReached() {
+                Timber.d("onBottomReached");
+                if (mArticle.text != null && !mArticle.isInReaden) {
+                    mPresenter.setArticleIsReaden(mArticle.url);
+                }
+            }
+        });
+    }
+
+    private void updateActivityMenuState() {
+        if (getActivity() instanceof ToolbarStateSetter) {
+            if (mArticle.title != null) {
+                ((ToolbarStateSetter) getActivity()).setTitle(mArticle.title);
+            }
+            ((ToolbarStateSetter) getActivity()).setFavoriteState(mArticle.isInFavorite != Article.ORDER_NONE);
         }
     }
 
@@ -329,7 +331,7 @@ public class ArticleFragment
 
     @Override
     public void onUnsupportedLinkPressed(String link) {
-        Snackbar.make(root, R.string.unsupported_link, Snackbar.LENGTH_SHORT).show();
+        showMessage(R.string.unsupported_link);
     }
 
     @Override
@@ -344,20 +346,6 @@ public class ArticleFragment
             Timber.e(e, "error play music");
             showError(e);
         }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        PreferenceManager.getDefaultSharedPreferences(getActivity())
-                .registerOnSharedPreferenceChangeListener(this);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        PreferenceManager.getDefaultSharedPreferences(getActivity())
-                .unregisterOnSharedPreferenceChangeListener(this);
     }
 
     @Override

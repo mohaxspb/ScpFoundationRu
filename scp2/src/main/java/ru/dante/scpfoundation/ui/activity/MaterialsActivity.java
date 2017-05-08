@@ -4,13 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialogFragment;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
 import android.view.MenuItem;
-
-import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.Arrays;
 import java.util.List;
@@ -20,9 +16,9 @@ import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.monetization.util.MyAdListener;
 import ru.dante.scpfoundation.mvp.base.MonetizationActions;
+import ru.dante.scpfoundation.mvp.contract.DataSyncActions;
 import ru.dante.scpfoundation.mvp.contract.MaterialsScreenMvp;
 import ru.dante.scpfoundation.ui.base.BaseDrawerActivity;
-import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
 import ru.dante.scpfoundation.ui.dialog.TextSizeDialogFragment;
 import ru.dante.scpfoundation.ui.fragment.ArticleFragment;
 import ru.dante.scpfoundation.ui.fragment.FragmentMaterialsAll;
@@ -54,7 +50,7 @@ public class MaterialsActivity
                             intent.putExtra(EXTRA_SHOW_DISABLE_ADS, true);
                             context.startActivity(intent);
                         }
-                    });
+                    }, true);
                     return;
                 } else {
                     Timber.d("Ads not loaded yet");
@@ -71,22 +67,15 @@ public class MaterialsActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Timber.d("onCreate");
         super.onCreate(savedInstanceState);
 
         if (getIntent().hasExtra(EXTRA_SHOW_DISABLE_ADS)) {
-            Snackbar snackbar = Snackbar.make(mRoot, R.string.remove_ads, Snackbar.LENGTH_LONG);
-            snackbar.setAction(R.string.yes_bliad, v -> {
-                snackbar.dismiss();
-                BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
-                subsDF.show(getSupportFragmentManager(), subsDF.getTag());
+            showSnackBarWithAction(Constants.Firebase.CallToActionReason.REMOVE_ADS);
+            getIntent().removeExtra(EXTRA_SHOW_DISABLE_ADS);
 
-                Bundle bundle = new Bundle();
-                bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.MAIN_TO_ARTICLE_SNACK_BAR);
-                mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
-            });
-            snackbar.setActionTextColor(ContextCompat.getColor(this, R.color.material_amber_500));
-            snackbar.show();
+            @DataSyncActions.ScoreAction
+            String action = DataSyncActions.ScoreAction.INTERSTITIAL_SHOWN;
+            mPresenter.updateUserScoreForScoreAction(action);
         }
 
         if (savedInstanceState == null) {

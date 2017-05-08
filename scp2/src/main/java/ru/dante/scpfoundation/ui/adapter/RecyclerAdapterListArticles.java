@@ -19,6 +19,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.RealmResults;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.db.model.Article;
@@ -42,7 +43,7 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
     @Inject
     MyPreferenceManager mMyPreferenceManager;
 
-    private List<Article> mData;
+    private List<Article> mData;// = new ArrayList<>();
 
     private ArticleClickListener mArticleClickListener;
     private boolean shouldShowPopupOnFavoriteClick;
@@ -54,7 +55,34 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
 
     public void setData(List<Article> data) {
         mData = data;
+//        int previousCount = mData.size();
+
+//        notifyItemRangeRemoved(0, previousCount);
+
+//        mData.clear();
+//        mData.addAll(data);
+
+//        notifyItemRangeInserted(0, mData.size());
+//        Timber.d("previousCount/mData.size(): %s/%s", previousCount, mData.size());
+
+//        notifyItemRangeChanged(0, mData.size());
         notifyDataSetChanged();
+
+//        if (previousCount != mData.size()) {
+//            Timber.d("previousCount/mData.size(): %s/%s", previousCount, mData);
+//
+//            notifyItemRangeInserted(0, mData.size());
+//        } else {
+//            notifyItemRangeChanged(0, mData.size());
+////            notifyDataSetChanged();
+//        }
+//        notifyItemRangeInserted(0, mData.size());
+//        notifyDataSetChanged();
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return mData.get(position).url.hashCode();
     }
 
     @Override
@@ -100,7 +128,8 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
 
     @Override
     public int getItemCount() {
-        return mData == null ? 0 : mData.size();
+//        return mData == null || !((RealmResults<Article>)mData).isValid()? 0 : mData.size();
+        return mData == null || ((mData instanceof RealmResults) && !((RealmResults<Article>) mData).isValid()) ? 0 : mData.size();
     }
 
     public void setArticleClickListener(ArticleClickListener articleClickListener) {
@@ -273,7 +302,6 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
 
         HolderWithImage(View itemView) {
             super(itemView);
-//            ButterKnife.bind(this, itemView);
         }
 
         void bind(Article article) {
@@ -334,11 +362,10 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
         }
     }
 
-    class HolderMedium extends HolderWithImage {
+    private class HolderMedium extends HolderWithImage {
 
         HolderMedium(View itemView) {
             super(itemView);
-//            ButterKnife.bind(this, itemView);
         }
 
         @Override

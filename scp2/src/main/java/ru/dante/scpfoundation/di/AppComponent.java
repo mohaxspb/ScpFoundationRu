@@ -8,6 +8,7 @@ import ru.dante.scpfoundation.di.module.NetModule;
 import ru.dante.scpfoundation.di.module.NotificationModule;
 import ru.dante.scpfoundation.di.module.PresentersModule;
 import ru.dante.scpfoundation.di.module.StorageModule;
+import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.monetization.util.MyAdListener;
 import ru.dante.scpfoundation.monetization.util.MySkippableVideoCallbacks;
 import ru.dante.scpfoundation.receivers.AppInstallReceiver;
@@ -20,9 +21,12 @@ import ru.dante.scpfoundation.ui.activity.LicenceActivity;
 import ru.dante.scpfoundation.ui.activity.MainActivity;
 import ru.dante.scpfoundation.ui.activity.MaterialsActivity;
 import ru.dante.scpfoundation.ui.adapter.RecyclerAdapterArticle;
+import ru.dante.scpfoundation.ui.adapter.RecyclerAdapterImages;
 import ru.dante.scpfoundation.ui.adapter.RecyclerAdapterListArticles;
 import ru.dante.scpfoundation.ui.adapter.RecyclerAdapterSubscriptions;
+import ru.dante.scpfoundation.ui.adapter.SettingsSpinnerAdapter;
 import ru.dante.scpfoundation.ui.dialog.FreeAdsDisablingDialogFragment;
+import ru.dante.scpfoundation.ui.dialog.LeaderboardDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.NewVersionDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
@@ -110,13 +114,19 @@ public interface AppComponent {
 
     void inject(FreeAdsDisablingDialogFragment dialogFragment);
 
+    void inject(LeaderboardDialogFragment dialogFragment);
+
     void inject(SetttingsBottomSheetDialogFragment bottomSheetDialogFragment);
 
     void inject(RecyclerAdapterListArticles adapterNewArticles);
 
+    void inject(RecyclerAdapterImages adapterImages);
+
     void inject(RecyclerAdapterArticle adapterNewArticles);
 
     void inject(RecyclerAdapterSubscriptions adapterSubscriptions);
+
+    void inject(SettingsSpinnerAdapter adapter);
 
     void inject(DownloadAllService service);
 
