@@ -78,8 +78,9 @@ import timber.log.Timber;
  */
 public class ApiClient {
 
-    private final MyPreferenceManager mPreferencesManager;
-    private final OkHttpClient mOkHttpClient;
+    @SuppressWarnings("unused")
+    private MyPreferenceManager mPreferencesManager;
+    private OkHttpClient mOkHttpClient;
     private Gson mGson;
 
     private VpsServer mVpsServer;
@@ -953,7 +954,7 @@ public class ApiClient {
         return images;
     }
 
-    public Observable<VKApiUser> getUserDataFromVk() {
+    private Observable<VKApiUser> getUserDataFromVk() {
         return Observable.create(subscriber -> VKApi.users().get(VKParameters.from(VKApiConst.FIELDS, "photo_200")).executeWithListener(new VKRequest.VKRequestListener() {
             @Override
             public void onComplete(VKResponse response) {
@@ -1260,48 +1261,48 @@ public class ApiClient {
         });
     }
 
-    public Observable<List<Article>> writeArticlesToFirebase(List<Article> articles) {
-        //TODO caclulate how many new articles we add and return it to calculate hoe much score we should add
-        //I think that this can be done via calculate initial childs of ARTICLE ref minus result childs of ARTICLE ref
-        return Observable.create(subscriber -> {
-            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-            if (firebaseUser == null) {
-                subscriber.onError(new IllegalArgumentException("firebase user is null"));
-                return;
-            }
-
-            Map<String, Object> users = new HashMap<>();
-
-            for (Article article : articles) {
-                String url = article.url.replace(BuildConfig.BASE_API_URL, "");
-
-                ArticleInFirebase articleInFirebase = new ArticleInFirebase(
-                        article.isInFavorite != Article.ORDER_NONE,
-                        article.isInReaden,
-                        article.title,
-                        article.url,
-                        System.currentTimeMillis()
-                );
-
-                users.put(url, articleInFirebase);
-            }
-
-            FirebaseDatabase database = FirebaseDatabase.getInstance();
-            DatabaseReference reference = database.getReference()
-                    .child(Constants.Firebase.Refs.USERS)
-                    .child(firebaseUser.getUid())
-                    .child(Constants.Firebase.Refs.ARTICLES);
-
-            reference.updateChildren(users, (databaseError, databaseReference) -> {
-                if (databaseError == null) {
-                    subscriber.onNext(articles);
-                    subscriber.onCompleted();
-                } else {
-                    subscriber.onError(databaseError.toException());
-                }
-            });
-        });
-    }
+//    public Observable<List<Article>> writeArticlesToFirebase(List<Article> articles) {
+//        //TODO caclulate how many new articles we add and return it to calculate hoe much score we should add
+//        //I think that this can be done via calculate initial childs of ARTICLE ref minus result childs of ARTICLE ref
+//        return Observable.create(subscriber -> {
+//            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+//            if (firebaseUser == null) {
+//                subscriber.onError(new IllegalArgumentException("firebase user is null"));
+//                return;
+//            }
+//
+//            Map<String, Object> users = new HashMap<>();
+//
+//            for (Article article : articles) {
+//                String url = article.url.replace(BuildConfig.BASE_API_URL, "");
+//
+//                ArticleInFirebase articleInFirebase = new ArticleInFirebase(
+//                        article.isInFavorite != Article.ORDER_NONE,
+//                        article.isInReaden,
+//                        article.title,
+//                        article.url,
+//                        System.currentTimeMillis()
+//                );
+//
+//                users.put(url, articleInFirebase);
+//            }
+//
+//            FirebaseDatabase database = FirebaseDatabase.getInstance();
+//            DatabaseReference reference = database.getReference()
+//                    .child(Constants.Firebase.Refs.USERS)
+//                    .child(firebaseUser.getUid())
+//                    .child(Constants.Firebase.Refs.ARTICLES);
+//
+//            reference.updateChildren(users, (databaseError, databaseReference) -> {
+//                if (databaseError == null) {
+//                    subscriber.onNext(articles);
+//                    subscriber.onCompleted();
+//                } else {
+//                    subscriber.onError(databaseError.toException());
+//                }
+//            });
+//        });
+//    }
 
     public Observable<Integer> getUserScoreFromFirebase() {
         return Observable.create(subscriber -> {

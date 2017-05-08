@@ -9,6 +9,7 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringDef;
 import android.support.v4.app.NotificationCompat;
+import android.text.TextUtils;
 import android.util.Pair;
 
 import java.lang.annotation.Retention;
@@ -33,11 +34,7 @@ import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
-import static ru.dante.scpfoundation.service.DownloadAllService.DownloadType.TYPE_1;
-import static ru.dante.scpfoundation.service.DownloadAllService.DownloadType.TYPE_2;
-import static ru.dante.scpfoundation.service.DownloadAllService.DownloadType.TYPE_3;
-import static ru.dante.scpfoundation.service.DownloadAllService.DownloadType.TYPE_ALL;
-import static ru.dante.scpfoundation.service.DownloadAllService.DownloadType.TYPE_RU;
+import static ru.dante.scpfoundation.service.DownloadAllService.DownloadType.*;
 
 /**
  * Created by mohax on 11.01.2017.
@@ -52,12 +49,25 @@ public class DownloadAllService extends Service {
     private static final String ACTION_START = "ACTION_START";
 
     @Retention(RetentionPolicy.SOURCE)
-    @StringDef({DownloadType.TYPE_1, DownloadType.TYPE_2, DownloadType.TYPE_3, DownloadType.TYPE_RU, DownloadType.TYPE_ALL})
+    @StringDef({
+            DownloadType.TYPE_1, DownloadType.TYPE_2, DownloadType.TYPE_3, DownloadType.TYPE_RU,
+            DownloadType.TYPE_EXPERIMETS, TYPE_OTHER, DownloadType.TYPE_INCIDENTS,
+            DownloadType.TYPE_INTERVIEWS, DownloadType.TYPE_ARCHIVE, DownloadType.TYPE_JOKES,
+            DownloadType.TYPE_ALL
+    })
     public @interface DownloadType {
         String TYPE_1 = "TYPE_1";
         String TYPE_2 = "TYPE_2";
         String TYPE_3 = "TYPE_3";
         String TYPE_RU = "TYPE_RU";
+
+        String TYPE_EXPERIMETS = "TYPE_Experiments";
+        String TYPE_OTHER = "TYPE_Other";
+        String TYPE_INCIDENTS = "TYPE_Incidents";
+        String TYPE_INTERVIEWS = "TYPE_Interviews";
+        String TYPE_ARCHIVE = "TYPE_Archive";
+        String TYPE_JOKES = "TYPE_Jokes";
+
         String TYPE_ALL = "TYPE_ALL";
     }
 
@@ -130,6 +140,10 @@ public class DownloadAllService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent == null || TextUtils.isEmpty(intent.getAction())) {
+            stopDownloadAndRemoveNotif();
+            return super.onStartCommand(intent, flags, startId);
+        }
         if (intent.getAction().equals(ACTION_STOP)) {
             stopDownloadAndRemoveNotif();
             return super.onStartCommand(intent, flags, startId);
@@ -150,9 +164,24 @@ public class DownloadAllService extends Service {
             case TYPE_RU:
                 downloadObjects(Constants.Urls.OBJECTS_RU, Article.FIELD_IS_IN_OBJECTS_RU);
                 break;
+            case TYPE_EXPERIMETS:
+                break;
+            case TYPE_OTHER:
+                break;
+            case TYPE_INCIDENTS:
+                break;
+            case TYPE_INTERVIEWS:
+                break;
+            case TYPE_ARCHIVE:
+                break;
+            case TYPE_JOKES:
+                break;
+
             case TYPE_ALL:
                 downloadAll();
                 break;
+            default:
+                throw new IllegalArgumentException("unexpected type");
         }
         return super.onStartCommand(intent, flags, startId);
     }
@@ -303,18 +332,16 @@ public class DownloadAllService extends Service {
                 })
                 //try to load article
                 //on error increase counters and resume query, emiting onComplete to article observable
-                .flatMap(article -> mApiClient.getArticle(article.url)
-                        .onErrorResumeNext(throwable -> {
-                            Timber.e(throwable, "error while load article: %s", article.url);
-                            mNumOfErrors++;
-                            mCurProgress++;
-                            showNotificationDownloadProgress(
-                                    getString(R.string.download_objects_title),
-                                    mCurProgress, mMaxProgress, mNumOfErrors
-                            );
-                            return Observable.empty();
-                        })
-                )
+                .flatMap(article -> mApiClient.getArticle(article.url).onErrorResumeNext(throwable -> {
+                    Timber.e(throwable, "error while load article: %s", article.url);
+                    mNumOfErrors++;
+                    mCurProgress++;
+                    showNotificationDownloadProgress(
+                            getString(R.string.download_objects_title),
+                            mCurProgress, mMaxProgress, mNumOfErrors
+                    );
+                    return Observable.empty();
+                }))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(article -> mDbProviderFactory.getDbProvider().saveArticle(article))
