@@ -3,6 +3,7 @@ package ru.dante.scpfoundation;
 import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 
+import com.squareup.leakcanary.LeakCanary;
 import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKAccessTokenTracker;
 import com.vk.sdk.VKSdk;
@@ -50,6 +51,12 @@ public class MyApplication extends MultiDexApplication {
     @Override
     public void onCreate() {
         super.onCreate();
+        if (LeakCanary.isInAnalyzerProcess(this)) {
+            // This process is dedicated to LeakCanary for heap analysis.
+            // You should not init your app in this process.
+            return;
+        }
+        LeakCanary.install(this);
         // Инициализация AppMetrica SDK
         YandexMetrica.activate(getApplicationContext(), getString(R.string.yandex_metrica_api_key));
         // Отслеживание активности пользователей
