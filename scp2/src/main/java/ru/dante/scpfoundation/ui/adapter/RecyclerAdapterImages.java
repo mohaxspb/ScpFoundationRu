@@ -36,10 +36,6 @@ public class RecyclerAdapterImages extends RecyclerView.Adapter<RecyclerView.Vie
         mImageClickListener = imageClickListener;
     }
 
-    public RecyclerAdapterImages() {
-        MyApplication.getAppComponent().inject(this);
-    }
-
     public void setData(List<VkImage> vkImages) {
         mVkImages = vkImages;
         notifyDataSetChanged();
@@ -60,10 +56,11 @@ public class RecyclerAdapterImages extends RecyclerView.Adapter<RecyclerView.Vie
 
     @Override
     public int getItemCount() {
-        if (mVkImages != null)
+        if (mVkImages != null) {
             return mVkImages.size();
-        else
+        }  else {
             return -1;
+        }
     }
 
     public interface ImageClickListener {

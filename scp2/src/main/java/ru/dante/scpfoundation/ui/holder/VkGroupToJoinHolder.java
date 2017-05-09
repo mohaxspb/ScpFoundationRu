@@ -8,7 +8,6 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 
 import butterknife.BindView;
-import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.monetization.model.BaseModel;
 import ru.dante.scpfoundation.monetization.model.VkGroupToJoin;
@@ -30,7 +29,6 @@ public class VkGroupToJoinHolder extends BaseHolder<BaseModel, BaseAdapterClickL
 
     public VkGroupToJoinHolder(View itemView) {
         super(itemView);
-        MyApplication.getAppComponent().inject(this);
     }
 
     @Override
