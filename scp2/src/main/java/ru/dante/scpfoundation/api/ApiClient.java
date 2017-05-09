@@ -35,10 +35,8 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import io.realm.RealmList;
 import okhttp3.Call;
@@ -1207,6 +1205,11 @@ public class ApiClient {
                 return;
             }
             String url = article.url.replace(BuildConfig.BASE_API_URL, "");
+
+            //as firebase can't have dots or # in ref path we must replace it...
+            url = url.replaceAll("#", "____");
+            Timber.d("id: %s", url);
+
             FirebaseDatabase database = FirebaseDatabase.getInstance();
             DatabaseReference reference = database.getReference()
                     .child(Constants.Firebase.Refs.USERS)
@@ -1240,6 +1243,11 @@ public class ApiClient {
                 return;
             }
             String url = article.url.replace(BuildConfig.BASE_API_URL, "");
+
+            //as firebase can't have dots or # in ref path we must replace it...
+            url = url.replaceAll("#", "____");
+            Timber.d("id: %s", url);
+
             FirebaseDatabase database = FirebaseDatabase.getInstance();
             DatabaseReference reference = database.getReference()
                     .child(Constants.Firebase.Refs.USERS)
