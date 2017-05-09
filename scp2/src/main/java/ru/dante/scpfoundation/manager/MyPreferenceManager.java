@@ -356,7 +356,9 @@ public class MyPreferenceManager {
     private long getLastTimeNeedReloginPopupShown() {
         long timeFromLastShow = mPreferences.getLong(Keys.NEED_RELOGIN_POPUP_LAST_TIME_CHECKED, 0);
         if (timeFromLastShow == 0) {
-            setLastTimeAdsShows(System.currentTimeMillis());
+            long curTime = System.currentTimeMillis();
+            setLastTimeAdsShows(curTime);
+            timeFromLastShow = curTime;
         }
         return timeFromLastShow;
     }
