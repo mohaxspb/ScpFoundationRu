@@ -118,18 +118,23 @@ public class GalleryActivity
         mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                if (position % FirebaseRemoteConfig.getInstance()
-                        .getLong(Constants.Firebase.RemoteConfigKeys.NUM_OF_GALLERY_PHOTOS_BETWEEN_INTERSITIAL) == 0) {
-                    showInterstitial(new MyAdListener() {
-                        @Override
-                        public void onAdClosed() {
-                            @DataSyncActions.ScoreAction
-                            String action = DataSyncActions.ScoreAction.INTERSTITIAL_SHOWN;
-                            mPresenter.updateUserScoreForScoreAction(action);
-                            showSnackBarWithAction(Constants.Firebase.CallToActionReason.REMOVE_ADS);
+                if (position % FirebaseRemoteConfig.getInstance().getLong(Constants.Firebase.RemoteConfigKeys.NUM_OF_GALLERY_PHOTOS_BETWEEN_INTERSITIAL) == 0) {
+                    if (isTimeToShowAds()) {
+                        if (isAdsLoaded()) {
+                            showInterstitial(new MyAdListener() {
+                                @Override
+                                public void onAdClosed() {
+                                    @DataSyncActions.ScoreAction
+                                    String action = DataSyncActions.ScoreAction.INTERSTITIAL_SHOWN;
+                                    mPresenter.updateUserScoreForScoreAction(action);
+                                    showSnackBarWithAction(Constants.Firebase.CallToActionReason.REMOVE_ADS);
+                                    requestNewInterstitial();
+                                }
+                            }, false);
+                        } else {
                             requestNewInterstitial();
                         }
-                    }, false);
+                    }
                 }
             }
         });
@@ -172,7 +177,12 @@ public class GalleryActivity
             }
             adRequest.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
         }
-        mAdView.loadAd(adRequest.build());
+        if (mMyPreferenceManager.isHasSubscription()) {
+            mAdView.setVisibility(View.GONE);
+        } else {
+            mAdView.setVisibility(View.VISIBLE);
+            mAdView.loadAd(adRequest.build());
+        }
     }
 
     @Override
