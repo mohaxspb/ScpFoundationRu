@@ -3,6 +3,7 @@ package ru.dante.scpfoundation.api.model.remoteconfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.gson.GsonBuilder;
 
+import java.util.Collections;
 import java.util.List;
 
 import ru.dante.scpfoundation.Constants;
@@ -62,9 +63,20 @@ public class LevelsJson {
         String levelsJsonString = FirebaseRemoteConfig.getInstance().getString(Constants.Firebase.RemoteConfigKeys.LEVELS_JSON);
         LevelsJson levelsJson = new GsonBuilder().create().fromJson(levelsJsonString, LevelsJson.class);
         if (levelsJson != null) {
+//            for (int i = 0; i < levelsJson.levels.size(); i++) {
+//                LevelsJson.Level level = levelsJson.levels.get(i);
+//                if (score >= level.score) {
+//                    userLevel = level;
+//                    break;
+//                } else if (i == levelsJson.levels.size() - 1) {
+//                    //so max level reached
+//                    userLevel = level;
+//                }
+//            }
+            Collections.reverse(levelsJson.levels);
             for (int i = 0; i < levelsJson.levels.size(); i++) {
                 LevelsJson.Level level = levelsJson.levels.get(i);
-                if (score < level.score) {
+                if (score >= level.score) {
                     userLevel = level;
                     break;
                 } else if (i == levelsJson.levels.size() - 1) {

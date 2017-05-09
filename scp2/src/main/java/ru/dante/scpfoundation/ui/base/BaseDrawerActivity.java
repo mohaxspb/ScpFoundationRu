@@ -310,15 +310,15 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
             } else {
                 String levelsJsonString = FirebaseRemoteConfig.getInstance().getString(Constants.Firebase.RemoteConfigKeys.LEVELS_JSON);
                 LevelsJson levelsJson = mGson.fromJson(levelsJsonString, LevelsJson.class);
-                LevelsJson.Level prevLevel = levelsJson.levels.get(level.id - 1);
+                LevelsJson.Level nextLevel = levelsJson.levels.get(level.id + 1);
 
-                int levelNum = prevLevel.id;
-                String levelTitle = prevLevel.title;
+                int levelNum = level.id;
+                String levelTitle = level.title;
 
-                int nextLevelScore = level.score;
+                int nextLevelScore = nextLevel.score;
 
-                int max = nextLevelScore - prevLevel.score;
-                int value = user.score - prevLevel.score;
+                int max = nextLevelScore - level.score;
+                int value = user.score - level.score;
                 headerViewHolder.circleProgress.setMaxValue(max);
                 headerViewHolder.circleProgress.setValue(value);
 
