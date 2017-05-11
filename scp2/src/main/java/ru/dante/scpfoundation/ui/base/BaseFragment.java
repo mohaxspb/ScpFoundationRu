@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.hannesdorfmann.mosby.mvp.MvpFragment;
+import com.squareup.leakcanary.RefWatcher;
 
 import java.io.IOException;
 
@@ -24,6 +25,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import ru.dante.scpfoundation.Constants;
+import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.api.error.ScpParseException;
 import ru.dante.scpfoundation.manager.MyNotificationManager;
@@ -230,5 +232,13 @@ public abstract class BaseFragment<V extends BaseMvp.View, P extends BaseMvp.Pre
     @Override
     public void showSnackBarWithAction(Constants.Firebase.CallToActionReason reason) {
         getBaseActivity().showSnackBarWithAction(reason);
+    }
+
+    @Override
+    public void onDestroy() {
+        Timber.d("onDestroy");
+        super.onDestroy();
+        RefWatcher refWatcher = MyApplication.getAppInstance().getRefWatcher();
+        refWatcher.watch(this);
     }
 }

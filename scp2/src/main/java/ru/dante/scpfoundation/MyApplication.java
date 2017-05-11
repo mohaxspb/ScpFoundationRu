@@ -4,6 +4,7 @@ import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 
 import com.squareup.leakcanary.LeakCanary;
+import com.squareup.leakcanary.RefWatcher;
 import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKAccessTokenTracker;
 import com.vk.sdk.VKSdk;
@@ -38,6 +39,12 @@ public class MyApplication extends MultiDexApplication {
         return sAppInstance;
     }
 
+    public RefWatcher getRefWatcher() {
+        return refWatcher;
+    }
+
+    private RefWatcher refWatcher;
+
     VKAccessTokenTracker vkAccessTokenTracker = new VKAccessTokenTracker() {
         @Override
         public void onVKAccessTokenChanged(VKAccessToken oldToken, VKAccessToken newToken) {
@@ -56,7 +63,7 @@ public class MyApplication extends MultiDexApplication {
             // You should not init your app in this process.
             return;
         }
-        LeakCanary.install(this);
+        refWatcher = LeakCanary.install(this);
         // Инициализация AppMetrica SDK
         YandexMetrica.activate(getApplicationContext(), getString(R.string.yandex_metrica_api_key));
         // Отслеживание активности пользователей
@@ -94,7 +101,7 @@ public class MyApplication extends MultiDexApplication {
         Timber.d("VERSION_CODE: %s", BuildConfig.VERSION_CODE);
 
         //secure
-        if(SecureUtils.checkIfPackageChanged(this) || SecureUtils.checkLuckyPatcher(this)){
+        if (SecureUtils.checkIfPackageChanged(this) || SecureUtils.checkLuckyPatcher(this)) {
             MyPreferenceManager myPreferenceManager = new MyPreferenceManager(this, null);
             myPreferenceManager.setAppCracked(true);
         }

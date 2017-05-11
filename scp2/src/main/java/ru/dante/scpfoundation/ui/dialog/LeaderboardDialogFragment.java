@@ -15,7 +15,6 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.api.model.response.LeaderBoardResponse;
 import ru.dante.scpfoundation.ui.adapter.LeaderboardRecyclerAdapter;
@@ -39,8 +38,6 @@ public class LeaderboardDialogFragment extends DialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        MyApplication.getAppComponent().inject(this);
-
         mLeaderBoardResponse = (LeaderBoardResponse) getArguments().getSerializable(EXTRA_LEADERBOARD_RESPONSE);
     }
 
