@@ -110,8 +110,6 @@ public interface AppComponent {
 
     void inject(FreeAdsDisablingDialogFragment dialogFragment);
 
-    void inject(LeaderboardDialogFragment dialogFragment);
-
     void inject(SetttingsBottomSheetDialogFragment bottomSheetDialogFragment);
 
     void inject(RecyclerAdapterListArticles adapterNewArticles);
