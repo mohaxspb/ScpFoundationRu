@@ -26,22 +26,36 @@
             tools:visibility="visible"
             />
 
-        <android.support.v4.widget.SwipeRefreshLayout
-            android:id="@+id/swipeRefresh"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            >
+        <!--<FrameLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="0dp"-->
+            <!--android:layout_weight="1"-->
+            <!--&gt;-->
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recyclerView"
+            <android.support.v4.widget.SwipeRefreshLayout
+                android:id="@+id/swipeRefresh"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scrollbarThumbVertical="?scrollbar"
-                android:scrollbars="vertical"
-                />
-        </android.support.v4.widget.SwipeRefreshLayout>
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                >
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    />
+            </android.support.v4.widget.SwipeRefreshLayout>
+        <!--</FrameLayout>-->
     </LinearLayout>
+
+    <xyz.danoz.recyclerviewfastscroller.vertical.VerticalRecyclerViewFastScroller
+        android:id="@+id/fastScroller"
+        android:layout_width="@dimen/defaultMarginSmall"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        app:rfs_barColor="@android:color/transparent"
+        app:rfs_handleColor="?newArticlesTextColor"
+        />
 
     <ProgressBar
         android:id="@+id/progressCenter"
@@ -52,5 +66,6 @@
         android:indeterminateTint="?newArticlesTextColor"
         android:indeterminateTintMode="src_in"
         android:visibility="gone"
-        tools:targetApi="lollipop"/>
+        tools:targetApi="lollipop"
+        />
 </FrameLayout>
