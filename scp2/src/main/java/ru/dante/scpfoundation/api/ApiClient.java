@@ -31,6 +31,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
 import org.jsoup.parser.Tag;
 import org.jsoup.select.Elements;
 
@@ -544,6 +545,14 @@ public class ApiClient {
                         }
                         //and remove first one, which is old
                         pageContent.getElementsByClass("rimg").first().remove();
+                    }
+                }
+                //put all text which is not in any tag in div tag
+                for (Element element : pageContent.children()) {
+                    Node nextSibling = element.nextSibling();
+                    Timber.d("child: ___%s___", nextSibling);
+                    if (nextSibling != null && !nextSibling.toString().equals(" ")) {
+                        element.after(new Element("div").appendChild(nextSibling));
                     }
                 }
                 //search for images and add it to separate field to be able to show it in arts lists
