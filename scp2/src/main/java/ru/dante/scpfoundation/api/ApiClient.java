@@ -28,6 +28,7 @@ import com.vk.sdk.api.model.VKAttachments;
 import com.vk.sdk.api.model.VKList;
 
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.parser.Tag;
@@ -507,6 +508,16 @@ public class ApiClient {
                 if (svernut != null) {
                     svernut.remove();
                 }
+                //replace all spans with strike-through with <s>
+                Elements spansWithStrike = pageContent.select("span[style=text-decoration: line-through;]");
+                for (Element element : spansWithStrike) {
+                    Timber.d("element: %s", element);
+                    element.tagName("s");
+                    for (Attribute attribute : element.attributes()) {
+                        element.removeAttr(attribute.getKey());
+                    }
+                    Timber.d("element refactored: %s", element);
+                }
                 //get title
                 Element titleEl = doc.getElementById("page-title");
                 String title = "";
@@ -528,6 +539,7 @@ public class ApiClient {
                 RealmList<RealmString> textPartsTypes = null;
 
                 Document document = Jsoup.parse(rawText);
+
                 Element yuiNavset = document.getElementsByAttributeValueStarting("class", "yui-navset").first();
                 if (yuiNavset != null) {
                     hasTabs = true;
@@ -581,6 +593,9 @@ public class ApiClient {
                 article.tabsTexts = tabsText;
                 //textParts
                 article.textParts = textParts;
+                for (RealmString realmString : article.textParts) {
+                    Timber.d("part: %s", realmString.val);
+                }
                 article.textPartsTypes = textPartsTypes;
                 //images
                 article.imagesUrls = imgsUrls;
