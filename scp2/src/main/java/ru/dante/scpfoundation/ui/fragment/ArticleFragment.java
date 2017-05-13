@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.firebase.auth.FirebaseAuth;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -237,6 +238,12 @@ public class ArticleFragment
             @Override
             public void onBottomReached() {
                 Timber.d("onBottomReached");
+                if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+                    //do not show, in this case
+//                    showNeedLoginPopup();
+                    return;
+                }
+
                 if (mArticle.text != null && !mArticle.isInReaden) {
                     mPresenter.setArticleIsReaden(mArticle.url);
                 }

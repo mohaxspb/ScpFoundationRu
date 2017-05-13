@@ -139,7 +139,8 @@ public class SetTextViewHTML {
             int end = spannable.getSpanEnd(quoteSpan);
             int flags = spannable.getSpanFlags(quoteSpan);
             spannable.removeSpan(quoteSpan);
-            spannable.setSpan(new CustomQuoteSpan(
+            spannable.setSpan(
+                    new CustomQuoteSpan(
                             colorBackground,
                             colorStripe,
                             5,
@@ -151,6 +152,7 @@ public class SetTextViewHTML {
     }
 
     public interface TextItemsClickListener {
+
         void onLinkClicked(String link);
 
         void onSnoskaClicked(String link);

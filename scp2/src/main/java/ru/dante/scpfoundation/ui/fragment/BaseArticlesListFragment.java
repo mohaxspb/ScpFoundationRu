@@ -102,21 +102,25 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
         getAdapter().setArticleClickListener(new RecyclerAdapterListArticles.ArticleClickListener() {
             @Override
             public void onArticleClicked(Article article, int position) {
+                Timber.d("onArticleClicked: %s/%s", article.title, position);
                 ArticleActivity.startActivity(getActivity(), (ArrayList<String>) Article.getListOfUrls(mPresenter.getData()), position);
             }
 
             @Override
             public void toggleReadenState(Article article) {
+                Timber.d("toggleReadenState: %s", article.title);
                 mPresenter.toggleReadState(article);
             }
 
             @Override
             public void toggleFavoriteState(Article article) {
+                Timber.d("toggleFavoriteState: %s", article.title);
                 mPresenter.toggleFavoriteState(article);
             }
 
             @Override
             public void onOfflineClicked(Article article) {
+                Timber.d("onOfflineClicked: %s", article.title);
                 mPresenter.toggleOfflineState(article);
             }
         });

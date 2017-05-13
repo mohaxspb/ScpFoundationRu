@@ -222,6 +222,14 @@ public abstract class BaseFragment<V extends BaseMvp.View, P extends BaseMvp.Pre
         mProgressDialog.dismiss();
     }
 
+    @Override
+    public void showNeedLoginPopup() {
+        if (!isAdded()) {
+            return;
+        }
+        getBaseActivity().showNeedLoginPopup();
+    }
+
     protected BaseActivity getBaseActivity() {
         if (!(getActivity() instanceof BaseActivity)) {
             throw new RuntimeException("Activity must extend BaseActivity");

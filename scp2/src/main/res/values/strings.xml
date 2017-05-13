@@ -217,6 +217,8 @@
     <string name="logout">Выйти</string>
     <string name="error_getting_path_to_image">Не удалось сохранить изображение. Попробуйте ещё раз.</string>
     <string name="faq">Справка</string>
+    <string name="need_login">Требуется авторизация</string>
+    <string name="need_login_content">Внимание агенты! Для добавления в избранное и отмечания статьи прочитанной требуется авторизация. Это позволит вам синхронизировать данные через облако на всех ваших устройствах, а также позволит вам получать очки и участвовать в рейтинге агентов!</string>
 
     <plurals name="plurals_score">
         <item quantity="zero">%1$d очков</item>
