@@ -179,7 +179,7 @@ dependencies {
     compile 'org.parceler:parceler-api:1.1.6'
     annotationProcessor 'org.parceler:parceler:1.1.6'
     //jsoup
-    compile 'org.jsoup:jsoup:1.10.1'
+    compile 'org.jsoup:jsoup:1.10.2'
     //logs
     compile 'com.jakewharton.timber:timber:4.3.1'
     //dagger2

@@ -490,16 +490,20 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
 
             boolean nightModeIsOn = mMyPreferenceManager.isNightMode();
             MenuItem themeMenuItem = menu.findItem(R.id.night_mode_item);
-            if (nightModeIsOn) {
-                themeMenuItem.setIcon(R.drawable.ic_brightness_low_white_24dp);
-                themeMenuItem.setTitle(R.string.day_mode);
-            } else {
-                themeMenuItem.setIcon(R.drawable.ic_brightness_3_white_24dp);
-                themeMenuItem.setTitle(R.string.night_mode);
+            if (themeMenuItem != null) {
+                if (nightModeIsOn) {
+                    themeMenuItem.setIcon(R.drawable.ic_brightness_low_white_24dp);
+                    themeMenuItem.setTitle(R.string.day_mode);
+                } else {
+                    themeMenuItem.setIcon(R.drawable.ic_brightness_3_white_24dp);
+                    themeMenuItem.setTitle(R.string.night_mode);
+                }
             }
 
             MenuItem subs = menu.findItem(R.id.subscribe);
-            subs.setVisible(mOwnedMarketItems.isEmpty());
+            if (subs != null) {
+                subs.setVisible(mOwnedMarketItems.isEmpty());
+            }
         }
         return super.onPrepareOptionsPanel(view, menu);
     }
