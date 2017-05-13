@@ -565,6 +565,20 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
     }
 
     @Override
+    public void showNeedLoginPopup() {
+        Timber.d("showNeedLoginPopup");
+        new MaterialDialog.Builder(this)
+                .title(R.string.need_login)
+                .content(R.string.need_login_content)
+                .positiveText(R.string.authorize)
+                .onPositive((dialog, which) -> startLogin(Constants.Firebase.SocialProvider.VK))
+                .negativeText(android.R.string.cancel)
+                .onNegative((dialog, which) -> dialog.dismiss())
+                .build()
+                .show();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.settings:

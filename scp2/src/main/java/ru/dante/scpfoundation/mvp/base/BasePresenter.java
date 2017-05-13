@@ -54,6 +54,7 @@ public abstract class BasePresenter<V extends BaseMvp.View>
 
     @Override
     public void getUserFromDb() {
+        Timber.d("getUserFromDb");
         mDbProviderFactory.getDbProvider().getUserAsync().subscribe(
                 user -> {
                     mUser = user;

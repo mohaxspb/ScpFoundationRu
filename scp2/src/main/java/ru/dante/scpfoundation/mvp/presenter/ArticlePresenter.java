@@ -1,5 +1,7 @@
 package ru.dante.scpfoundation.mvp.presenter;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 import ru.dante.scpfoundation.api.ApiClient;
 import ru.dante.scpfoundation.db.DbProviderFactory;
 import ru.dante.scpfoundation.db.model.Article;
@@ -62,10 +64,10 @@ public class ArticlePresenter
                         getView().enableSwipeRefresh(true);
                     }
                 },
-                error -> {
+                e -> {
                     getView().showCenterProgress(false);
                     getView().enableSwipeRefresh(true);
-                    getView().showError(error);
+                    getView().showError(e);
                 }
         );
     }
@@ -85,9 +87,9 @@ public class ArticlePresenter
                             getView().enableSwipeRefresh(true);
                             getView().showSwipeProgress(false);
                         },
-                        error -> {
-                            Timber.e(error);
-                            getView().showError(error);
+                        e -> {
+                            Timber.e(e);
+                            getView().showError(e);
 
                             getView().showCenterProgress(false);
                             getView().enableSwipeRefresh(true);
@@ -99,6 +101,10 @@ public class ArticlePresenter
     @Override
     public void setArticleIsReaden(String url) {
         Timber.d("setArticleIsReaden url: %s", url);
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            getView().showNeedLoginPopup();
+            return;
+        }
         mDbProviderFactory.getDbProvider()
                 .toggleReaden(url)
                 .flatMap(articleUrl -> mDbProviderFactory.getDbProvider().getUnmanagedArticleAsyncOnes(articleUrl))
