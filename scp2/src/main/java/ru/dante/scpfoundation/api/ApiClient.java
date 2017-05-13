@@ -465,7 +465,7 @@ public class ApiClient {
                     subscriber.onCompleted();
                     return;
                 }
-//            замена ссылок в сносках
+                //замена ссылок в сносках
                 Elements footnoterefs = pageContent.getElementsByClass("footnoteref");
                 for (Element snoska : footnoterefs) {
                     Element aTag = snoska.getElementsByTag("a").first();
@@ -528,6 +528,37 @@ public class ApiClient {
                 if (upperDivWithLink != null) {
                     pageContent.prependChild(upperDivWithLink);
                 }
+                //parse multiple imgs in "rimg" tag
+                Element rimg = pageContent.getElementsByClass("rimg").first();
+                if (rimg != null) {
+                    Elements imgs = rimg.getElementsByTag("img");
+                    Elements descriptions = rimg.getElementsByTag("span");
+                    if (imgs != null && imgs.size() > 1 && descriptions.size() == imgs.size()) {
+                        for (int i = 0; i < imgs.size(); i++) {
+                            Element img = imgs.get(i);
+                            Element description = descriptions.get(i);
+                            Element newRimg = new Element("div");
+                            newRimg.addClass("rimg");
+                            newRimg.appendChild(img).appendChild(description);
+                            pageContent.getElementsByClass("rimg").last().after(newRimg);
+                        }
+                        //and remove first one, which is old
+                        pageContent.getElementsByClass("rimg").first().remove();
+                    }
+                }
+                //search for images and add it to separate field to be able to show it in arts lists
+                RealmList<RealmString> imgsUrls = null;
+                Elements imgsOfArticle = pageContent.getElementsByTag("img");
+                if (!imgsOfArticle.isEmpty()) {
+                    imgsUrls = new RealmList<>();
+                    for (Element img : imgsOfArticle) {
+                        imgsUrls.add(new RealmString(img.attr("src")));
+                    }
+                }
+
+                //type TODO fucking unformatted info!
+
+                //this we store aas article text
                 String rawText = pageContent.toString();
 
                 //tabs
@@ -568,18 +599,6 @@ public class ApiClient {
                         textPartsTypes.add(new RealmString(value));
                     }
                 }
-
-                //search for images and add it to separate field to be able to show it in arts lists
-                RealmList<RealmString> imgsUrls = null;
-                Elements imgs = pageContent.getElementsByTag("img");
-                if (!imgs.isEmpty()) {
-                    imgsUrls = new RealmList<>();
-                    for (Element img : imgs) {
-                        imgsUrls.add(new RealmString(img.attr("src")));
-                    }
-                }
-
-                //type TODO fucking unformatted info!
 
                 //finally fill article info
                 Article article = new Article();
