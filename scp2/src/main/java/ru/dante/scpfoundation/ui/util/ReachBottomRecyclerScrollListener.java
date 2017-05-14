@@ -14,9 +14,9 @@ public abstract class ReachBottomRecyclerScrollListener extends RecyclerView.OnS
 
     @Override
     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-        RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
+        LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
         int totalItemCount = layoutManager.getItemCount();
-        int lastCompletelyVisibleItemPosition = ((LinearLayoutManager) layoutManager).findLastCompletelyVisibleItemPosition();
+        int lastCompletelyVisibleItemPosition = layoutManager.findLastVisibleItemPosition();
 
         if (!alreadyReachedBottom && lastCompletelyVisibleItemPosition == totalItemCount - 1) {
             alreadyReachedBottom = true;
