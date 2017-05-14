@@ -131,6 +131,7 @@ public class ArticleFragment
 
         // Connect the recycler to the scroller (to let the scroller scroll the list)
         mVerticalRecyclerViewFastScroller.setRecyclerView(mRecyclerView);
+        mVerticalRecyclerViewFastScroller.moveHandleToPosition(0);
 
         mPresenter.setArticleId(url);
         mPresenter.getDataFromDb();
@@ -271,6 +272,7 @@ public class ArticleFragment
 
     @Override
     public void onLinkClicked(String link) {
+        Timber.d("onLinkClicked: %s", link);
         //open predefined main activities link clicked
         for (String pressedLink : Constants.Urls.ALL_LINKS_ARRAY) {
             if (link.equals(pressedLink)) {
@@ -324,6 +326,7 @@ public class ArticleFragment
 
     @Override
     public void onTocClicked(String link) {
+        Timber.d("onTocClicked: %s", link);
         List<String> articlesTextParts = mAdapter.getArticlesTextParts();
         String digits = "";
         for (char c : link.toCharArray()) {
@@ -333,6 +336,22 @@ public class ArticleFragment
         }
         for (int i = 0; i < articlesTextParts.size(); i++) {
             if (articlesTextParts.get(i).contains("id=\"" + "toc" + digits + "\"")) {
+//                (i+1 так как в адаптере есть еще элемент для заголовка)
+                Timber.d("found part: %s", articlesTextParts.get(i));
+                mRecyclerView.scrollToPosition(i + 1);
+                return;
+            }
+        }
+        Timber.d("check for a with name");
+        //if reach here, so it's one of awful toc with bad style
+        String srtToCheck = "name=\"" + link + "\"";
+        String srtToCheck1 = "name=\"" + link.replace("#", "") + "\"";
+        Timber.d("srtToCheck: %s", srtToCheck);
+        Timber.d("srtToCheck1: %s", srtToCheck1);
+        for (int i = 0; i < articlesTextParts.size(); i++) {
+            if (articlesTextParts.get(i).contains(srtToCheck) ||
+                    articlesTextParts.get(i).contains(srtToCheck1)) {
+                Timber.d("found part: %s", articlesTextParts.get(i));
 //                (i+1 так как в адаптере есть еще элемент для заголовка)
                 mRecyclerView.scrollToPosition(i + 1);
                 return;
@@ -380,6 +399,7 @@ public class ArticleFragment
     }
 
     public interface ToolbarStateSetter {
+
         void setTitle(String title);
 
         void setFavoriteState(boolean isInFavorite);
