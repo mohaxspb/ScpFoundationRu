@@ -27,4 +27,9 @@ public class RatedArticlesFragment
     protected boolean isSwipeRefreshEnabled() {
         return true;
     }
+
+    @Override
+    protected boolean isHasOptionsMenu() {
+        return false;
+    }
 }

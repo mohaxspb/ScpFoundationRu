@@ -8,6 +8,7 @@ import org.parceler.ParcelPropertyConverter;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import io.realm.ArticleRealmProxy;
@@ -210,4 +211,13 @@ public class Article extends RealmObject {
     public String toString() {
         return url + "\n";
     }
+
+    //TODO check dates and create proper comparator
+//    public static final Comparator<Article> COMPARATOR_DATE_CREATED = (a1, a2) -> a1.createdDate == null ? a2.createdDate == null : a1.createdDate.compareTo(a1.createdDate);///a1.createdDate.compareTo(a2.createdDate);
+//
+//    public static final Comparator<Article> COMPARATOR_DATE_UPDATED = (a1, a2) -> a1.updatedDate.compareTo(a2.updatedDate);
+
+    public static final Comparator<Article> COMPARATOR_DATE_RATING = (a1, a2) -> a2.rating - a1.rating;
+
+    public static final Comparator<Article> COMPARATOR_READ_STATE = (a1, a2) -> Boolean.valueOf(a1.isInReaden).compareTo(a2.isInReaden);
 }

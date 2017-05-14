@@ -24,24 +24,19 @@ public class FavoriteArticlesFragment
     }
 
     @Override
-    protected void initAdapter() {
-        super.initAdapter();
-        mAdapter.setShouldShowPopupOnFavoriteClick(true);
-    }
-
-    @Override
-    protected void getDataFromApi() {
-        //FIXME now we do not use any server to store favs
+    protected boolean isShouldShowPopupOnFavoriteClick() {
+        return true;
     }
 
     @Override
     public void resetOnScrollListener() {
-        //FIXME now we do not have paging for favs
+        //we do not have paging
     }
 
     @Override
     protected boolean isSwipeRefreshEnabled() {
         //FIXME as we do not have api for it, we do not need to update list
+        //// TODO: 14.05.2017  now we have firebase as cloud storage, so we can update favs from it
         return false;
     }
 }

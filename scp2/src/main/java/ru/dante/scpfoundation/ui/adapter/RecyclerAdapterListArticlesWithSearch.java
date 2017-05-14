@@ -12,12 +12,10 @@ import ru.dante.scpfoundation.db.model.Article;
  */
 public class RecyclerAdapterListArticlesWithSearch extends RecyclerAdapterListArticles {
 
-    private List<Article> mData;
-
     private List<Article> mSortedData = new ArrayList<>();
     private String mSearchQuery = "";
 
-    public List<Article> getSortedData() {
+    public List<Article> getDisplayedData() {
         return mSortedData;
     }
 
@@ -26,22 +24,18 @@ public class RecyclerAdapterListArticlesWithSearch extends RecyclerAdapterListAr
         if (mData == null) {
             return;
         }
-        int prevCount = mSortedData.size();
         mSortedData.clear();
-        for (Article article : mData) {
+        for (Article article : mSortedWithFilterData) {
             if (article.title.toLowerCase().contains(searchQuery.toLowerCase())) {
                 mSortedData.add(article);
             }
         }
         notifyDataSetChanged();
-
-//        if (mSortedData.size() < prevCount) {
-//            notifyItemRangeRemoved(0, prevCount - mSortedData.size());
-//        }
     }
 
-    public void setData(List<Article> data) {
-        mData = data;
+    @Override
+    public void sortByType(SortType sortType) {
+        super.sortByType(sortType);
         sortArticles(mSearchQuery);
     }
 
@@ -52,6 +46,6 @@ public class RecyclerAdapterListArticlesWithSearch extends RecyclerAdapterListAr
 
     @Override
     public int getItemCount() {
-        return mData == null ? 0 : mSortedData.size();
+        return mSortedData.size();
     }
 }

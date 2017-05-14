@@ -14,14 +14,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-
 import butterknife.BindView;
 import ru.dante.scpfoundation.R;
-import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.mvp.base.BaseArticlesListMvp;
-import ru.dante.scpfoundation.ui.activity.ArticleActivity;
-import ru.dante.scpfoundation.ui.adapter.RecyclerAdapterListArticles;
 import ru.dante.scpfoundation.ui.adapter.RecyclerAdapterListArticlesWithSearch;
 
 /**
@@ -55,38 +50,13 @@ public abstract class BaseListArticlesWithSearchFragment<V extends BaseArticlesL
 
     @Override
     protected void initAdapter() {
-        getAdapter().setArticleClickListener(new RecyclerAdapterListArticles.ArticleClickListener() {
-            @Override
-            public void onArticleClicked(Article article, int position) {
-                ArticleActivity.startActivity(getActivity(), (ArrayList<String>) Article.getListOfUrls(getAdapter().getSortedData()), position);
-            }
-
-            @Override
-            public void toggleReadenState(Article article) {
-                mPresenter.toggleReadState(article);
-            }
-
-            @Override
-            public void toggleFavoriteState(Article article) {
-                mPresenter.toggleFavoriteState(article);
-            }
-
-            @Override
-            public void onOfflineClicked(Article article) {
-                mPresenter.toggleOfflineState(article);
-            }
-        });
+        super.initAdapter();
         getAdapter().sortArticles(mSearchQuery);
     }
 
     @Override
     protected int getLayoutResId() {
         return R.layout.fragment_list_with_search;
-    }
-
-    @Override
-    protected boolean isHasOptionsMenu() {
-        return true;
     }
 
     @Override
@@ -130,8 +100,6 @@ public abstract class BaseListArticlesWithSearchFragment<V extends BaseArticlesL
             public boolean onQueryTextChange(String newText) {
                 mSearchQuery = newText;
                 mAdapter.sortArticles(newText);
-//                mAdapter.notifyItemRangeChanged(0, mAdapter.getItemCount());
-//                mRecyclerView.invalidate();
                 return true;
             }
         });
