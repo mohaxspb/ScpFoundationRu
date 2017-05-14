@@ -246,6 +246,8 @@ public class ArticleFragment
 
                 if (mArticle.text != null && !mArticle.isInReaden) {
                     mPresenter.setArticleIsReaden(mArticle.url);
+                } else {
+                    Timber.d("mArticle.text != null && !mArticle.isInReaden is FALSE, can't mark read");
                 }
             }
         });
