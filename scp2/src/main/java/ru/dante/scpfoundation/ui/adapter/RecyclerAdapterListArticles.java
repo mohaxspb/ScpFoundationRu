@@ -13,13 +13,14 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.realm.RealmResults;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.db.model.Article;
@@ -27,6 +28,7 @@ import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
 import ru.dante.scpfoundation.util.AttributeGetter;
 import ru.dante.scpfoundation.util.DateUtils;
+import timber.log.Timber;
 import uk.co.chrisjenx.calligraphy.CalligraphyUtils;
 
 /**
@@ -36,6 +38,63 @@ import uk.co.chrisjenx.calligraphy.CalligraphyUtils;
  */
 public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAdapterListArticles.HolderSimple> {
 
+    public SortType getSortType() {
+        return mSortType;
+    }
+
+    public enum SortType {
+        NONE {
+            @Override
+            public String toString() {
+                return "Без фильтра";
+            }
+        },
+        NEUTRAL_OR_NOT_ADDED {
+            @Override
+            public String toString() {
+                return "Не назначен или нейтрализован";
+            }
+        },
+        SAFE {
+            @Override
+            public String toString() {
+                return "Безопасный";
+            }
+        },
+        EUCLID {
+            @Override
+            public String toString() {
+                return "Евклид";
+            }
+        },
+        KETER {
+            @Override
+            public String toString() {
+                return "Кетер";
+            }
+        },
+        THAUMIEL {
+            @Override
+            public String toString() {
+                return "Таумиэль";
+            }
+        },
+        NOT_READ {
+            @Override
+            public String toString() {
+                return "Непрочитанные";
+            }
+        },
+        RATING {
+            @Override
+            public String toString() {
+                return "По рейтингу";
+            }
+        }
+        //        DATE_CREATED,
+        //        DATE_UPDATED,
+    }
+
     private static final int TYPE_MIN = 0;
     private static final int TYPE_MIDDLE = 1;
     private static final int TYPE_MAX = 2;
@@ -43,7 +102,11 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
     @Inject
     MyPreferenceManager mMyPreferenceManager;
 
-    private List<Article> mData;// = new ArrayList<>();
+    protected List<Article> mData;
+
+    protected List<Article> mSortedWithFilterData = new ArrayList<>();
+
+    private SortType mSortType = SortType.NONE;
 
     private ArticleClickListener mArticleClickListener;
     private boolean shouldShowPopupOnFavoriteClick;
@@ -55,34 +118,98 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
 
     public void setData(List<Article> data) {
         mData = data;
-//        int previousCount = mData.size();
+        sortByType(mSortType);
+    }
 
-//        notifyItemRangeRemoved(0, previousCount);
+    public void sortByType(SortType sortType) {
+        Timber.d("sortByType: %s", sortType);
+        mSortType = sortType;
 
-//        mData.clear();
-//        mData.addAll(data);
+        mSortedWithFilterData.clear();
 
-//        notifyItemRangeInserted(0, mData.size());
-//        Timber.d("previousCount/mData.size(): %s/%s", previousCount, mData.size());
+        switch (mSortType) {
+            case NONE:
+                mSortedWithFilterData.addAll(mData);
+                break;
+//            case DATE_CREATED:
+//                List<Article> sortedByDateCreatedArts = new ArrayList<>(mData);
+//                Collections.sort(sortedByDateCreatedArts, Article.COMPARATOR_DATE_CREATED);
+//                mSortedWithFilterData.addAll(sortedByDateCreatedArts);
+//                break;
+//            case DATE_UPDATED:
+//                List<Article> sortedByDateUpdatedArts = new ArrayList<>(mData);
+//                Collections.sort(sortedByDateUpdatedArts, Article.COMPARATOR_DATE_UPDATED);
+//                mSortedWithFilterData.addAll(sortedByDateUpdatedArts);
+//                break;
+            case RATING:
+                List<Article> sortedByRatingArts = new ArrayList<>(mData);
+                Collections.sort(sortedByRatingArts, Article.COMPARATOR_DATE_RATING);
+                mSortedWithFilterData.addAll(sortedByRatingArts);
+                break;
+            case NOT_READ:
+                List<Article> sortedByReadStateArts = new ArrayList<>();
+                for (Article article : mData) {
+                    if (!article.isInReaden) {
+                        sortedByReadStateArts.add(article);
+                    }
+                }
+                mSortedWithFilterData.addAll(sortedByReadStateArts);
+                break;
+            case NEUTRAL_OR_NOT_ADDED:
+                List<Article> neutralOrNotAdded = new ArrayList<>();
+                for (Article article : mData) {
+                    if (article.type.equals(Article.ObjectType.NEUTRAL_OR_NOT_ADDED)) {
+                        neutralOrNotAdded.add(article);
+                    }
+                }
+                mSortedWithFilterData.addAll(neutralOrNotAdded);
+                break;
+            case EUCLID:
+                List<Article> euclid = new ArrayList<>();
+                for (Article article : mData) {
+                    if (article.type.equals(Article.ObjectType.EUCLID)) {
+                        euclid.add(article);
+                    }
+                }
+                mSortedWithFilterData.addAll(euclid);
+                break;
+            case KETER:
+                List<Article> keter = new ArrayList<>();
+                for (Article article : mData) {
+                    if (article.type.equals(Article.ObjectType.KETER)) {
+                        keter.add(article);
+                    }
+                }
+                mSortedWithFilterData.addAll(keter);
+                break;
+            case SAFE:
+                List<Article> safe = new ArrayList<>();
+                for (Article article : mData) {
+                    if (article.type.equals(Article.ObjectType.SAFE)) {
+                        safe.add(article);
+                    }
+                }
+                mSortedWithFilterData.addAll(safe);
+                break;
+            case THAUMIEL:
+                List<Article> thaumiel = new ArrayList<>();
+                for (Article article : mData) {
+                    if (article.type.equals(Article.ObjectType.THAUMIEL)) {
+                        thaumiel.add(article);
+                    }
+                }
+                mSortedWithFilterData.addAll(thaumiel);
+                break;
+            default:
+                throw new IllegalArgumentException("unexpected type: " + mSortType);
+        }
 
-//        notifyItemRangeChanged(0, mData.size());
         notifyDataSetChanged();
-
-//        if (previousCount != mData.size()) {
-//            Timber.d("previousCount/mData.size(): %s/%s", previousCount, mData);
-//
-//            notifyItemRangeInserted(0, mData.size());
-//        } else {
-//            notifyItemRangeChanged(0, mData.size());
-////            notifyDataSetChanged();
-//        }
-//        notifyItemRangeInserted(0, mData.size());
-//        notifyDataSetChanged();
     }
 
     @Override
     public long getItemId(int position) {
-        return mData.get(position).url.hashCode();
+        return mSortedWithFilterData.get(position).url.hashCode();
     }
 
     @Override
@@ -123,13 +250,12 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
 
     @Override
     public void onBindViewHolder(HolderSimple holder, int position) {
-        holder.bind(mData.get(position));
+        holder.bind(mSortedWithFilterData.get(position));
     }
 
     @Override
     public int getItemCount() {
-//        return mData == null || !((RealmResults<Article>)mData).isValid()? 0 : mData.size();
-        return mData == null || ((mData instanceof RealmResults) && !((RealmResults<Article>) mData).isValid()) ? 0 : mData.size();
+        return mSortedWithFilterData.size();
     }
 
     public void setArticleClickListener(ArticleClickListener articleClickListener) {
@@ -251,12 +377,6 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
                         });
                         popup.show();
                     } else {
-//                        offline.animate().rotationBy(360).setDuration(250).setListener(new AnimatorListenerAdapter() {
-//                            @Override
-//                            public void onAnimationEnd(Animator animation) {
-//                                offline.animate().rotationBy(360).setDuration(250).setListener(this);
-//                            }
-//                        });
                         mArticleClickListener.onOfflineClicked(article);
                     }
                 }
@@ -404,6 +524,7 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
     }
 
     public interface ArticleClickListener {
+
         void onArticleClicked(Article article, int position);
 
         void toggleReadenState(Article article);

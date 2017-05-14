@@ -2,8 +2,12 @@ package ru.dante.scpfoundation.ui.fragment;
 
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.MenuItem;
+
+import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import ru.dante.scpfoundation.Constants;
@@ -65,6 +69,41 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
         resetOnScrollListener();
 
         initSwipeRefresh();
+    }
+
+    @Override
+    protected boolean isHasOptionsMenu() {
+        return true;
+    }
+
+    @Override
+    protected int getMenuResId() {
+        return R.menu.menu_articles_list;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menuItemSort:
+                final List<RecyclerAdapterListArticles.SortType> sortTypes = Arrays.asList(RecyclerAdapterListArticles.SortType.values());
+                new MaterialDialog.Builder(getActivity())
+                        .title(R.string.dialog_sort_title)
+                        .items(sortTypes)
+                        .alwaysCallSingleChoiceCallback()
+                        .itemsCallbackSingleChoice(RecyclerAdapterListArticles.SortType.valueOf(getAdapter().getSortType().name()).ordinal(), (dialog, itemView, which, text) -> {
+                            Timber.d("sortBy: %s", text);
+                            getAdapter().sortByType(sortTypes.get(which));
+                            dialog.dismiss();
+                            return true;
+                        })
+                        .positiveText(R.string.close)
+                        .onPositive((dialog, which) -> dialog.dismiss())
+                        .build()
+                        .show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     /**

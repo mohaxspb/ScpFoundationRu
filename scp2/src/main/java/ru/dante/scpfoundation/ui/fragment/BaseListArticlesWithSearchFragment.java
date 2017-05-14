@@ -85,11 +85,6 @@ public abstract class BaseListArticlesWithSearchFragment<V extends BaseArticlesL
     }
 
     @Override
-    protected boolean isHasOptionsMenu() {
-        return true;
-    }
-
-    @Override
     protected int getMenuResId() {
         return R.menu.menu_search;
     }
@@ -130,8 +125,6 @@ public abstract class BaseListArticlesWithSearchFragment<V extends BaseArticlesL
             public boolean onQueryTextChange(String newText) {
                 mSearchQuery = newText;
                 mAdapter.sortArticles(newText);
-//                mAdapter.notifyItemRangeChanged(0, mAdapter.getItemCount());
-//                mRecyclerView.invalidate();
                 return true;
             }
         });
