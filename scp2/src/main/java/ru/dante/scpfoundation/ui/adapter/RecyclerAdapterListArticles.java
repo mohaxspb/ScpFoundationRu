@@ -116,6 +116,10 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
         MyApplication.getAppComponent().inject(this);
     }
 
+    public List<Article> getDisplayedData() {
+        return mSortedWithFilterData;
+    }
+
     public void setData(List<Article> data) {
         mData = data;
         sortByType(mSortType);
@@ -124,6 +128,9 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
     public void sortByType(SortType sortType) {
         Timber.d("sortByType: %s", sortType);
         mSortType = sortType;
+        if (mData == null) {
+            return;
+        }
 
         mSortedWithFilterData.clear();
 

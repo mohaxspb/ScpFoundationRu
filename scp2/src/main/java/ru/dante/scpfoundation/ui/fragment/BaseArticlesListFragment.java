@@ -1,5 +1,6 @@
 package ru.dante.scpfoundation.ui.fragment;
 
+import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
@@ -30,7 +31,23 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
         extends BaseListFragment<V, P>
         implements BaseListMvp.View {
 
+    private static final String EXTRA_SORT_TYPE = "EXTRA_SORT_TYPE";
     protected RecyclerAdapterListArticles mAdapter;
+    private RecyclerAdapterListArticles.SortType mSortType = RecyclerAdapterListArticles.SortType.NONE;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) {
+            mSortType = (RecyclerAdapterListArticles.SortType) savedInstanceState.getSerializable(EXTRA_SORT_TYPE);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(EXTRA_SORT_TYPE, mSortType);
+    }
 
     @SuppressWarnings("unchecked")
     @Override
@@ -92,7 +109,8 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
                         .alwaysCallSingleChoiceCallback()
                         .itemsCallbackSingleChoice(RecyclerAdapterListArticles.SortType.valueOf(getAdapter().getSortType().name()).ordinal(), (dialog, itemView, which, text) -> {
                             Timber.d("sortBy: %s", text);
-                            getAdapter().sortByType(sortTypes.get(which));
+                            mSortType = sortTypes.get(which);
+                            getAdapter().sortByType(mSortType);
                             dialog.dismiss();
                             return true;
                         })
@@ -142,7 +160,7 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
             @Override
             public void onArticleClicked(Article article, int position) {
                 Timber.d("onArticleClicked: %s/%s", article.title, position);
-                ArticleActivity.startActivity(getActivity(), (ArrayList<String>) Article.getListOfUrls(mPresenter.getData()), position);
+                ArticleActivity.startActivity(getActivity(), (ArrayList<String>) Article.getListOfUrls(getAdapter().getDisplayedData()), position);
             }
 
             @Override
@@ -165,6 +183,7 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
         });
         getAdapter().setHasStableIds(true);
         getAdapter().setShouldShowPopupOnFavoriteClick(isShouldShowPopupOnFavoriteClick());
+        getAdapter().sortByType(mSortType);
     }
 
     protected boolean isShouldShowPopupOnFavoriteClick() {
