@@ -66,11 +66,6 @@ public class OfflineArticlesFragment
     }
 
     @Override
-    protected void getDataFromApi() {
-        //do not use any server to store offlines
-    }
-
-    @Override
     public void resetOnScrollListener() {
         //we do not have paging
     }
@@ -81,6 +76,7 @@ public class OfflineArticlesFragment
         return false;
     }
 
+    //TODO crate enum for it, or IntDef...
     public static final int TYPE_OBJ_1 = 0;
     public static final int TYPE_OBJ_2 = 1;
     public static final int TYPE_OBJ_3 = 2;

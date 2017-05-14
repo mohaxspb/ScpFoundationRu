@@ -6,8 +6,6 @@ import java.util.List;
 
 import io.realm.RealmResults;
 import io.realm.Sort;
-import ru.dante.scpfoundation.MyApplication;
-import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.api.ApiClient;
 import ru.dante.scpfoundation.db.DbProviderFactory;
 import ru.dante.scpfoundation.db.model.Article;
@@ -35,11 +33,11 @@ public class FavoriteArticlesPresenter
 
     @Override
     protected Observable<List<Article>> getApiObservable(int offset) {
-        throw new IllegalStateException(MyApplication.getAppInstance().getString(R.string.not_implemented));
+        return Observable.empty();
     }
 
     @Override
     protected Observable<Pair<Integer, Integer>> getSaveToDbObservable(List<Article> data, int offset) {
-        throw new IllegalStateException(MyApplication.getAppInstance().getString(R.string.not_implemented));
+        return Observable.empty();
     }
 }

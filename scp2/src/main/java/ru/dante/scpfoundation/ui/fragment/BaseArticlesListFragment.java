@@ -55,10 +55,10 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
         if (mPresenter.getData() != null) {
             getAdapter().setData(mPresenter.getData());
         } else {
-            getDataFromDb();
+            mPresenter.getDataFromDb();
             //TODO add settings to update list on launch
             if (shouldUpdateThisListOnLaunch()) {
-                getDataFromApi();
+                mPresenter.getDataFromApi(Constants.Api.ZERO_OFFSET);
             }
         }
 
@@ -125,6 +125,11 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
             }
         });
         getAdapter().setHasStableIds(true);
+        getAdapter().setShouldShowPopupOnFavoriteClick(isShouldShowPopupOnFavoriteClick());
+    }
+
+    protected boolean isShouldShowPopupOnFavoriteClick() {
+        return false;
     }
 
     @Override
@@ -135,14 +140,6 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
         }
         getAdapter().setData(data);
         resetOnScrollListener();
-    }
-
-    protected void getDataFromDb() {
-        mPresenter.getDataFromDb();
-    }
-
-    protected void getDataFromApi() {
-        mPresenter.getDataFromApi(Constants.Api.ZERO_OFFSET);
     }
 
     /**
