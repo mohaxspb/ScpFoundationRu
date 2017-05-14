@@ -368,11 +368,15 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Timber.d("called in fragment");
         if (requestCode == REQUEST_CODE_INAPP) {
-//            int responseCode = data.getIntExtra("RESPONSE_CODE", 0);
-            String purchaseData = data.getStringExtra("INAPP_PURCHASE_DATA");
-//            String dataSignature = data.getStringExtra("INAPP_DATA_SIGNATURE");
 
             if (resultCode == Activity.RESULT_OK) {
+                if(data==null){
+                    showMessage(R.string.error_inapp);
+                    return;
+                }
+//            int responseCode = data.getIntExtra("RESPONSE_CODE", 0);
+                String purchaseData = data.getStringExtra("INAPP_PURCHASE_DATA");
+//            String dataSignature = data.getStringExtra("INAPP_DATA_SIGNATURE");
                 try {
                     JSONObject jo = new JSONObject(purchaseData);
                     String sku = jo.getString("productId");

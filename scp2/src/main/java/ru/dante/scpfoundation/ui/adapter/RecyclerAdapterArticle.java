@@ -297,7 +297,12 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                     })
                     .into(imageView);
 
-            String title = document.getElementsByTag("span").text();
+            String title = null;
+            if (!document.getElementsByTag("span").isEmpty()) {
+                title = document.getElementsByTag("span").text();
+            } else if (!document.getElementsByClass("scp-image-caption").isEmpty()) {
+                title = document.getElementsByClass("scp-image-caption").first().text();
+            }
             //TODO add settings for it
 //            titleTextView.setTextIsSelectable(true);
             titleTextView.setText(title);

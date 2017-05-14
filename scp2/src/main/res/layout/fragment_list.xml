@@ -18,8 +18,8 @@
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scrollbars="vertical"
             />
+        <!--android:scrollbars="vertical"-->
         <!--android:scrollbarThumbVertical="?scrollbar"-->
     </android.support.v4.widget.SwipeRefreshLayout>
 
@@ -27,7 +27,7 @@
         android:id="@+id/fastScroller"
         android:layout_width="@dimen/defaultMarginSmall"
         android:layout_height="match_parent"
-        android:layout_gravity="right"
+        android:layout_gravity="end"
         app:rfs_barColor="@android:color/transparent"
         app:rfs_handleColor="?newArticlesTextColor"
         />

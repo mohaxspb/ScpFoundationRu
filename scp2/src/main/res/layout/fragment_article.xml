@@ -37,8 +37,6 @@
                 android:id="@+id/recyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scrollbarThumbVertical="?scrollbar"
-                android:scrollbars="vertical"
                 />
         </android.support.v4.widget.SwipeRefreshLayout>
     </LinearLayout>
@@ -52,5 +50,6 @@
         android:indeterminateTint="?newArticlesTextColor"
         android:indeterminateTintMode="src_in"
         android:visibility="gone"
-        tools:targetApi="lollipop"/>
+        tools:targetApi="lollipop"
+        />
 </FrameLayout>

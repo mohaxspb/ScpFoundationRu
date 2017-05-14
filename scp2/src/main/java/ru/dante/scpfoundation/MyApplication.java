@@ -3,6 +3,9 @@ package ru.dante.scpfoundation;
 import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 import com.vk.sdk.VKAccessToken;
@@ -77,7 +80,24 @@ public class MyApplication extends MultiDexApplication {
                 .build();
 
         if (BuildConfig.TIMBER_ENABLE) {
-            Timber.plant(new Timber.DebugTree());
+            Timber.plant(new Timber.DebugTree() {
+                @Override
+                protected void log(int priority, String tag, String message, Throwable t) {
+                    message = formatLogs(message);
+                    super.log(priority, tag, message, t);
+                }
+
+                private String formatLogs(String message) {
+                    if (!message.startsWith("{")) {
+                        return message;
+                    }
+                    try {
+                        return new GsonBuilder().setPrettyPrinting().create().toJson(new JsonParser().parse(message));
+                    } catch (JsonSyntaxException m) {
+                        return message;
+                    }
+                }
+            });
         } else {
             Timber.plant(new Timber.DebugTree() {
                 @Override
