@@ -39,7 +39,6 @@ import ru.dante.scpfoundation.ui.util.ReachBottomRecyclerScrollListener;
 import ru.dante.scpfoundation.ui.util.SetTextViewHTML;
 import ru.dante.scpfoundation.util.DialogUtils;
 import timber.log.Timber;
-import xyz.danoz.recyclerviewfastscroller.vertical.VerticalRecyclerViewFastScroller;
 
 /**
  * Created by mohax on 03.01.2017.
@@ -64,8 +63,6 @@ public class ArticleFragment
     SwipeRefreshLayout mSwipeRefreshLayout;
     @BindView(R.id.recyclerView)
     RecyclerView mRecyclerView;
-    @BindView(R.id.fastScroller)
-    protected VerticalRecyclerViewFastScroller mVerticalRecyclerViewFastScroller;
 
     @BindView(R.id.tabLayout)
     TabLayout tabLayout;
@@ -128,10 +125,6 @@ public class ArticleFragment
         mAdapter = new RecyclerAdapterArticle();
         mAdapter.setTextItemsClickListener(this);
         mRecyclerView.setAdapter(mAdapter);
-
-        // Connect the recycler to the scroller (to let the scroller scroll the list)
-        mVerticalRecyclerViewFastScroller.setRecyclerView(mRecyclerView);
-        mVerticalRecyclerViewFastScroller.moveHandleToPosition(0);
 
         mPresenter.setArticleId(url);
         mPresenter.getDataFromDb();
@@ -256,9 +249,6 @@ public class ArticleFragment
                 }
             }
         });
-
-        // Connect the scroller to the recycler (to let the recycler scroll the scroller's handle)
-        mRecyclerView.addOnScrollListener(mVerticalRecyclerViewFastScroller.getOnScrollListener());
     }
 
     private void updateActivityMenuState() {
