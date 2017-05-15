@@ -54,7 +54,7 @@ dependencies {
     }
     compile 'com.yandex.android:mobmetricalib:2.32'
     //vk SDK
-    compile 'com.vk:androidsdk:+'
+    compile 'com.vk:androidsdk:1.6.8'
     /*Галерея*/
     compile 'com.veinhorn.scrollgalleryview:library:1.0.5'
     compile 'com.squareup.picasso:picasso:2.5.2'

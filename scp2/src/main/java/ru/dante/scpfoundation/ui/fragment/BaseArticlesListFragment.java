@@ -1,8 +1,11 @@
 package ru.dante.scpfoundation.ui.fragment;
 
+import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
 import android.view.MenuItem;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -112,6 +115,7 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
                             mSortType = sortTypes.get(which);
                             getAdapter().sortByType(mSortType);
                             dialog.dismiss();
+                            getActivity().supportInvalidateOptionsMenu();
                             return true;
                         })
                         .positiveText(R.string.close)
@@ -121,6 +125,19 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        MenuItem item = menu.findItem(R.id.menuItemSort);
+        if (item != null) {
+            if (mSortType != RecyclerAdapterListArticles.SortType.NONE) {
+                item.getIcon().setColorFilter(ContextCompat.getColor(getActivity(), R.color.material_green_500), PorterDuff.Mode.SRC_ATOP);
+            } else {
+                item.getIcon().setColorFilter(ContextCompat.getColor(getActivity(), android.R.color.transparent), PorterDuff.Mode.SRC_ATOP);
+            }
         }
     }
 
