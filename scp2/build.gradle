@@ -195,7 +195,7 @@ dependencies {
     //mvp
     compile 'com.hannesdorfmann.mosby:mvp:2.0.1'
     //vk
-    compile 'com.vk:androidsdk:1.6.7'
+    compile 'com.vk:androidsdk:1.6.8'
     //dialogs
     compile 'com.afollestad.material-dialogs:core:0.9.1.0'
     //fonts
