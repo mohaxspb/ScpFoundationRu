@@ -1,5 +1,7 @@
 package ru.dante.scpfoundation.mvp.presenter;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 import ru.dante.scpfoundation.api.ApiClient;
 import ru.dante.scpfoundation.db.DbProviderFactory;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
@@ -23,6 +25,11 @@ public class ArticleScreenPresenter
     @Override
     public void toggleFavorite(String url) {
         Timber.d("toggleFavorite url: %s", url);
+        //TODO seems to that we can move it to ArticlePresenter
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            getView().showNeedLoginPopup();
+            return;
+        }
         mDbProviderFactory.getDbProvider().toggleFavorite(url)
                 .flatMap(article1 -> mDbProviderFactory.getDbProvider().setArticleSynced(article1, false))
                 .subscribe(

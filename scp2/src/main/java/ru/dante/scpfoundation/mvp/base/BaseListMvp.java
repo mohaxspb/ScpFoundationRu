@@ -10,7 +10,9 @@ import ru.dante.scpfoundation.db.model.Article;
  * for pacanskiypublic
  */
 public interface BaseListMvp {
+
     interface View extends BaseMvp.View {
+
         void showSwipeProgress(boolean show);
 
         void showCenterProgress(boolean show);
@@ -25,6 +27,7 @@ public interface BaseListMvp {
     }
 
     interface Presenter<V extends View> extends BaseMvp.Presenter<V> {
+
         List<Article> getData();
 
         void getDataFromDb();

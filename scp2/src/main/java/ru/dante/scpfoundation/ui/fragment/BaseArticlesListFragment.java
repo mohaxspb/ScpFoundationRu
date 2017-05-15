@@ -1,9 +1,17 @@
 package ru.dante.scpfoundation.ui.fragment;
 
+import android.graphics.PorterDuff;
+import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuItem;
+
+import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import ru.dante.scpfoundation.Constants;
@@ -26,7 +34,23 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
         extends BaseListFragment<V, P>
         implements BaseListMvp.View {
 
+    private static final String EXTRA_SORT_TYPE = "EXTRA_SORT_TYPE";
     protected RecyclerAdapterListArticles mAdapter;
+    private RecyclerAdapterListArticles.SortType mSortType = RecyclerAdapterListArticles.SortType.NONE;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) {
+            mSortType = (RecyclerAdapterListArticles.SortType) savedInstanceState.getSerializable(EXTRA_SORT_TYPE);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(EXTRA_SORT_TYPE, mSortType);
+    }
 
     @SuppressWarnings("unchecked")
     @Override
@@ -55,16 +79,66 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
         if (mPresenter.getData() != null) {
             getAdapter().setData(mPresenter.getData());
         } else {
-            getDataFromDb();
+            mPresenter.getDataFromDb();
             //TODO add settings to update list on launch
             if (shouldUpdateThisListOnLaunch()) {
-                getDataFromApi();
+                mPresenter.getDataFromApi(Constants.Api.ZERO_OFFSET);
             }
         }
 
         resetOnScrollListener();
 
         initSwipeRefresh();
+    }
+
+    @Override
+    protected boolean isHasOptionsMenu() {
+        return true;
+    }
+
+    @Override
+    protected int getMenuResId() {
+        return R.menu.menu_articles_list;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menuItemSort:
+                final List<RecyclerAdapterListArticles.SortType> sortTypes = Arrays.asList(RecyclerAdapterListArticles.SortType.values());
+                new MaterialDialog.Builder(getActivity())
+                        .title(R.string.dialog_sort_title)
+                        .items(sortTypes)
+                        .alwaysCallSingleChoiceCallback()
+                        .itemsCallbackSingleChoice(RecyclerAdapterListArticles.SortType.valueOf(getAdapter().getSortType().name()).ordinal(), (dialog, itemView, which, text) -> {
+                            Timber.d("sortBy: %s", text);
+                            mSortType = sortTypes.get(which);
+                            getAdapter().sortByType(mSortType);
+                            dialog.dismiss();
+                            getActivity().supportInvalidateOptionsMenu();
+                            return true;
+                        })
+                        .positiveText(R.string.close)
+                        .onPositive((dialog, which) -> dialog.dismiss())
+                        .build()
+                        .show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        MenuItem item = menu.findItem(R.id.menuItemSort);
+        if (item != null) {
+            if (mSortType != RecyclerAdapterListArticles.SortType.NONE) {
+                item.getIcon().setColorFilter(ContextCompat.getColor(getActivity(), R.color.material_green_500), PorterDuff.Mode.SRC_ATOP);
+            } else {
+                item.getIcon().setColorFilter(ContextCompat.getColor(getActivity(), android.R.color.transparent), PorterDuff.Mode.SRC_ATOP);
+            }
+        }
     }
 
     /**
@@ -102,25 +176,35 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
         getAdapter().setArticleClickListener(new RecyclerAdapterListArticles.ArticleClickListener() {
             @Override
             public void onArticleClicked(Article article, int position) {
-                ArticleActivity.startActivity(getActivity(), (ArrayList<String>) Article.getListOfUrls(mPresenter.getData()), position);
+                Timber.d("onArticleClicked: %s/%s", article.title, position);
+                ArticleActivity.startActivity(getActivity(), (ArrayList<String>) Article.getListOfUrls(getAdapter().getDisplayedData()), position);
             }
 
             @Override
             public void toggleReadenState(Article article) {
+                Timber.d("toggleReadenState: %s", article.title);
                 mPresenter.toggleReadState(article);
             }
 
             @Override
             public void toggleFavoriteState(Article article) {
+                Timber.d("toggleFavoriteState: %s", article.title);
                 mPresenter.toggleFavoriteState(article);
             }
 
             @Override
             public void onOfflineClicked(Article article) {
+                Timber.d("onOfflineClicked: %s", article.title);
                 mPresenter.toggleOfflineState(article);
             }
         });
         getAdapter().setHasStableIds(true);
+        getAdapter().setShouldShowPopupOnFavoriteClick(isShouldShowPopupOnFavoriteClick());
+        getAdapter().sortByType(mSortType);
+    }
+
+    protected boolean isShouldShowPopupOnFavoriteClick() {
+        return false;
     }
 
     @Override
@@ -131,14 +215,6 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
         }
         getAdapter().setData(data);
         resetOnScrollListener();
-    }
-
-    protected void getDataFromDb() {
-        mPresenter.getDataFromDb();
-    }
-
-    protected void getDataFromApi() {
-        mPresenter.getDataFromApi(Constants.Api.ZERO_OFFSET);
     }
 
     /**

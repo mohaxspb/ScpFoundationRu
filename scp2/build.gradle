@@ -179,7 +179,7 @@ dependencies {
     compile 'org.parceler:parceler-api:1.1.6'
     annotationProcessor 'org.parceler:parceler:1.1.6'
     //jsoup
-    compile 'org.jsoup:jsoup:1.10.1'
+    compile 'org.jsoup:jsoup:1.10.2'
     //logs
     compile 'com.jakewharton.timber:timber:4.3.1'
     //dagger2
@@ -195,7 +195,7 @@ dependencies {
     //mvp
     compile 'com.hannesdorfmann.mosby:mvp:2.0.1'
     //vk
-    compile 'com.vk:androidsdk:1.6.7'
+    compile 'com.vk:androidsdk:1.6.8'
     //dialogs
     compile 'com.afollestad.material-dialogs:core:0.9.1.0'
     //fonts

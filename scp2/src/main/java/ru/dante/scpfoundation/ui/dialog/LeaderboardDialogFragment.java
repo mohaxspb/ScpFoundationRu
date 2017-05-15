@@ -6,6 +6,8 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
@@ -15,11 +17,12 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import ru.dante.scpfoundation.MyApplication;
+import butterknife.ButterKnife;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.api.model.response.LeaderBoardResponse;
 import ru.dante.scpfoundation.ui.adapter.LeaderboardRecyclerAdapter;
 import timber.log.Timber;
+import xyz.danoz.recyclerviewfastscroller.vertical.VerticalRecyclerViewFastScroller;
 
 public class LeaderboardDialogFragment extends DialogFragment {
 
@@ -39,8 +42,6 @@ public class LeaderboardDialogFragment extends DialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        MyApplication.getAppComponent().inject(this);
-
         mLeaderBoardResponse = (LeaderBoardResponse) getArguments().getSerializable(EXTRA_LEADERBOARD_RESPONSE);
     }
 
@@ -59,7 +60,7 @@ public class LeaderboardDialogFragment extends DialogFragment {
         MaterialDialog.Builder dialogTextSizeBuilder = new MaterialDialog.Builder(getActivity());
         dialogTextSizeBuilder
                 .title(R.string.leaderboard_dialog_title)
-                .content(getString(R.string.refreshed, refreshed))
+                .customView(R.layout.dialog_leaderboard, false)
                 .positiveText(android.R.string.cancel);
 
         LeaderboardRecyclerAdapter adapter = new LeaderboardRecyclerAdapter();
@@ -67,12 +68,21 @@ public class LeaderboardDialogFragment extends DialogFragment {
         Collections.sort(mLeaderBoardResponse.users, (user1, user) -> user.score - user1.score);
         adapter.setData(mLeaderBoardResponse.users);
 
-        dialogTextSizeBuilder.adapter(adapter, new LinearLayoutManager(getActivity()));
-
         dialog = dialogTextSizeBuilder.build();
 
-        dialog.getRecyclerView().addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
-        dialog.getRecyclerView().setAdapter(adapter);
+        TextView content = ButterKnife.findById(dialog, R.id.content);
+        content.setText(getString(R.string.refreshed, refreshed));
+
+        RecyclerView recyclerView = ButterKnife.findById(dialog, R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
+        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
+        recyclerView.setAdapter(adapter);
+
+        VerticalRecyclerViewFastScroller mVerticalRecyclerViewFastScroller = ButterKnife.findById(dialog, R.id.fastScroller);
+        mVerticalRecyclerViewFastScroller.setRecyclerView(recyclerView);
+
+        // Connect the scroller to the recycler (to let the recycler scroll the scroller's handle)
+        recyclerView.addOnScrollListener(mVerticalRecyclerViewFastScroller.getOnScrollListener());
 
         return dialog;
     }

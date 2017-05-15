@@ -2,6 +2,8 @@ package ru.dante.scpfoundation.mvp.presenter;
 
 import android.util.Pair;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 import java.util.List;
 
 import io.realm.RealmResults;
@@ -126,12 +128,12 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
                             getView().showBottomProgress(false);
                             getView().showCenterProgress(false);
                         },
-                        error -> {
-                            Timber.e(error);
+                        e -> {
+                            Timber.e(e);
 
                             isLoading = false;
 
-                            getView().showError(error);
+                            getView().showError(e);
 
                             getView().enableSwipeRefresh(true);
                             getView().showSwipeProgress(false);
@@ -151,6 +153,10 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
 
     @Override
     public void toggleFavoriteState(Article article) {
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            getView().showNeedLoginPopup();
+            return;
+        }
         if (!article.isValid()) {
             return;
         }
@@ -164,6 +170,10 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
 
     @Override
     public void toggleReadState(Article article) {
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            getView().showNeedLoginPopup();
+            return;
+        }
         if (!article.isValid()) {
             return;
         }

@@ -63,7 +63,8 @@ public class ParseHtmlUtils {
                 listOfTextTypes.add(TextType.TABLE);
                 continue;
             }
-            if (ourElement.className().equals("rimg")) {
+            if (ourElement.className().equals("rimg") ||
+                    ourElement.classNames().contains("scp-image-block")) {
                 listOfTextTypes.add(TextType.IMAGE);
                 continue;
             }

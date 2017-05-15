@@ -28,8 +28,10 @@ import com.vk.sdk.api.model.VKAttachments;
 import com.vk.sdk.api.model.VKList;
 
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
 import org.jsoup.parser.Tag;
 import org.jsoup.select.Elements;
 
@@ -464,7 +466,7 @@ public class ApiClient {
                     subscriber.onCompleted();
                     return;
                 }
-//            замена ссылок в сносках
+                //замена ссылок в сносках
                 Elements footnoterefs = pageContent.getElementsByClass("footnoteref");
                 for (Element snoska : footnoterefs) {
                     Element aTag = snoska.getElementsByTag("a").first();
@@ -507,6 +509,16 @@ public class ApiClient {
                 if (svernut != null) {
                     svernut.remove();
                 }
+                //replace all spans with strike-through with <s>
+                Elements spansWithStrike = pageContent.select("span[style=text-decoration: line-through;]");
+                for (Element element : spansWithStrike) {
+                    Timber.d("element: %s", element);
+                    element.tagName("s");
+                    for (Attribute attribute : element.attributes()) {
+                        element.removeAttr(attribute.getKey());
+                    }
+                    Timber.d("element refactored: %s", element);
+                }
                 //get title
                 Element titleEl = doc.getElementById("page-title");
                 String title = "";
@@ -517,6 +529,45 @@ public class ApiClient {
                 if (upperDivWithLink != null) {
                     pageContent.prependChild(upperDivWithLink);
                 }
+                //parse multiple imgs in "rimg" tag
+                Element rimg = pageContent.getElementsByClass("rimg").first();
+                if (rimg != null) {
+                    Elements imgs = rimg.getElementsByTag("img");
+                    Elements descriptions = rimg.getElementsByTag("span");
+                    if (imgs != null && imgs.size() > 1 && descriptions.size() == imgs.size()) {
+                        for (int i = 0; i < imgs.size(); i++) {
+                            Element img = imgs.get(i);
+                            Element description = descriptions.get(i);
+                            Element newRimg = new Element("div");
+                            newRimg.addClass("rimg");
+                            newRimg.appendChild(img).appendChild(description);
+                            pageContent.getElementsByClass("rimg").last().after(newRimg);
+                        }
+                        //and remove first one, which is old
+                        pageContent.getElementsByClass("rimg").first().remove();
+                    }
+                }
+                //put all text which is not in any tag in div tag
+                for (Element element : pageContent.children()) {
+                    Node nextSibling = element.nextSibling();
+                    Timber.d("child: ___%s___", nextSibling);
+                    if (nextSibling != null && !nextSibling.toString().equals(" ")) {
+                        element.after(new Element("div").appendChild(nextSibling));
+                    }
+                }
+                //search for images and add it to separate field to be able to show it in arts lists
+                RealmList<RealmString> imgsUrls = null;
+                Elements imgsOfArticle = pageContent.getElementsByTag("img");
+                if (!imgsOfArticle.isEmpty()) {
+                    imgsUrls = new RealmList<>();
+                    for (Element img : imgsOfArticle) {
+                        imgsUrls.add(new RealmString(img.attr("src")));
+                    }
+                }
+
+                //type TODO fucking unformatted info!
+
+                //this we store aas article text
                 String rawText = pageContent.toString();
 
                 //tabs
@@ -528,6 +579,7 @@ public class ApiClient {
                 RealmList<RealmString> textPartsTypes = null;
 
                 Document document = Jsoup.parse(rawText);
+
                 Element yuiNavset = document.getElementsByAttributeValueStarting("class", "yui-navset").first();
                 if (yuiNavset != null) {
                     hasTabs = true;
@@ -557,18 +609,6 @@ public class ApiClient {
                     }
                 }
 
-                //search for images and add it to separate field to be able to show it in arts lists
-                RealmList<RealmString> imgsUrls = null;
-                Elements imgs = pageContent.getElementsByTag("img");
-                if (!imgs.isEmpty()) {
-                    imgsUrls = new RealmList<>();
-                    for (Element img : imgs) {
-                        imgsUrls.add(new RealmString(img.attr("src")));
-                    }
-                }
-
-                //type TODO fucking unformatted info!
-
                 //finally fill article info
                 Article article = new Article();
 
@@ -581,6 +621,9 @@ public class ApiClient {
                 article.tabsTexts = tabsText;
                 //textParts
                 article.textParts = textParts;
+                for (RealmString realmString : article.textParts) {
+                    Timber.d("part: %s", realmString.val);
+                }
                 article.textPartsTypes = textPartsTypes;
                 //images
                 article.imagesUrls = imgsUrls;
@@ -1268,49 +1311,6 @@ public class ApiClient {
             });
         });
     }
-
-//    public Observable<List<Article>> writeArticlesToFirebase(List<Article> articles) {
-//        //TODO caclulate how many new articles we add and return it to calculate hoe much score we should add
-//        //I think that this can be done via calculate initial childs of ARTICLE ref minus result childs of ARTICLE ref
-//        return Observable.create(subscriber -> {
-//            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-//            if (firebaseUser == null) {
-//                subscriber.onError(new IllegalArgumentException("firebase user is null"));
-//                return;
-//            }
-//
-//            Map<String, Object> users = new HashMap<>();
-//
-//            for (Article article : articles) {
-//                String url = article.url.replace(BuildConfig.BASE_API_URL, "");
-//
-//                ArticleInFirebase articleInFirebase = new ArticleInFirebase(
-//                        article.isInFavorite != Article.ORDER_NONE,
-//                        article.isInReaden,
-//                        article.title,
-//                        article.url,
-//                        System.currentTimeMillis()
-//                );
-//
-//                users.put(url, articleInFirebase);
-//            }
-//
-//            FirebaseDatabase database = FirebaseDatabase.getInstance();
-//            DatabaseReference reference = database.getReference()
-//                    .child(Constants.Firebase.Refs.USERS)
-//                    .child(firebaseUser.getUid())
-//                    .child(Constants.Firebase.Refs.ARTICLES);
-//
-//            reference.updateChildren(users, (databaseError, databaseReference) -> {
-//                if (databaseError == null) {
-//                    subscriber.onNext(articles);
-//                    subscriber.onCompleted();
-//                } else {
-//                    subscriber.onError(databaseError.toException());
-//                }
-//            });
-//        });
-//    }
 
     public Observable<Integer> getUserScoreFromFirebase() {
         return Observable.create(subscriber -> {

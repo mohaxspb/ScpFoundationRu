@@ -11,6 +11,7 @@ import rx.Subscriber;
  * for scp_ru
  */
 public interface BaseArticlesListMvp {
+
     interface View extends BaseListMvp.View {
 
     }

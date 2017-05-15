@@ -7,6 +7,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.hannesdorfmann.mosby.mvp.MvpNullObjectBasePresenter;
 import com.vk.sdk.VKSdk;
 
+import ru.dante.scpfoundation.BuildConfig;
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
@@ -53,6 +54,7 @@ public abstract class BasePresenter<V extends BaseMvp.View>
 
     @Override
     public void getUserFromDb() {
+        Timber.d("getUserFromDb");
         mDbProviderFactory.getDbProvider().getUserAsync().subscribe(
                 user -> {
                     mUser = user;
@@ -78,6 +80,7 @@ public abstract class BasePresenter<V extends BaseMvp.View>
     @Override
     public void updateArticleInFirebase(Article article, boolean showResultMessage) {
         Timber.d("updateArticleInFirebase: %s", article.url);
+
         if (!mMyPreferencesManager.isHasSubscription()) {
             long curNumOfAttempts = mMyPreferencesManager.getNumOfAttemptsToAutoSync();
             long maxNumOfAttempts = FirebaseRemoteConfig.getInstance()
@@ -92,6 +95,14 @@ public abstract class BasePresenter<V extends BaseMvp.View>
             } else {
                 mMyPreferencesManager.setNumOfAttemptsToAutoSync(curNumOfAttempts + 1);
             }
+            return;
+        }
+        //ignore articles which not starts with base domain
+        if (!article.url.startsWith(BuildConfig.BASE_API_URL)) {
+            mDbProviderFactory.getDbProvider().setArticleSynced(article, true).subscribe(
+                    article1 -> Timber.d("article1 synced"),
+                    Timber::e
+            );
             return;
         }
 
@@ -138,11 +149,18 @@ public abstract class BasePresenter<V extends BaseMvp.View>
         dbProvider.getUnsyncedArticlesManaged()
                 .doOnNext(articles -> Timber.d("articles: %s", articles))
                 .flatMap(articles -> articles.isEmpty() ? Observable.just(new Pair<>(0, 0)) :
-                        //TODO need to calculate and add score for firstly synced articles
+                        //need to calculate and add score for firstly synced articles
                         //caclulate how many new articles we add and return it to calculate hoц much score we should add
                         //I think that this can be done via calculate initial childs of ARTICLE ref minus result childs of ARTICLE ref
                         Observable.from(articles)
                                 .flatMap(article -> {
+                                    //ignore articles which not starts with base domain
+                                    if (!article.url.startsWith(BuildConfig.BASE_API_URL)) {
+                                        Timber.e("Article from no main domain MUST IGNORE");
+                                        return mDbProviderFactory.getDbProvider().setArticleSynced(article, true)
+                                                .flatMap(art -> Observable.just(new Pair<>(article, 0)));
+                                    }
+
                                     @ScoreAction
                                     String action = article.isInReaden ? ScoreAction.READ :
                                             article.isInFavorite != Article.ORDER_NONE ? ScoreAction.FAVORITE : ScoreAction.NONE;
@@ -157,7 +175,10 @@ public abstract class BasePresenter<V extends BaseMvp.View>
                                                             .flatMap(integer -> Observable.just((new Pair<>(article, totalScoreToAdd))))
                                                     : Observable.just(new Pair<>(article, 0)))
                                             .flatMap(articleAndScore -> mApiClient.writeArticleToFirebase(articleAndScore.first).flatMap(article1 -> Observable.just(articleAndScore)))
-                                            .flatMap(articleAndScore -> mDbProviderFactory.getDbProvider().setArticleSynced(articleAndScore.first, true).flatMap(article1 -> Observable.just(articleAndScore)));
+                                            .flatMap(articleAndScore -> mDbProviderFactory.getDbProvider().setArticleSynced(articleAndScore.first, true).flatMap(article1 -> Observable.just(articleAndScore)))
+                                            //try not to break whole operation if error ocures
+                                            .doOnError(Timber::e)
+                                            .onErrorResumeNext(error -> mDbProviderFactory.getDbProvider().setArticleSynced(article, true).flatMap(article1 -> Observable.just(new Pair<>(article, 0))));
                                 })
                                 .toList()
                                 .flatMap(articleAndScores -> {

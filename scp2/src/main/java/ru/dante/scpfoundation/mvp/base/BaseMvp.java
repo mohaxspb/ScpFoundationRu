@@ -35,9 +35,12 @@ public interface BaseMvp {
         void dismissProgressDialog();
 
         void showSnackBarWithAction(Constants.Firebase.CallToActionReason reason);
+
+        void showNeedLoginPopup();
     }
 
     interface Presenter<V extends MvpView> extends MvpPresenter<V>, DataSyncActions {
+
         void onCreate();
 
         void getUserFromDb();
