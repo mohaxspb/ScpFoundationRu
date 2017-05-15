@@ -85,6 +85,12 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
                 return "Непрочитанные";
             }
         },
+        READ {
+            @Override
+            public String toString() {
+                return "Прочитанные";
+            }
+        },
         RATING {
             @Override
             public String toString() {
@@ -161,6 +167,15 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
                     }
                 }
                 mSortedWithFilterData.addAll(sortedByReadStateArts);
+                break;
+            case READ:
+                List<Article> sortedByNonReadStateArts = new ArrayList<>();
+                for (Article article : mData) {
+                    if (article.isInReaden) {
+                        sortedByNonReadStateArts.add(article);
+                    }
+                }
+                mSortedWithFilterData.addAll(sortedByNonReadStateArts);
                 break;
             case NEUTRAL_OR_NOT_ADDED:
                 List<Article> neutralOrNotAdded = new ArrayList<>();
