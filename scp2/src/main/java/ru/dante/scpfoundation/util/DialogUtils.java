@@ -7,7 +7,7 @@ import com.bumptech.glide.Glide;
 
 import ru.dante.scpfoundation.R;
 import timber.log.Timber;
-import uk.co.senab.photoview.PhotoView;
+import com.github.chrisbanes.photoview.PhotoView;
 
 /**
  * Created by mohax on 05.01.2017.
