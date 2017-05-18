@@ -592,6 +592,9 @@ public class DbProvider {
                 case VK:
                     VKSdk.logout();
                     break;
+                case GOOGLE:
+                    //do nothing...
+                    break;
                 default:
                     throw new IllegalArgumentException("unexpected provider");
             }

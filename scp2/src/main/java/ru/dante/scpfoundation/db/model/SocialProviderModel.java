@@ -34,10 +34,25 @@ public class SocialProviderModel extends RealmObject implements Serializable {
             case VK:
                 return new SocialProviderModel(provider.name(), VKAccessToken.currentToken().userId);
             case GOOGLE:
-                return new SocialProviderModel(provider.name(), VKAccessToken.currentToken().userId);
+                return new SocialProviderModel(provider.name(), null);
             default:
                 throw new IllegalArgumentException("unexpected provider");
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SocialProviderModel that = (SocialProviderModel) o;
+
+        return provider.equals(that.provider);
+    }
+
+    @Override
+    public int hashCode() {
+        return provider.hashCode();
     }
 
     @Override

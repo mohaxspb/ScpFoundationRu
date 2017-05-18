@@ -32,15 +32,26 @@ public interface Constants {
 //            String VK = "vk";
 //        }
 
-        enum CallToActionReason{
+        enum CallToActionReason {
             REMOVE_ADS, ENABLE_AUTO_SYNC, SYNC_NEED_AUTH, ENABLE_FONTS
         }
 
-        enum SocialProvider{
-            VK, GOOGLE
+        enum SocialProvider {
+            VK,
+            GOOGLE;
+
+//            private String id;
+//
+//            public void setSocialProvider(String id) {
+//                this.id = id;
+//            }
+//
+//            public String getId() {
+//                return id;
+//            }
         }
 
-        interface Refs{
+        interface Refs {
             String USERS = "users";
             String ARTICLES = "articles";
             String SCORE = "score";
@@ -48,6 +59,7 @@ public interface Constants {
             String APPS = "apps";
             String INAPP = "inapp";
             String CRACKED = "cracked";
+            String SOCIAL_PROVIDER = "socialProviders";
         }
 
         int REQUEST_INVITE = 1024;

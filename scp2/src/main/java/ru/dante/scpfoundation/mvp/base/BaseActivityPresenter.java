@@ -121,11 +121,12 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
      * @param provider login provider to use to login to firebase
      */
     @Override
-    public void startFirebaseLogin(Constants.Firebase.SocialProvider provider) {
+    public void startFirebaseLogin(Constants.Firebase.SocialProvider provider, String id) {
         getView().showProgressDialog(R.string.login_in_progress_custom_token);
-        mApiClient.getAuthInFirebaseWithSocialProviderObservable(provider)
+        mApiClient.getAuthInFirebaseWithSocialProviderObservable(provider, id)
                 .flatMap(firebaseUser -> {
                     if (TextUtils.isEmpty(firebaseUser.getEmail())) {
+                        //TODO seems to be we can remove Observable.create here
                         return Observable.create(subscriber -> mApiClient.nameAndAvatarFromProviderObservable(provider)
                                 .flatMap(nameAvatar -> mApiClient.updateFirebaseUsersNameAndAvatarObservable(nameAvatar.first, nameAvatar.second))
                                 .flatMap(aVoid -> mApiClient.updateFirebaseUsersEmailObservable())
@@ -173,6 +174,12 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
                         //userToWriteToDb.socialProviders.put(provider.name(), SocialProviderModel.getSocialProviderModelForProvider(provider));
                         return mApiClient.writeUserToFirebaseObservable(userToWriteToDb);
                     } else {
+                        SocialProviderModel socialProviderModel = SocialProviderModel.getSocialProviderModelForProvider(provider);
+                        if (!userObjectInFirebase.socialProviders.contains(socialProviderModel)) {
+                            Timber.d("User does not contains provider info: %s", provider);
+                            socialProviderModel.id = id;
+                            return mApiClient.updateFirebaseUsersSocialProvidersObservable(socialProviderModel);
+                        }
                         return Observable.just(userObjectInFirebase);
                     }
                 })

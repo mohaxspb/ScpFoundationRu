@@ -18,6 +18,7 @@ import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,7 +31,12 @@ import com.appodeal.ads.Appodeal;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
@@ -82,49 +88,49 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
  */
 public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends BaseActivityMvp.Presenter<V>>
         extends MvpActivity<V, P>
-        implements BaseActivityMvp.View, MonetizationActions, SharedPreferences.OnSharedPreferenceChangeListener {
+        implements BaseActivityMvp.View, MonetizationActions,
+        SharedPreferences.OnSharedPreferenceChangeListener, GoogleApiClient.OnConnectionFailedListener {
 
     //google login
-    GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id))
-            .requestEmail()
-            .build();
+    private static final int RC_SIGN_IN = 5555;
+    protected GoogleApiClient mGoogleApiClient;
+    ///////////
 
     @BindView(R.id.root)
     protected View mRoot;
     @BindView(R.id.content)
     protected View mContent;
+
     @Nullable
     @BindView(R.id.toolBar)
     protected Toolbar mToolbar;
-
     @Inject
     protected P mPresenter;
     @Inject
     protected MyPreferenceManager mMyPreferenceManager;
+
     @Inject
     protected MyNotificationManager mMyNotificationManager;
-
     //inapps and ads
     private IInAppBillingService mService;
     private List<Item> mOwnedMarketItems = new ArrayList<>();
     private InterstitialAd mInterstitialAd;
-    private MaterialDialog mProgressDialog;
 
+    private MaterialDialog mProgressDialog;
     //download all consts
     //TODO need to refactor it and use one enum here and in service
     public static final int TYPE_OBJ_1 = 0;
     public static final int TYPE_OBJ_2 = 1;
     public static final int TYPE_OBJ_3 = 2;
-    public static final int TYPE_OBJ_RU = 3;
 
+    public static final int TYPE_OBJ_RU = 3;
     public static final int TYPE_EXPERIMETS = 4;
     public static final int TYPE_OTHER = 5;
     public static final int TYPE_INCIDENTS = 6;
     public static final int TYPE_INTERVIEWS = 7;
     public static final int TYPE_ARCHIVE = 8;
-    public static final int TYPE_JOKES = 9;
 
+    public static final int TYPE_JOKES = 9;
     public static final int TYPE_ALL = 10;
 
     @NonNull
@@ -149,6 +155,16 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
 
         setSupportActionBar(mToolbar);
 
+        //google login
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.web_application_id))
+                .requestEmail()
+                .build();
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+
         mPresenter.onCreate();
 
         //setAlarm for notification
@@ -172,6 +188,10 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
         switch (provider) {
             case VK:
                 VKSdk.login(this, VKScope.EMAIL, VKScope.GROUPS);
+                break;
+            case GOOGLE:
+                Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+                startActivityForResult(signInIntent, RC_SIGN_IN);
                 break;
             default:
                 throw new RuntimeException("unexpected provider");
@@ -654,6 +674,8 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
         if (isTimeToShowAds() && !isAdsLoaded()) {
             requestNewInterstitial();
         }
+
+        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -662,6 +684,7 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
             YandexMetrica.onPauseActivity(this);
         }
         super.onPause();
+        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -692,13 +715,13 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (!VKSdk.onActivityResult(requestCode, resultCode, data, new VKCallback<VKAccessToken>() {
+        VKCallback<VKAccessToken> vkCallback = new VKCallback<VKAccessToken>() {
             @Override
             public void onResult(VKAccessToken vkAccessToken) {
                 //Пользователь успешно авторизовался
-                Timber.d("Auth successfull: %s", vkAccessToken.email);
+                Timber.d("Auth successful: %s", vkAccessToken.email);
                 if (vkAccessToken.email != null) {
-                    mPresenter.startFirebaseLogin(Constants.Firebase.SocialProvider.VK);
+                    mPresenter.startFirebaseLogin(Constants.Firebase.SocialProvider.VK, VKAccessToken.currentToken().accessToken);
                 } else {
                     Toast.makeText(BaseActivity.this, R.string.error_login_no_email, Toast.LENGTH_SHORT).show();
                     mPresenter.logoutUser();
@@ -711,8 +734,33 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
                 Timber.e(error.errorMessage);
                 Toast.makeText(BaseActivity.this, error.errorMessage, Toast.LENGTH_SHORT).show();
             }
-        })) {
+        };
+        if (VKSdk.onActivityResult(requestCode, resultCode, data, vkCallback)) {
+            Timber.d("Vk receives and handled onActivityResult");
             super.onActivityResult(requestCode, resultCode, data);
+        } else if (requestCode == RC_SIGN_IN) {
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            if (result.isSuccess()) {
+                Timber.d("Auth successful: %s", result);
+                // Signed in successfully, show authenticated UI.
+                GoogleSignInAccount acct = result.getSignInAccount();
+                if (acct == null) {
+                    Timber.wtf("GoogleSignInAccount is NULL!");
+                    showMessage("GoogleSignInAccount is NULL!");
+                    return;
+                }
+                String email = acct.getEmail();
+                if (!TextUtils.isEmpty(email)) {
+                    mPresenter.startFirebaseLogin(Constants.Firebase.SocialProvider.GOOGLE, acct.getIdToken());
+                } else {
+                    Toast.makeText(BaseActivity.this, R.string.error_login_no_email, Toast.LENGTH_SHORT).show();
+                    mPresenter.logoutUser();
+                }
+            } else {
+                // Signed out, show unauthenticated UI.
+                //TODO
+                mPresenter.logoutUser();
+            }
         }
     }
 
@@ -883,5 +931,10 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
                 Timber.d("Fetch Failed");
             }
         });
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Timber.e("onConnectionFailed: %s", connectionResult);
     }
 }
