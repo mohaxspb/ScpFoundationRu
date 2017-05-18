@@ -33,6 +33,8 @@ public class SocialProviderModel extends RealmObject implements Serializable {
         switch (provider) {
             case VK:
                 return new SocialProviderModel(provider.name(), VKAccessToken.currentToken().userId);
+            case GOOGLE:
+                return new SocialProviderModel(provider.name(), VKAccessToken.currentToken().userId);
             default:
                 throw new IllegalArgumentException("unexpected provider");
         }

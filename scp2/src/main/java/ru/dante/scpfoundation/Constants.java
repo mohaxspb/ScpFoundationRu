@@ -37,7 +37,7 @@ public interface Constants {
         }
 
         enum SocialProvider{
-            VK
+            VK, GOOGLE
         }
 
         interface Refs{

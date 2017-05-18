@@ -89,6 +89,9 @@ android {
 
             resValue('string', 'tools_api_url', apiKeysProperties.get("vpsApiAddress"))
             buildConfigField('String', 'TOOLS_API_URL', '"' + apiKeysProperties.get("vpsApiAddress") + '"')
+
+            resValue('string', 'web_application_id', apiKeysProperties.get("webApplicationId"))
+            buildConfigField('String', 'WEB_APPLICATION_ID', '"' + apiKeysProperties.get("webApplicationId") + '"')
         } else {
             throw new GradleException("You need to have apiKeys.properties file in root of project with " +
                     "yandexMetricaApiKey," +
@@ -96,6 +99,8 @@ android {
                     "adsBannerIdInterstitial," +
                     "vkSdkAppId," +
                     "firebaseUri," +
+                    "vpsApiAddress" +
+                    "webApplicationId" +
                     "vpsApiAddress" +
                     " variables to build project")
         }
