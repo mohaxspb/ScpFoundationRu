@@ -126,20 +126,12 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
         mApiClient.getAuthInFirebaseWithSocialProviderObservable(provider, id)
                 .flatMap(firebaseUser -> {
                     if (TextUtils.isEmpty(firebaseUser.getEmail())) {
-                        //TODO seems to be we can remove Observable.create here
-                        return Observable.create(subscriber -> mApiClient.nameAndAvatarFromProviderObservable(provider)
+                        return mApiClient.nameAndAvatarFromProviderObservable(provider)
                                 .flatMap(nameAvatar -> mApiClient.updateFirebaseUsersNameAndAvatarObservable(nameAvatar.first, nameAvatar.second))
                                 .flatMap(aVoid -> mApiClient.updateFirebaseUsersEmailObservable())
                                 .subscribeOn(AndroidSchedulers.mainThread())
                                 .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(
-                                        result -> {
-                                            Timber.d("result");
-                                            subscriber.onNext(FirebaseAuth.getInstance().getCurrentUser());
-                                            subscriber.onCompleted();
-                                        },
-                                        Observable::error
-                                ));
+                                .flatMap(aVoid -> Observable.just(FirebaseAuth.getInstance().getCurrentUser()));
                     } else {
                         return Observable.just(firebaseUser);
                     }
@@ -170,7 +162,9 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
                         }
                         userToWriteToDb.email = firebaseUser.getEmail();
                         userToWriteToDb.socialProviders = new ArrayList<>();
-                        userToWriteToDb.socialProviders.add(SocialProviderModel.getSocialProviderModelForProvider(provider));
+                        SocialProviderModel socialProviderModel = SocialProviderModel.getSocialProviderModelForProvider(provider);
+                        socialProviderModel.id = id;
+                        userToWriteToDb.socialProviders.add(socialProviderModel);
                         //userToWriteToDb.socialProviders.put(provider.name(), SocialProviderModel.getSocialProviderModelForProvider(provider));
                         return mApiClient.writeUserToFirebaseObservable(userToWriteToDb);
                     } else {
@@ -178,7 +172,9 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
                         if (!userObjectInFirebase.socialProviders.contains(socialProviderModel)) {
                             Timber.d("User does not contains provider info: %s", provider);
                             socialProviderModel.id = id;
-                            return mApiClient.updateFirebaseUsersSocialProvidersObservable(socialProviderModel);
+                            userObjectInFirebase.socialProviders.add(socialProviderModel);
+                            return mApiClient.updateFirebaseUsersSocialProvidersObservable(userObjectInFirebase.socialProviders)
+                                    .flatMap(aVoid -> Observable.just(userObjectInFirebase));
                         }
                         return Observable.just(userObjectInFirebase);
                     }

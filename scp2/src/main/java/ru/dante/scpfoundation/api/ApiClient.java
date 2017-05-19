@@ -1193,20 +1193,19 @@ public class ApiClient {
         return nameAvatarObservable;
     }
 
-    public Observable<FirebaseUser> updateFirebaseUsersSocialProvidersObservable(SocialProviderModel socialProviderModel) {
-        return Observable.create(subscriber -> {
+    public Observable<Void> updateFirebaseUsersSocialProvidersObservable(List<SocialProviderModel> socialProviderModels) {
+        return Observable.unsafeCreate(subscriber -> {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             if (firebaseUser != null) {
-                List<Constants.Firebase.SocialProvider> socialProviders  =
                 FirebaseDatabase.getInstance()
                         .getReference(Constants.Firebase.Refs.USERS)
                         .child(firebaseUser.getUid())
                         .child(Constants.Firebase.Refs.SOCIAL_PROVIDER)
-                        .setValue(user, (databaseError, databaseReference) -> {
+                        .setValue(socialProviderModels, (databaseError, databaseReference) -> {
                             if (databaseError == null) {
                                 //success
                                 Timber.d("user created");
-                                subscriber.onNext(firebaseUser);
+                                subscriber.onNext(null);
                                 subscriber.onCompleted();
                             } else {
                                 subscriber.onError(databaseError.toException());
