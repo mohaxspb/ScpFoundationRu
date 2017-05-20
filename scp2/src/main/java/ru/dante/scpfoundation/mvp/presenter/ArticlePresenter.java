@@ -1,5 +1,7 @@
 package ru.dante.scpfoundation.mvp.presenter;
 
+import android.text.TextUtils;
+
 import com.google.firebase.auth.FirebaseAuth;
 
 import ru.dante.scpfoundation.api.ApiClient;
@@ -27,8 +29,16 @@ public class ArticlePresenter
     private String mArticleUrl;
     private Article mData;
 
+    private boolean alreadyRefreshedFromApi;
+
     public ArticlePresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
         super(myPreferencesManager, dbProviderFactory, apiClient);
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        Timber.d("onCreate: %s", mArticleUrl);
     }
 
     @Override
@@ -44,7 +54,10 @@ public class ArticlePresenter
 
     @Override
     public void getDataFromDb() {
-        Timber.d("getDataFromDb");
+        Timber.d("getDataFromDb: %s", mArticleUrl);
+        if (TextUtils.isEmpty(mArticleUrl)) {
+            return;
+        }
 
         getView().showCenterProgress(true);
         getView().enableSwipeRefresh(false);
@@ -54,10 +67,14 @@ public class ArticlePresenter
                     Timber.d("getDataFromDb data: %s", data);
                     mData = data;
                     if (mData == null) {
-                        getDataFromApi();
+                        if (!alreadyRefreshedFromApi) {
+                            getDataFromApi();
+                        }
                     } else if (mData.text == null) {
                         getView().showData(mData);
-                        getDataFromApi();
+                        if (!alreadyRefreshedFromApi) {
+                            getDataFromApi();
+                        }
                     } else {
                         getView().showData(mData);
                         getView().showCenterProgress(false);
@@ -75,6 +92,9 @@ public class ArticlePresenter
     @Override
     public void getDataFromApi() {
         Timber.d("getDataFromApi: %s", mArticleUrl);
+        if (TextUtils.isEmpty(mArticleUrl)) {
+            return;
+        }
         mApiClient.getArticle(mArticleUrl)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -83,12 +103,17 @@ public class ArticlePresenter
                         data -> {
                             Timber.d("getDataFromApi onNext");
 
+                            alreadyRefreshedFromApi = true;
+
                             getView().showCenterProgress(false);
                             getView().enableSwipeRefresh(true);
                             getView().showSwipeProgress(false);
                         },
                         e -> {
                             Timber.e(e);
+
+                            alreadyRefreshedFromApi = true;
+
                             getView().showError(e);
 
                             getView().showCenterProgress(false);
