@@ -4,6 +4,11 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Pair;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.facebook.Profile;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FacebookAuthProvider;
@@ -537,9 +542,11 @@ public class ApiClient {
                 }
                 //parse multiple imgs in "rimg" tag
                 Element rimg = pageContent.getElementsByClass("rimg").first();
+                Timber.d("rimg: %s", rimg);
                 if (rimg != null) {
                     Elements imgs = rimg.getElementsByTag("img");
                     Elements descriptions = rimg.getElementsByTag("span");
+                    List<Element> rimgsToAdd = new ArrayList<>();
                     if (imgs != null && imgs.size() > 1 && descriptions.size() == imgs.size()) {
                         for (int i = 0; i < imgs.size(); i++) {
                             Element img = imgs.get(i);
@@ -547,17 +554,26 @@ public class ApiClient {
                             Element newRimg = new Element("div");
                             newRimg.addClass("rimg");
                             newRimg.appendChild(img).appendChild(description);
-                            pageContent.getElementsByClass("rimg").last().after(newRimg);
+//                            pageContent.getElementsByClass("rimg").last().after(newRimg);
+                            rimgsToAdd.add(newRimg);
                         }
+                        Element rimgLast = rimg;
+                        for (Element newRimg : rimgsToAdd) {
+                            rimgLast.after(newRimg);
+                            rimgLast = newRimg;
+                        }
+                        rimg.remove();
                         //and remove first one, which is old
-                        pageContent.getElementsByClass("rimg").first().remove();
+//                        pageContent.getElementsByClass("rimg").first().remove();
                     }
                 }
+                Timber.d("pageContent.getElementsByClass(\"rimg\"): %s", pageContent.getElementsByClass("rimg"));
                 //put all text which is not in any tag in div tag
                 for (Element element : pageContent.children()) {
                     Node nextSibling = element.nextSibling();
                     Timber.d("child: ___%s___", nextSibling);
-                    if (nextSibling != null && !nextSibling.toString().equals(" ")) {
+//                    Timber.d("nextSibling.nodeName(): %s", nextSibling.nodeName());
+                    if (nextSibling != null && !nextSibling.toString().equals(" ") && nextSibling.nodeName().equals("#text")) {
                         element.after(new Element("div").appendChild(nextSibling));
                     }
                 }
@@ -645,6 +661,35 @@ public class ApiClient {
                 subscriber.onError(e);
             }
         }))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .map(article -> {
+                    //download all images
+                    if (article.imagesUrls != null) {
+                        for (RealmString realmString : article.imagesUrls) {
+                            Timber.d("load image by Glide: %s", realmString.val);
+                            Glide.with(MyApplication.getAppInstance())
+                                    .load(realmString.val)
+                                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                                    .listener(new RequestListener<String, GlideDrawable>() {
+                                        @Override
+                                        public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                                            Timber.e("error while preload image by Glide");
+                                            return false;
+                                        }
+
+                                        @Override
+                                        public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                                            Timber.e("onResourceReady: %s/%s", resource.getIntrinsicWidth(), resource.getIntrinsicHeight());
+                                            return false;
+                                        }
+                                    })
+                                    .preload();
+                        }
+                    }
+
+                    return article;
+                })
                 .onErrorResumeNext(throwable -> Observable.error(new ScpException(throwable, url)));
     }
 

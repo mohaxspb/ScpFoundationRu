@@ -287,8 +287,8 @@ public class DownloadAllService extends Service {
                         })
                 )
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .flatMap(article -> mDbProviderFactory.getDbProvider().saveArticle(article))
+                .observeOn(Schedulers.io())
+                .flatMap(article -> mDbProviderFactory.getDbProvider().saveArticleSync(article))
                 //TODO we can show notif here as we do it for articles lists
                 .flatMap(article -> {
                     mCurProgress++;
@@ -307,8 +307,8 @@ public class DownloadAllService extends Service {
                 .subscribe(
                         article -> showNotificationDownloadProgress(getString(R.string.download_objects_title),
                                 mCurProgress, mMaxProgress, mNumOfErrors),
-                        error -> {
-                            Timber.e(error, "error download objects");
+                        e -> {
+                            Timber.e(e, "error download objects");
                             stopDownloadAndRemoveNotif();
                         },
                         () -> {
@@ -410,8 +410,8 @@ public class DownloadAllService extends Service {
                     return Observable.empty();
                 }))
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .flatMap(article -> mDbProviderFactory.getDbProvider().saveArticle(article))
+                .observeOn(Schedulers.io())
+                .flatMap(article -> mDbProviderFactory.getDbProvider().saveArticleSync(article))
                 .flatMap(article -> {
                     Timber.d("downloaded: %s", article.url);
                     mCurProgress++;
