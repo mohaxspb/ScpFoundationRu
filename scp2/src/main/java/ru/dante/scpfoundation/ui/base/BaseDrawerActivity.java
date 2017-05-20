@@ -235,34 +235,32 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
                 headerViewHolder.relogin.setVisibility(View.GONE);
             }
 
-            headerViewHolder.levelUp.setOnClickListener(view -> {
-                InappHelper.getInappsListToBuyObserveble(view.getContext(), getIInAppBillingService()).subscribe(
-                        items -> new MaterialDialog.Builder(view.getContext())
-                                .title(R.string.dialog_level_up_title)
-                                .content(R.string.dialog_level_up_content)
-                                .neutralText(android.R.string.cancel)
-                                .positiveText(R.string.dialog_level_up_ok_text)
-                                .onPositive((dialog1, which) -> {
-                                    try {
-                                        Bundle buyIntentBundle = getIInAppBillingService().getBuyIntent(
-                                                3,
-                                                getPackageName(),
-                                                items.get(0).productId,
-                                                "inapp",
-                                                String.valueOf(System.currentTimeMillis()));
-                                        PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
-                                        if (pendingIntent != null) {
-                                            startIntentSenderForResult(pendingIntent.getIntentSender(), REQUEST_CODE_INAPP, new Intent(), 0, 0, 0, null);
-                                        }
-                                    } catch (Exception e) {
-                                        Timber.e(e, "error ");
-                                        Snackbar.make(mRoot, e.getMessage(), Snackbar.LENGTH_SHORT).show();
+            headerViewHolder.levelUp.setOnClickListener(view -> InappHelper.getInappsListToBuyObserveble(view.getContext(), getIInAppBillingService()).subscribe(
+                    items -> new MaterialDialog.Builder(view.getContext())
+                            .title(R.string.dialog_level_up_title)
+                            .content(R.string.dialog_level_up_content)
+                            .neutralText(android.R.string.cancel)
+                            .positiveText(R.string.dialog_level_up_ok_text)
+                            .onPositive((dialog1, which) -> {
+                                try {
+                                    Bundle buyIntentBundle = getIInAppBillingService().getBuyIntent(
+                                            3,
+                                            getPackageName(),
+                                            items.get(0).productId,
+                                            "inapp",
+                                            String.valueOf(System.currentTimeMillis()));
+                                    PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
+                                    if (pendingIntent != null) {
+                                        startIntentSenderForResult(pendingIntent.getIntentSender(), REQUEST_CODE_INAPP, new Intent(), 0, 0, 0, null);
                                     }
-                                })
-                                .show(),
-                        this::showError
-                );
-            });
+                                } catch (Exception e) {
+                                    Timber.e(e, "error ");
+                                    Snackbar.make(mRoot, e.getMessage(), Snackbar.LENGTH_SHORT).show();
+                                }
+                            })
+                            .show(),
+                    this::showError
+            ));
 
             headerViewHolder.inapp.setOnClickListener(view -> {
                 BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();

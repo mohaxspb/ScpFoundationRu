@@ -1,8 +1,17 @@
 package ru.dante.scpfoundation.util;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Base64;
 
 import com.vk.sdk.util.VKUtil;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import ru.dante.scpfoundation.MyApplication;
 import timber.log.Timber;
@@ -24,6 +33,20 @@ public class SystemUtils {
         for (String sha1 : fingerprints) {
 //            System.out.println("sha1: " + sha1);
             Timber.d("sha1: %s", sha1);
+        }
+
+        try {
+            Context context = MyApplication.getAppInstance();
+            @SuppressLint("PackageManagerGetSignatures")
+            PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_SIGNATURES);
+            for (Signature signature : info.signatures) {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                String hashKey = new String(Base64.encode(md.digest(), 0));
+                Timber.i("printHashKey() Hash Key: %s", hashKey);
+            }
+        } catch (Exception e) {
+            Timber.e(e);
         }
     }
 

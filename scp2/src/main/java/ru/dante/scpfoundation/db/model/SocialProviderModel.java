@@ -1,5 +1,6 @@
 package ru.dante.scpfoundation.db.model;
 
+import com.facebook.Profile;
 import com.vk.sdk.VKAccessToken;
 
 import java.io.Serializable;
@@ -35,6 +36,8 @@ public class SocialProviderModel extends RealmObject implements Serializable {
                 return new SocialProviderModel(provider.name(), VKAccessToken.currentToken().userId);
             case GOOGLE:
                 return new SocialProviderModel(provider.name(), null);
+            case FACEBOOK:
+                return new SocialProviderModel(provider.name(), Profile.getCurrentProfile().getId());
             default:
                 throw new IllegalArgumentException("unexpected provider");
         }

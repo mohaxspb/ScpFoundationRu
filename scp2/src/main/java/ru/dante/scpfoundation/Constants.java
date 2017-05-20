@@ -34,10 +34,9 @@ public interface Constants {
         }
 
         enum SocialProvider {
-            //            VK(R.string.social_provider_vk_title, R.drawable.social_provider_vk_icon),
-//            GOOGLE(R.string.social_provider_google_title, R.drawable.social_provider_google_icon);
-            VK(R.string.social_provider_vk_title, R.mipmap.ic_launcher),
-            GOOGLE(R.string.social_provider_google_title, R.mipmap.ic_launcher);
+            VK(R.string.social_provider_vk_title, R.drawable.ic_social_vk),
+            GOOGLE(R.string.social_provider_google_title, R.drawable.ic_social_google),
+            FACEBOOK(R.string.social_provider_facebook_title, R.drawable.ic_social_facebook);
 
             @StringRes
             private final int title;

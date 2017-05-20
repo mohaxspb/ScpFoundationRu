@@ -3,6 +3,7 @@ package ru.dante.scpfoundation.mvp.base;
 import android.text.TextUtils;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -163,7 +164,7 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
                         userToWriteToDb.email = firebaseUser.getEmail();
                         userToWriteToDb.socialProviders = new ArrayList<>();
                         SocialProviderModel socialProviderModel = SocialProviderModel.getSocialProviderModelForProvider(provider);
-                        socialProviderModel.id = id;
+//                        socialProviderModel.id = id;
                         userToWriteToDb.socialProviders.add(socialProviderModel);
                         //userToWriteToDb.socialProviders.put(provider.name(), SocialProviderModel.getSocialProviderModelForProvider(provider));
                         return mApiClient.writeUserToFirebaseObservable(userToWriteToDb);
@@ -171,7 +172,7 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
                         SocialProviderModel socialProviderModel = SocialProviderModel.getSocialProviderModelForProvider(provider);
                         if (!userObjectInFirebase.socialProviders.contains(socialProviderModel)) {
                             Timber.d("User does not contains provider info: %s", provider);
-                            socialProviderModel.id = id;
+//                            socialProviderModel.id = id;
                             userObjectInFirebase.socialProviders.add(socialProviderModel);
                             return mApiClient.updateFirebaseUsersSocialProvidersObservable(userObjectInFirebase.socialProviders)
                                     .flatMap(aVoid -> Observable.just(userObjectInFirebase));
@@ -193,17 +194,22 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
                             Timber.d("user saved");
                             getView().dismissProgressDialog();
                             getView().showMessage(MyApplication.getAppInstance()
-                                    .getString(R.string.on_user_logined,
-                                            userInRealm.fullName));
+                                    .getString(R.string.on_user_logined, userInRealm.fullName));
                         },
                         e -> {
                             Timber.e(e, "error while save user to DB");
                             logoutUser();
                             getView().dismissProgressDialog();
-                            getView().showError(new ScpLoginException(
-                                    MyApplication.getAppInstance()
-                                            .getString(R.string.error_login_firebase_connection,
-                                                    e.getMessage())));
+                            if (e instanceof FirebaseAuthUserCollisionException) {
+                                getView().showError(new ScpLoginException(
+                                        MyApplication.getAppInstance()
+                                                .getString(R.string.error_login_firebase_user_collision)));
+                            } else {
+                                getView().showError(new ScpLoginException(
+                                        MyApplication.getAppInstance()
+                                                .getString(R.string.error_login_firebase_connection,
+                                                        e.getMessage())));
+                            }
                         }
                 );
     }
