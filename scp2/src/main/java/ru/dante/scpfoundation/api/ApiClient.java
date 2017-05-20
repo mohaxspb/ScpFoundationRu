@@ -1,11 +1,17 @@
 package ru.dante.scpfoundation.api;
 
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Pair;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -61,6 +67,7 @@ import ru.dante.scpfoundation.api.model.response.VkGalleryResponse;
 import ru.dante.scpfoundation.api.model.response.VkGroupJoinResponse;
 import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.db.model.RealmString;
+import ru.dante.scpfoundation.db.model.SocialProviderModel;
 import ru.dante.scpfoundation.db.model.User;
 import ru.dante.scpfoundation.db.model.VkImage;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
@@ -1032,14 +1039,14 @@ public class ApiClient {
     }
 
     //todo use it via retrofit and update server to return JSON with request result
-    public Observable<FirebaseUser> getAuthInFirebaseWithSocialProviderObservable(Constants.Firebase.SocialProvider provider) {
+    public Observable<FirebaseUser> getAuthInFirebaseWithSocialProviderObservable(Constants.Firebase.SocialProvider provider, String id) {
         Observable<FirebaseUser> authToFirebaseObservable;
         switch (provider) {
             case VK:
                 authToFirebaseObservable = Observable.<String>create(subscriber -> {
                     String url = BuildConfig.TOOLS_API_URL + "MyServlet";
                     String params = "?provider=vk&token=" +
-                            VKAccessToken.currentToken().accessToken +
+                            id +
                             "&email=" + VKAccessToken.currentToken().email +
                             "&id=" + VKAccessToken.currentToken().userId;
                     Request request = new Request.Builder()
@@ -1064,6 +1071,24 @@ public class ApiClient {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .flatMap(this::authWithCustomToken);
+                break;
+            case GOOGLE:
+                authToFirebaseObservable = Observable.create(subscriber -> {
+                    AuthCredential credential = GoogleAuthProvider.getCredential(id, null);
+                    FirebaseAuth.getInstance().signInWithCredential(credential).addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Timber.d("signInWithCredential:success");
+                            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                            subscriber.onNext(user);
+                            subscriber.onCompleted();
+                        } else {
+                            // If sign in fails, display a message to the user.
+//                            Timber.e(task.getException(), "signInWithCredential:failure");
+                            subscriber.onError(task.getException());
+                        }
+                    });
+                });
                 break;
             default:
                 throw new IllegalArgumentException("unexpected provider");
@@ -1166,6 +1191,31 @@ public class ApiClient {
                 throw new RuntimeException("unexpected provider");
         }
         return nameAvatarObservable;
+    }
+
+    public Observable<Void> updateFirebaseUsersSocialProvidersObservable(List<SocialProviderModel> socialProviderModels) {
+        return Observable.unsafeCreate(subscriber -> {
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (firebaseUser != null) {
+                FirebaseDatabase.getInstance()
+                        .getReference(Constants.Firebase.Refs.USERS)
+                        .child(firebaseUser.getUid())
+                        .child(Constants.Firebase.Refs.SOCIAL_PROVIDER)
+                        .setValue(socialProviderModels, (databaseError, databaseReference) -> {
+                            if (databaseError == null) {
+                                //success
+                                Timber.d("user created");
+                                subscriber.onNext(null);
+                                subscriber.onCompleted();
+                            } else {
+                                subscriber.onError(databaseError.toException());
+                            }
+                        });
+            } else {
+                Timber.e("firebase user is null while try to update!");
+                subscriber.onError(new IllegalStateException("Firebase user is null while try to update its profile"));
+            }
+        });
     }
 
     /**

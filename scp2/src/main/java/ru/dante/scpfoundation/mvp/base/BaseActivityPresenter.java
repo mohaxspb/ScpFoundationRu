@@ -121,24 +121,17 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
      * @param provider login provider to use to login to firebase
      */
     @Override
-    public void startFirebaseLogin(Constants.Firebase.SocialProvider provider) {
+    public void startFirebaseLogin(Constants.Firebase.SocialProvider provider, String id) {
         getView().showProgressDialog(R.string.login_in_progress_custom_token);
-        mApiClient.getAuthInFirebaseWithSocialProviderObservable(provider)
+        mApiClient.getAuthInFirebaseWithSocialProviderObservable(provider, id)
                 .flatMap(firebaseUser -> {
                     if (TextUtils.isEmpty(firebaseUser.getEmail())) {
-                        return Observable.create(subscriber -> mApiClient.nameAndAvatarFromProviderObservable(provider)
+                        return mApiClient.nameAndAvatarFromProviderObservable(provider)
                                 .flatMap(nameAvatar -> mApiClient.updateFirebaseUsersNameAndAvatarObservable(nameAvatar.first, nameAvatar.second))
                                 .flatMap(aVoid -> mApiClient.updateFirebaseUsersEmailObservable())
                                 .subscribeOn(AndroidSchedulers.mainThread())
                                 .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(
-                                        result -> {
-                                            Timber.d("result");
-                                            subscriber.onNext(FirebaseAuth.getInstance().getCurrentUser());
-                                            subscriber.onCompleted();
-                                        },
-                                        Observable::error
-                                ));
+                                .flatMap(aVoid -> Observable.just(FirebaseAuth.getInstance().getCurrentUser()));
                     } else {
                         return Observable.just(firebaseUser);
                     }
@@ -169,10 +162,20 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
                         }
                         userToWriteToDb.email = firebaseUser.getEmail();
                         userToWriteToDb.socialProviders = new ArrayList<>();
-                        userToWriteToDb.socialProviders.add(SocialProviderModel.getSocialProviderModelForProvider(provider));
+                        SocialProviderModel socialProviderModel = SocialProviderModel.getSocialProviderModelForProvider(provider);
+                        socialProviderModel.id = id;
+                        userToWriteToDb.socialProviders.add(socialProviderModel);
                         //userToWriteToDb.socialProviders.put(provider.name(), SocialProviderModel.getSocialProviderModelForProvider(provider));
                         return mApiClient.writeUserToFirebaseObservable(userToWriteToDb);
                     } else {
+                        SocialProviderModel socialProviderModel = SocialProviderModel.getSocialProviderModelForProvider(provider);
+                        if (!userObjectInFirebase.socialProviders.contains(socialProviderModel)) {
+                            Timber.d("User does not contains provider info: %s", provider);
+                            socialProviderModel.id = id;
+                            userObjectInFirebase.socialProviders.add(socialProviderModel);
+                            return mApiClient.updateFirebaseUsersSocialProvidersObservable(userObjectInFirebase.socialProviders)
+                                    .flatMap(aVoid -> Observable.just(userObjectInFirebase));
+                        }
                         return Observable.just(userObjectInFirebase);
                     }
                 })

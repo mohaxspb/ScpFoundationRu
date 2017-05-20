@@ -21,7 +21,7 @@ public interface LoginActions {
 
     interface Presenter {
 
-        void startFirebaseLogin(Constants.Firebase.SocialProvider provider);
+        void startFirebaseLogin(Constants.Firebase.SocialProvider provider, String id);
 
         void logoutUser();
     }

@@ -222,6 +222,9 @@
     <string name="error_inapp">Ошибка при чтении данных.</string>
     <string name="sort">Сортировка</string>
     <string name="dialog_sort_title">Сортировка и фильтр</string>
+    <string name="social_provider_vk_title">Вконтакте</string>
+    <string name="social_provider_google_title">Google</string>
+    <string name="dialog_social_login_title">Авторизация</string>
 
     <plurals name="plurals_score">
         <item quantity="zero">%1$d очков</item>

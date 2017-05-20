@@ -1,5 +1,8 @@
 package ru.dante.scpfoundation;
 
+import android.support.annotation.DrawableRes;
+import android.support.annotation.StringRes;
+
 /**
  * Created by mohax on 03.01.2017.
  * <p>
@@ -26,21 +29,37 @@ public interface Constants {
 
     interface Firebase {
 
-//        @Retention(RetentionPolicy.SOURCE)
-//        @StringDef({SocialProvider.VK})
-//        @interface SocialProvider {
-//            String VK = "vk";
-//        }
-
-        enum CallToActionReason{
+        enum CallToActionReason {
             REMOVE_ADS, ENABLE_AUTO_SYNC, SYNC_NEED_AUTH, ENABLE_FONTS
         }
 
-        enum SocialProvider{
-            VK
+        enum SocialProvider {
+            //            VK(R.string.social_provider_vk_title, R.drawable.social_provider_vk_icon),
+//            GOOGLE(R.string.social_provider_google_title, R.drawable.social_provider_google_icon);
+            VK(R.string.social_provider_vk_title, R.mipmap.ic_launcher),
+            GOOGLE(R.string.social_provider_google_title, R.mipmap.ic_launcher);
+
+            @StringRes
+            private final int title;
+
+            @DrawableRes
+            private final int icon;
+
+            SocialProvider(int title, int icon) {
+                this.title = title;
+                this.icon = icon;
+            }
+
+            public int getIcon() {
+                return icon;
+            }
+
+            public int getTitle() {
+                return title;
+            }
         }
 
-        interface Refs{
+        interface Refs {
             String USERS = "users";
             String ARTICLES = "articles";
             String SCORE = "score";
@@ -48,6 +67,7 @@ public interface Constants {
             String APPS = "apps";
             String INAPP = "inapp";
             String CRACKED = "cracked";
+            String SOCIAL_PROVIDER = "socialProviders";
         }
 
         int REQUEST_INVITE = 1024;

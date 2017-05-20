@@ -2,8 +2,6 @@ package ru.dante.scpfoundation.util;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
-import android.support.annotation.IdRes;
-import android.view.View;
 
 /**
  * Created by mohax on 06.03.2017.
@@ -11,17 +9,11 @@ import android.view.View;
  * for Vjux
  */
 public class SecureUtils {
+
     private static final String ONE = "ru.";
     private static final String TWO = "dan";
     private static final String THREE = "te.";
     private static final String FOUR = "scpfoundation";
-
-    /**
-     * checks if view has child with given id
-     */
-    public static boolean checkIfBannerIsRemoved(View view, @IdRes int idOfBanner) {
-        return view.findViewById(idOfBanner) == null;
-    }
 
     public static boolean checkIfPackageChanged(Context context) {
         return !context.getPackageName().equals(ONE + TWO + THREE + FOUR);

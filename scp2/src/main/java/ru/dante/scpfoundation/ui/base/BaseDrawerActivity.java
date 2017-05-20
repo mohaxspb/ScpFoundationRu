@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -18,6 +17,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,6 +25,7 @@ import android.view.View;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
+import com.google.android.gms.auth.api.Auth;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -34,6 +35,9 @@ import com.vk.sdk.VKSdk;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Arrays;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -47,10 +51,12 @@ import ru.dante.scpfoundation.db.model.User;
 import ru.dante.scpfoundation.monetization.util.InappHelper;
 import ru.dante.scpfoundation.mvp.contract.DrawerMvp;
 import ru.dante.scpfoundation.ui.activity.ArticleActivity;
+import ru.dante.scpfoundation.ui.adapter.SocialLoginAdapter;
 import ru.dante.scpfoundation.ui.dialog.LeaderboardDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
 import ru.dante.scpfoundation.ui.holder.HeaderViewHolderLogined;
 import ru.dante.scpfoundation.ui.holder.HeaderViewHolderUnlogined;
+import ru.dante.scpfoundation.ui.holder.SocialLoginHolder;
 import ru.dante.scpfoundation.util.SecureUtils;
 import timber.log.Timber;
 
@@ -197,18 +203,6 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
-    }
-
-    @Override
     public void updateUser(User user) {
         Timber.d("updateUser: %s", user);
         if (user != null) {
@@ -228,8 +222,8 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
                     .positiveText(R.string.logout)
                     .onPositive((dialog, which) -> {
                         dialog.dismiss();
-                        mPresenter.logoutUser();
-                        mDrawerLayout.closeDrawer(GravityCompat.START);
+                        //logout from google, then logout from other
+                        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(status -> mPresenter.logoutUser());
                     })
                     .show()
             );
@@ -242,7 +236,6 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
             }
 
             headerViewHolder.levelUp.setOnClickListener(view -> {
-//                showError(new IllegalStateException("not implemented"));
                 InappHelper.getInappsListToBuyObserveble(view.getContext(), getIInAppBillingService()).subscribe(
                         items -> new MaterialDialog.Builder(view.getContext())
                                 .title(R.string.dialog_level_up_title)
@@ -348,7 +341,25 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
 
             HeaderViewHolderUnlogined headerViewHolder = new HeaderViewHolderUnlogined(headerUnlogined);
 
-            headerViewHolder.mLogin.setOnClickListener(view -> startLogin(Constants.Firebase.SocialProvider.VK));
+            headerViewHolder.mLogin.setOnClickListener(view -> {
+                Timber.d("Login clicked");
+                final MaterialDialog dialog;
+                List<Constants.Firebase.SocialProvider> providers = Arrays.asList(Constants.Firebase.SocialProvider.values());
+                SocialLoginAdapter adapter = new SocialLoginAdapter();
+                dialog = new MaterialDialog.Builder(this)
+                        .title(R.string.dialog_social_login_title)
+                        .items(providers)
+                        .adapter(adapter, new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false))
+                        .positiveText(android.R.string.cancel)
+                        .build();
+                adapter.setItemClickListener(data -> {
+                    startLogin(data.getSocialProvider());
+                    dialog.dismiss();
+                });
+                adapter.setData(SocialLoginHolder.SocialLoginModel.getModels());
+                dialog.getRecyclerView().setOverScrollMode(View.OVER_SCROLL_NEVER);
+                dialog.show();
+            });
 
             headerViewHolder.mLoginInfo.setOnClickListener(view -> new MaterialDialog.Builder(this)
                     .content(R.string.login_advantages)
@@ -368,9 +379,8 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Timber.d("called in fragment");
         if (requestCode == REQUEST_CODE_INAPP) {
-
             if (resultCode == Activity.RESULT_OK) {
-                if(data==null){
+                if (data == null) {
                     showMessage(R.string.error_inapp);
                     return;
                 }
