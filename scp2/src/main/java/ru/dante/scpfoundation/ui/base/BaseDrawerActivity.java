@@ -17,6 +17,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -50,10 +51,12 @@ import ru.dante.scpfoundation.db.model.User;
 import ru.dante.scpfoundation.monetization.util.InappHelper;
 import ru.dante.scpfoundation.mvp.contract.DrawerMvp;
 import ru.dante.scpfoundation.ui.activity.ArticleActivity;
+import ru.dante.scpfoundation.ui.adapter.SocialLoginAdapter;
 import ru.dante.scpfoundation.ui.dialog.LeaderboardDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
 import ru.dante.scpfoundation.ui.holder.HeaderViewHolderLogined;
 import ru.dante.scpfoundation.ui.holder.HeaderViewHolderUnlogined;
+import ru.dante.scpfoundation.ui.holder.SocialLoginHolder;
 import ru.dante.scpfoundation.util.SecureUtils;
 import timber.log.Timber;
 
@@ -221,7 +224,6 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
                         dialog.dismiss();
                         //logout from google, then logout from other
                         Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(status -> mPresenter.logoutUser());
-//                        mDrawerLayout.closeDrawer(GravityCompat.START);
                     })
                     .show()
             );
@@ -234,7 +236,6 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
             }
 
             headerViewHolder.levelUp.setOnClickListener(view -> {
-//                showError(new IllegalStateException("not implemented"));
                 InappHelper.getInappsListToBuyObserveble(view.getContext(), getIInAppBillingService()).subscribe(
                         items -> new MaterialDialog.Builder(view.getContext())
                                 .title(R.string.dialog_level_up_title)
@@ -340,16 +341,24 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
 
             HeaderViewHolderUnlogined headerViewHolder = new HeaderViewHolderUnlogined(headerUnlogined);
 
-//            headerViewHolder.mLogin.setOnClickListener(view -> startLogin(Constants.Firebase.SocialProvider.VK));
             headerViewHolder.mLogin.setOnClickListener(view -> {
                 Timber.d("Login clicked");
+                final MaterialDialog dialog;
                 List<Constants.Firebase.SocialProvider> providers = Arrays.asList(Constants.Firebase.SocialProvider.values());
-                new MaterialDialog.Builder(this)
+                SocialLoginAdapter adapter = new SocialLoginAdapter();
+                dialog = new MaterialDialog.Builder(this)
+                        .title(R.string.dialog_social_login_title)
                         .items(providers)
-                        .alwaysCallSingleChoiceCallback()
-                        .itemsCallback((dialog12, itemView, position, text) -> startLogin(providers.get(position)))
-                        .build()
-                        .show();
+                        .adapter(adapter, new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false))
+                        .positiveText(android.R.string.cancel)
+                        .build();
+                adapter.setItemClickListener(data -> {
+                    startLogin(data.getSocialProvider());
+                    dialog.dismiss();
+                });
+                adapter.setData(SocialLoginHolder.SocialLoginModel.getModels());
+                dialog.getRecyclerView().setOverScrollMode(View.OVER_SCROLL_NEVER);
+                dialog.show();
             });
 
             headerViewHolder.mLoginInfo.setOnClickListener(view -> new MaterialDialog.Builder(this)
