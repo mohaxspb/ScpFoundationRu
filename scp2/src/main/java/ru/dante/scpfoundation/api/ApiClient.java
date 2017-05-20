@@ -1,14 +1,12 @@
 package ru.dante.scpfoundation.api;
 
 import android.net.Uri;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Pair;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
+import com.facebook.Profile;
 import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
@@ -73,6 +71,7 @@ import ru.dante.scpfoundation.db.model.VkImage;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.monetization.model.PlayMarketApplication;
 import ru.dante.scpfoundation.monetization.model.VkGroupToJoin;
+import ru.dante.scpfoundation.util.DimensionUtils;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -113,7 +112,7 @@ public class ApiClient {
     }
 
     public Observable<String> getRandomUrl() {
-        return bindWithUtils(Observable.create(subscriber -> {
+        return bindWithUtils(Observable.unsafeCreate(subscriber -> {
             Request.Builder request = new Request.Builder();
             request.url(Constants.Api.RANDOM_PAGE_SCRIPT_URL);
             request.addHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
@@ -142,7 +141,7 @@ public class ApiClient {
     }
 
     public Observable<Integer> getRecentArticlesPageCount() {
-        return bindWithUtils(Observable.<Integer>create(subscriber -> {
+        return bindWithUtils(Observable.<Integer>unsafeCreate(subscriber -> {
             Request request = new Request.Builder()
                     .url(BuildConfig.BASE_API_URL + Constants.Api.MOST_RECENT_URL + 1)
                     .build();
@@ -178,7 +177,7 @@ public class ApiClient {
     }
 
     public Observable<List<Article>> getRecentArticlesForPage(int page) {
-        return bindWithUtils(Observable.<List<Article>>create(subscriber -> {
+        return bindWithUtils(Observable.<List<Article>>unsafeCreate(subscriber -> {
             Request request = new Request.Builder()
                     .url(BuildConfig.BASE_API_URL + Constants.Api.MOST_RECENT_URL + page)
                     .build();
@@ -247,7 +246,7 @@ public class ApiClient {
     }
 
     public Observable<List<Article>> getRatedArticles(int offset) {
-        return bindWithUtils(Observable.<List<Article>>create(subscriber -> {
+        return bindWithUtils(Observable.<List<Article>>unsafeCreate(subscriber -> {
             int page = offset / Constants.Api.NUM_OF_ARTICLES_ON_RATED_PAGE + 1/*as pages are not zero based*/;
 
             Request request = new Request.Builder()
@@ -305,7 +304,7 @@ public class ApiClient {
     }
 
     public Observable<List<Article>> getSearchArticles(int offset, String searchQuery) {
-        return bindWithUtils(Observable.<List<Article>>create(subscriber -> {
+        return bindWithUtils(Observable.<List<Article>>unsafeCreate(subscriber -> {
             int page = offset / Constants.Api.NUM_OF_ARTICLES_ON_SEARCH_PAGE + 1/*as pages are not zero based*/;
 
             Request request = new Request.Builder()
@@ -362,7 +361,7 @@ public class ApiClient {
     }
 
     public Observable<List<Article>> getObjectsArticles(String sObjectsLink) {
-        return bindWithUtils(Observable.<List<Article>>create(subscriber -> {
+        return bindWithUtils(Observable.<List<Article>>unsafeCreate(subscriber -> {
             Request request = new Request.Builder()
                     .url(sObjectsLink)
                     .build();
@@ -441,7 +440,7 @@ public class ApiClient {
     }
 
     public Observable<Article> getArticle(String url) {
-        return bindWithUtils(Observable.<Article>create(subscriber -> {
+        return bindWithUtils(Observable.<Article>unsafeCreate(subscriber -> {
             Request request = new Request.Builder()
                     .url(url)
                     .build();
@@ -646,7 +645,7 @@ public class ApiClient {
     }
 
     public Observable<List<Article>> getMaterialsArticles(String objectsLink) {
-        return bindWithUtils(Observable.<List<Article>>create(subscriber -> {
+        return bindWithUtils(Observable.<List<Article>>unsafeCreate(subscriber -> {
             Request request = new Request.Builder()
                     .url(objectsLink)
                     .build();
@@ -695,7 +694,7 @@ public class ApiClient {
     }
 
     public Observable<List<Article>> getMaterialsArchiveArticles() {
-        return bindWithUtils(Observable.<List<Article>>create(subscriber -> {
+        return bindWithUtils(Observable.<List<Article>>unsafeCreate(subscriber -> {
             Request request = new Request.Builder()
                     .url(Constants.Urls.ARCHIVE)
                     .build();
@@ -767,7 +766,7 @@ public class ApiClient {
     }
 
     public Observable<List<Article>> getMaterialsJokesArticles() {
-        return bindWithUtils(Observable.<List<Article>>create(subscriber -> {
+        return bindWithUtils(Observable.<List<Article>>unsafeCreate(subscriber -> {
             Request request = new Request.Builder()
                     .url(Constants.Urls.JOKES)
                     .build();
@@ -836,7 +835,7 @@ public class ApiClient {
 
     public Observable<Boolean> joinVkGroup(String groupId) {
         Timber.d("joinVkGroup with groupId: %s", groupId);
-        return bindWithUtils(Observable.<Boolean>create(subscriber -> {
+        return bindWithUtils(Observable.<Boolean>unsafeCreate(subscriber -> {
                     VKParameters parameters = VKParameters.from(
                             VKApiConst.GROUP_ID, groupId,
                             VKApiConst.ACCESS_TOKEN, VKAccessToken.currentToken(),
@@ -920,7 +919,7 @@ public class ApiClient {
 
     public Observable<List<VkImage>> getGallery() {
         Timber.d("getGallery");
-        return bindWithUtils(Observable.create(subscriber -> {
+        return bindWithUtils(Observable.unsafeCreate(subscriber -> {
                     VKParameters parameters = VKParameters.from(
                             VKApiConst.OWNER_ID, Constants.Api.GALLERY_VK_GROUP_ID,
                             VKApiConst.ALBUM_ID, Constants.Api.GALLERY_VK_ALBUM_ID,
@@ -1003,7 +1002,7 @@ public class ApiClient {
     }
 
     private Observable<VKApiUser> getUserDataFromVk() {
-        return Observable.create(subscriber -> VKApi.users().get(VKParameters.from(VKApiConst.FIELDS, "photo_200")).executeWithListener(new VKRequest.VKRequestListener() {
+        return Observable.unsafeCreate(subscriber -> VKApi.users().get(VKParameters.from(VKApiConst.FIELDS, "photo_200")).executeWithListener(new VKRequest.VKRequestListener() {
             @Override
             public void onComplete(VKResponse response) {
                 //noinspection unchecked
@@ -1022,7 +1021,7 @@ public class ApiClient {
     }
 
     private Observable<FirebaseUser> authWithCustomToken(String token) {
-        return Observable.create(subscriber ->
+        return Observable.unsafeCreate(subscriber ->
                 FirebaseAuth.getInstance().signInWithCustomToken(token).addOnCompleteListener(task -> {
                     Timber.d("signInWithCustomToken:onComplete: %s", task.isSuccessful());
 
@@ -1043,7 +1042,7 @@ public class ApiClient {
         Observable<FirebaseUser> authToFirebaseObservable;
         switch (provider) {
             case VK:
-                authToFirebaseObservable = Observable.<String>create(subscriber -> {
+                authToFirebaseObservable = Observable.<String>unsafeCreate(subscriber -> {
                     String url = BuildConfig.TOOLS_API_URL + "MyServlet";
                     String params = "?provider=vk&token=" +
                             id +
@@ -1073,7 +1072,7 @@ public class ApiClient {
                         .flatMap(this::authWithCustomToken);
                 break;
             case GOOGLE:
-                authToFirebaseObservable = Observable.create(subscriber -> {
+                authToFirebaseObservable = Observable.unsafeCreate(subscriber -> {
                     AuthCredential credential = GoogleAuthProvider.getCredential(id, null);
                     FirebaseAuth.getInstance().signInWithCredential(credential).addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
@@ -1088,6 +1087,25 @@ public class ApiClient {
                             subscriber.onError(task.getException());
                         }
                     });
+                });
+                break;
+            case FACEBOOK:
+                authToFirebaseObservable = Observable.unsafeCreate(subscriber -> {
+                    AuthCredential credential = FacebookAuthProvider.getCredential(id);
+                    FirebaseAuth.getInstance().signInWithCredential(credential)
+                            .addOnCompleteListener(task -> {
+                                if (task.isSuccessful()) {
+                                    // Sign in success, update UI with the signed-in user's information
+                                    Timber.d("signInWithCredential:success");
+                                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                                    subscriber.onNext(user);
+                                    subscriber.onCompleted();
+                                } else {
+                                    // If sign in fails, display a message to the user.
+                                    Timber.e(task.getException(), "signInWithCredential:failure");
+                                    subscriber.onError(task.getException());
+                                }
+                            });
                 });
                 break;
             default:
@@ -1154,6 +1172,7 @@ public class ApiClient {
     public Observable<Void> updateFirebaseUsersNameAndAvatarObservable(String name, String avatar) {
         return Observable.create(subscriber -> {
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
             if (user != null) {
                 UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                         .setDisplayName(name)
@@ -1187,10 +1206,27 @@ public class ApiClient {
                     return Observable.just(new Pair<>(displayName, avatarUrl));
                 });
                 break;
+            case FACEBOOK:
+                Timber.d("attempt to get name and avatar from facebook");
+                nameAvatarObservable = getUserDataFromFacebook();
+                break;
             default:
                 throw new RuntimeException("unexpected provider");
         }
         return nameAvatarObservable;
+    }
+
+    private Observable<Pair<String, String>> getUserDataFromFacebook() {
+        return Observable.unsafeCreate(subscriber -> {
+            Profile profile = Profile.getCurrentProfile();
+            if (profile != null) {
+                int size = DimensionUtils.dpToPx(56);
+                subscriber.onNext(new Pair<>(profile.getName(), profile.getProfilePictureUri(size, size).toString()));
+                subscriber.onCompleted();
+            } else {
+                subscriber.onError(new NullPointerException("profile is null"));
+            }
+        });
     }
 
     public Observable<Void> updateFirebaseUsersSocialProvidersObservable(List<SocialProviderModel> socialProviderModels) {

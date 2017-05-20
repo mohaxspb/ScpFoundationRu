@@ -12,7 +12,7 @@ ext.googleLibraryVersion = '10.2.4'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion '25.0.2'
+    buildToolsVersion '25.0.3'
 
     sourceSets {
         main {
@@ -83,6 +83,10 @@ android {
 
             resValue('integer', 'com_vk_sdk_AppId', apiKeysProperties.get("vkSdkAppId"))
             buildConfigField('int', 'VK_SDK_APP_ID', apiKeysProperties.get("vkSdkAppId"))
+
+            //use string, as so in facebook docs...
+            resValue('string', 'facebook_app_id', apiKeysProperties.get("facebookAppId"))
+            buildConfigField('String', 'FACEBOOK_APP_ID', '"' + apiKeysProperties.get("facebookAppId") + '"')
 
             resValue('string', 'firebase_db_url', apiKeysProperties.get("firebaseUri"))
             buildConfigField('String', 'FIREBASE_DB_URL', '"' + apiKeysProperties.get("firebaseUri") + '"')
@@ -166,6 +170,7 @@ dependencies {
     compile "com.android.support:cardview-v7:$supportLibraryVersion"
     //need this as gradle place warning on libs versions
     compile "com.android.support:support-annotations:$supportLibraryVersion"
+    compile "com.android.support:customtabs:$supportLibraryVersion"
     compile "com.android.support:animated-vector-drawable:$supportLibraryVersion"
     compile "com.android.support:support-v13:$supportLibraryVersion"
     compile "com.android.support:support-v4:$supportLibraryVersion"
@@ -204,6 +209,8 @@ dependencies {
     compile 'com.hannesdorfmann.mosby:mvp:2.0.1'
     //vk
     compile 'com.vk:androidsdk:1.6.8'
+    //facebook
+    compile 'com.facebook.android:facebook-android-sdk:[4,5)'
     //dialogs
     compile 'com.afollestad.material-dialogs:core:0.9.4.3'
     //fonts

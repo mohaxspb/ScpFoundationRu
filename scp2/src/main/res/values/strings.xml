@@ -225,6 +225,8 @@
     <string name="social_provider_vk_title">Вконтакте</string>
     <string name="social_provider_google_title">Google</string>
     <string name="dialog_social_login_title">Авторизация</string>
+    <string name="social_provider_facebook_title">Facebook</string>
+    <string name="error_login_firebase_user_collision">Ошибка - на этот email уже зарегистрирован другой пользователь.</string>
 
     <plurals name="plurals_score">
         <item quantity="zero">%1$d очков</item>

@@ -2,6 +2,7 @@ package ru.dante.scpfoundation.db;
 
 import android.util.Pair;
 
+import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.vk.sdk.VKSdk;
@@ -594,6 +595,9 @@ public class DbProvider {
                     break;
                 case GOOGLE:
                     //do nothing...
+                    break;
+                case FACEBOOK:
+                    LoginManager.getInstance().logOut();
                     break;
                 default:
                     throw new IllegalArgumentException("unexpected provider");

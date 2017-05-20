@@ -28,6 +28,11 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.vending.billing.IInAppBillingService;
 import com.appodeal.ads.Appodeal;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
@@ -50,6 +55,7 @@ import com.yandex.metrica.YandexMetrica;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -132,6 +138,7 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
 
     public static final int TYPE_JOKES = 9;
     public static final int TYPE_ALL = 10;
+    private CallbackManager mCallbackManager = CallbackManager.Factory.create();
 
     @NonNull
     @Override
@@ -164,6 +171,24 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
                 .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
+        //facebook login
+        LoginManager.getInstance().registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                Timber.d("onSuccess: %s", loginResult);
+                mPresenter.startFirebaseLogin(Constants.Firebase.SocialProvider.FACEBOOK, loginResult.getAccessToken().getToken());
+            }
+
+            @Override
+            public void onCancel() {
+                Timber.e("onCancel");
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+                Timber.e(error);
+            }
+        });
 
         mPresenter.onCreate();
 
@@ -192,6 +217,9 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
             case GOOGLE:
                 Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
                 startActivityForResult(signInIntent, RC_SIGN_IN);
+                break;
+            case FACEBOOK:
+                LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("email", "public_profile"));
                 break;
             default:
                 throw new RuntimeException("unexpected provider");
@@ -761,6 +789,10 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
                 //TODO
                 mPresenter.logoutUser();
             }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+            mCallbackManager.onActivityResult(requestCode, resultCode, data);
+
         }
     }
 
