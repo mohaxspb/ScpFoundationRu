@@ -13,12 +13,14 @@ import timber.log.Timber;
  * for scp_ru
  */
 public class SystemUtils {
+
     private static String[] getCertificateFingerprints(Context context) {
         return VKUtil.getCertificateFingerprint(context, context.getPackageName());
     }
 
     public static void printCertificateFingerprints() {
         String[] fingerprints = getCertificateFingerprints(MyApplication.getAppInstance());
+        Timber.d("sha fingerprints");
         for (String sha1 : fingerprints) {
             Timber.d("sha1: %s", sha1);
         }
