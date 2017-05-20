@@ -627,8 +627,12 @@ public class ApiClient {
                 article.tabsTexts = tabsText;
                 //textParts
                 article.textParts = textParts;
-                for (RealmString realmString : article.textParts) {
-                    Timber.d("part: %s", realmString.val);
+                if (article.textParts != null) {
+                    for (RealmString realmString : article.textParts) {
+                        Timber.d("part: %s", realmString.val);
+                    }
+                } else {
+                    Timber.d("article.textParts is NULL!");
                 }
                 article.textPartsTypes = textPartsTypes;
                 //images

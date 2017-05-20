@@ -100,17 +100,13 @@ public class ArticleFragment
             mArticle = Parcels.unwrap(savedInstanceState.getParcelable(EXTRA_ARTICLE));
             mCurrentSelectedTab = savedInstanceState.getInt(KEY_CURRENT_SELECTED_TAB);
         }
+
+        mPresenter.onCreate();
     }
 
     @Override
     protected int getLayoutResId() {
         return R.layout.fragment_article;
-    }
-
-    @NonNull
-    @Override
-    public ArticleMvp.Presenter createPresenter() {
-        return mPresenter;
     }
 
     @Override

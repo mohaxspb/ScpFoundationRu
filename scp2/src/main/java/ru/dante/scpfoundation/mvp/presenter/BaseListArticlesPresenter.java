@@ -29,7 +29,7 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
         implements BaseArticlesListMvp.Presenter<V> {
 
     protected RealmResults<Article> mData;
-    private boolean isLoading;
+    protected boolean isLoading;
 
     BaseListArticlesPresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
         super(myPreferencesManager, dbProviderFactory, apiClient);
