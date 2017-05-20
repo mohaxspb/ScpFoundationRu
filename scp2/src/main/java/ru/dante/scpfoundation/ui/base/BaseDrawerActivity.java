@@ -392,11 +392,10 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
 
                     Bundle bundle = new Bundle();
                     bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, sku);
-                    bundle.putFloat(FirebaseAnalytics.Param.VALUE, .5f);
                     bundle.putFloat(FirebaseAnalytics.Param.PRICE, .5f);
                     FirebaseAnalytics.getInstance(this).logEvent(FirebaseAnalytics.Event.ECOMMERCE_PURCHASE, bundle);
 
-                    if (SecureUtils.checkLuckyPatcher(this) || SecureUtils.checkIfPackageChanged(this)) {
+                    if (SecureUtils.checkCrack(this)) {
                         Bundle args = new Bundle();
                         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
                         args.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "CRACK_" + sku + ((firebaseUser != null) ? firebaseUser.getUid() : ""));

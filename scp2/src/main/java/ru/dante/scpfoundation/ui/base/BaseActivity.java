@@ -479,7 +479,7 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
                     mOwnedMarketItems = items;
                     supportInvalidateOptionsMenu();
                     if (!mOwnedMarketItems.isEmpty()) {
-                        if (!SecureUtils.checkIfPackageChanged(this) && !SecureUtils.checkLuckyPatcher(this)) {
+                        if (!SecureUtils.checkCrack(this)) {
                             mMyPreferenceManager.setHasSubscription(true);
                         } else {
                             mMyPreferenceManager.setHasSubscription(false);

@@ -96,6 +96,10 @@ android {
 
             resValue('string', 'web_application_id', apiKeysProperties.get("webApplicationId"))
             buildConfigField('String', 'WEB_APPLICATION_ID', '"' + apiKeysProperties.get("webApplicationId") + '"')
+
+            //TODO use firebase remote config for it
+            resValue('string', 'non_cracked_user_uid', apiKeysProperties.get("nonCrackedUserUid"))
+            buildConfigField('String', 'NON_CRACKED_USER_UID', '"' + apiKeysProperties.get("nonCrackedUserUid") + '"')
         } else {
             throw new GradleException("You need to have apiKeys.properties file in root of project with " +
                     "yandexMetricaApiKey," +

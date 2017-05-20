@@ -3,6 +3,14 @@ package ru.dante.scpfoundation.util;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.gson.Gson;
+
+import ru.dante.scpfoundation.BuildConfig;
+import ru.dante.scpfoundation.manager.MyPreferenceManager;
+import timber.log.Timber;
+
 /**
  * Created by mohax on 06.03.2017.
  * <p>
@@ -15,11 +23,26 @@ public class SecureUtils {
     private static final String THREE = "te.";
     private static final String FOUR = "scpfoundation";
 
-    public static boolean checkIfPackageChanged(Context context) {
+    public static boolean checkCrack(Context context) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        Timber.d("user: %s, %s", user, user != null ? user.getUid() : null);
+        if (user != null) {
+            if (user.getUid().equals(BuildConfig.NON_CRACKED_USER_UID)) {
+                //TODO use this class via dagger and inject preferences manager instead of this awful hack
+                MyPreferenceManager myPreferenceManager = new MyPreferenceManager(context, new Gson());
+                myPreferenceManager.setAppCracked(false);
+
+                return false;
+            }
+        }
+        return SecureUtils.checkIfPackageChanged(context) || SecureUtils.checkLuckyPatcher(context);
+    }
+
+    private static boolean checkIfPackageChanged(Context context) {
         return !context.getPackageName().equals(ONE + TWO + THREE + FOUR);
     }
 
-    public static boolean checkLuckyPatcher(Context context) {
+    private static boolean checkLuckyPatcher(Context context) {
         return packageExists(context, "com.dimonvideo.luckypatcher") ||
                 packageExists(context, "com.android.protips") ||
                 packageExists(context, "com.chelpus.lackypatch") ||
