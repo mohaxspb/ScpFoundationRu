@@ -86,7 +86,7 @@ android {
 
             //use string, as so in facebook docs...
             resValue('string', 'facebook_app_id', apiKeysProperties.get("facebookAppId"))
-            buildConfigField('String', 'FACEBOOK_APP_ID', apiKeysProperties.get("facebookAppId"))
+            buildConfigField('String', 'FACEBOOK_APP_ID', '"' + apiKeysProperties.get("facebookAppId") + '"')
 
             resValue('string', 'firebase_db_url', apiKeysProperties.get("firebaseUri"))
             buildConfigField('String', 'FIREBASE_DB_URL', '"' + apiKeysProperties.get("firebaseUri") + '"')

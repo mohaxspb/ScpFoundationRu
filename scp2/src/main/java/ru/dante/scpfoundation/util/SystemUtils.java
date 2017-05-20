@@ -22,6 +22,7 @@ public class SystemUtils {
         String[] fingerprints = getCertificateFingerprints(MyApplication.getAppInstance());
         Timber.d("sha fingerprints");
         for (String sha1 : fingerprints) {
+//            System.out.println("sha1: " + sha1);
             Timber.d("sha1: %s", sha1);
         }
     }
