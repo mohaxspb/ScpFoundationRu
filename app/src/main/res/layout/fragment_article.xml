@@ -2,39 +2,56 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    >
 
     <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        >
 
         <android.support.design.widget.TabLayout
             android:id="@+id/tabLayout"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
             app:tabGravity="center"
             app:tabIndicatorHeight="3dp"
             app:tabMode="scrollable"
-            app:tabSelectedTextColor="?android:textColorSecondary"/>
+            app:tabSelectedTextColor="?android:textColorSecondary"
+            tools:visibility="visible"
+            />
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycler_view"
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefresh"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scrollbarThumbVertical="?scrollbar"
-            android:scrollbars="vertical"/>
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            >
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scrollbarThumbVertical="?scrollbar"
+                android:scrollbars="vertical"
+                />
+        </android.support.v4.widget.SwipeRefreshLayout>
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/loading_indicator"
+    <ProgressBar
+        android:id="@+id/progressCenter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:indeterminate="true"
+        android:indeterminateTint="?newArticlesTextColor"
+        android:indeterminateTintMode="src_in"
         android:visibility="gone"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_gravity="center_horizontal|center_vertical"
-        android:contentDescription="@string/app_name"
-        android:src="?loadingIndicator"/>
+        tools:targetApi="lollipop"
+        />
 </FrameLayout>
