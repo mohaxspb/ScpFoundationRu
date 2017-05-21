@@ -24,6 +24,7 @@ import ru.dante.scpfoundation.ui.util.MyHtmlTagHandler;
 import timber.log.Timber;
 
 public class NewVersionDialogFragment extends DialogFragment {
+
     public static final String TAG = NewVersionDialogFragment.class.getSimpleName();
 
     public static final String EXTRA_TITLE = NewVersionDialogFragment.class.getSimpleName();
@@ -52,7 +53,7 @@ public class NewVersionDialogFragment extends DialogFragment {
         final MaterialDialog dialogTextSize;
         String newVersionFeatures = "";
         try {
-            newVersionFeatures = readFromAssets(getActivity(), "newVersionFeatures" + BuildConfig.VERSION_CODE + ".txt");
+            newVersionFeatures = readFromAssets(getActivity(), "releaseNotes/newVersionFeatures" + BuildConfig.VERSION_CODE + ".txt");
         } catch (IOException e) {
             Timber.e(e, "error while read newVersionFeatures from file");
         }
