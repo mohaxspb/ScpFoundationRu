@@ -144,6 +144,7 @@ public interface Constants {
         String OBJECTS_1 = "http://scpfoundation.ru/scp-list";
         String OBJECTS_2 = "http://scpfoundation.ru/scp-list-2";
         String OBJECTS_3 = "http://scpfoundation.ru/scp-list-3";
+        String OBJECTS_4 = "http://scpfoundation.ru/scp-list-4";
         String OBJECTS_RU = "http://scpfoundation.ru/scp-list-ru";
         String ABOUT_SCP = "http://scpfoundation.ru/about-the-scp-foundation";
         String SEARCH = "SEARCH";

@@ -39,6 +39,7 @@ import ru.dante.scpfoundation.ui.fragment.MaterialsOtherFragment;
 import ru.dante.scpfoundation.ui.fragment.Objects1ArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.Objects2ArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.Objects3ArticlesFragment;
+import ru.dante.scpfoundation.ui.fragment.Objects4ArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.ObjectsRuArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.OfflineArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.RatedArticlesFragment;
@@ -100,6 +101,8 @@ public interface AppComponent {
     void inject(MaterialsArchiveFragment fragment);
 
     void inject(MaterialsJokesFragment fragment);
+
+    void inject(Objects4ArticlesFragment fragment);
 
     void inject(TextSizeDialogFragment dialogFragment);
 

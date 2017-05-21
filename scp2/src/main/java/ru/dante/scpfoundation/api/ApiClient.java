@@ -576,6 +576,14 @@ public class ApiClient {
                     if (nextSibling != null && !nextSibling.toString().equals(" ") && nextSibling.nodeName().equals("#text")) {
                         element.after(new Element("div").appendChild(nextSibling));
                     }
+
+                    //also fix scp-3000, where image and spoiler are in div tag, fucking shit! Web monkeys, ARGH!!!
+                    if (!element.children().isEmpty() && element.children().size() == 2
+                            && element.child(0).tagName().equals("img") && element.child(1).className().equals("collapsible-block")) {
+                        element.before(element.childNode(0));
+                        element.after(element.childNode(1));
+                        element.remove();
+                    }
                 }
                 //search for images and add it to separate field to be able to show it in arts lists
                 RealmList<RealmString> imgsUrls = null;
@@ -919,6 +927,7 @@ public class ApiClient {
         String type;
 
         switch (imageURL) {
+            case "http://scp-ru.wdfiles.com/local--files/scp-list-4/na.png":
             case "http://scp-ru.wdfiles.com/local--files/scp-list-3/na.png":
             case "http://scp-ru.wdfiles.com/local--files/scp-list-2/na(1).png":
             case "http://scp-ru.wdfiles.com/local--files/scp-list-ru/na(1).png":
@@ -927,6 +936,7 @@ public class ApiClient {
             case "http://scp-ru.wdfiles.com/local--files/scp-list-j/na(1).png":
                 type = Article.ObjectType.NEUTRAL_OR_NOT_ADDED;
                 break;
+            case "http://scp-ru.wdfiles.com/local--files/scp-list-4/safe.png":
             case "http://scp-ru.wdfiles.com/local--files/scp-list-3/safe.png":
             case "http://scp-ru.wdfiles.com/local--files/scp-list-2/safe(1).png":
             case "http://scp-ru.wdfiles.com/local--files/scp-list-ru/safe(1).png":
@@ -935,6 +945,7 @@ public class ApiClient {
             case "http://scp-ru.wdfiles.com/local--files/scp-list-j/safe(1).png":
                 type = Article.ObjectType.SAFE;
                 break;
+            case "http://scp-ru.wdfiles.com/local--files/scp-list-4/euclid.png":
             case "http://scp-ru.wdfiles.com/local--files/scp-list-3/euclid.png":
             case "http://scp-ru.wdfiles.com/local--files/scp-list-2/euclid(1).png":
             case "http://scp-ru.wdfiles.com/local--files/scp-list-ru/euclid(1).png":
@@ -943,6 +954,7 @@ public class ApiClient {
             case "http://scp-ru.wdfiles.com/local--files/scp-list-j/euclid(1).png":
                 type = Article.ObjectType.EUCLID;
                 break;
+            case "http://scp-ru.wdfiles.com/local--files/scp-list-4/keter.png":
             case "http://scp-ru.wdfiles.com/local--files/scp-list-3/keter.png":
             case "http://scp-ru.wdfiles.com/local--files/scp-list-2/keter(1).png":
             case "http://scp-ru.wdfiles.com/local--files/scp-list-ru/keter(1).png":
@@ -951,6 +963,7 @@ public class ApiClient {
             case "http://scp-ru.wdfiles.com/local--files/scp-list-j/keter(1).png":
                 type = Article.ObjectType.KETER;
                 break;
+            case "http://scp-ru.wdfiles.com/local--files/scp-list-4/thaumiel.png":
             case "http://scp-ru.wdfiles.com/local--files/scp-list-3/thaumiel.png":
             case "http://scp-ru.wdfiles.com/local--files/scp-list-2/thaumiel(1).png":
             case "http://scp-ru.wdfiles.com/local--files/scp-list-ru/thaumiel(1).png":
@@ -1164,7 +1177,7 @@ public class ApiClient {
     }
 
     public Observable<FirebaseObjectUser> getUserObjectFromFirebaseObservable() {
-        return Observable.create(subscriber -> {
+        return Observable.unsafeCreate(subscriber -> {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             if (firebaseUser != null) {
                 FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
@@ -1193,7 +1206,7 @@ public class ApiClient {
     }
 
     public Observable<Void> updateFirebaseUsersEmailObservable() {
-        return Observable.create(subscriber -> {
+        return Observable.unsafeCreate(subscriber -> {
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             if (user != null) {
                 if (VKAccessToken.currentToken() != null) {
@@ -1219,7 +1232,7 @@ public class ApiClient {
     }
 
     public Observable<Void> updateFirebaseUsersNameAndAvatarObservable(String name, String avatar) {
-        return Observable.create(subscriber -> {
+        return Observable.unsafeCreate(subscriber -> {
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
             if (user != null) {
@@ -1307,7 +1320,7 @@ public class ApiClient {
      * @param user local DB {@link User} object to write to firebase DB
      */
     public Observable<FirebaseObjectUser> writeUserToFirebaseObservable(FirebaseObjectUser user) {
-        return Observable.create(subscriber -> {
+        return Observable.unsafeCreate(subscriber -> {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             if (firebaseUser != null) {
                 FirebaseDatabase.getInstance()
@@ -1334,7 +1347,7 @@ public class ApiClient {
      * @return Observable, that emits user total score
      */
     public Observable<Integer> incrementScoreInFirebaseObservable(int scoreToAdd) {
-        return Observable.create(subscriber -> {
+        return Observable.unsafeCreate(subscriber -> {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             if (firebaseUser != null) {
                 //add, not rewrite
@@ -1376,7 +1389,7 @@ public class ApiClient {
     }
 
     public Observable<Article> writeArticleToFirebase(Article article) {
-        return Observable.create(subscriber -> {
+        return Observable.unsafeCreate(subscriber -> {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             if (firebaseUser == null) {
                 subscriber.onError(new IllegalArgumentException("firebase user is null"));
@@ -1414,7 +1427,7 @@ public class ApiClient {
     }
 
     public Observable<ArticleInFirebase> getArticleFromFirebase(Article article) {
-        return Observable.create(subscriber -> {
+        return Observable.unsafeCreate(subscriber -> {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             if (firebaseUser == null) {
                 subscriber.onError(new IllegalArgumentException("firebase user is null"));
@@ -1448,7 +1461,7 @@ public class ApiClient {
     }
 
     public Observable<Integer> getUserScoreFromFirebase() {
-        return Observable.create(subscriber -> {
+        return Observable.unsafeCreate(subscriber -> {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             if (firebaseUser == null) {
                 subscriber.onError(new IllegalArgumentException("firebase user is null"));
@@ -1476,7 +1489,7 @@ public class ApiClient {
 
     public Observable<Boolean> isUserJoinedVkGroup(String id) {
         Timber.d("isUserJoinedVkGroup id: %s", id);
-        return Observable.create(subscriber -> {
+        return Observable.unsafeCreate(subscriber -> {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             if (firebaseUser == null) {
                 subscriber.onError(new IllegalArgumentException("firebase user is null"));
@@ -1506,7 +1519,7 @@ public class ApiClient {
     }
 
     public Observable<Void> addJoinedVkGroup(String id) {
-        return Observable.create(subscriber -> {
+        return Observable.unsafeCreate(subscriber -> {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             if (firebaseUser == null) {
                 subscriber.onError(new IllegalArgumentException("firebase user is null"));
@@ -1533,7 +1546,7 @@ public class ApiClient {
         //as firebase can't have dots in ref path we must replace it...
         final String id = packageNameWithDots.replaceAll("\\.", "____");
         Timber.d("id: %s", id);
-        return Observable.create(subscriber -> {
+        return Observable.unsafeCreate(subscriber -> {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             if (firebaseUser == null) {
                 subscriber.onError(new IllegalArgumentException("firebase user is null"));
@@ -1565,7 +1578,7 @@ public class ApiClient {
     public Observable<Void> addInstalledApp(String packageNameWithDots) {
         //as firebase can't have dots in ref path we must replace it...
         final String id = packageNameWithDots.replaceAll("\\.", "____");
-        return Observable.create(subscriber -> {
+        return Observable.unsafeCreate(subscriber -> {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             if (firebaseUser == null) {
                 subscriber.onError(new IllegalArgumentException("firebase user is null"));
@@ -1589,7 +1602,7 @@ public class ApiClient {
     }
 
     public Observable<Boolean> isUserGainedSkoreFromInapp(String sku) {
-        return Observable.create(subscriber -> {
+        return Observable.unsafeCreate(subscriber -> {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             if (firebaseUser == null) {
                 subscriber.onError(new IllegalArgumentException("firebase user is null"));
@@ -1619,7 +1632,7 @@ public class ApiClient {
     }
 
     public Observable<Void> addRewardedInapp(String sku) {
-        return Observable.create(subscriber -> {
+        return Observable.unsafeCreate(subscriber -> {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             if (firebaseUser == null) {
                 subscriber.onError(new IllegalArgumentException("firebase user is null"));
@@ -1643,7 +1656,7 @@ public class ApiClient {
     }
 
     public Observable<Void> setCrackedInFirebase() {
-        return Observable.create(subscriber -> {
+        return Observable.unsafeCreate(subscriber -> {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             if (firebaseUser == null) {
                 subscriber.onError(new IllegalArgumentException("firebase user is null"));
