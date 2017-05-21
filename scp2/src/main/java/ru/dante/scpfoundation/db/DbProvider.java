@@ -2,6 +2,7 @@ package ru.dante.scpfoundation.db;
 
 import android.util.Pair;
 
+import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.vk.sdk.VKSdk;
@@ -66,14 +67,13 @@ public class DbProvider {
     }
 
     public Observable<Pair<Integer, Integer>> saveRecentArticlesList(List<Article> apiData, int offset) {
-        return Observable.create(subscriber -> mRealm.executeTransactionAsync(
+        return Observable.unsafeCreate(subscriber -> mRealm.executeTransactionAsync(
                 realm -> {
                     //remove all aps from nominees if we update list
                     if (offset == 0) {
-                        List<Article> nomineesApps =
-                                realm.where(Article.class)
-                                        .notEqualTo(Article.FIELD_IS_IN_RECENT, Article.ORDER_NONE)
-                                        .findAll();
+                        List<Article> nomineesApps = realm.where(Article.class)
+                                .notEqualTo(Article.FIELD_IS_IN_RECENT, Article.ORDER_NONE)
+                                .findAll();
                         for (Article application : nomineesApps) {
                             application.isInRecent = Article.ORDER_NONE;
                         }
@@ -113,14 +113,13 @@ public class DbProvider {
     }
 
     public Observable<Pair<Integer, Integer>> saveRatedArticlesList(List<Article> data, int offset) {
-        return Observable.create(subscriber -> mRealm.executeTransactionAsync(
+        return Observable.unsafeCreate(subscriber -> mRealm.executeTransactionAsync(
                 realm -> {
                     //remove all aps from nominees if we update list
                     if (offset == 0) {
-                        List<Article> articleList =
-                                realm.where(Article.class)
-                                        .notEqualTo(Article.FIELD_IS_IN_MOST_RATED, Article.ORDER_NONE)
-                                        .findAll();
+                        List<Article> articleList = realm.where(Article.class)
+                                .notEqualTo(Article.FIELD_IS_IN_MOST_RATED, Article.ORDER_NONE)
+                                .findAll();
                         for (Article application : articleList) {
                             application.isInMostRated = Article.ORDER_NONE;
                         }
@@ -154,7 +153,7 @@ public class DbProvider {
     }
 
     public Observable<Pair<Integer, Integer>> saveObjectsArticlesList(List<Article> data, String inDbField) {
-        return Observable.create(subscriber -> mRealm.executeTransactionAsync(
+        return Observable.unsafeCreate(subscriber -> mRealm.executeTransactionAsync(
                 realm -> {
                     //remove all aps from this list while update it
                     List<Article> articleList =
@@ -171,6 +170,9 @@ public class DbProvider {
                                 break;
                             case Article.FIELD_IS_IN_OBJECTS_3:
                                 application.isInObjects3 = Article.ORDER_NONE;
+                                break;
+                            case Article.FIELD_IS_IN_OBJECTS_4:
+                                application.isInObjects4 = Article.ORDER_NONE;
                                 break;
                             case Article.FIELD_IS_IN_OBJECTS_RU:
                                 application.isInObjectsRu = Article.ORDER_NONE;
@@ -215,6 +217,9 @@ public class DbProvider {
                                 case Article.FIELD_IS_IN_OBJECTS_3:
                                     applicationInDb.isInObjects3 = i;
                                     break;
+                                case Article.FIELD_IS_IN_OBJECTS_4:
+                                    applicationInDb.isInObjects4 = i;
+                                    break;
                                 case Article.FIELD_IS_IN_OBJECTS_RU:
                                     applicationInDb.isInObjectsRu = i;
                                     break;
@@ -244,7 +249,6 @@ public class DbProvider {
 
                             applicationInDb.type = applicationToWrite.type;
                         } else {
-//                            applicationToWrite.isInMostRated = i;
                             switch (inDbField) {
                                 case Article.FIELD_IS_IN_OBJECTS_1:
                                     applicationToWrite.isInObjects1 = i;
@@ -254,6 +258,9 @@ public class DbProvider {
                                     break;
                                 case Article.FIELD_IS_IN_OBJECTS_3:
                                     applicationToWrite.isInObjects3 = i;
+                                    break;
+                                case Article.FIELD_IS_IN_OBJECTS_4:
+                                    applicationToWrite.isInObjects4 = i;
                                     break;
                                 case Article.FIELD_IS_IN_OBJECTS_RU:
                                     applicationToWrite.isInObjectsRu = i;
@@ -289,27 +296,11 @@ public class DbProvider {
                     subscriber.onCompleted();
                     mRealm.close();
                 },
-                error -> {
-                    subscriber.onError(error);
+                e -> {
+                    subscriber.onError(e);
                     mRealm.close();
                 }));
     }
-
-//    /**
-//     * @param articleUrl used as ID
-//     * @return Observable that emits managed, valid and loaded Article
-//     * and emits changes to it
-//     * or null if there is no one in DB with this url
-//     */
-//    public Observable<Article> getArticleAsync(String articleUrl) {
-//        return mRealm.where(Article.class)
-//                .equalTo(Article.FIELD_URL, articleUrl)
-//                .findAllAsync()
-//                .<List<Article>>asObservable()
-//                .filter(RealmResults::isLoaded)
-//                .filter(RealmResults::isValid)
-//                .flatMap(arts -> arts.isEmpty() ? Observable.just(null) : Observable.just(arts.first()));
-//    }
 
     /**
      * @param articleUrl used as ID
@@ -353,80 +344,92 @@ public class DbProvider {
      * @return Observable that emits unmanaged saved article on successful insert or throws error
      */
     public Observable<Article> saveArticle(Article article) {
-        return Observable.create(subscriber -> mRealm.executeTransactionAsync(
-                realm -> {
-                    //if not have subscription
-                    //check if we have limit in downloads
-                    //if so - delete one article to save this
-                    if (!mMyPreferenceManager.isHasSubscription()) {
-                        FirebaseRemoteConfig config = FirebaseRemoteConfig.getInstance();
-                        if (!config.getBoolean(Constants.Firebase.RemoteConfigKeys.DOWNLOAD_ALL_ENABLED_FOR_FREE)) {
-                            long numOfArtsInDb = realm.where(Article.class)
-                                    .notEqualTo(Article.FIELD_TEXT, (String) null)
-                                    //remove articles from main activity
-                                    .notEqualTo(Article.FIELD_URL, Constants.Urls.ABOUT_SCP)
-                                    .notEqualTo(Article.FIELD_URL, Constants.Urls.NEWS)
-                                    .notEqualTo(Article.FIELD_URL, Constants.Urls.STORIES)
-                                    .count();
-                            Timber.d("numOfArtsInDb: %s", numOfArtsInDb);
-                            long limit = config.getLong(Constants.Firebase.RemoteConfigKeys.DOWNLOAD_FREE_ARTICLES_LIMIT);
-                            Timber.d("limit: %s", limit);
-                            if (numOfArtsInDb + 1 > limit) {
-                                int numOfArtsToDelete = (int) (numOfArtsInDb + 1 - limit);
-                                Timber.d("numOfArtsToDelete: %s", numOfArtsToDelete);
-                                for (int i = 0; i < numOfArtsToDelete; i++) {
-                                    RealmResults<Article> articlesToDelete = realm.where(Article.class)
-                                            .notEqualTo(Article.FIELD_TEXT, (String) null)
-                                            .notEqualTo(Article.FIELD_URL, article.url)
-                                            //remove articles from main activity
-                                            .notEqualTo(Article.FIELD_URL, Constants.Urls.ABOUT_SCP)
-                                            .notEqualTo(Article.FIELD_URL, Constants.Urls.NEWS)
-                                            .notEqualTo(Article.FIELD_URL, Constants.Urls.STORIES)
-                                            .findAllSorted(Article.FIELD_LOCAL_UPDATE_TIME_STAMP, Sort.ASCENDING);
-                                    if (!articlesToDelete.isEmpty()) {
-                                        Timber.d("delete text for: %s", articlesToDelete.first().title);
-                                        articlesToDelete.first().text = null;
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    //check if we have app in db and update
-                    Article applicationInDb = realm.where(Article.class)
-                            .equalTo(Article.FIELD_URL, article.url)
-                            .findFirst();
-                    if (applicationInDb != null) {
-                        applicationInDb = realm.copyFromRealm(applicationInDb);
-                        applicationInDb.text = article.text;
-                        applicationInDb.title = article.title;
-                        //tabs
-                        applicationInDb.hasTabs = article.hasTabs;
-                        applicationInDb.tabsTitles = article.tabsTitles;
-                        applicationInDb.tabsTexts = article.tabsTexts;
-                        //textParts
-                        applicationInDb.textParts = article.textParts;
-                        applicationInDb.textPartsTypes = article.textPartsTypes;
-                        //images
-                        applicationInDb.imagesUrls = article.imagesUrls;
-                        //update localUpdateTimeStamp to be able to sort arts by this value
-                        applicationInDb.localUpdateTimeStamp = System.currentTimeMillis();
-
-                        //update it in DB such way, as we add unmanaged items
-                        realm.insertOrUpdate(applicationInDb);
-                    } else {
-                        realm.insertOrUpdate(article);
-                    }
-                },
+        return Observable.unsafeCreate(subscriber -> mRealm.executeTransactionAsync(
+                realm -> saveArticleToRealm(article, realm),
                 () -> {
                     subscriber.onNext(article);
                     subscriber.onCompleted();
                     mRealm.close();
                 },
-                error -> {
-                    subscriber.onError(error);
+                e -> {
+                    subscriber.onError(e);
                     mRealm.close();
                 }));
+    }
+
+    /**
+     * @param article obj to save
+     * @return Observable that emits unmanaged saved article on successful insert or throws error
+     */
+    public Observable<Article> saveArticleSync(Article article) {
+        mRealm.executeTransaction(realm -> saveArticleToRealm(article, realm));
+        mRealm.close();
+        return Observable.just(article);
+    }
+
+    private void saveArticleToRealm(Article article, Realm realm) {
+        //if not have subscription
+        //check if we have limit in downloads
+        //if so - delete one article to save this
+        if (!mMyPreferenceManager.isHasSubscription()) {
+            FirebaseRemoteConfig config = FirebaseRemoteConfig.getInstance();
+            if (!config.getBoolean(Constants.Firebase.RemoteConfigKeys.DOWNLOAD_ALL_ENABLED_FOR_FREE)) {
+                long numOfArtsInDb = realm.where(Article.class)
+                        .notEqualTo(Article.FIELD_TEXT, (String) null)
+                        //remove articles from main activity
+                        .notEqualTo(Article.FIELD_URL, Constants.Urls.ABOUT_SCP)
+                        .notEqualTo(Article.FIELD_URL, Constants.Urls.NEWS)
+                        .notEqualTo(Article.FIELD_URL, Constants.Urls.STORIES)
+                        .count();
+                Timber.d("numOfArtsInDb: %s", numOfArtsInDb);
+                long limit = config.getLong(Constants.Firebase.RemoteConfigKeys.DOWNLOAD_FREE_ARTICLES_LIMIT);
+                Timber.d("limit: %s", limit);
+                if (numOfArtsInDb + 1 > limit) {
+                    int numOfArtsToDelete = (int) (numOfArtsInDb + 1 - limit);
+                    Timber.d("numOfArtsToDelete: %s", numOfArtsToDelete);
+                    for (int i = 0; i < numOfArtsToDelete; i++) {
+                        RealmResults<Article> articlesToDelete = realm.where(Article.class)
+                                .notEqualTo(Article.FIELD_TEXT, (String) null)
+                                .notEqualTo(Article.FIELD_URL, article.url)
+                                //remove articles from main activity
+                                .notEqualTo(Article.FIELD_URL, Constants.Urls.ABOUT_SCP)
+                                .notEqualTo(Article.FIELD_URL, Constants.Urls.NEWS)
+                                .notEqualTo(Article.FIELD_URL, Constants.Urls.STORIES)
+                                .findAllSorted(Article.FIELD_LOCAL_UPDATE_TIME_STAMP, Sort.ASCENDING);
+                        if (!articlesToDelete.isEmpty()) {
+                            Timber.d("delete text for: %s", articlesToDelete.first().title);
+                            articlesToDelete.first().text = null;
+                        }
+                    }
+                }
+            }
+        }
+
+        //check if we have app in db and update
+        Article applicationInDb = realm.where(Article.class)
+                .equalTo(Article.FIELD_URL, article.url)
+                .findFirst();
+        if (applicationInDb != null) {
+            applicationInDb = realm.copyFromRealm(applicationInDb);
+            applicationInDb.text = article.text;
+            applicationInDb.title = article.title;
+            //tabs
+            applicationInDb.hasTabs = article.hasTabs;
+            applicationInDb.tabsTitles = article.tabsTitles;
+            applicationInDb.tabsTexts = article.tabsTexts;
+            //textParts
+            applicationInDb.textParts = article.textParts;
+            applicationInDb.textPartsTypes = article.textPartsTypes;
+            //images
+            applicationInDb.imagesUrls = article.imagesUrls;
+            //update localUpdateTimeStamp to be able to sort arts by this value
+            applicationInDb.localUpdateTimeStamp = System.currentTimeMillis();
+
+            //update it in DB such way, as we add unmanaged items
+            realm.insertOrUpdate(applicationInDb);
+        } else {
+            realm.insertOrUpdate(article);
+        }
     }
 
     public Observable<Article> toggleFavorite(String url) {
@@ -591,6 +594,12 @@ public class DbProvider {
             switch (provider) {
                 case VK:
                     VKSdk.logout();
+                    break;
+                case GOOGLE:
+                    //do nothing...
+                    break;
+                case FACEBOOK:
+                    LoginManager.getInstance().logOut();
                     break;
                 default:
                     throw new IllegalArgumentException("unexpected provider");

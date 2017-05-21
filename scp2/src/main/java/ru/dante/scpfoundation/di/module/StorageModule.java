@@ -88,6 +88,13 @@ public class StorageModule {
                 oldVersion++;
             }
 
+            if (oldVersion == 1) {
+                schema.get(Article.class.getSimpleName())
+                        .addField(Article.FIELD_IS_IN_OBJECTS_4, long.class)
+                        .transform(obj -> obj.set(Article.FIELD_IS_IN_OBJECTS_4, Article.ORDER_NONE));
+                oldVersion++;
+            }
+
             //TODO add new if blocks if schema changed
             if (oldVersion < newVersion) {
                 throw new IllegalStateException(String.format(Locale.ENGLISH, "Migration missing from v%d to v%d", oldVersion, newVersion));

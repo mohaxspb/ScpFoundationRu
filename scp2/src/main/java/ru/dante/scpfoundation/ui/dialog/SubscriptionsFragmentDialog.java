@@ -224,11 +224,11 @@ public class SubscriptionsFragmentDialog
 
                     Bundle bundle = new Bundle();
                     bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, sku);
-                    bundle.putFloat(FirebaseAnalytics.Param.VALUE, .5f);
+//                    bundle.putFloat(FirebaseAnalytics.Param.VALUE, .5f);
                     bundle.putFloat(FirebaseAnalytics.Param.PRICE, .5f);
                     FirebaseAnalytics.getInstance(getActivity()).logEvent(FirebaseAnalytics.Event.ECOMMERCE_PURCHASE, bundle);
 
-                    if (SecureUtils.checkLuckyPatcher(getActivity()) || SecureUtils.checkIfPackageChanged(getActivity())) {
+                    if (SecureUtils.checkCrack(getActivity())) {
                         Bundle args = new Bundle();
                         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
                         args.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "CRACK_" + sku + ((firebaseUser != null) ? firebaseUser.getUid() : ""));

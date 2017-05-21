@@ -16,6 +16,14 @@ import ru.dante.scpfoundation.ui.holder.BaseHolder;
 public abstract class BaseRecyclerAdapter<D extends BaseModel, A extends BaseAdapterClickListener<D>, H extends BaseHolder<D, A>>
         extends RecyclerView.Adapter<H> {
 
+    public BaseRecyclerAdapter(List<D> data, A adapterClickListener) {
+        mData = data;
+        mAdapterClickListener = adapterClickListener;
+    }
+
+    public BaseRecyclerAdapter() {
+    }
+
     protected List<D> mData;
 
     protected A mAdapterClickListener;

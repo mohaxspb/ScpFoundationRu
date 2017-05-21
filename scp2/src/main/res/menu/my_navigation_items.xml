@@ -53,6 +53,12 @@
             android:title="@string/drawer_item_8"
             />
         <item
+            android:id="@+id/objects_IV"
+            android:checked="true"
+            android:icon="@drawable/ic_drawer_object_4"
+            android:title="@string/drawer_item_objects4"
+            />
+        <item
             android:id="@+id/objects_RU"
             android:checked="true"
             android:icon="@drawable/ic_drawer_object_ru"

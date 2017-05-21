@@ -33,6 +33,7 @@ public class Article extends RealmObject {
     public static final String FIELD_IS_IN_OBJECTS_1 = "isInObjects1";
     public static final String FIELD_IS_IN_OBJECTS_2 = "isInObjects2";
     public static final String FIELD_IS_IN_OBJECTS_3 = "isInObjects3";
+    public static final String FIELD_IS_IN_OBJECTS_4 = "isInObjects4";
     public static final String FIELD_IS_IN_OBJECTS_RU = "isInObjectsRu";
 
     public static final String FIELD_IS_IN_EXPERIMETS = "isInExperiments";
@@ -81,6 +82,7 @@ public class Article extends RealmObject {
     public long isInObjects1 = ORDER_NONE;
     public long isInObjects2 = ORDER_NONE;
     public long isInObjects3 = ORDER_NONE;
+    public long isInObjects4 = ORDER_NONE;
     public long isInObjectsRu = ORDER_NONE;
 
     public long isInExperiments = ORDER_NONE;

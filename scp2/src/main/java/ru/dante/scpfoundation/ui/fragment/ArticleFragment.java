@@ -3,7 +3,6 @@ package ru.dante.scpfoundation.ui.fragment;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -33,7 +32,7 @@ import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.mvp.contract.ArticleMvp;
 import ru.dante.scpfoundation.ui.activity.ArticleActivity;
 import ru.dante.scpfoundation.ui.activity.MainActivity;
-import ru.dante.scpfoundation.ui.adapter.RecyclerAdapterArticle;
+import ru.dante.scpfoundation.ui.adapter.ArticleRecyclerAdapter;
 import ru.dante.scpfoundation.ui.base.BaseFragment;
 import ru.dante.scpfoundation.ui.util.ReachBottomRecyclerScrollListener;
 import ru.dante.scpfoundation.ui.util.SetTextViewHTML;
@@ -72,7 +71,7 @@ public class ArticleFragment
 
     private String url;
 
-    private RecyclerAdapterArticle mAdapter;
+    private ArticleRecyclerAdapter mAdapter;
     private Article mArticle;
 
     public static ArticleFragment newInstance(String url) {
@@ -100,17 +99,13 @@ public class ArticleFragment
             mArticle = Parcels.unwrap(savedInstanceState.getParcelable(EXTRA_ARTICLE));
             mCurrentSelectedTab = savedInstanceState.getInt(KEY_CURRENT_SELECTED_TAB);
         }
+
+        mPresenter.onCreate();
     }
 
     @Override
     protected int getLayoutResId() {
         return R.layout.fragment_article;
-    }
-
-    @NonNull
-    @Override
-    public ArticleMvp.Presenter createPresenter() {
-        return mPresenter;
     }
 
     @Override
@@ -122,7 +117,7 @@ public class ArticleFragment
     protected void initViews() {
         Timber.d("initViews");
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mAdapter = new RecyclerAdapterArticle();
+        mAdapter = new ArticleRecyclerAdapter();
         mAdapter.setTextItemsClickListener(this);
         mRecyclerView.setAdapter(mAdapter);
 

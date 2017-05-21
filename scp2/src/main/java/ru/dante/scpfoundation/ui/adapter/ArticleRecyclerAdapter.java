@@ -2,6 +2,7 @@ package ru.dante.scpfoundation.ui.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -12,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
@@ -36,6 +38,7 @@ import ru.dante.scpfoundation.ui.util.SetTextViewHTML;
 import ru.dante.scpfoundation.util.AttributeGetter;
 import ru.dante.scpfoundation.util.DialogUtils;
 import ru.dante.scpfoundation.util.DimensionUtils;
+import timber.log.Timber;
 import uk.co.chrisjenx.calligraphy.CalligraphyUtils;
 
 /**
@@ -43,7 +46,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyUtils;
  * <p>
  * for scp_ru
  */
-public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class ArticleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int TYPE_TEXT = 0;
     private static final int TYPE_SPOILER = 1;
@@ -69,7 +72,7 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
         mTextItemsClickListener = textItemsClickListener;
     }
 
-    public RecyclerAdapterArticle() {
+    public ArticleRecyclerAdapter() {
         MyApplication.getAppComponent().inject(this);
     }
 
@@ -83,6 +86,9 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
             mArticlesTextParts = RealmString.toStringList(mArticle.textParts);
             mArticlesTextPartsTypes = RealmString.toStringList(mArticle.textPartsTypes);
         }
+
+        Timber.d("mArticlesTextPartsTypes: %s", mArticlesTextPartsTypes);
+
         notifyDataSetChanged();
     }
 
@@ -271,9 +277,11 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
                     .error(AttributeGetter.getDrawableId(context, R.attr.iconEmptyImage))
                     .fitCenter()
                     .crossFade()
+                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                     .listener(new RequestListener<String, GlideDrawable>() {
                         @Override
                         public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                            Timber.e(e, "error while download image by glide");
                             return false;
                         }
 
@@ -299,13 +307,13 @@ public class RecyclerAdapterArticle extends RecyclerView.Adapter<RecyclerView.Vi
 
             String title = null;
             if (!document.getElementsByTag("span").isEmpty()) {
-                title = document.getElementsByTag("span").text();
+                title = document.getElementsByTag("span").html();
             } else if (!document.getElementsByClass("scp-image-caption").isEmpty()) {
-                title = document.getElementsByClass("scp-image-caption").first().text();
+                title = document.getElementsByClass("scp-image-caption").first().html();
             }
             //TODO add settings for it
 //            titleTextView.setTextIsSelectable(true);
-            titleTextView.setText(title);
+            titleTextView.setText(Html.fromHtml(title));
         }
     }
 

@@ -24,6 +24,7 @@ import ru.dante.scpfoundation.mvp.contract.MaterialsScreenMvp;
 import ru.dante.scpfoundation.mvp.contract.Objects1Articles;
 import ru.dante.scpfoundation.mvp.contract.Objects2Articles;
 import ru.dante.scpfoundation.mvp.contract.Objects3Articles;
+import ru.dante.scpfoundation.mvp.contract.Objects4Articles;
 import ru.dante.scpfoundation.mvp.contract.ObjectsRuArticles;
 import ru.dante.scpfoundation.mvp.contract.OfflineArticles;
 import ru.dante.scpfoundation.mvp.contract.RatedArticlesMvp;
@@ -46,6 +47,7 @@ import ru.dante.scpfoundation.mvp.presenter.MostRecentArticlesPresenter;
 import ru.dante.scpfoundation.mvp.presenter.Objects1ArticlesPresenter;
 import ru.dante.scpfoundation.mvp.presenter.Objects2ArticlesPresenter;
 import ru.dante.scpfoundation.mvp.presenter.Objects3ArticlesPresenter;
+import ru.dante.scpfoundation.mvp.presenter.Objects4ArticlesPresenter;
 import ru.dante.scpfoundation.mvp.presenter.ObjectsRuArticlesPresenter;
 import ru.dante.scpfoundation.mvp.presenter.OfflineArticlesPresenter;
 import ru.dante.scpfoundation.mvp.presenter.SiteSearchArticlesPresenter;
@@ -196,6 +198,17 @@ public class PresentersModule {
             @NonNull ApiClient apiClient
     ) {
         return new Objects3ArticlesPresenter(myPreferencesManager, dbProviderFactory, apiClient);
+    }
+
+    @Provides
+    @Singleton
+    @NonNull
+    Objects4Articles.Presenter providesObjects4ArticlesPresenter(
+            @NonNull MyPreferenceManager myPreferencesManager,
+            @NonNull DbProviderFactory dbProviderFactory,
+            @NonNull ApiClient apiClient
+    ) {
+        return new Objects4ArticlesPresenter(myPreferencesManager, dbProviderFactory, apiClient);
     }
 
     @Provides

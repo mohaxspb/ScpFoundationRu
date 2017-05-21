@@ -92,6 +92,9 @@
             android:label="ServiceActivity"
             android:theme="@style/VK.Transparent"/>
 
+        <!--facebook-->
+        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
+
         <!--ads by appodeal-->
         <meta-data
             android:name="com.appodeal.framework"
@@ -258,7 +261,7 @@
             </intent-filter>
             <meta-data
                 android:name="metrica:api:level"
-                android:value="50"
+                android:value="52"
                 tools:replace="android:value"/>
         </service>
         <receiver

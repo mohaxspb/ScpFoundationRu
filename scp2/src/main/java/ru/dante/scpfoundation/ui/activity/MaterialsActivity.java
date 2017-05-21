@@ -140,6 +140,9 @@ public class MaterialsActivity
             case R.id.objects_III:
                 link = Constants.Urls.OBJECTS_3;
                 break;
+            case R.id.objects_IV:
+                link = Constants.Urls.OBJECTS_4;
+                break;
             case R.id.objects_RU:
                 link = Constants.Urls.OBJECTS_RU;
                 break;

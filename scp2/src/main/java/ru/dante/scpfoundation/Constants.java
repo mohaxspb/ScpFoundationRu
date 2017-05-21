@@ -1,5 +1,8 @@
 package ru.dante.scpfoundation;
 
+import android.support.annotation.DrawableRes;
+import android.support.annotation.StringRes;
+
 /**
  * Created by mohax on 03.01.2017.
  * <p>
@@ -26,21 +29,36 @@ public interface Constants {
 
     interface Firebase {
 
-//        @Retention(RetentionPolicy.SOURCE)
-//        @StringDef({SocialProvider.VK})
-//        @interface SocialProvider {
-//            String VK = "vk";
-//        }
-
-        enum CallToActionReason{
+        enum CallToActionReason {
             REMOVE_ADS, ENABLE_AUTO_SYNC, SYNC_NEED_AUTH, ENABLE_FONTS
         }
 
-        enum SocialProvider{
-            VK
+        enum SocialProvider {
+            VK(R.string.social_provider_vk_title, R.drawable.ic_social_vk),
+            GOOGLE(R.string.social_provider_google_title, R.drawable.ic_social_google),
+            FACEBOOK(R.string.social_provider_facebook_title, R.drawable.ic_social_facebook);
+
+            @StringRes
+            private final int title;
+
+            @DrawableRes
+            private final int icon;
+
+            SocialProvider(int title, int icon) {
+                this.title = title;
+                this.icon = icon;
+            }
+
+            public int getIcon() {
+                return icon;
+            }
+
+            public int getTitle() {
+                return title;
+            }
         }
 
-        interface Refs{
+        interface Refs {
             String USERS = "users";
             String ARTICLES = "articles";
             String SCORE = "score";
@@ -48,6 +66,7 @@ public interface Constants {
             String APPS = "apps";
             String INAPP = "inapp";
             String CRACKED = "cracked";
+            String SOCIAL_PROVIDER = "socialProviders";
         }
 
         int REQUEST_INVITE = 1024;
@@ -125,6 +144,7 @@ public interface Constants {
         String OBJECTS_1 = "http://scpfoundation.ru/scp-list";
         String OBJECTS_2 = "http://scpfoundation.ru/scp-list-2";
         String OBJECTS_3 = "http://scpfoundation.ru/scp-list-3";
+        String OBJECTS_4 = "http://scpfoundation.ru/scp-list-4";
         String OBJECTS_RU = "http://scpfoundation.ru/scp-list-ru";
         String ABOUT_SCP = "http://scpfoundation.ru/about-the-scp-foundation";
         String SEARCH = "SEARCH";

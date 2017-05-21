@@ -4,8 +4,17 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Pair;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
+import com.facebook.Profile;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -61,11 +70,13 @@ import ru.dante.scpfoundation.api.model.response.VkGalleryResponse;
 import ru.dante.scpfoundation.api.model.response.VkGroupJoinResponse;
 import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.db.model.RealmString;
+import ru.dante.scpfoundation.db.model.SocialProviderModel;
 import ru.dante.scpfoundation.db.model.User;
 import ru.dante.scpfoundation.db.model.VkImage;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.monetization.model.PlayMarketApplication;
 import ru.dante.scpfoundation.monetization.model.VkGroupToJoin;
+import ru.dante.scpfoundation.util.DimensionUtils;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -106,7 +117,7 @@ public class ApiClient {
     }
 
     public Observable<String> getRandomUrl() {
-        return bindWithUtils(Observable.create(subscriber -> {
+        return bindWithUtils(Observable.unsafeCreate(subscriber -> {
             Request.Builder request = new Request.Builder();
             request.url(Constants.Api.RANDOM_PAGE_SCRIPT_URL);
             request.addHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
@@ -135,7 +146,7 @@ public class ApiClient {
     }
 
     public Observable<Integer> getRecentArticlesPageCount() {
-        return bindWithUtils(Observable.<Integer>create(subscriber -> {
+        return bindWithUtils(Observable.<Integer>unsafeCreate(subscriber -> {
             Request request = new Request.Builder()
                     .url(BuildConfig.BASE_API_URL + Constants.Api.MOST_RECENT_URL + 1)
                     .build();
@@ -171,7 +182,7 @@ public class ApiClient {
     }
 
     public Observable<List<Article>> getRecentArticlesForPage(int page) {
-        return bindWithUtils(Observable.<List<Article>>create(subscriber -> {
+        return bindWithUtils(Observable.<List<Article>>unsafeCreate(subscriber -> {
             Request request = new Request.Builder()
                     .url(BuildConfig.BASE_API_URL + Constants.Api.MOST_RECENT_URL + page)
                     .build();
@@ -240,7 +251,7 @@ public class ApiClient {
     }
 
     public Observable<List<Article>> getRatedArticles(int offset) {
-        return bindWithUtils(Observable.<List<Article>>create(subscriber -> {
+        return bindWithUtils(Observable.<List<Article>>unsafeCreate(subscriber -> {
             int page = offset / Constants.Api.NUM_OF_ARTICLES_ON_RATED_PAGE + 1/*as pages are not zero based*/;
 
             Request request = new Request.Builder()
@@ -298,7 +309,7 @@ public class ApiClient {
     }
 
     public Observable<List<Article>> getSearchArticles(int offset, String searchQuery) {
-        return bindWithUtils(Observable.<List<Article>>create(subscriber -> {
+        return bindWithUtils(Observable.<List<Article>>unsafeCreate(subscriber -> {
             int page = offset / Constants.Api.NUM_OF_ARTICLES_ON_SEARCH_PAGE + 1/*as pages are not zero based*/;
 
             Request request = new Request.Builder()
@@ -355,7 +366,7 @@ public class ApiClient {
     }
 
     public Observable<List<Article>> getObjectsArticles(String sObjectsLink) {
-        return bindWithUtils(Observable.<List<Article>>create(subscriber -> {
+        return bindWithUtils(Observable.<List<Article>>unsafeCreate(subscriber -> {
             Request request = new Request.Builder()
                     .url(sObjectsLink)
                     .build();
@@ -434,7 +445,7 @@ public class ApiClient {
     }
 
     public Observable<Article> getArticle(String url) {
-        return bindWithUtils(Observable.<Article>create(subscriber -> {
+        return bindWithUtils(Observable.<Article>unsafeCreate(subscriber -> {
             Request request = new Request.Builder()
                     .url(url)
                     .build();
@@ -531,9 +542,11 @@ public class ApiClient {
                 }
                 //parse multiple imgs in "rimg" tag
                 Element rimg = pageContent.getElementsByClass("rimg").first();
+                Timber.d("rimg: %s", rimg);
                 if (rimg != null) {
                     Elements imgs = rimg.getElementsByTag("img");
                     Elements descriptions = rimg.getElementsByTag("span");
+                    List<Element> rimgsToAdd = new ArrayList<>();
                     if (imgs != null && imgs.size() > 1 && descriptions.size() == imgs.size()) {
                         for (int i = 0; i < imgs.size(); i++) {
                             Element img = imgs.get(i);
@@ -541,18 +554,35 @@ public class ApiClient {
                             Element newRimg = new Element("div");
                             newRimg.addClass("rimg");
                             newRimg.appendChild(img).appendChild(description);
-                            pageContent.getElementsByClass("rimg").last().after(newRimg);
+//                            pageContent.getElementsByClass("rimg").last().after(newRimg);
+                            rimgsToAdd.add(newRimg);
                         }
+                        Element rimgLast = rimg;
+                        for (Element newRimg : rimgsToAdd) {
+                            rimgLast.after(newRimg);
+                            rimgLast = newRimg;
+                        }
+                        rimg.remove();
                         //and remove first one, which is old
-                        pageContent.getElementsByClass("rimg").first().remove();
+//                        pageContent.getElementsByClass("rimg").first().remove();
                     }
                 }
+                Timber.d("pageContent.getElementsByClass(\"rimg\"): %s", pageContent.getElementsByClass("rimg"));
                 //put all text which is not in any tag in div tag
                 for (Element element : pageContent.children()) {
                     Node nextSibling = element.nextSibling();
                     Timber.d("child: ___%s___", nextSibling);
-                    if (nextSibling != null && !nextSibling.toString().equals(" ")) {
+//                    Timber.d("nextSibling.nodeName(): %s", nextSibling.nodeName());
+                    if (nextSibling != null && !nextSibling.toString().equals(" ") && nextSibling.nodeName().equals("#text")) {
                         element.after(new Element("div").appendChild(nextSibling));
+                    }
+
+                    //also fix scp-3000, where image and spoiler are in div tag, fucking shit! Web monkeys, ARGH!!!
+                    if (!element.children().isEmpty() && element.children().size() == 2
+                            && element.child(0).tagName().equals("img") && element.child(1).className().equals("collapsible-block")) {
+                        element.before(element.childNode(0));
+                        element.after(element.childNode(1));
+                        element.remove();
                     }
                 }
                 //search for images and add it to separate field to be able to show it in arts lists
@@ -621,8 +651,12 @@ public class ApiClient {
                 article.tabsTexts = tabsText;
                 //textParts
                 article.textParts = textParts;
-                for (RealmString realmString : article.textParts) {
-                    Timber.d("part: %s", realmString.val);
+                if (article.textParts != null) {
+                    for (RealmString realmString : article.textParts) {
+                        Timber.d("part: %s", realmString.val);
+                    }
+                } else {
+                    Timber.d("article.textParts is NULL!");
                 }
                 article.textPartsTypes = textPartsTypes;
                 //images
@@ -635,11 +669,40 @@ public class ApiClient {
                 subscriber.onError(e);
             }
         }))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .map(article -> {
+                    //download all images
+                    if (article.imagesUrls != null) {
+                        for (RealmString realmString : article.imagesUrls) {
+                            Timber.d("load image by Glide: %s", realmString.val);
+                            Glide.with(MyApplication.getAppInstance())
+                                    .load(realmString.val)
+                                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                                    .listener(new RequestListener<String, GlideDrawable>() {
+                                        @Override
+                                        public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                                            Timber.e("error while preload image by Glide");
+                                            return false;
+                                        }
+
+                                        @Override
+                                        public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                                            Timber.e("onResourceReady: %s/%s", resource.getIntrinsicWidth(), resource.getIntrinsicHeight());
+                                            return false;
+                                        }
+                                    })
+                                    .preload();
+                        }
+                    }
+
+                    return article;
+                })
                 .onErrorResumeNext(throwable -> Observable.error(new ScpException(throwable, url)));
     }
 
     public Observable<List<Article>> getMaterialsArticles(String objectsLink) {
-        return bindWithUtils(Observable.<List<Article>>create(subscriber -> {
+        return bindWithUtils(Observable.<List<Article>>unsafeCreate(subscriber -> {
             Request request = new Request.Builder()
                     .url(objectsLink)
                     .build();
@@ -688,7 +751,7 @@ public class ApiClient {
     }
 
     public Observable<List<Article>> getMaterialsArchiveArticles() {
-        return bindWithUtils(Observable.<List<Article>>create(subscriber -> {
+        return bindWithUtils(Observable.<List<Article>>unsafeCreate(subscriber -> {
             Request request = new Request.Builder()
                     .url(Constants.Urls.ARCHIVE)
                     .build();
@@ -760,7 +823,7 @@ public class ApiClient {
     }
 
     public Observable<List<Article>> getMaterialsJokesArticles() {
-        return bindWithUtils(Observable.<List<Article>>create(subscriber -> {
+        return bindWithUtils(Observable.<List<Article>>unsafeCreate(subscriber -> {
             Request request = new Request.Builder()
                     .url(Constants.Urls.JOKES)
                     .build();
@@ -829,7 +892,7 @@ public class ApiClient {
 
     public Observable<Boolean> joinVkGroup(String groupId) {
         Timber.d("joinVkGroup with groupId: %s", groupId);
-        return bindWithUtils(Observable.<Boolean>create(subscriber -> {
+        return bindWithUtils(Observable.<Boolean>unsafeCreate(subscriber -> {
                     VKParameters parameters = VKParameters.from(
                             VKApiConst.GROUP_ID, groupId,
                             VKApiConst.ACCESS_TOKEN, VKAccessToken.currentToken(),
@@ -864,6 +927,7 @@ public class ApiClient {
         String type;
 
         switch (imageURL) {
+            case "http://scp-ru.wdfiles.com/local--files/scp-list-4/na.png":
             case "http://scp-ru.wdfiles.com/local--files/scp-list-3/na.png":
             case "http://scp-ru.wdfiles.com/local--files/scp-list-2/na(1).png":
             case "http://scp-ru.wdfiles.com/local--files/scp-list-ru/na(1).png":
@@ -872,6 +936,7 @@ public class ApiClient {
             case "http://scp-ru.wdfiles.com/local--files/scp-list-j/na(1).png":
                 type = Article.ObjectType.NEUTRAL_OR_NOT_ADDED;
                 break;
+            case "http://scp-ru.wdfiles.com/local--files/scp-list-4/safe.png":
             case "http://scp-ru.wdfiles.com/local--files/scp-list-3/safe.png":
             case "http://scp-ru.wdfiles.com/local--files/scp-list-2/safe(1).png":
             case "http://scp-ru.wdfiles.com/local--files/scp-list-ru/safe(1).png":
@@ -880,6 +945,7 @@ public class ApiClient {
             case "http://scp-ru.wdfiles.com/local--files/scp-list-j/safe(1).png":
                 type = Article.ObjectType.SAFE;
                 break;
+            case "http://scp-ru.wdfiles.com/local--files/scp-list-4/euclid.png":
             case "http://scp-ru.wdfiles.com/local--files/scp-list-3/euclid.png":
             case "http://scp-ru.wdfiles.com/local--files/scp-list-2/euclid(1).png":
             case "http://scp-ru.wdfiles.com/local--files/scp-list-ru/euclid(1).png":
@@ -888,6 +954,7 @@ public class ApiClient {
             case "http://scp-ru.wdfiles.com/local--files/scp-list-j/euclid(1).png":
                 type = Article.ObjectType.EUCLID;
                 break;
+            case "http://scp-ru.wdfiles.com/local--files/scp-list-4/keter.png":
             case "http://scp-ru.wdfiles.com/local--files/scp-list-3/keter.png":
             case "http://scp-ru.wdfiles.com/local--files/scp-list-2/keter(1).png":
             case "http://scp-ru.wdfiles.com/local--files/scp-list-ru/keter(1).png":
@@ -896,6 +963,7 @@ public class ApiClient {
             case "http://scp-ru.wdfiles.com/local--files/scp-list-j/keter(1).png":
                 type = Article.ObjectType.KETER;
                 break;
+            case "http://scp-ru.wdfiles.com/local--files/scp-list-4/thaumiel.png":
             case "http://scp-ru.wdfiles.com/local--files/scp-list-3/thaumiel.png":
             case "http://scp-ru.wdfiles.com/local--files/scp-list-2/thaumiel(1).png":
             case "http://scp-ru.wdfiles.com/local--files/scp-list-ru/thaumiel(1).png":
@@ -913,7 +981,7 @@ public class ApiClient {
 
     public Observable<List<VkImage>> getGallery() {
         Timber.d("getGallery");
-        return bindWithUtils(Observable.create(subscriber -> {
+        return bindWithUtils(Observable.unsafeCreate(subscriber -> {
                     VKParameters parameters = VKParameters.from(
                             VKApiConst.OWNER_ID, Constants.Api.GALLERY_VK_GROUP_ID,
                             VKApiConst.ALBUM_ID, Constants.Api.GALLERY_VK_ALBUM_ID,
@@ -996,7 +1064,7 @@ public class ApiClient {
     }
 
     private Observable<VKApiUser> getUserDataFromVk() {
-        return Observable.create(subscriber -> VKApi.users().get(VKParameters.from(VKApiConst.FIELDS, "photo_200")).executeWithListener(new VKRequest.VKRequestListener() {
+        return Observable.unsafeCreate(subscriber -> VKApi.users().get(VKParameters.from(VKApiConst.FIELDS, "photo_200")).executeWithListener(new VKRequest.VKRequestListener() {
             @Override
             public void onComplete(VKResponse response) {
                 //noinspection unchecked
@@ -1015,7 +1083,7 @@ public class ApiClient {
     }
 
     private Observable<FirebaseUser> authWithCustomToken(String token) {
-        return Observable.create(subscriber ->
+        return Observable.unsafeCreate(subscriber ->
                 FirebaseAuth.getInstance().signInWithCustomToken(token).addOnCompleteListener(task -> {
                     Timber.d("signInWithCustomToken:onComplete: %s", task.isSuccessful());
 
@@ -1032,14 +1100,14 @@ public class ApiClient {
     }
 
     //todo use it via retrofit and update server to return JSON with request result
-    public Observable<FirebaseUser> getAuthInFirebaseWithSocialProviderObservable(Constants.Firebase.SocialProvider provider) {
+    public Observable<FirebaseUser> getAuthInFirebaseWithSocialProviderObservable(Constants.Firebase.SocialProvider provider, String id) {
         Observable<FirebaseUser> authToFirebaseObservable;
         switch (provider) {
             case VK:
-                authToFirebaseObservable = Observable.<String>create(subscriber -> {
+                authToFirebaseObservable = Observable.<String>unsafeCreate(subscriber -> {
                     String url = BuildConfig.TOOLS_API_URL + "MyServlet";
                     String params = "?provider=vk&token=" +
-                            VKAccessToken.currentToken().accessToken +
+                            id +
                             "&email=" + VKAccessToken.currentToken().email +
                             "&id=" + VKAccessToken.currentToken().userId;
                     Request request = new Request.Builder()
@@ -1065,6 +1133,43 @@ public class ApiClient {
                         .observeOn(AndroidSchedulers.mainThread())
                         .flatMap(this::authWithCustomToken);
                 break;
+            case GOOGLE:
+                authToFirebaseObservable = Observable.unsafeCreate(subscriber -> {
+                    AuthCredential credential = GoogleAuthProvider.getCredential(id, null);
+                    FirebaseAuth.getInstance().signInWithCredential(credential).addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Timber.d("signInWithCredential:success");
+                            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                            subscriber.onNext(user);
+                            subscriber.onCompleted();
+                        } else {
+                            // If sign in fails, display a message to the user.
+//                            Timber.e(task.getException(), "signInWithCredential:failure");
+                            subscriber.onError(task.getException());
+                        }
+                    });
+                });
+                break;
+            case FACEBOOK:
+                authToFirebaseObservable = Observable.unsafeCreate(subscriber -> {
+                    AuthCredential credential = FacebookAuthProvider.getCredential(id);
+                    FirebaseAuth.getInstance().signInWithCredential(credential)
+                            .addOnCompleteListener(task -> {
+                                if (task.isSuccessful()) {
+                                    // Sign in success, update UI with the signed-in user's information
+                                    Timber.d("signInWithCredential:success");
+                                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                                    subscriber.onNext(user);
+                                    subscriber.onCompleted();
+                                } else {
+                                    // If sign in fails, display a message to the user.
+                                    Timber.e(task.getException(), "signInWithCredential:failure");
+                                    subscriber.onError(task.getException());
+                                }
+                            });
+                });
+                break;
             default:
                 throw new IllegalArgumentException("unexpected provider");
         }
@@ -1072,7 +1177,7 @@ public class ApiClient {
     }
 
     public Observable<FirebaseObjectUser> getUserObjectFromFirebaseObservable() {
-        return Observable.create(subscriber -> {
+        return Observable.unsafeCreate(subscriber -> {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             if (firebaseUser != null) {
                 FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
@@ -1101,7 +1206,7 @@ public class ApiClient {
     }
 
     public Observable<Void> updateFirebaseUsersEmailObservable() {
-        return Observable.create(subscriber -> {
+        return Observable.unsafeCreate(subscriber -> {
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             if (user != null) {
                 if (VKAccessToken.currentToken() != null) {
@@ -1127,8 +1232,9 @@ public class ApiClient {
     }
 
     public Observable<Void> updateFirebaseUsersNameAndAvatarObservable(String name, String avatar) {
-        return Observable.create(subscriber -> {
+        return Observable.unsafeCreate(subscriber -> {
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
             if (user != null) {
                 UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                         .setDisplayName(name)
@@ -1162,17 +1268,59 @@ public class ApiClient {
                     return Observable.just(new Pair<>(displayName, avatarUrl));
                 });
                 break;
+            case FACEBOOK:
+                Timber.d("attempt to get name and avatar from facebook");
+                nameAvatarObservable = getUserDataFromFacebook();
+                break;
             default:
                 throw new RuntimeException("unexpected provider");
         }
         return nameAvatarObservable;
     }
 
+    private Observable<Pair<String, String>> getUserDataFromFacebook() {
+        return Observable.unsafeCreate(subscriber -> {
+            Profile profile = Profile.getCurrentProfile();
+            if (profile != null) {
+                int size = DimensionUtils.dpToPx(56);
+                subscriber.onNext(new Pair<>(profile.getName(), profile.getProfilePictureUri(size, size).toString()));
+                subscriber.onCompleted();
+            } else {
+                subscriber.onError(new NullPointerException("profile is null"));
+            }
+        });
+    }
+
+    public Observable<Void> updateFirebaseUsersSocialProvidersObservable(List<SocialProviderModel> socialProviderModels) {
+        return Observable.unsafeCreate(subscriber -> {
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (firebaseUser != null) {
+                FirebaseDatabase.getInstance()
+                        .getReference(Constants.Firebase.Refs.USERS)
+                        .child(firebaseUser.getUid())
+                        .child(Constants.Firebase.Refs.SOCIAL_PROVIDER)
+                        .setValue(socialProviderModels, (databaseError, databaseReference) -> {
+                            if (databaseError == null) {
+                                //success
+                                Timber.d("user created");
+                                subscriber.onNext(null);
+                                subscriber.onCompleted();
+                            } else {
+                                subscriber.onError(databaseError.toException());
+                            }
+                        });
+            } else {
+                Timber.e("firebase user is null while try to update!");
+                subscriber.onError(new IllegalStateException("Firebase user is null while try to update its profile"));
+            }
+        });
+    }
+
     /**
      * @param user local DB {@link User} object to write to firebase DB
      */
     public Observable<FirebaseObjectUser> writeUserToFirebaseObservable(FirebaseObjectUser user) {
-        return Observable.create(subscriber -> {
+        return Observable.unsafeCreate(subscriber -> {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             if (firebaseUser != null) {
                 FirebaseDatabase.getInstance()
@@ -1199,7 +1347,7 @@ public class ApiClient {
      * @return Observable, that emits user total score
      */
     public Observable<Integer> incrementScoreInFirebaseObservable(int scoreToAdd) {
-        return Observable.create(subscriber -> {
+        return Observable.unsafeCreate(subscriber -> {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             if (firebaseUser != null) {
                 //add, not rewrite
@@ -1241,7 +1389,7 @@ public class ApiClient {
     }
 
     public Observable<Article> writeArticleToFirebase(Article article) {
-        return Observable.create(subscriber -> {
+        return Observable.unsafeCreate(subscriber -> {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             if (firebaseUser == null) {
                 subscriber.onError(new IllegalArgumentException("firebase user is null"));
@@ -1279,7 +1427,7 @@ public class ApiClient {
     }
 
     public Observable<ArticleInFirebase> getArticleFromFirebase(Article article) {
-        return Observable.create(subscriber -> {
+        return Observable.unsafeCreate(subscriber -> {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             if (firebaseUser == null) {
                 subscriber.onError(new IllegalArgumentException("firebase user is null"));
@@ -1313,7 +1461,7 @@ public class ApiClient {
     }
 
     public Observable<Integer> getUserScoreFromFirebase() {
-        return Observable.create(subscriber -> {
+        return Observable.unsafeCreate(subscriber -> {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             if (firebaseUser == null) {
                 subscriber.onError(new IllegalArgumentException("firebase user is null"));
@@ -1341,7 +1489,7 @@ public class ApiClient {
 
     public Observable<Boolean> isUserJoinedVkGroup(String id) {
         Timber.d("isUserJoinedVkGroup id: %s", id);
-        return Observable.create(subscriber -> {
+        return Observable.unsafeCreate(subscriber -> {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             if (firebaseUser == null) {
                 subscriber.onError(new IllegalArgumentException("firebase user is null"));
@@ -1371,7 +1519,7 @@ public class ApiClient {
     }
 
     public Observable<Void> addJoinedVkGroup(String id) {
-        return Observable.create(subscriber -> {
+        return Observable.unsafeCreate(subscriber -> {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             if (firebaseUser == null) {
                 subscriber.onError(new IllegalArgumentException("firebase user is null"));
@@ -1398,7 +1546,7 @@ public class ApiClient {
         //as firebase can't have dots in ref path we must replace it...
         final String id = packageNameWithDots.replaceAll("\\.", "____");
         Timber.d("id: %s", id);
-        return Observable.create(subscriber -> {
+        return Observable.unsafeCreate(subscriber -> {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             if (firebaseUser == null) {
                 subscriber.onError(new IllegalArgumentException("firebase user is null"));
@@ -1430,7 +1578,7 @@ public class ApiClient {
     public Observable<Void> addInstalledApp(String packageNameWithDots) {
         //as firebase can't have dots in ref path we must replace it...
         final String id = packageNameWithDots.replaceAll("\\.", "____");
-        return Observable.create(subscriber -> {
+        return Observable.unsafeCreate(subscriber -> {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             if (firebaseUser == null) {
                 subscriber.onError(new IllegalArgumentException("firebase user is null"));
@@ -1454,7 +1602,7 @@ public class ApiClient {
     }
 
     public Observable<Boolean> isUserGainedSkoreFromInapp(String sku) {
-        return Observable.create(subscriber -> {
+        return Observable.unsafeCreate(subscriber -> {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             if (firebaseUser == null) {
                 subscriber.onError(new IllegalArgumentException("firebase user is null"));
@@ -1484,7 +1632,7 @@ public class ApiClient {
     }
 
     public Observable<Void> addRewardedInapp(String sku) {
-        return Observable.create(subscriber -> {
+        return Observable.unsafeCreate(subscriber -> {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             if (firebaseUser == null) {
                 subscriber.onError(new IllegalArgumentException("firebase user is null"));
@@ -1508,7 +1656,7 @@ public class ApiClient {
     }
 
     public Observable<Void> setCrackedInFirebase() {
-        return Observable.create(subscriber -> {
+        return Observable.unsafeCreate(subscriber -> {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             if (firebaseUser == null) {
                 subscriber.onError(new IllegalArgumentException("firebase user is null"));

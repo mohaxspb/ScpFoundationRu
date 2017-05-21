@@ -19,12 +19,11 @@ import ru.dante.scpfoundation.ui.activity.GalleryActivity;
 import ru.dante.scpfoundation.ui.activity.LicenceActivity;
 import ru.dante.scpfoundation.ui.activity.MainActivity;
 import ru.dante.scpfoundation.ui.activity.MaterialsActivity;
-import ru.dante.scpfoundation.ui.adapter.RecyclerAdapterArticle;
+import ru.dante.scpfoundation.ui.adapter.ArticleRecyclerAdapter;
 import ru.dante.scpfoundation.ui.adapter.RecyclerAdapterListArticles;
 import ru.dante.scpfoundation.ui.adapter.RecyclerAdapterSubscriptions;
 import ru.dante.scpfoundation.ui.adapter.SettingsSpinnerAdapter;
 import ru.dante.scpfoundation.ui.dialog.FreeAdsDisablingDialogFragment;
-import ru.dante.scpfoundation.ui.dialog.LeaderboardDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.NewVersionDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
@@ -40,6 +39,7 @@ import ru.dante.scpfoundation.ui.fragment.MaterialsOtherFragment;
 import ru.dante.scpfoundation.ui.fragment.Objects1ArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.Objects2ArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.Objects3ArticlesFragment;
+import ru.dante.scpfoundation.ui.fragment.Objects4ArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.ObjectsRuArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.OfflineArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.RatedArticlesFragment;
@@ -102,6 +102,8 @@ public interface AppComponent {
 
     void inject(MaterialsJokesFragment fragment);
 
+    void inject(Objects4ArticlesFragment fragment);
+
     void inject(TextSizeDialogFragment dialogFragment);
 
     void inject(NewVersionDialogFragment dialogFragment);
@@ -114,7 +116,7 @@ public interface AppComponent {
 
     void inject(RecyclerAdapterListArticles adapterNewArticles);
 
-    void inject(RecyclerAdapterArticle adapterNewArticles);
+    void inject(ArticleRecyclerAdapter adapterNewArticles);
 
     void inject(RecyclerAdapterSubscriptions adapterSubscriptions);
 

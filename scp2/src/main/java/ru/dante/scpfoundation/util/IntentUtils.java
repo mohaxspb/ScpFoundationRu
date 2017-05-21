@@ -56,8 +56,7 @@ public class IntentUtils {
     }
 
     public static void shareViewWithText(AppCompatActivity activity, String text, View viewToShare) {
-        Bitmap bitmap = Bitmap.createBitmap(viewToShare.getWidth(), viewToShare.getHeight(),
-                Bitmap.Config.ARGB_8888);
+        Bitmap bitmap = Bitmap.createBitmap(viewToShare.getWidth(), viewToShare.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         viewToShare.draw(canvas);
 
