@@ -67,14 +67,13 @@ public class DbProvider {
     }
 
     public Observable<Pair<Integer, Integer>> saveRecentArticlesList(List<Article> apiData, int offset) {
-        return Observable.create(subscriber -> mRealm.executeTransactionAsync(
+        return Observable.unsafeCreate(subscriber -> mRealm.executeTransactionAsync(
                 realm -> {
                     //remove all aps from nominees if we update list
                     if (offset == 0) {
-                        List<Article> nomineesApps =
-                                realm.where(Article.class)
-                                        .notEqualTo(Article.FIELD_IS_IN_RECENT, Article.ORDER_NONE)
-                                        .findAll();
+                        List<Article> nomineesApps = realm.where(Article.class)
+                                .notEqualTo(Article.FIELD_IS_IN_RECENT, Article.ORDER_NONE)
+                                .findAll();
                         for (Article application : nomineesApps) {
                             application.isInRecent = Article.ORDER_NONE;
                         }
@@ -114,14 +113,13 @@ public class DbProvider {
     }
 
     public Observable<Pair<Integer, Integer>> saveRatedArticlesList(List<Article> data, int offset) {
-        return Observable.create(subscriber -> mRealm.executeTransactionAsync(
+        return Observable.unsafeCreate(subscriber -> mRealm.executeTransactionAsync(
                 realm -> {
                     //remove all aps from nominees if we update list
                     if (offset == 0) {
-                        List<Article> articleList =
-                                realm.where(Article.class)
-                                        .notEqualTo(Article.FIELD_IS_IN_MOST_RATED, Article.ORDER_NONE)
-                                        .findAll();
+                        List<Article> articleList = realm.where(Article.class)
+                                .notEqualTo(Article.FIELD_IS_IN_MOST_RATED, Article.ORDER_NONE)
+                                .findAll();
                         for (Article application : articleList) {
                             application.isInMostRated = Article.ORDER_NONE;
                         }
@@ -155,7 +153,7 @@ public class DbProvider {
     }
 
     public Observable<Pair<Integer, Integer>> saveObjectsArticlesList(List<Article> data, String inDbField) {
-        return Observable.create(subscriber -> mRealm.executeTransactionAsync(
+        return Observable.unsafeCreate(subscriber -> mRealm.executeTransactionAsync(
                 realm -> {
                     //remove all aps from this list while update it
                     List<Article> articleList =
@@ -172,6 +170,9 @@ public class DbProvider {
                                 break;
                             case Article.FIELD_IS_IN_OBJECTS_3:
                                 application.isInObjects3 = Article.ORDER_NONE;
+                                break;
+                            case Article.FIELD_IS_IN_OBJECTS_4:
+                                application.isInObjects4 = Article.ORDER_NONE;
                                 break;
                             case Article.FIELD_IS_IN_OBJECTS_RU:
                                 application.isInObjectsRu = Article.ORDER_NONE;
@@ -216,6 +217,9 @@ public class DbProvider {
                                 case Article.FIELD_IS_IN_OBJECTS_3:
                                     applicationInDb.isInObjects3 = i;
                                     break;
+                                case Article.FIELD_IS_IN_OBJECTS_4:
+                                    applicationInDb.isInObjects4 = i;
+                                    break;
                                 case Article.FIELD_IS_IN_OBJECTS_RU:
                                     applicationInDb.isInObjectsRu = i;
                                     break;
@@ -245,7 +249,6 @@ public class DbProvider {
 
                             applicationInDb.type = applicationToWrite.type;
                         } else {
-//                            applicationToWrite.isInMostRated = i;
                             switch (inDbField) {
                                 case Article.FIELD_IS_IN_OBJECTS_1:
                                     applicationToWrite.isInObjects1 = i;
@@ -255,6 +258,9 @@ public class DbProvider {
                                     break;
                                 case Article.FIELD_IS_IN_OBJECTS_3:
                                     applicationToWrite.isInObjects3 = i;
+                                    break;
+                                case Article.FIELD_IS_IN_OBJECTS_4:
+                                    applicationToWrite.isInObjects4 = i;
                                     break;
                                 case Article.FIELD_IS_IN_OBJECTS_RU:
                                     applicationToWrite.isInObjectsRu = i;
@@ -290,27 +296,11 @@ public class DbProvider {
                     subscriber.onCompleted();
                     mRealm.close();
                 },
-                error -> {
-                    subscriber.onError(error);
+                e -> {
+                    subscriber.onError(e);
                     mRealm.close();
                 }));
     }
-
-//    /**
-//     * @param articleUrl used as ID
-//     * @return Observable that emits managed, valid and loaded Article
-//     * and emits changes to it
-//     * or null if there is no one in DB with this url
-//     */
-//    public Observable<Article> getArticleAsync(String articleUrl) {
-//        return mRealm.where(Article.class)
-//                .equalTo(Article.FIELD_URL, articleUrl)
-//                .findAllAsync()
-//                .<List<Article>>asObservable()
-//                .filter(RealmResults::isLoaded)
-//                .filter(RealmResults::isValid)
-//                .flatMap(arts -> arts.isEmpty() ? Observable.just(null) : Observable.just(arts.first()));
-//    }
 
     /**
      * @param articleUrl used as ID
@@ -355,10 +345,7 @@ public class DbProvider {
      */
     public Observable<Article> saveArticle(Article article) {
         return Observable.unsafeCreate(subscriber -> mRealm.executeTransactionAsync(
-                realm -> {
-//                   save article
-                    saveArticleToRealm(article, realm);
-                },
+                realm -> saveArticleToRealm(article, realm),
                 () -> {
                     subscriber.onNext(article);
                     subscriber.onCompleted();

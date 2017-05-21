@@ -172,6 +172,9 @@ public class ArticleActivity
             case R.id.objects_III:
                 link = Constants.Urls.OBJECTS_3;
                 break;
+            case R.id.objects_IV:
+                link = Constants.Urls.OBJECTS_4;
+                break;
             case R.id.objects_RU:
                 link = Constants.Urls.OBJECTS_RU;
                 break;
@@ -217,8 +220,7 @@ public class ArticleActivity
                 mPresenter.toggleFavorite(mUrls.get(mCurPosition));
                 return true;
             case R.id.text_size:
-                BottomSheetDialogFragment fragmentDialogTextAppearance =
-                        TextSizeDialogFragment.newInstance(TextSizeDialogFragment.TextSizeType.ARTICLE);
+                BottomSheetDialogFragment fragmentDialogTextAppearance = TextSizeDialogFragment.newInstance(TextSizeDialogFragment.TextSizeType.ARTICLE);
                 fragmentDialogTextAppearance.show(getSupportFragmentManager(), TextSizeDialogFragment.TAG);
                 return true;
             default:

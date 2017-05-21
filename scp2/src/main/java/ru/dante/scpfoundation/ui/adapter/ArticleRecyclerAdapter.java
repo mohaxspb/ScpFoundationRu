@@ -86,6 +86,9 @@ public class ArticleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             mArticlesTextParts = RealmString.toStringList(mArticle.textParts);
             mArticlesTextPartsTypes = RealmString.toStringList(mArticle.textPartsTypes);
         }
+
+        Timber.d("mArticlesTextPartsTypes: %s", mArticlesTextPartsTypes);
+
         notifyDataSetChanged();
     }
 

@@ -24,6 +24,7 @@ import ru.dante.scpfoundation.ui.fragment.FavoriteArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.Objects1ArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.Objects2ArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.Objects3ArticlesFragment;
+import ru.dante.scpfoundation.ui.fragment.Objects4ArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.ObjectsRuArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.OfflineArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.RatedArticlesFragment;
@@ -87,6 +88,9 @@ public class MainActivity
                 break;
             case Constants.Urls.OBJECTS_3:
                 mCurrentSelectedDrawerItemId = (R.id.objects_III);
+                break;
+            case Constants.Urls.OBJECTS_4:
+                mCurrentSelectedDrawerItemId = (R.id.objects_IV);
                 break;
             case Constants.Urls.OBJECTS_RU:
                 mCurrentSelectedDrawerItemId = (R.id.objects_RU);
@@ -200,6 +204,10 @@ public class MainActivity
                 mCurrentSelectedDrawerItemId = id;
                 showFragment(Objects3ArticlesFragment.newInstance(), Objects3ArticlesFragment.TAG);
                 return true;
+            case R.id.objects_IV:
+                mCurrentSelectedDrawerItemId = id;
+                showFragment(Objects4ArticlesFragment.newInstance(), Objects4ArticlesFragment.TAG);
+                return true;
             case R.id.objects_RU:
                 mCurrentSelectedDrawerItemId = id;
                 showFragment(ObjectsRuArticlesFragment.newInstance(), ObjectsRuArticlesFragment.TAG);
@@ -291,6 +299,9 @@ public class MainActivity
                 break;
             case R.id.objects_III:
                 title = getString(R.string.drawer_item_8);
+                break;
+            case R.id.objects_IV:
+                title = getString(R.string.drawer_item_objects4);
                 break;
             case R.id.objects_RU:
                 title = getString(R.string.drawer_item_9);
