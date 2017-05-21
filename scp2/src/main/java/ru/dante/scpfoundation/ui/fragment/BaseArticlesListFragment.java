@@ -132,7 +132,7 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
         MenuItem item = menu.findItem(R.id.menuItemSort);
-        if (item != null) {
+        if (item != null && getActivity() != null) {
             if (mSortType != RecyclerAdapterListArticles.SortType.NONE) {
                 item.getIcon().setColorFilter(ContextCompat.getColor(getActivity(), R.color.material_green_500), PorterDuff.Mode.SRC_ATOP);
             } else {

@@ -59,6 +59,9 @@ public class SiteSearchArticlesFragment
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
+        if(!isAdded()){
+            return;
+        }
         SearchView searchView = new SearchView(getActivity());
         searchView.setQueryHint(Html.fromHtml("<font color = #ffffff>" + getResources().getString(R.string.search_hint) + "</font>"));
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {

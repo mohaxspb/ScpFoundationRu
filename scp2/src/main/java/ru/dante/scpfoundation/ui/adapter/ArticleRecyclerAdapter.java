@@ -313,7 +313,9 @@ public class ArticleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             }
             //TODO add settings for it
 //            titleTextView.setTextIsSelectable(true);
-            titleTextView.setText(Html.fromHtml(title));
+            if (title != null) {
+                titleTextView.setText(Html.fromHtml(title));
+            }
         }
     }
 
