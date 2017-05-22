@@ -26,8 +26,8 @@ import timber.log.Timber;
  */
 public class InappHelper {
 
-    public static Observable<List<Item>> getOwnedInappsObserveble(Context context, IInAppBillingService mInAppBillingService) {
-        return Observable.create(subscriber -> {
+    public static Observable<List<Item>> getOwnedSubsObserveble(Context context, IInAppBillingService mInAppBillingService) {
+        return Observable.unsafeCreate(subscriber -> {
             try {
                 Bundle ownedItemsBundle = mInAppBillingService.getPurchases(3, context.getPackageName(), "subs", null);
 
@@ -62,7 +62,7 @@ public class InappHelper {
     }
 
     public static Observable<List<Subscription>> getSubsListToBuyObserveble(Context context, IInAppBillingService mInAppBillingService) {
-        return Observable.create(subscriber -> {
+        return Observable.unsafeCreate(subscriber -> {
             try {
                 //get all subs detailed info
                 List<Subscription> allSubscriptions = new ArrayList<>();
@@ -105,7 +105,7 @@ public class InappHelper {
     }
 
     public static Observable<List<Subscription>> getInappsListToBuyObserveble(Context context, IInAppBillingService mInAppBillingService) {
-        return Observable.create(subscriber -> {
+        return Observable.unsafeCreate(subscriber -> {
             try {
                 //get all subs detailed info
                 List<Subscription> allSubscriptions = new ArrayList<>();

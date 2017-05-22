@@ -30,11 +30,11 @@ import ru.dante.scpfoundation.ui.fragment.MaterialsJokesFragment;
 import ru.dante.scpfoundation.ui.fragment.MaterialsOtherFragment;
 import timber.log.Timber;
 
+import static ru.dante.scpfoundation.ui.activity.MainActivity.EXTRA_SHOW_DISABLE_ADS;
+
 public class MaterialsActivity
         extends BaseDrawerActivity<MaterialsScreenMvp.View, MaterialsScreenMvp.Presenter>
         implements MaterialsScreenMvp.View, ArticleFragment.ToolbarStateSetter {
-
-    public static final String EXTRA_SHOW_DISABLE_ADS = "EXTRA_SHOW_DISABLE_ADS";
 
     public static void startActivity(Context context) {
         Timber.d("startActivity");

@@ -119,7 +119,7 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
     protected MyNotificationManager mMyNotificationManager;
     //inapps and ads
     private IInAppBillingService mService;
-    private List<Item> mOwnedMarketItems = new ArrayList<>();
+    private List<Item> mOwnedMarketSubscriptions = new ArrayList<>();
     private InterstitialAd mInterstitialAd;
 
     private MaterialDialog mProgressDialog;
@@ -321,10 +321,10 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
 
     @Override
     public boolean isTimeToShowAds() {
-        Timber.d("isTimeToShowAds mOwnedMarketItems.isEmpty(): %s, mMyPreferenceManager.isTimeToShowAds(): %s",
-                mOwnedMarketItems.isEmpty(),
+        Timber.d("isTimeToShowAds mOwnedMarketSubscriptions.isEmpty(): %s, mMyPreferenceManager.isTimeToShowAds(): %s",
+                mOwnedMarketSubscriptions.isEmpty(),
                 mMyPreferenceManager.isTimeToShowAds());
-        return mOwnedMarketItems.isEmpty() && mMyPreferenceManager.isTimeToShowAds();
+        return mOwnedMarketSubscriptions.isEmpty() && mMyPreferenceManager.isTimeToShowAds();
     }
 
     @Override
@@ -473,12 +473,12 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
     @Override
     public void updateOwnedMarketItems() {
         Timber.d("updateOwnedMarketItems");
-        InappHelper.getOwnedInappsObserveble(this, mService).subscribe(
+        InappHelper.getOwnedSubsObserveble(this, mService).subscribe(
                 items -> {
                     Timber.d("market items: %s", items);
-                    mOwnedMarketItems = items;
+                    mOwnedMarketSubscriptions = items;
                     supportInvalidateOptionsMenu();
-                    if (!mOwnedMarketItems.isEmpty()) {
+                    if (!mOwnedMarketSubscriptions.isEmpty()) {
                         if (!SecureUtils.checkCrack(this)) {
                             mMyPreferenceManager.setHasSubscription(true);
                         } else {
@@ -501,7 +501,7 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
 
     @Override
     public List<Item> getOwnedItems() {
-        return mOwnedMarketItems;
+        return mOwnedMarketSubscriptions;
     }
 
     /**
@@ -557,7 +557,7 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
 
             MenuItem subs = menu.findItem(R.id.subscribe);
             if (subs != null) {
-                subs.setVisible(mOwnedMarketItems.isEmpty());
+                subs.setVisible(mOwnedMarketSubscriptions.isEmpty());
             }
         }
         return super.onPrepareOptionsPanel(view, menu);
@@ -567,7 +567,7 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem subs = menu.findItem(R.id.subscribe);
         if (subs != null) {
-            subs.setVisible(mOwnedMarketItems.isEmpty());
+            subs.setVisible(mOwnedMarketSubscriptions.isEmpty());
         }
         return super.onPrepareOptionsMenu(menu);
     }

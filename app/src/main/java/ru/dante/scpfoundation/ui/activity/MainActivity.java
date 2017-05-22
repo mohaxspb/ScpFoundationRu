@@ -40,6 +40,7 @@ public class MainActivity
         implements MainMvp.View {
 
     public static final String EXTRA_LINK = "EXTRA_LINK";
+    public static final String EXTRA_SHOW_DISABLE_ADS = "EXTRA_SHOW_DISABLE_ADS";
 
     public static void startActivity(Context context, String link) {
         Timber.d("startActivity: %s", link);

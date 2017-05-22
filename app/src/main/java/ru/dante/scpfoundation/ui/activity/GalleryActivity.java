@@ -37,17 +37,18 @@ import ru.dante.scpfoundation.mvp.contract.GalleryScreenMvp;
 import ru.dante.scpfoundation.ui.adapter.ImagesPagerAdapter;
 import ru.dante.scpfoundation.ui.adapter.RecyclerAdapterImages;
 import ru.dante.scpfoundation.ui.base.BaseDrawerActivity;
-import ru.dante.scpfoundation.ui.fragment.FragmentMaterialsAll;
 import ru.dante.scpfoundation.util.IntentUtils;
 import ru.dante.scpfoundation.util.StorageUtils;
 import ru.dante.scpfoundation.util.SystemUtils;
 import timber.log.Timber;
 
+import static ru.dante.scpfoundation.ui.activity.MainActivity.EXTRA_SHOW_DISABLE_ADS;
+
 public class GalleryActivity
         extends BaseDrawerActivity<GalleryScreenMvp.View, GalleryScreenMvp.Presenter>
         implements GalleryScreenMvp.View {
 
-    public static final String EXTRA_SHOW_DISABLE_ADS = "EXTRA_SHOW_DISABLE_ADS";
+    public static final String EXTRA_POSITION = "EXTRA_POSITION";
 
     @BindView(R.id.viewPager)
     ViewPager mViewPager;
@@ -67,6 +68,7 @@ public class GalleryActivity
 
     private ImagesPagerAdapter mAdapter;
     private RecyclerAdapterImages mRecyclerAdapter;
+    private int mCurPosition;
 
     public static void startActivity(Context context) {
         Timber.d("startActivity");
@@ -98,6 +100,12 @@ public class GalleryActivity
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(EXTRA_POSITION, mCurPosition);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -110,6 +118,10 @@ public class GalleryActivity
             mPresenter.updateUserScoreForScoreAction(action);
         }
 
+        if (savedInstanceState != null) {
+            mCurPosition = getIntent().getIntExtra(EXTRA_POSITION, 0);
+        }
+
         if (mToolbar != null) {
             mToolbar.setTitle(R.string.gallery);
         }
@@ -118,8 +130,10 @@ public class GalleryActivity
         mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
+                mCurPosition = position;
                 if (position % FirebaseRemoteConfig.getInstance().getLong(Constants.Firebase.RemoteConfigKeys.NUM_OF_GALLERY_PHOTOS_BETWEEN_INTERSITIAL) == 0) {
-                    if (isTimeToShowAds()) {
+//                    if (isTimeToShowAds()) {
+                    if (getOwnedItems().isEmpty()) {
                         if (isAdsLoaded()) {
                             showInterstitial(new MyAdListener() {
                                 @Override
@@ -139,18 +153,33 @@ public class GalleryActivity
             }
         });
 
-        mRecyclerAdapter = new RecyclerAdapterImages();
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        mRecyclerAdapter = new
+
+                RecyclerAdapterImages();
+        mRecyclerView.setLayoutManager(new
+
+                LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         mRecyclerView.setAdapter(mRecyclerAdapter);
         mRecyclerAdapter.setImageClickListener((position, v) -> mViewPager.setCurrentItem(position));
+
+//        if (mPresenter.getData() != null && !mPresenter.getData().isEmpty()) {
+//            showData(mPresenter.getData());
+//        }
+
+        mViewPager.setCurrentItem(mCurPosition);
+//        mRecyclerView.smoothScrollToPosition(mCurPosition);
 
         //ads
         initAds();
 
-        if (mPresenter.getData() != null) {
+        if (mPresenter.getData() != null)
+
+        {
             mAdapter.setData(mPresenter.getData());
             mRecyclerAdapter.setData(mPresenter.getData());
-        } else {
+        } else
+
+        {
             mPresenter.getDataFromDb();
             mPresenter.updateData();
         }
@@ -246,7 +275,7 @@ public class GalleryActivity
                 link = Constants.Urls.OBJECTS_RU;
                 break;
             case R.id.files:
-                getSupportFragmentManager().popBackStackImmediate(FragmentMaterialsAll.TAG, 0);
+                MaterialsActivity.startActivity(this);
                 return false;
             case R.id.stories:
                 link = Constants.Urls.STORIES;
@@ -316,6 +345,9 @@ public class GalleryActivity
         Timber.d("showData: %s", data.size());
         mAdapter.setData(data);
         mRecyclerAdapter.setData(data);
+
+        mViewPager.setCurrentItem(mCurPosition);
+//        mRecyclerView.smoothScrollToPosition(mCurPosition);
     }
 
     @Override

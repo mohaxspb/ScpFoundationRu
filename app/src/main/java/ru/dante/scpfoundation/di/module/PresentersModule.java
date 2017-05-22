@@ -92,6 +92,7 @@ public class PresentersModule {
     }
 
     @Provides
+    @Singleton
     @NonNull
     GalleryScreenMvp.Presenter providesGalleryScreenPresenter(
             @NonNull MyPreferenceManager myPreferencesManager,
