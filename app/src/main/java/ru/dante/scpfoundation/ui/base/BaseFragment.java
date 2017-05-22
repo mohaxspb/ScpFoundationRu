@@ -28,7 +28,6 @@ import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.api.error.ScpParseException;
-import ru.dante.scpfoundation.manager.MyNotificationManager;
 import ru.dante.scpfoundation.mvp.base.BaseMvp;
 import timber.log.Timber;
 
@@ -40,9 +39,6 @@ import timber.log.Timber;
 public abstract class BaseFragment<V extends BaseMvp.View, P extends BaseMvp.Presenter<V>>
         extends MvpFragment<V, P>
         implements BaseMvp.View {
-
-    @Inject
-    protected MyNotificationManager mMyNotificationManager;
 
     protected Unbinder mUnbinder;
 

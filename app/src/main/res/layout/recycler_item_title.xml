@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center"
-    android:paddingLeft="@dimen/defaultMargin"
-    android:paddingRight="@dimen/defaultMargin"
+    android:padding="@dimen/defaultMargin"
     android:textSize="@dimen/text_size_large"
     android:textStyle="bold"
     />

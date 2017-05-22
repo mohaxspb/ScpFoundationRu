@@ -119,6 +119,13 @@ public class ArticleFragment
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mAdapter = new ArticleRecyclerAdapter();
         mAdapter.setTextItemsClickListener(this);
+        mAdapter.setHasStableIds(true);
+
+        //we need this as it's the only way to be able to scroll
+        //articles, which have a lot of tables, which are shown in webView
+        mRecyclerView.setDrawingCacheEnabled(true);
+        mRecyclerView.setItemViewCacheSize(20);
+
         mRecyclerView.setAdapter(mAdapter);
 
         mPresenter.setArticleId(url);

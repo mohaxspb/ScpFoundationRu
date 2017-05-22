@@ -1,5 +1,6 @@
 package ru.dante.scpfoundation.ui.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -166,6 +167,11 @@ public class ArticleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         return mArticlesTextParts == null ? 0 : mArticlesTextParts.size() + 1;
     }
 
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
     class ViewHolderTitle extends RecyclerView.ViewHolder {
         @BindView(R.id.text)
         TextView textView;
@@ -328,6 +334,7 @@ public class ArticleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             ButterKnife.bind(this, itemView);
         }
 
+        @SuppressLint("SetJavaScriptEnabled")
         void bind(String tableContent) {
             String fullHtml = "<!DOCTYPE html>\n" +
                     "<html>\n" +
@@ -339,6 +346,10 @@ public class ArticleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             fullHtml += tableContent;
             fullHtml += "</body>\n" +
                     "</html>";
+
+            webView.getSettings().setJavaScriptEnabled(true);
+
+            webView.loadUrl("about:blank");
             webView.loadData(fullHtml, "text/html; charset=UTF-8", null);
         }
     }
