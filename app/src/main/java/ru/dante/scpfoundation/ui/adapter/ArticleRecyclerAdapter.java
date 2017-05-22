@@ -1,15 +1,20 @@
 package ru.dante.scpfoundation.ui.adapter;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -29,6 +34,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import ru.dante.scpfoundation.BuildConfig;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.api.ParseHtmlUtils;
@@ -348,6 +354,92 @@ public class ArticleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                     "</html>";
 
             webView.getSettings().setJavaScriptEnabled(true);
+
+            webView.setWebViewClient(new WebViewClient() {
+                @Override
+                public void onPageFinished(WebView view, String url) {
+                    super.onPageFinished(view, url);
+                    Timber.d("onPageFinished: %s", url);
+
+                    int indexOfHashTag = url.lastIndexOf("#");
+                    if (indexOfHashTag != -1) {
+                        String link = url.substring(indexOfHashTag);
+                        Timber.d("link: %s", link);
+
+                        if (checkUrl(link)) {
+                            Timber.d("Link clicked: %s", link);
+                        }
+                    }
+                }
+
+                @SuppressWarnings("deprecation")
+                @Override
+                public boolean shouldOverrideUrlLoading(WebView view, String link) {
+                    Timber.d("Link clicked: %s", link);
+
+                    return checkUrl(link);
+                }
+
+                @TargetApi(Build.VERSION_CODES.N)
+                @Override
+                public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                    Timber.d("Link clicked: %s", request.getUrl().toString());
+                    String link = request.getUrl().toString();
+
+                    return checkUrl(link);
+                }
+
+                private boolean checkUrl(String link) {
+                    if (link.contains("javascript")) {
+                        if (mTextItemsClickListener != null) {
+                            mTextItemsClickListener.onUnsupportedLinkPressed(link);
+                        }
+                        return true;
+                    }
+                    if (TextUtils.isDigitsOnly(link)) {
+                        if (mTextItemsClickListener != null) {
+                            mTextItemsClickListener.onSnoskaClicked(link);
+                        }
+                        return true;
+                    }
+                    if (link.startsWith("bibitem-")) {
+                        if (mTextItemsClickListener != null) {
+                            mTextItemsClickListener.onBibliographyClicked(link);
+                        }
+                        return true;
+                    }
+                    if (link.startsWith("#")) {
+                        if (mTextItemsClickListener != null) {
+                            mTextItemsClickListener.onTocClicked(link);
+                        }
+                        return true;
+                    }
+                    if (!link.startsWith("http")) {
+                        link = BuildConfig.BASE_API_URL + link;
+                    }
+
+                    if (link.endsWith(".mp3")) {
+                        if (mTextItemsClickListener != null) {
+                            mTextItemsClickListener.onMusicClicked(link);
+                        }
+                        return true;
+                    }
+
+                    if (!link.startsWith(BuildConfig.BASE_API_URL)) {
+                        if (mTextItemsClickListener != null) {
+                            mTextItemsClickListener.onExternalDomenUrlClicked(link);
+                        }
+                        return true;
+                    }
+
+                    if (mTextItemsClickListener != null) {
+                        mTextItemsClickListener.onLinkClicked(link);
+                        return true;
+                    }
+
+                    return false;
+                }
+            });
 
             webView.loadUrl("about:blank");
             webView.loadData(fullHtml, "text/html; charset=UTF-8", null);

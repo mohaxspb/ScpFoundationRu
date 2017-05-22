@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:background="?selectableItemBackground"
         android:drawableLeft="?iconArrowDown"
-        android:gravity="center_horizontal"
+        android:gravity="center"
         android:padding="@dimen/defaultMarginSmall"
         android:textColor="?spoilerColorTitle"
         tools:ignore="RtlHardcoded"

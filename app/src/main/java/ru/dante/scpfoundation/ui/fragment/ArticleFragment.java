@@ -37,6 +37,7 @@ import ru.dante.scpfoundation.ui.base.BaseFragment;
 import ru.dante.scpfoundation.ui.util.ReachBottomRecyclerScrollListener;
 import ru.dante.scpfoundation.ui.util.SetTextViewHTML;
 import ru.dante.scpfoundation.util.DialogUtils;
+import ru.dante.scpfoundation.util.IntentUtils;
 import timber.log.Timber;
 
 /**
@@ -287,7 +288,6 @@ public class ArticleFragment
                 Document document = Jsoup.parse(articlesTextParts.get(i));
                 Elements divTag = document.getElementsByAttributeValue("id", linkToFind);
                 if (divTag.size() != 0) {
-                    divTag.first().getElementsByTag("pizda").first().remove();
                     String textThatWeTryToFindSoManyTime = divTag.text();
                     textThatWeTryToFindSoManyTime = textThatWeTryToFindSoManyTime.substring(3, textThatWeTryToFindSoManyTime.length());
                     new MaterialDialog.Builder(getActivity())
@@ -375,6 +375,11 @@ public class ArticleFragment
             Timber.e(e, "error play music");
             showError(e);
         }
+    }
+
+    @Override
+    public void onExternalDomenUrlClicked(String link) {
+        IntentUtils.openUrl(link);
     }
 
     @Override

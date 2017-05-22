@@ -48,7 +48,7 @@ public class SetTextViewHTML {
         ClickableSpan clickable = new ClickableSpan() {
             @Override
             public void onClick(View view) {
-                Timber.d("LINK CLICKED: %s", span.getURL());
+                Timber.d("Link clicked: %s", span.getURL());
 
                 String link = span.getURL();
                 if (link.contains("javascript")) {
@@ -82,6 +82,13 @@ public class SetTextViewHTML {
                 if (link.endsWith(".mp3")) {
                     if (textItemsClickListener != null) {
                         textItemsClickListener.onMusicClicked(link);
+                    }
+                    return;
+                }
+
+                if (!link.startsWith(BuildConfig.BASE_API_URL)) {
+                    if (textItemsClickListener != null) {
+                        textItemsClickListener.onExternalDomenUrlClicked(link);
                     }
                     return;
                 }
@@ -166,5 +173,7 @@ public class SetTextViewHTML {
         void onUnsupportedLinkPressed(String link);
 
         void onMusicClicked(String link);
+
+        void onExternalDomenUrlClicked(String link);
     }
 }

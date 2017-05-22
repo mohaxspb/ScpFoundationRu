@@ -55,6 +55,7 @@ import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 import retrofit2.Retrofit;
 import ru.dante.scpfoundation.BuildConfig;
 import ru.dante.scpfoundation.Constants;
@@ -154,7 +155,13 @@ public class ApiClient {
             String responseBody = null;
             try {
                 Response response = mOkHttpClient.newCall(request).execute();
-                responseBody = response.body().string();
+                ResponseBody body = response.body();
+                if (body != null) {
+                    responseBody = body.string();
+                } else {
+                    subscriber.onError(new IOException(MyApplication.getAppInstance().getString(R.string.error_parse)));
+                    return;
+                }
             } catch (IOException e) {
                 subscriber.onError(new IOException(MyApplication.getAppInstance().getString(R.string.error_connection)));
                 return;
@@ -190,7 +197,13 @@ public class ApiClient {
             String responseBody = null;
             try {
                 Response response = mOkHttpClient.newCall(request).execute();
-                responseBody = response.body().string();
+                ResponseBody body = response.body();
+                if (body != null) {
+                    responseBody = body.string();
+                } else {
+                    subscriber.onError(new IOException(MyApplication.getAppInstance().getString(R.string.error_parse)));
+                    return;
+                }
             } catch (IOException e) {
                 subscriber.onError(new IOException(MyApplication.getAppInstance().getString(R.string.error_connection)));
                 return;
@@ -261,7 +274,13 @@ public class ApiClient {
             String responseBody = null;
             try {
                 Response response = mOkHttpClient.newCall(request).execute();
-                responseBody = response.body().string();
+                ResponseBody body = response.body();
+                if (body != null) {
+                    responseBody = body.string();
+                } else {
+                    subscriber.onError(new IOException(MyApplication.getAppInstance().getString(R.string.error_parse)));
+                    return;
+                }
             } catch (IOException e) {
                 subscriber.onError(new IOException(MyApplication.getAppInstance().getString(R.string.error_connection)));
                 return;
@@ -319,7 +338,13 @@ public class ApiClient {
             String responseBody = null;
             try {
                 Response response = mOkHttpClient.newCall(request).execute();
-                responseBody = response.body().string();
+                ResponseBody body = response.body();
+                if (body != null) {
+                    responseBody = body.string();
+                } else {
+                    subscriber.onError(new IOException(MyApplication.getAppInstance().getString(R.string.error_parse)));
+                    return;
+                }
             } catch (IOException e) {
                 subscriber.onError(new IOException(MyApplication.getAppInstance().getString(R.string.error_connection)));
                 return;
@@ -374,7 +399,13 @@ public class ApiClient {
             String responseBody = null;
             try {
                 Response response = mOkHttpClient.newCall(request).execute();
-                responseBody = response.body().string();
+                ResponseBody body = response.body();
+                if (body != null) {
+                    responseBody = body.string();
+                } else {
+                    subscriber.onError(new IOException(MyApplication.getAppInstance().getString(R.string.error_parse)));
+                    return;
+                }
             } catch (IOException e) {
                 subscriber.onError(new IOException(MyApplication.getAppInstance().getString(R.string.error_connection)));
                 return;
@@ -453,7 +484,13 @@ public class ApiClient {
             String responseBody = null;
             try {
                 Response response = mOkHttpClient.newCall(request).execute();
-                responseBody = response.body().string();
+                ResponseBody body = response.body();
+                if (body != null) {
+                    responseBody = body.string();
+                } else {
+                    subscriber.onError(new IOException(MyApplication.getAppInstance().getString(R.string.error_parse)));
+                    return;
+                }
             } catch (IOException e) {
                 subscriber.onError(new IOException(MyApplication.getAppInstance().getString(R.string.error_connection)));
                 return;
@@ -493,7 +530,8 @@ public class ApiClient {
                 for (Element snoska : footnoterefsFooter) {
                     Element aTag = snoska.getElementsByTag("a").first();
                     snoska.prependText(aTag.text());
-                    aTag.replaceWith(new Element(Tag.valueOf("pizda"), aTag.text()));
+                    aTag.remove();
+//                    aTag.replaceWith(new Element(Tag.valueOf("pizda"), aTag.text()));
                 }
 
                 //замена ссылок в библиографии
@@ -710,7 +748,13 @@ public class ApiClient {
             String responseBody = null;
             try {
                 Response response = mOkHttpClient.newCall(request).execute();
-                responseBody = response.body().string();
+                ResponseBody body = response.body();
+                if (body != null) {
+                    responseBody = body.string();
+                } else {
+                    subscriber.onError(new IOException(MyApplication.getAppInstance().getString(R.string.error_parse)));
+                    return;
+                }
             } catch (IOException e) {
                 subscriber.onError(new IOException(MyApplication.getAppInstance().getString(R.string.error_connection)));
                 return;
@@ -759,7 +803,13 @@ public class ApiClient {
             String responseBody = null;
             try {
                 Response response = mOkHttpClient.newCall(request).execute();
-                responseBody = response.body().string();
+                ResponseBody body = response.body();
+                if (body != null) {
+                    responseBody = body.string();
+                } else {
+                    subscriber.onError(new IOException(MyApplication.getAppInstance().getString(R.string.error_parse)));
+                    return;
+                }
             } catch (IOException e) {
                 subscriber.onError(new IOException(MyApplication.getAppInstance().getString(R.string.error_connection)));
                 return;
@@ -831,7 +881,13 @@ public class ApiClient {
             String responseBody = null;
             try {
                 Response response = mOkHttpClient.newCall(request).execute();
-                responseBody = response.body().string();
+                ResponseBody body = response.body();
+                if (body != null) {
+                    responseBody = body.string();
+                } else {
+                    subscriber.onError(new IOException(MyApplication.getAppInstance().getString(R.string.error_parse)));
+                    return;
+                }
             } catch (IOException e) {
                 subscriber.onError(new IOException(MyApplication.getAppInstance().getString(R.string.error_connection)));
                 return;
@@ -1121,7 +1177,15 @@ public class ApiClient {
 
                         @Override
                         public void onResponse(Call call, Response response) throws IOException {
-                            subscriber.onNext(response.body().string());
+                            String responseBody;
+                            ResponseBody body = response.body();
+                            if (body != null) {
+                                responseBody = body.string();
+                            } else {
+                                subscriber.onError(new IOException(MyApplication.getAppInstance().getString(R.string.error_parse)));
+                                return;
+                            }
+                            subscriber.onNext(responseBody);
                             subscriber.onCompleted();
                         }
                     });
