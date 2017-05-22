@@ -6,6 +6,7 @@ package ru.dante.scpfoundation.monetization.model;
  * for scp_ru
  */
 public class Item {
+
     public String purchaseData;
     public String signature;
     public String sku;

@@ -25,14 +25,14 @@ import ru.dante.scpfoundation.ui.fragment.ArticleFragment;
 import ru.dante.scpfoundation.util.IntentUtils;
 import timber.log.Timber;
 
+import static ru.dante.scpfoundation.ui.activity.MainActivity.EXTRA_SHOW_DISABLE_ADS;
+
 public class ArticleActivity
         extends BaseDrawerActivity<ArticleScreenMvp.View, ArticleScreenMvp.Presenter>
         implements ArticleScreenMvp.View, ArticleFragment.ToolbarStateSetter {
 
     public static final String EXTRA_ARTICLES_URLS_LIST = "EXTRA_ARTICLES_URLS_LIST";
     public static final String EXTRA_POSITION = "EXTRA_POSITION";
-
-    public static final String EXTRA_SHOW_DISABLE_ADS = "EXTRA_SHOW_DISABLE_ADS";
 
     @BindView(R.id.content)
     ViewPager mViewPager;
