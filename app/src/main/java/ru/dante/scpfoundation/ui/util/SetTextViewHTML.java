@@ -63,6 +63,12 @@ public class SetTextViewHTML {
                     }
                     return;
                 }
+                if (link.startsWith("scp://")) {
+                    if (textItemsClickListener != null) {
+                        textItemsClickListener.onSnoskaClicked(link.replace("scp://", ""));
+                    }
+                    return;
+                }
                 if (link.startsWith("bibitem-")) {
                     if (textItemsClickListener != null) {
                         textItemsClickListener.onBibliographyClicked(link);

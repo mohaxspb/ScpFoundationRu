@@ -524,7 +524,7 @@ public class ApiClient {
                             digits += String.valueOf(c);
                         }
                     }
-                    aTag.attr("href", digits);
+                    aTag.attr("href", "scp://" + digits);
                 }
                 Elements footnoterefsFooter = pageContent.getElementsByClass("footnote-footer");
                 for (Element snoska : footnoterefsFooter) {
@@ -578,6 +578,7 @@ public class ApiClient {
                 if (upperDivWithLink != null) {
                     pageContent.prependChild(upperDivWithLink);
                 }
+                //todo need to use one method for rimg/limg and add loopeing through multiple rimg/limg tags in article
                 //parse multiple imgs in "rimg" tag
                 Element rimg = pageContent.getElementsByClass("rimg").first();
                 Timber.d("rimg: %s", rimg);
@@ -592,7 +593,6 @@ public class ApiClient {
                             Element newRimg = new Element("div");
                             newRimg.addClass("rimg");
                             newRimg.appendChild(img).appendChild(description);
-//                            pageContent.getElementsByClass("rimg").last().after(newRimg);
                             rimgsToAdd.add(newRimg);
                         }
                         Element rimgLast = rimg;
@@ -601,11 +601,36 @@ public class ApiClient {
                             rimgLast = newRimg;
                         }
                         rimg.remove();
-                        //and remove first one, which is old
-//                        pageContent.getElementsByClass("rimg").first().remove();
                     }
                 }
                 Timber.d("pageContent.getElementsByClass(\"rimg\"): %s", pageContent.getElementsByClass("rimg"));
+
+                //parse multiple imgs in "limg" tag
+                Element limg = pageContent.getElementsByClass("limg").first();
+                Timber.d("limg: %s", limg);
+                if (limg != null) {
+                    Elements imgs = limg.getElementsByTag("img");
+                    Elements descriptions = limg.getElementsByTag("span");
+                    List<Element> rimgsToAdd = new ArrayList<>();
+                    if (imgs != null && imgs.size() > 1 && descriptions.size() == imgs.size()) {
+                        for (int i = 0; i < imgs.size(); i++) {
+                            Element img = imgs.get(i);
+                            Element description = descriptions.get(i);
+                            Element newRimg = new Element("div");
+                            newRimg.addClass("limg");
+                            newRimg.appendChild(img).appendChild(description);
+                            rimgsToAdd.add(newRimg);
+                        }
+                        Element rimgLast = limg;
+                        for (Element newRimg : rimgsToAdd) {
+                            rimgLast.after(newRimg);
+                            rimgLast = newRimg;
+                        }
+                        limg.remove();
+                    }
+                }
+                Timber.d("pageContent.getElementsByClass(\"limg\"): %s", pageContent.getElementsByClass("limg"));
+
                 //put all text which is not in any tag in div tag
                 for (Element element : pageContent.children()) {
                     Node nextSibling = element.nextSibling();
@@ -623,6 +648,14 @@ public class ApiClient {
                         element.remove();
                     }
                 }
+
+                //search for relative urls to add domain
+                for (Element a : pageContent.getElementsByTag("a")) {
+                    if (a.attr("href").startsWith("/")) {
+                        a.attr("href", BuildConfig.BASE_API_URL + a.attr("href"));
+                    }
+                }
+
                 //search for images and add it to separate field to be able to show it in arts lists
                 RealmList<RealmString> imgsUrls = null;
                 Elements imgsOfArticle = pageContent.getElementsByTag("img");

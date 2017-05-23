@@ -404,6 +404,12 @@ public class ArticleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                         }
                         return true;
                     }
+                    if (link.startsWith("scp://")) {
+                        if (mTextItemsClickListener != null) {
+                            mTextItemsClickListener.onSnoskaClicked(link.replace("scp://", ""));
+                        }
+                        return true;
+                    }
                     if (link.startsWith("bibitem-")) {
                         if (mTextItemsClickListener != null) {
                             mTextItemsClickListener.onBibliographyClicked(link);
