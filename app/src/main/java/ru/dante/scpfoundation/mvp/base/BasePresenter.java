@@ -388,7 +388,10 @@ public abstract class BasePresenter<V extends BaseMvp.View>
             if (curNumOfAttempts >= maxNumOfAttempts) {
                 //show call to action
                 mMyPreferencesManager.setNumOfAttemptsToAutoSync(0);
-                getView().showSnackBarWithAction(Constants.Firebase.CallToActionReason.ENABLE_AUTO_SYNC);
+                //do not show for adding score after showing ads
+                if(!action.equals(ScoreAction.INTERSTITIAL_SHOWN)) {
+                    getView().showSnackBarWithAction(Constants.Firebase.CallToActionReason.ENABLE_AUTO_SYNC);
+                }
             } else {
                 mMyPreferencesManager.setNumOfAttemptsToAutoSync(curNumOfAttempts + 1);
             }
