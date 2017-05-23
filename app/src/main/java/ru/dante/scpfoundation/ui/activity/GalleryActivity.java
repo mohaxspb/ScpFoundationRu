@@ -35,7 +35,7 @@ import ru.dante.scpfoundation.mvp.base.MonetizationActions;
 import ru.dante.scpfoundation.mvp.contract.DataSyncActions;
 import ru.dante.scpfoundation.mvp.contract.GalleryScreenMvp;
 import ru.dante.scpfoundation.ui.adapter.ImagesPagerAdapter;
-import ru.dante.scpfoundation.ui.adapter.RecyclerAdapterImages;
+import ru.dante.scpfoundation.ui.adapter.ImagesRecyclerAdapter;
 import ru.dante.scpfoundation.ui.base.BaseDrawerActivity;
 import ru.dante.scpfoundation.util.IntentUtils;
 import ru.dante.scpfoundation.util.StorageUtils;
@@ -67,7 +67,7 @@ public class GalleryActivity
     AdView mAdView;
 
     private ImagesPagerAdapter mAdapter;
-    private RecyclerAdapterImages mRecyclerAdapter;
+    private ImagesRecyclerAdapter mRecyclerAdapter;
     private int mCurPosition;
 
     public static void startActivity(Context context) {
@@ -155,7 +155,7 @@ public class GalleryActivity
 
         mRecyclerAdapter = new
 
-                RecyclerAdapterImages();
+                ImagesRecyclerAdapter();
         mRecyclerView.setLayoutManager(new
 
                 LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));

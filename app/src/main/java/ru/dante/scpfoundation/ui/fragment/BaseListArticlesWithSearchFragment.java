@@ -17,7 +17,7 @@ import android.widget.TextView;
 import butterknife.BindView;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.mvp.base.BaseArticlesListMvp;
-import ru.dante.scpfoundation.ui.adapter.RecyclerAdapterListArticlesWithSearch;
+import ru.dante.scpfoundation.ui.adapter.ArticlesListWithSearchRecyclerAdapter;
 
 /**
  * Created by mohax on 03.01.2017.
@@ -38,12 +38,12 @@ public abstract class BaseListArticlesWithSearchFragment<V extends BaseArticlesL
     private String mSavedQuery = "";
     private MenuItem menuItem;
 
-    protected RecyclerAdapterListArticlesWithSearch mAdapter;
+    protected ArticlesListWithSearchRecyclerAdapter mAdapter;
 
     @Override
-    protected RecyclerAdapterListArticlesWithSearch getAdapter() {
+    protected ArticlesListWithSearchRecyclerAdapter getAdapter() {
         if (mAdapter == null) {
-            mAdapter = new RecyclerAdapterListArticlesWithSearch();
+            mAdapter = new ArticlesListWithSearchRecyclerAdapter();
         }
         return mAdapter;
     }

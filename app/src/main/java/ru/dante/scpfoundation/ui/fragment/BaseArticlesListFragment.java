@@ -20,7 +20,7 @@ import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.mvp.base.BaseArticlesListMvp;
 import ru.dante.scpfoundation.mvp.base.BaseListMvp;
 import ru.dante.scpfoundation.ui.activity.ArticleActivity;
-import ru.dante.scpfoundation.ui.adapter.RecyclerAdapterListArticles;
+import ru.dante.scpfoundation.ui.adapter.ArticlesListRecyclerAdapter;
 import ru.dante.scpfoundation.ui.base.BaseListFragment;
 import ru.dante.scpfoundation.ui.util.EndlessRecyclerViewScrollListener;
 import timber.log.Timber;
@@ -35,14 +35,14 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
         implements BaseListMvp.View {
 
     private static final String EXTRA_SORT_TYPE = "EXTRA_SORT_TYPE";
-    protected RecyclerAdapterListArticles mAdapter;
-    private RecyclerAdapterListArticles.SortType mSortType = RecyclerAdapterListArticles.SortType.NONE;
+    protected ArticlesListRecyclerAdapter mAdapter;
+    private ArticlesListRecyclerAdapter.SortType mSortType = ArticlesListRecyclerAdapter.SortType.NONE;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
-            mSortType = (RecyclerAdapterListArticles.SortType) savedInstanceState.getSerializable(EXTRA_SORT_TYPE);
+            mSortType = (ArticlesListRecyclerAdapter.SortType) savedInstanceState.getSerializable(EXTRA_SORT_TYPE);
         }
     }
 
@@ -54,9 +54,9 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
 
     @SuppressWarnings("unchecked")
     @Override
-    protected RecyclerAdapterListArticles getAdapter() {
+    protected ArticlesListRecyclerAdapter getAdapter() {
         if (mAdapter == null) {
-            mAdapter = new RecyclerAdapterListArticles();
+            mAdapter = new ArticlesListRecyclerAdapter();
         }
         return mAdapter;
     }
@@ -105,12 +105,12 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menuItemSort:
-                final List<RecyclerAdapterListArticles.SortType> sortTypes = Arrays.asList(RecyclerAdapterListArticles.SortType.values());
+                final List<ArticlesListRecyclerAdapter.SortType> sortTypes = Arrays.asList(ArticlesListRecyclerAdapter.SortType.values());
                 new MaterialDialog.Builder(getActivity())
                         .title(R.string.dialog_sort_title)
                         .items(sortTypes)
                         .alwaysCallSingleChoiceCallback()
-                        .itemsCallbackSingleChoice(RecyclerAdapterListArticles.SortType.valueOf(getAdapter().getSortType().name()).ordinal(), (dialog, itemView, which, text) -> {
+                        .itemsCallbackSingleChoice(ArticlesListRecyclerAdapter.SortType.valueOf(getAdapter().getSortType().name()).ordinal(), (dialog, itemView, which, text) -> {
                             Timber.d("sortBy: %s", text);
                             mSortType = sortTypes.get(which);
                             getAdapter().sortByType(mSortType);
@@ -133,7 +133,7 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
         super.onPrepareOptionsMenu(menu);
         MenuItem item = menu.findItem(R.id.menuItemSort);
         if (item != null && getActivity() != null) {
-            if (mSortType != RecyclerAdapterListArticles.SortType.NONE) {
+            if (mSortType != ArticlesListRecyclerAdapter.SortType.NONE) {
                 item.getIcon().setColorFilter(ContextCompat.getColor(getActivity(), R.color.material_green_500), PorterDuff.Mode.SRC_ATOP);
             } else {
                 item.getIcon().setColorFilter(ContextCompat.getColor(getActivity(), android.R.color.transparent), PorterDuff.Mode.SRC_ATOP);
@@ -173,7 +173,7 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
      * override it to add something
      */
     protected void initAdapter() {
-        getAdapter().setArticleClickListener(new RecyclerAdapterListArticles.ArticleClickListener() {
+        getAdapter().setArticleClickListener(new ArticlesListRecyclerAdapter.ArticleClickListener() {
             @Override
             public void onArticleClicked(Article article, int position) {
                 Timber.d("onArticleClicked: %s/%s", article.title, position);

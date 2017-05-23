@@ -25,7 +25,7 @@ import timber.log.Timber;
  * <p>
  * for scp_ru
  */
-public class RecyclerAdapterSubscriptions extends RecyclerView.Adapter<RecyclerAdapterSubscriptions.ViewHolderText> {
+public class SubscriptionsRecyclerAdapter extends RecyclerView.Adapter<SubscriptionsRecyclerAdapter.ViewHolderText> {
 
     @Inject
     MyPreferenceManager mMyPreferenceManager;
@@ -38,7 +38,7 @@ public class RecyclerAdapterSubscriptions extends RecyclerView.Adapter<RecyclerA
         mArticleClickListener = articleClickListener;
     }
 
-    public RecyclerAdapterSubscriptions() {
+    public SubscriptionsRecyclerAdapter() {
         MyApplication.getAppComponent().inject(this);
     }
 
@@ -53,8 +53,8 @@ public class RecyclerAdapterSubscriptions extends RecyclerView.Adapter<RecyclerA
     }
 
     @Override
-    public RecyclerAdapterSubscriptions.ViewHolderText onCreateViewHolder(ViewGroup parent, int viewType) {
-        RecyclerAdapterSubscriptions.ViewHolderText viewHolder;
+    public SubscriptionsRecyclerAdapter.ViewHolderText onCreateViewHolder(ViewGroup parent, int viewType) {
+        SubscriptionsRecyclerAdapter.ViewHolderText viewHolder;
         View view;
         view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_subscription, parent, false);
         viewHolder = new ViewHolderText(view);
@@ -62,7 +62,7 @@ public class RecyclerAdapterSubscriptions extends RecyclerView.Adapter<RecyclerA
     }
 
     @Override
-    public void onBindViewHolder(RecyclerAdapterSubscriptions.ViewHolderText holder, int position) {
+    public void onBindViewHolder(SubscriptionsRecyclerAdapter.ViewHolderText holder, int position) {
         holder.bind(mData.get(position));
     }
 
