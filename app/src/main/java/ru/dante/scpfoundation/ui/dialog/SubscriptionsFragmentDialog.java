@@ -39,7 +39,7 @@ import ru.dante.scpfoundation.manager.InAppBillingServiceConnectionObservable;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.monetization.model.Subscription;
 import ru.dante.scpfoundation.monetization.util.InappHelper;
-import ru.dante.scpfoundation.ui.adapter.RecyclerAdapterSubscriptions;
+import ru.dante.scpfoundation.ui.adapter.SubscriptionsRecyclerAdapter;
 import ru.dante.scpfoundation.ui.base.BaseBottomSheetDialogFragment;
 import ru.dante.scpfoundation.util.SecureUtils;
 import rx.Observable;
@@ -49,7 +49,7 @@ import timber.log.Timber;
 
 public class SubscriptionsFragmentDialog
         extends BaseBottomSheetDialogFragment
-        implements RecyclerAdapterSubscriptions.SubscriptionClickListener {
+        implements SubscriptionsRecyclerAdapter.SubscriptionClickListener {
 
     public static final int REQUEST_CODE_SUBSCRIPTION = 1001;
 
@@ -152,7 +152,7 @@ public class SubscriptionsFragmentDialog
 //                            }
                             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
                             recyclerView.setHasFixedSize(true);
-                            RecyclerAdapterSubscriptions adapter = new RecyclerAdapterSubscriptions();
+                            SubscriptionsRecyclerAdapter adapter = new SubscriptionsRecyclerAdapter();
                             adapter.setData(ownedItemsAndSubscriptions.second);
                             adapter.setArticleClickListener(SubscriptionsFragmentDialog.this);
                             recyclerView.setAdapter(adapter);

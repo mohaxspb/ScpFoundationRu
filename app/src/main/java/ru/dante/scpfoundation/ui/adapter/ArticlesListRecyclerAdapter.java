@@ -36,12 +36,13 @@ import uk.co.chrisjenx.calligraphy.CalligraphyUtils;
  * <p>
  * for scp_ru
  */
-public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAdapterListArticles.HolderSimple> {
+public class ArticlesListRecyclerAdapter extends RecyclerView.Adapter<ArticlesListRecyclerAdapter.HolderSimple> {
 
     public SortType getSortType() {
         return mSortType;
     }
 
+    //TODO use res, not hacdcoded strings
     public enum SortType {
         NONE {
             @Override
@@ -96,6 +97,12 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
             public String toString() {
                 return "По рейтингу";
             }
+        },
+        TITLE {
+            @Override
+            public String toString() {
+                return "По названию";
+            }
         }
         //        DATE_CREATED,
         //        DATE_UPDATED,
@@ -118,7 +125,7 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
     private boolean shouldShowPopupOnFavoriteClick;
     private boolean shouldShowPreview;
 
-    public RecyclerAdapterListArticles() {
+    public ArticlesListRecyclerAdapter() {
         MyApplication.getAppComponent().inject(this);
     }
 
@@ -158,6 +165,11 @@ public class RecyclerAdapterListArticles extends RecyclerView.Adapter<RecyclerAd
                 List<Article> sortedByRatingArts = new ArrayList<>(mData);
                 Collections.sort(sortedByRatingArts, Article.COMPARATOR_DATE_RATING);
                 mSortedWithFilterData.addAll(sortedByRatingArts);
+                break;
+            case TITLE:
+                List<Article> sortedByTitleArts = new ArrayList<>(mData);
+                Collections.sort(sortedByTitleArts, Article.COMPARATOR_TITLE);
+                mSortedWithFilterData.addAll(sortedByTitleArts);
                 break;
             case NOT_READ:
                 List<Article> sortedByReadStateArts = new ArrayList<>();

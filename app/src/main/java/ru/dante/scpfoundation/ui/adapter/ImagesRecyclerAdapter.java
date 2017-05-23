@@ -26,7 +26,7 @@ import ru.dante.scpfoundation.util.AttributeGetter;
  * <p>
  * for scp_ru
  */
-public class RecyclerAdapterImages extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class ImagesRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<VkImage> mVkImages;
 

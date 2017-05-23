@@ -10,7 +10,7 @@ import ru.dante.scpfoundation.db.model.Article;
  * <p>
  * for scp_ru
  */
-public class RecyclerAdapterListArticlesWithSearch extends RecyclerAdapterListArticles {
+public class ArticlesListWithSearchRecyclerAdapter extends ArticlesListRecyclerAdapter {
 
     private List<Article> mSortedData = new ArrayList<>();
     private String mSearchQuery = "";

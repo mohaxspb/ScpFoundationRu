@@ -148,7 +148,7 @@ public class ArticleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     }
 
     @Override
-    public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         switch (getItemViewType(position)) {
             case TYPE_TEXT:
                 ((ViewHolderText) holder).bind(mArticlesTextParts.get(position - 1));
@@ -165,12 +165,14 @@ public class ArticleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             case TYPE_TABLE:
                 ((ViewHolderTable) holder).bind(mArticlesTextParts.get(position - 1));
                 break;
+            default:
+                throw new IllegalArgumentException("unexpected item type: " + getItemViewType(position));
         }
     }
 
     @Override
     public int getItemCount() {
-        return mArticlesTextParts == null ? 0 : mArticlesTextParts.size() + 1;
+        return mArticlesTextParts == null ? 0 : mArticlesTextParts.size() + 1; //+1 for title
     }
 
     @Override
