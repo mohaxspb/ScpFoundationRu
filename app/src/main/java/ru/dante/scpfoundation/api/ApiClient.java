@@ -41,7 +41,6 @@ import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
-import org.jsoup.parser.Tag;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
@@ -67,11 +66,13 @@ import ru.dante.scpfoundation.api.error.ScpParseException;
 import ru.dante.scpfoundation.api.model.firebase.ArticleInFirebase;
 import ru.dante.scpfoundation.api.model.firebase.FirebaseObjectUser;
 import ru.dante.scpfoundation.api.model.response.LeaderBoardResponse;
+import ru.dante.scpfoundation.api.model.response.TagsSearchResponse;
 import ru.dante.scpfoundation.api.model.response.VkGalleryResponse;
 import ru.dante.scpfoundation.api.model.response.VkGroupJoinResponse;
 import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.db.model.RealmString;
 import ru.dante.scpfoundation.db.model.SocialProviderModel;
+import ru.dante.scpfoundation.db.model.Tag;
 import ru.dante.scpfoundation.db.model.User;
 import ru.dante.scpfoundation.db.model.VkImage;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
@@ -96,12 +97,20 @@ public class ApiClient {
     private Gson mGson;
 
     private VpsServer mVpsServer;
+    private ScpServer mScpServer;
 
-    public ApiClient(OkHttpClient okHttpClient, Retrofit retrofit, MyPreferenceManager preferencesManager, Gson gson) {
+    public ApiClient(
+            OkHttpClient okHttpClient,
+            Retrofit vpsRetrofit,
+            Retrofit scpRetrofit,
+            MyPreferenceManager preferencesManager,
+            Gson gson
+    ) {
         mPreferencesManager = preferencesManager;
         mOkHttpClient = okHttpClient;
         mGson = gson;
-        mVpsServer = retrofit.create(VpsServer.class);
+        mVpsServer = vpsRetrofit.create(VpsServer.class);
+        mScpServer = scpRetrofit.create(ScpServer.class);
     }
 
     private <T> Observable<T> bindWithUtils(Observable<T> observable) {
@@ -1777,5 +1786,9 @@ public class ApiClient {
 
     public Observable<LeaderBoardResponse> getLeaderboard() {
         return bindWithUtils(mVpsServer.getLeaderboard());
+    }
+
+    public Observable<TagsSearchResponse> getArticlesByTags(List<Tag> tags) {
+        return bindWithUtils(mScpServer.getArticlesByTags());
     }
 }

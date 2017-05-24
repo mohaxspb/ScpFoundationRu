@@ -30,6 +30,7 @@ android {
         manifestPlaceholders = [debuggable: true]
         buildConfigField "boolean", "TIMBER_ENABLE", "true"
         buildConfigField('String', 'BASE_API_URL', '"http://scpfoundation.ru"')
+        buildConfigField('String', 'SCP_API_URL', '"https://scpfoundation.net/_api/wikidot_tags_search/"')
 
         buildConfigField "String", "VK_API_VERSION", '"5.62"'
 
