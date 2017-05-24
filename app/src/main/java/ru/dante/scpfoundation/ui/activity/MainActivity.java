@@ -236,6 +236,9 @@ public class MainActivity
                 mCurrentSelectedDrawerItemId = id;
                 showFragment(SiteSearchArticlesFragment.newInstance(), SiteSearchArticlesFragment.TAG);
                 return true;
+            case R.id.tagsSearch:
+                TagSearchActivity.startActivity(this);
+                return true;
             default:
                 Timber.e("unexpected item ID");
                 return true;

@@ -30,6 +30,8 @@ import ru.dante.scpfoundation.mvp.contract.OfflineArticles;
 import ru.dante.scpfoundation.mvp.contract.RatedArticlesMvp;
 import ru.dante.scpfoundation.mvp.contract.RecentArticlesMvp;
 import ru.dante.scpfoundation.mvp.contract.SiteSearchArticlesMvp;
+import ru.dante.scpfoundation.mvp.contract.TagsScreenMvp;
+import ru.dante.scpfoundation.mvp.contract.TagsSearchMvp;
 import ru.dante.scpfoundation.mvp.presenter.ArticlePresenter;
 import ru.dante.scpfoundation.mvp.presenter.ArticleScreenPresenter;
 import ru.dante.scpfoundation.mvp.presenter.FavoriteArticlesPresenter;
@@ -51,6 +53,8 @@ import ru.dante.scpfoundation.mvp.presenter.Objects4ArticlesPresenter;
 import ru.dante.scpfoundation.mvp.presenter.ObjectsRuArticlesPresenter;
 import ru.dante.scpfoundation.mvp.presenter.OfflineArticlesPresenter;
 import ru.dante.scpfoundation.mvp.presenter.SiteSearchArticlesPresenter;
+import ru.dante.scpfoundation.mvp.presenter.TagsSearchFragmentPresenter;
+import ru.dante.scpfoundation.mvp.presenter.TagsSearchScreenPresenter;
 
 /**
  * Created by y.kuchanov on 21.12.16.
@@ -82,6 +86,7 @@ public class PresentersModule {
     }
 
     @Provides
+    @Singleton
     @NonNull
     MaterialsScreenMvp.Presenter providesMaterialsScreenPresenter(
             @NonNull MyPreferenceManager myPreferencesManager,
@@ -89,6 +94,17 @@ public class PresentersModule {
             @NonNull ApiClient apiClient
     ) {
         return new MaterialsScreenPresenter(myPreferencesManager, dbProviderFactory, apiClient);
+    }
+
+    @Provides
+    @Singleton
+    @NonNull
+    TagsScreenMvp.Presenter providesTagsSearchScreenPresenter(
+            @NonNull MyPreferenceManager myPreferencesManager,
+            @NonNull DbProviderFactory dbProviderFactory,
+            @NonNull ApiClient apiClient
+    ) {
+        return new TagsSearchScreenPresenter(myPreferencesManager, dbProviderFactory, apiClient);
     }
 
     @Provides
@@ -287,5 +303,16 @@ public class PresentersModule {
             @NonNull ApiClient apiClient
     ) {
         return new MaterialsJokesPresenter(myPreferencesManager, dbProviderFactory, apiClient);
+    }
+
+    @Provides
+    @Singleton
+    @NonNull
+    TagsSearchMvp.Presenter providesTagsSearchFragmentPresenter(
+            @NonNull MyPreferenceManager myPreferencesManager,
+            @NonNull DbProviderFactory dbProviderFactory,
+            @NonNull ApiClient apiClient
+    ) {
+        return new TagsSearchFragmentPresenter(myPreferencesManager, dbProviderFactory, apiClient);
     }
 }

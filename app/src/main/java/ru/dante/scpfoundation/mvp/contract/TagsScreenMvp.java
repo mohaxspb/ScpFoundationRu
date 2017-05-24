@@ -5,11 +5,10 @@ package ru.dante.scpfoundation.mvp.contract;
  * <p>
  * for scp_ru
  */
-public interface MaterialsScreenMvp extends DrawerMvp {
+public interface TagsScreenMvp extends DrawerMvp {
 
     interface View extends DrawerMvp.View {
 
-        void onMaterialsListItemClicked(int position);
     }
 
     interface Presenter extends DrawerMvp.Presenter<View> {

@@ -4,39 +4,37 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialogFragment;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.view.MenuItem;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
+import ru.dante.scpfoundation.db.model.ArticleTag;
 import ru.dante.scpfoundation.monetization.util.MyAdListener;
 import ru.dante.scpfoundation.mvp.base.MonetizationActions;
 import ru.dante.scpfoundation.mvp.contract.DataSyncActions;
-import ru.dante.scpfoundation.mvp.contract.MaterialsScreenMvp;
+import ru.dante.scpfoundation.mvp.contract.TagsScreenMvp;
 import ru.dante.scpfoundation.ui.base.BaseDrawerActivity;
 import ru.dante.scpfoundation.ui.dialog.TextSizeDialogFragment;
 import ru.dante.scpfoundation.ui.fragment.ArticleFragment;
 import ru.dante.scpfoundation.ui.fragment.FragmentMaterialsAll;
-import ru.dante.scpfoundation.ui.fragment.MaterialsArchiveFragment;
-import ru.dante.scpfoundation.ui.fragment.MaterialsExperimentsFragment;
-import ru.dante.scpfoundation.ui.fragment.MaterialsIncidentsFragment;
-import ru.dante.scpfoundation.ui.fragment.MaterialsInterviewsFragment;
-import ru.dante.scpfoundation.ui.fragment.MaterialsJokesFragment;
-import ru.dante.scpfoundation.ui.fragment.MaterialsOtherFragment;
+import ru.dante.scpfoundation.ui.fragment.TagsSearchFragment;
 import timber.log.Timber;
 
 import static ru.dante.scpfoundation.ui.activity.MainActivity.EXTRA_SHOW_DISABLE_ADS;
 
-public class MaterialsActivity
-        extends BaseDrawerActivity<MaterialsScreenMvp.View, MaterialsScreenMvp.Presenter>
-        implements MaterialsScreenMvp.View, ArticleFragment.ToolbarStateSetter {
+public class TagSearchActivity
+        extends BaseDrawerActivity<TagsScreenMvp.View, TagsScreenMvp.Presenter>
+        implements TagsScreenMvp.View, ArticleFragment.ToolbarStateSetter {
 
-    public static void startActivity(Context context) {
+    public static final String EXTRA_TAGS = "EXTRA_TAGS";
+
+    private List<ArticleTag> mTags;
+
+    public static void startActivity(Context context, List<ArticleTag> tagList) {
         Timber.d("startActivity");
         if (context instanceof MonetizationActions) {
             MonetizationActions monetizationActions = (MonetizationActions) context;
@@ -46,7 +44,8 @@ public class MaterialsActivity
                         @Override
                         public void onAdClosed() {
                             super.onAdClosed();
-                            Intent intent = new Intent(context, MaterialsActivity.class);
+                            Intent intent = new Intent(context, TagSearchActivity.class);
+                            intent.putExtra(EXTRA_TAGS, (ArrayList<String>) ArticleTag.getStringsFromTags(tagList));
                             intent.putExtra(EXTRA_SHOW_DISABLE_ADS, true);
                             context.startActivity(intent);
                         }
@@ -61,7 +60,37 @@ public class MaterialsActivity
         } else {
             Timber.wtf("context IS NOT instanceof MonetizationActions");
         }
-        Intent intent = new Intent(context, MaterialsActivity.class);
+        Intent intent = new Intent(context, TagSearchActivity.class);
+        intent.putExtra(EXTRA_TAGS, (ArrayList<String>) ArticleTag.getStringsFromTags(tagList));
+        context.startActivity(intent);
+    }
+
+    public static void startActivity(Context context) {
+        Timber.d("startActivity");
+        if (context instanceof MonetizationActions) {
+            MonetizationActions monetizationActions = (MonetizationActions) context;
+            if (monetizationActions.isTimeToShowAds()) {
+                if (monetizationActions.isAdsLoaded()) {
+                    monetizationActions.showInterstitial(new MyAdListener() {
+                        @Override
+                        public void onAdClosed() {
+                            super.onAdClosed();
+                            Intent intent = new Intent(context, TagSearchActivity.class);
+                            intent.putExtra(EXTRA_SHOW_DISABLE_ADS, true);
+                            context.startActivity(intent);
+                        }
+                    }, true);
+                    return;
+                } else {
+                    Timber.d("Ads not loaded yet");
+                }
+            } else {
+                Timber.d("it's not time to showInterstitial ads");
+            }
+        } else {
+            Timber.wtf("context IS NOT instanceof MonetizationActions");
+        }
+        Intent intent = new Intent(context, TagSearchActivity.class);
         context.startActivity(intent);
     }
 
@@ -78,9 +107,13 @@ public class MaterialsActivity
             mPresenter.updateUserScoreForScoreAction(action);
         }
 
+        if (getIntent().hasExtra(EXTRA_TAGS)) {
+            mTags = ArticleTag.getTagsFromStringList(getIntent().getStringArrayListExtra(EXTRA_TAGS));
+        }
+
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.content, FragmentMaterialsAll.newInstance(), FragmentMaterialsAll.TAG)
+                    .add(R.id.content, TagsSearchFragment.newInstance(ArticleTag.getStringsFromTags(mTags)), TagsSearchFragment.TAG)
                     .addToBackStack(FragmentMaterialsAll.TAG)
                     .commit();
         }
@@ -147,7 +180,7 @@ public class MaterialsActivity
                 link = Constants.Urls.OBJECTS_RU;
                 break;
             case R.id.files:
-                getSupportFragmentManager().popBackStackImmediate(FragmentMaterialsAll.TAG, 0);
+                MaterialsActivity.startActivity(this);
                 return false;
             case R.id.stories:
                 link = Constants.Urls.STORIES;
@@ -165,8 +198,8 @@ public class MaterialsActivity
                 link = Constants.Urls.SEARCH;
                 break;
             case R.id.tagsSearch:
-                TagSearchActivity.startActivity(this);
-                return true;
+                getSupportFragmentManager().popBackStackImmediate(TagsSearchFragment.TAG, 0);
+                break;
             default:
                 Timber.e("unexpected item ID");
                 break;
@@ -201,58 +234,6 @@ public class MaterialsActivity
     @Override
     public void setFavoriteState(boolean isInFavorite) {
         //nothing to do
-    }
-
-    @Override
-    public void onMaterialsListItemClicked(int position) {
-        List<String> materials = Arrays.asList(getResources().getStringArray(R.array.materials_titles));
-        Timber.d("onMaterialsListItemClicked: %s", materials.get(position));
-
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        Fragment fragment;
-        switch (position) {
-            case 0:
-                fragment = MaterialsExperimentsFragment.newInstance();
-                fragmentTransaction.replace(R.id.content, fragment);
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
-                break;
-            case 1:
-                fragment = MaterialsIncidentsFragment.newInstance();
-                fragmentTransaction.replace(R.id.content, fragment);
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
-                break;
-            case 2:
-                fragment = MaterialsInterviewsFragment.newInstance();
-                fragmentTransaction.replace(R.id.content, fragment);
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
-                break;
-            case 3:
-                fragment = MaterialsJokesFragment.newInstance();
-                fragmentTransaction.replace(R.id.content, fragment);
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
-                break;
-            case 4:
-                fragment = MaterialsArchiveFragment.newInstance();
-                fragmentTransaction.replace(R.id.content, fragment);
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
-                break;
-            case 5:
-                fragment = MaterialsOtherFragment.newInstance();
-                fragmentTransaction.replace(R.id.content, fragment);
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
-                break;
-            case 6:
-                ArticleActivity.startActivity(this, Constants.Urls.LEAKS);
-                break;
-            default:
-                throw new RuntimeException("unexpected position in materials list");
-        }
     }
 
     @Override

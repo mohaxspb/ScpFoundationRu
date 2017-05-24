@@ -20,6 +20,7 @@ import io.realm.RealmSchema;
 import ru.dante.scpfoundation.BuildConfig;
 import ru.dante.scpfoundation.db.DbProviderFactory;
 import ru.dante.scpfoundation.db.model.Article;
+import ru.dante.scpfoundation.db.model.ArticleTag;
 import ru.dante.scpfoundation.db.model.SocialProviderModel;
 import ru.dante.scpfoundation.db.model.User;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
@@ -92,6 +93,16 @@ public class StorageModule {
                 schema.get(Article.class.getSimpleName())
                         .addField(Article.FIELD_IS_IN_OBJECTS_4, long.class)
                         .transform(obj -> obj.set(Article.FIELD_IS_IN_OBJECTS_4, Article.ORDER_NONE));
+                oldVersion++;
+            }
+
+            if (oldVersion == 2) {
+                schema.create(ArticleTag.class.getSimpleName())
+                        .addField(ArticleTag.FIELD_TITLE, String.class);
+
+//                schema.get(Article.class.getSimpleName())
+//                        .addField(Article.FIELD_IS_IN_OBJECTS_4, long.class)
+//                        .transform(obj -> obj.set(Article.FIELD_IS_IN_OBJECTS_4, Article.ORDER_NONE));
                 oldVersion++;
             }
 

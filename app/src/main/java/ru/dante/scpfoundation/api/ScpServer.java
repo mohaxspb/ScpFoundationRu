@@ -5,6 +5,7 @@ import java.util.List;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 import ru.dante.scpfoundation.api.model.response.LeaderBoardResponse;
+import ru.dante.scpfoundation.api.model.response.TagsSearchResponse;
 import rx.Observable;
 
 /**
@@ -15,5 +16,5 @@ import rx.Observable;
 public interface ScpServer {
 
     @GET("find?wiki=scp-ru")
-    Observable<LeaderBoardResponse> getArticlesByTags(@Query("tag") List<String> tags);
+    Observable<List<TagsSearchResponse.ArticleFromSearchTagsOnSite>> getArticlesByTags(@Query("tag") List<String> tags);
 }

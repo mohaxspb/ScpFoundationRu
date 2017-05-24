@@ -101,5 +101,11 @@
             android:checked="false"
             android:title="@string/drawer_item_15"
             />
+        <item
+            android:id="@+id/tagsSearch"
+            android:icon="@drawable/ic_tag"
+            android:checked="false"
+            android:title="@string/tags_search"
+            />
     </group>
 </menu>

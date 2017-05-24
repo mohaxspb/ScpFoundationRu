@@ -41,6 +41,7 @@ import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
+import org.jsoup.parser.Tag;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
@@ -70,9 +71,9 @@ import ru.dante.scpfoundation.api.model.response.TagsSearchResponse;
 import ru.dante.scpfoundation.api.model.response.VkGalleryResponse;
 import ru.dante.scpfoundation.api.model.response.VkGroupJoinResponse;
 import ru.dante.scpfoundation.db.model.Article;
+import ru.dante.scpfoundation.db.model.ArticleTag;
 import ru.dante.scpfoundation.db.model.RealmString;
 import ru.dante.scpfoundation.db.model.SocialProviderModel;
-import ru.dante.scpfoundation.db.model.Tag;
 import ru.dante.scpfoundation.db.model.User;
 import ru.dante.scpfoundation.db.model.VkImage;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
@@ -1788,7 +1789,7 @@ public class ApiClient {
         return bindWithUtils(mVpsServer.getLeaderboard());
     }
 
-    public Observable<TagsSearchResponse> getArticlesByTags(List<Tag> tags) {
-        return bindWithUtils(mScpServer.getArticlesByTags());
+    public Observable<List<TagsSearchResponse.ArticleFromSearchTagsOnSite>> getArticlesByTags(List<ArticleTag> tags) {
+        return bindWithUtils(mScpServer.getArticlesByTags(ArticleTag.getStringsFromTags(tags)));
     }
 }

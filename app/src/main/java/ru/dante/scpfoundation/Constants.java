@@ -155,5 +155,7 @@ public interface Constants {
         String MATERIALS_ALL = "MATERIALS_ALL";
         String ARCHIVE = "http://scpfoundation.ru/archive";
         String JOKES = "http://scpfoundation.ru/scp-list-j";
+        //TODO catch this link from system
+        String TAGS_SEARCH = "TAGS_SEARCH";
     }
 }

@@ -11,19 +11,19 @@ import java.util.List;
  */
 public class TagsSearchResponse {
 
-    public List<Example> data;
+    public List<ArticleFromSearchTagsOnSite> data;
 
-    public static class Example {
+    public static class ArticleFromSearchTagsOnSite {
 
         public int id;
         public String name;
         public String title;
         @SerializedName("all_tags")
-        public List<String> allTags = null;
+        public List<String> allTags;
 
         @Override
         public String toString() {
-            return "Example{" +
+            return "ArticleFromSearchTagsOnSite{" +
                     "id=" + id +
                     ", name='" + name + '\'' +
                     ", title='" + title + '\'' +
