@@ -33,17 +33,30 @@ public class TagsSearchFragmentPresenter
     public void onCreate() {
         super.onCreate();
 
-        updateTagsFromApi();
+        getTagsFromApi();
 
         //FIXME test
-        searchByTags(new ArrayList<>(Arrays.asList(new ArticleTag("ru"), new ArticleTag("ru_en"))));
+//        searchByTags(new ArrayList<>(Arrays.asList(new ArticleTag("ru"), new ArticleTag("ru_en"))));
     }
 
 
     @Override
-    public void updateTagsFromApi() {
+    public void getTagsFromApi() {
         Timber.d("getTagsFromDb");
         //TODO
+        mApiClient.getTagsFromSite()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        data -> {
+                            Timber.d("data: %s", data.size());
+                            getView().showAllTags(data);
+                        },
+                        e -> {
+                            Timber.e(e);
+                            getView().showError(e);
+                        }
+                );
     }
 
     @Override

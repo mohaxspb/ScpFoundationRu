@@ -14,11 +14,12 @@ public interface TagsSearchMvp extends DrawerMvp {
 
     interface View extends BaseMvp.View {
 
+        void showAllTags(List<ArticleTag> data);
     }
 
     interface Presenter extends BaseMvp.Presenter<View> {
 
-        void updateTagsFromApi();
+        void getTagsFromApi();
 
         void getTagsFromDb();
 

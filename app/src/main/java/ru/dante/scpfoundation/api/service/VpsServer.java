@@ -1,4 +1,4 @@
-package ru.dante.scpfoundation.api;
+package ru.dante.scpfoundation.api.service;
 
 import retrofit2.http.GET;
 import ru.dante.scpfoundation.api.model.response.LeaderBoardResponse;
