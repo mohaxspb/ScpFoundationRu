@@ -1,10 +1,9 @@
 package ru.dante.scpfoundation.ui.fragment;
 
 import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.support.design.widget.FloatingActionButton;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.view.ViewGroup;
 
 import org.apmem.tools.layouts.FlowLayout;
 
@@ -12,12 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
+import butterknife.OnClick;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.db.model.ArticleTag;
 import ru.dante.scpfoundation.mvp.contract.TagsSearchMvp;
 import ru.dante.scpfoundation.ui.base.BaseFragment;
+import ru.dante.scpfoundation.ui.view.TagView;
 import timber.log.Timber;
 
 import static ru.dante.scpfoundation.ui.activity.TagSearchActivity.EXTRA_TAGS;
@@ -37,8 +37,10 @@ public class TagsSearchFragment
     FlowLayout mSearchTagsContainer;
     @BindView(R.id.tagsAll)
     FlowLayout mAllTagsContainer;
+    @BindView(R.id.searchFAB)
+    FloatingActionButton mSearchFab;
 
-    private List<ArticleTag> mTags;
+    private List<ArticleTag> mTags = new ArrayList<>();
 
     public static TagsSearchFragment newInstance(List<String> tags) {
         TagsSearchFragment fragment = new TagsSearchFragment();
@@ -57,11 +59,38 @@ public class TagsSearchFragment
         MyApplication.getAppComponent().inject(this);
     }
 
+    @OnClick(R.id.searchFAB)
+    void onSearchFabClick() {
+        Timber.d("onSearchFabClick");
+
+        mPresenter.searchByTags(mTags);
+    }
+
     @Override
     protected void initViews() {
-//        TODO
-
         mPresenter.onCreate();
+
+        if (getUserVisibleHint()) {
+            if (getActivity() instanceof ArticleFragment.ToolbarStateSetter) {
+                ((ArticleFragment.ToolbarStateSetter) getActivity()).setTitle(getString(R.string.tags_search));
+            }
+        }
+
+        mSearchTagsContainer.setOnHierarchyChangeListener(new ViewGroup.OnHierarchyChangeListener() {
+            @Override
+            public void onChildViewAdded(View view, View view1) {
+                mSearchFab.show();
+            }
+
+            @Override
+            public void onChildViewRemoved(View view, View view1) {
+                if (mSearchTagsContainer.getChildCount() == 0) {
+                    mSearchFab.hide();
+                }
+            }
+        });
+
+        mSearchFab.hide();
     }
 
     @Override
@@ -69,39 +98,43 @@ public class TagsSearchFragment
         Timber.d("showAllTags: %s", data);
         mAllTagsContainer.removeAllViews();
         for (ArticleTag tag : data) {
-            Timber.d("add tag: %s", tag.title);
-            View tagView = LayoutInflater.from(getActivity()).inflate(R.layout.card_tag, mAllTagsContainer, false);
-            TextView tagTitle = ButterKnife.findById(tagView, R.id.title);
-//            ImageView tagAction = ButterKnife.findById(tagView, R.id.action);
-//
-            tagTitle.setText(tag.title);
-            tagView.setOnClickListener(mAllTagsClickListener);
+//            Timber.d("add tag: %s", tag.title);
+            TagView tagView = new TagView(getActivity());
+            tagView.setTag(tag);
+
+            tagView.setOnTagClickListener(mAllTagsClickListener);
 
             mAllTagsContainer.addView(tagView);
         }
     }
 
-    private View.OnClickListener mAllTagsClickListener = new View.OnClickListener() {
+    private TagView.OnTagClickListener mAllTagsClickListener = new TagView.OnTagClickListener() {
         @Override
-        public void onClick(View view) {
+        public void onTagClicked(TagView view, ArticleTag tag) {
+            Timber.d("mAllTagsClickListener: %s", tag);
             mAllTagsContainer.removeView(view);
             mSearchTagsContainer.addView(view);
 
-            ImageView tagAction = ButterKnife.findById(view, R.id.action);
-            tagAction.setImageResource(R.drawable.ic_clear);
-            view.setOnClickListener(mSearchTagsClickListener);
+            mTags.add(tag);
+
+            view.setActionImage(TagView.Action.REMOVE);
+
+            view.setOnTagClickListener(mSearchTagsClickListener);
         }
     };
 
-    private View.OnClickListener mSearchTagsClickListener = new View.OnClickListener() {
+    private TagView.OnTagClickListener mSearchTagsClickListener = new TagView.OnTagClickListener() {
         @Override
-        public void onClick(View view) {
+        public void onTagClicked(TagView view, ArticleTag tag) {
+            Timber.d("mSearchTagsClickListener: %s", tag);
             mSearchTagsContainer.removeView(view);
             mAllTagsContainer.addView(view);
 
-            ImageView tagAction = ButterKnife.findById(view, R.id.action);
-            tagAction.setImageResource(R.drawable.ic_add);
-            view.setOnClickListener(mAllTagsClickListener);
+            mTags.remove(tag);
+
+            view.setActionImage(TagView.Action.ADD);
+
+            view.setOnTagClickListener(mAllTagsClickListener);
         }
     };
 }

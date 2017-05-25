@@ -20,7 +20,6 @@
             android:layout_height="match_parent"
             android:scrollbars="vertical"
             />
-        <!--android:scrollbarThumbVertical="?scrollbar"-->
     </android.support.v4.widget.SwipeRefreshLayout>
 
     <xyz.danoz.recyclerviewfastscroller.vertical.VerticalRecyclerViewFastScroller

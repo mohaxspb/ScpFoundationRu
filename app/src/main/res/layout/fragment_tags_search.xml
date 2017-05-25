@@ -1,36 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    tools:layout_marginTop="25dp"
     >
-    <!--todo-->
 
-    <android.support.v4.widget.NestedScrollView
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefresh"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         >
 
-        <LinearLayout
+        <android.support.v4.widget.NestedScrollView
+            android:id="@+id/scrollView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:scrollbarThumbVertical="?scrollbar"
+            android:scrollbars="vertical"
             >
 
-            <org.apmem.tools.layouts.FlowLayout
-                android:id="@+id/tagsSearch"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                />
+                android:orientation="vertical"
+                >
 
-            <org.apmem.tools.layouts.FlowLayout
-                android:id="@+id/tagsAll"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                />
-        </LinearLayout>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/defaultMargin"
+                    android:text="@string/tags_choosen"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    />
 
-    </android.support.v4.widget.NestedScrollView>
+                <org.apmem.tools.layouts.FlowLayout
+                    android:id="@+id/tagsSearch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="36dp"
+                    android:paddingLeft="@dimen/defaultMarginSmall"
+                    android:paddingRight="@dimen/defaultMarginSmall"
+                    />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/defaultMargin"
+                    android:text="@string/tags_all"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    />
+
+                <org.apmem.tools.layouts.FlowLayout
+                    android:id="@+id/tagsAll"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="36dp"
+                    android:paddingLeft="@dimen/defaultMarginSmall"
+                    android:paddingRight="@dimen/defaultMarginSmall"
+                    />
+            </LinearLayout>
+
+        </android.support.v4.widget.NestedScrollView>
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/searchFAB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/defaultMargin"
+        android:src="@drawable/ic_search"
+        app:backgroundTint="?colorFAB"
+        app:layout_anchor="@id/swipeRefresh"
+        app:layout_anchorGravity="bottom|end"
+        />
 
 </android.support.design.widget.CoordinatorLayout>

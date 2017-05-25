@@ -25,6 +25,21 @@ public class ArticleTag extends RealmObject {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ArticleTag tag = (ArticleTag) o;
+
+        return title.equals(tag.title);
+    }
+
+    @Override
+    public int hashCode() {
+        return title.hashCode();
+    }
+
+    @Override
     public String toString() {
         return "ArticleTag{" +
                 "title='" + title + '\'' +
