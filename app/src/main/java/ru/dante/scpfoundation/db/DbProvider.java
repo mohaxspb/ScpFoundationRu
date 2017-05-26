@@ -18,6 +18,7 @@ import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.api.model.firebase.ArticleInFirebase;
 import ru.dante.scpfoundation.db.error.ScpNoArticleForIdError;
 import ru.dante.scpfoundation.db.model.Article;
+import ru.dante.scpfoundation.db.model.ArticleTag;
 import ru.dante.scpfoundation.db.model.User;
 import ru.dante.scpfoundation.db.model.VkImage;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
@@ -433,7 +434,7 @@ public class DbProvider {
     }
 
     public Observable<Article> toggleFavorite(String url) {
-        return Observable.create(subscriber -> mRealm.executeTransactionAsync(
+        return Observable.unsafeCreate(subscriber -> mRealm.executeTransactionAsync(
                 realm -> {
                     //check if we have app in db and update
                     Article applicationInDb = realm.where(Article.class)
@@ -637,7 +638,7 @@ public class DbProvider {
     }
 
     public Observable<List<ArticleInFirebase>> saveArticlesFromFirebase(List<ArticleInFirebase> inFirebaseList) {
-        return Observable.create(subscriber -> mRealm.executeTransactionAsync(
+        return Observable.unsafeCreate(subscriber -> mRealm.executeTransactionAsync(
                 realm -> {
                     Collections.sort(inFirebaseList, (articleInFirebase, t1) ->
                             articleInFirebase.updated < t1.updated ? -1 : articleInFirebase.updated > t1.updated ? 1 : 0);
@@ -804,6 +805,29 @@ public class DbProvider {
                 e -> {
                     subscriber.onError(e);
                     mRealm.close();
+                })
+        );
+    }
+
+    public Observable<RealmResults<ArticleTag>> getArticleTagsAsync() {
+        return mRealm.where(ArticleTag.class)
+                .findAllAsync()
+                .asObservable()
+                .filter(RealmResults::isLoaded)
+                .filter(RealmResults::isValid);
+    }
+
+    public Observable<List<ArticleTag>> saveArticleTags(List<ArticleTag> data) {
+        return Observable.unsafeCreate(subscriber -> mRealm.executeTransactionAsync(
+                realm -> realm.insertOrUpdate(data),
+                () -> {
+                    mRealm.close();
+                    subscriber.onNext(data);
+                    subscriber.onCompleted();
+                },
+                error -> {
+                    mRealm.close();
+                    subscriber.onError(error);
                 })
         );
     }

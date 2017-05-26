@@ -23,6 +23,8 @@ public class TagsSearchFragmentPresenter
 
     private List<ArticleTag> mTags;
 
+    private boolean alreadyRefreshFromApi;
+
     public TagsSearchFragmentPresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
         super(myPreferencesManager, dbProviderFactory, apiClient);
     }
@@ -31,28 +33,28 @@ public class TagsSearchFragmentPresenter
     public void onCreate() {
         super.onCreate();
 
-        getTagsFromApi();
-
-        //FIXME test
-//        searchByTags(new ArrayList<>(Arrays.asList(new ArticleTag("ru"), new ArticleTag("ru_en"))));
+        getTagsFromDb();
     }
 
 
     @Override
     public void getTagsFromApi() {
-        Timber.d("getTagsFromDb");
-        //TODO show progress, save to DB
+        Timber.d("getTagsFromApi");
+
+        getView().showSwipeProgress(true);
 
         mApiClient.getTagsFromSite()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .flatMap(data -> mDbProviderFactory.getDbProvider().saveArticleTags(data))
                 .subscribe(
                         data -> {
-                            Timber.d("data: %s", data.size());
-                            getView().showAllTags(data);
+                            Timber.d("getTagsFromApi onNext: %s", data.size());
+                            getView().showSwipeProgress(false);
                         },
                         e -> {
                             Timber.e(e);
+                            getView().showSwipeProgress(false);
                             getView().showError(e);
                         }
                 );
@@ -61,7 +63,23 @@ public class TagsSearchFragmentPresenter
     @Override
     public void getTagsFromDb() {
         Timber.d("getTagsFromDb");
-        //TODO
+        mDbProviderFactory.getDbProvider().getArticleTagsAsync()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        tags -> {
+                            Timber.d("getTagsFromDb onNext: %s", tags.size());
+                            mTags = tags;
+                            getView().showAllTags(mTags);
+                            if (mTags.isEmpty() && !alreadyRefreshFromApi) {
+                                getTagsFromApi();
+                            }
+                        },
+                        e -> {
+                            Timber.e(e);
+                            getView().showError(e);
+                        }
+                );
     }
 
     @Override
@@ -81,12 +99,12 @@ public class TagsSearchFragmentPresenter
                 .subscribe(
                         tagsSearchResponse -> {
                             Timber.d("tagsSearchResponse: %s", tagsSearchResponse);
-
+                            alreadyRefreshFromApi = true;
                             getView().showProgress(false);
                         },
                         e -> {
                             Timber.e(e);
-
+                            alreadyRefreshFromApi = true;
                             getView().showProgress(false);
                         }
                 );

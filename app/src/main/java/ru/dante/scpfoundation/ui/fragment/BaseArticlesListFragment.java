@@ -159,10 +159,7 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
         if (mSwipeRefreshLayout != null) {
             if (isSwipeRefreshEnabled()) {
                 mSwipeRefreshLayout.setColorSchemeResources(R.color.zbs_color_red);
-                mSwipeRefreshLayout.setOnRefreshListener(() -> {
-                    Timber.d("onRefresh");
-                    mPresenter.getDataFromApi(Constants.Api.ZERO_OFFSET);
-                });
+                mSwipeRefreshLayout.setOnRefreshListener(() -> mPresenter.getDataFromApi(Constants.Api.ZERO_OFFSET));
             } else {
                 mSwipeRefreshLayout.setEnabled(false);
             }

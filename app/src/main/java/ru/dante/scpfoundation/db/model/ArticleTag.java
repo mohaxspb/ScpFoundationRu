@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by mohax on 24.05.2017.
@@ -14,7 +15,7 @@ public class ArticleTag extends RealmObject {
 
     public static final String FIELD_TITLE = "title";
 
-    //    @PrimaryKey
+    @PrimaryKey
     public String title;
 
     public ArticleTag() {

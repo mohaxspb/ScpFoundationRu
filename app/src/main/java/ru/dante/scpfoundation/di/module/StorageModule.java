@@ -13,6 +13,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import io.realm.FieldAttribute;
 import io.realm.RealmConfiguration;
 import io.realm.RealmMigration;
 import io.realm.RealmObjectSchema;
@@ -98,7 +99,7 @@ public class StorageModule {
 
             if (oldVersion == 2) {
                 schema.create(ArticleTag.class.getSimpleName())
-                        .addField(ArticleTag.FIELD_TITLE, String.class);
+                        .addField(ArticleTag.FIELD_TITLE, String.class, FieldAttribute.PRIMARY_KEY);
 
 //                schema.get(Article.class.getSimpleName())
 //                        .addField(Article.FIELD_IS_IN_OBJECTS_4, long.class)

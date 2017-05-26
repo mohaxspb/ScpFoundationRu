@@ -5,6 +5,7 @@ import android.animation.ValueAnimator;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -15,12 +16,14 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.db.model.ArticleTag;
 import ru.dante.scpfoundation.mvp.contract.TagsSearchMvp;
 import ru.dante.scpfoundation.ui.base.BaseFragment;
 import ru.dante.scpfoundation.ui.view.TagView;
+import ru.dante.scpfoundation.util.DimensionUtils;
 import timber.log.Timber;
 
 import static ru.dante.scpfoundation.ui.activity.TagSearchActivity.EXTRA_TAGS;
@@ -42,6 +45,8 @@ public class TagsSearchFragment
     FlowLayout mAllTagsContainer;
     @BindView(R.id.searchFAB)
     FloatingActionButton mSearchFab;
+    @BindView(R.id.swipeRefresh)
+    SwipeRefreshLayout mSwipeRefreshLayout;
 
     private ObjectAnimator fabAnimator;
 
@@ -95,6 +100,10 @@ public class TagsSearchFragment
             }
         });
 
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.zbs_color_red);
+        mSwipeRefreshLayout.setOnRefreshListener(() -> mPresenter.getTagsFromApi());
+        mSwipeRefreshLayout.setProgressViewEndTarget(false, DimensionUtils.getActionBarHeight(getActivity()));
+
         mSearchFab.hide();
     }
 
@@ -111,6 +120,19 @@ public class TagsSearchFragment
 
             mAllTagsContainer.addView(tagView);
         }
+    }
+
+    @Override
+    public void showSwipeProgress(boolean show) {
+        if (!mSwipeRefreshLayout.isRefreshing() && !show) {
+            return;
+        }
+        mSwipeRefreshLayout.setRefreshing(show);
+    }
+
+    @Override
+    public void enableSwipeRefresh(boolean enable) {
+        mSwipeRefreshLayout.setEnabled(enable);
     }
 
     @Override
