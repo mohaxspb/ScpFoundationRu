@@ -6,35 +6,40 @@
     android:id="@+id/root"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/defaultMarginSmall"
+    android:layout_marginBottom="@dimen/defaultMarginTiny"
+    android:layout_marginLeft="@dimen/defaultMarginSmall"
+    android:layout_marginRight="@dimen/defaultMarginSmall"
+    android:layout_marginTop="@dimen/defaultMarginTiny"
     android:foreground="?selectableItemBackground"
-    tools:layout_gravity="center"
     app:cardBackgroundColor="?artListCardBackgroundColor"
     app:cardCornerRadius="3dp"
+    tools:layout_gravity="center"
     >
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:gravity="center_vertical"
+        android:orientation="horizontal"
         android:padding="@dimen/defaultMarginSmall"
         tools:ignore="UseCompoundDrawables"
         >
+
         <TextView
             android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingRight="@dimen/defaultMarginSmall"
             android:textSize="14sp"
             tools:text="Keter"
-            android:layout_width="wrap_content"
-            android:paddingRight="@dimen/defaultMarginSmall"
-            android:layout_height="wrap_content"
             />
 
         <ImageView
             android:id="@+id/action"
-            android:src="@drawable/ic_add"
             android:layout_width="@dimen/defaultMargin"
             android:layout_height="@dimen/defaultMargin"
+            android:src="@drawable/ic_add"
+            android:tint="?android:attr/textColorSecondary"
             tools:ignore="ContentDescription"
             />
 

@@ -16,7 +16,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.db.model.ArticleTag;
@@ -69,16 +68,13 @@ public class TagsSearchFragment
         MyApplication.getAppComponent().inject(this);
     }
 
-    @OnClick(R.id.searchFAB)
-    void onSearchFabClick() {
-        Timber.d("onSearchFabClick");
-
-        mPresenter.searchByTags(mTags);
-    }
-
     @Override
     protected void initViews() {
-        mPresenter.onCreate();
+        if (mPresenter.getTags() == null) {
+            mPresenter.getTagsFromDb();
+        } else {
+            showAllTags(mPresenter.getTags());
+        }
 
         if (getUserVisibleHint()) {
             if (getActivity() instanceof ArticleFragment.ToolbarStateSetter) {
@@ -109,7 +105,7 @@ public class TagsSearchFragment
 
     @Override
     public void showAllTags(List<ArticleTag> data) {
-        Timber.d("showAllTags: %s", data);
+        Timber.d("showAllTags: %s", data.size());
         mAllTagsContainer.removeAllViews();
         for (ArticleTag tag : data) {
 //            Timber.d("add tag: %s", tag.title);
@@ -120,6 +116,12 @@ public class TagsSearchFragment
 
             mAllTagsContainer.addView(tagView);
         }
+    }
+
+    @OnClick(R.id.searchFAB)
+    void onSearchFabClick() {
+        Timber.d("onSearchFabClick");
+        mPresenter.searchByTags(mTags);
     }
 
     @Override

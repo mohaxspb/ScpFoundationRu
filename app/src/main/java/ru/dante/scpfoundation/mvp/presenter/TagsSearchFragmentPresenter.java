@@ -25,17 +25,13 @@ public class TagsSearchFragmentPresenter
 
     private boolean alreadyRefreshFromApi;
 
-    public TagsSearchFragmentPresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
+    public TagsSearchFragmentPresenter(
+            MyPreferenceManager myPreferencesManager,
+            DbProviderFactory dbProviderFactory,
+            ApiClient apiClient
+    ) {
         super(myPreferencesManager, dbProviderFactory, apiClient);
     }
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        getTagsFromDb();
-    }
-
 
     @Override
     public void getTagsFromApi() {
