@@ -84,6 +84,7 @@ public class TagView extends FrameLayout {
     }
 
     public void setActionImage(@DrawableRes @Action int actionImage) {
+        setVisibility(actionImage == Action.NONE ? GONE : VISIBLE);
         mActionImage.setImageResource(actionImage);
     }
 
@@ -113,13 +114,16 @@ public class TagView extends FrameLayout {
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({
             Action.ADD,
-            Action.REMOVE
+            Action.REMOVE,
+            Action.NONE
     })
     public @interface Action {
         @DrawableRes
         int ADD = R.drawable.ic_add;
         @DrawableRes
         int REMOVE = R.drawable.ic_clear;
+        @DrawableRes
+        int NONE = 0;
     }
 
     public interface OnTagClickListener {
