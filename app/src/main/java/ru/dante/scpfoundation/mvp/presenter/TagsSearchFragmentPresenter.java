@@ -1,7 +1,5 @@
 package ru.dante.scpfoundation.mvp.presenter;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import ru.dante.scpfoundation.api.ApiClient;
@@ -43,7 +41,8 @@ public class TagsSearchFragmentPresenter
     @Override
     public void getTagsFromApi() {
         Timber.d("getTagsFromDb");
-        //TODO
+        //TODO show progress, save to DB
+
         mApiClient.getTagsFromSite()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -73,15 +72,22 @@ public class TagsSearchFragmentPresenter
     @Override
     public void searchByTags(List<ArticleTag> tags) {
         Timber.d("searchByTags: %s", tags);
+
+        getView().showProgress(true);
+
         mApiClient.getArticlesByTags(tags)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         tagsSearchResponse -> {
                             Timber.d("tagsSearchResponse: %s", tagsSearchResponse);
+
+                            getView().showProgress(false);
                         },
                         e -> {
                             Timber.e(e);
+
+                            getView().showProgress(false);
                         }
                 );
     }

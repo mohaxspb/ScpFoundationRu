@@ -1,5 +1,8 @@
 package ru.dante.scpfoundation.ui.fragment;
 
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.view.View;
@@ -39,6 +42,8 @@ public class TagsSearchFragment
     FlowLayout mAllTagsContainer;
     @BindView(R.id.searchFAB)
     FloatingActionButton mSearchFab;
+
+    private ObjectAnimator fabAnimator;
 
     private List<ArticleTag> mTags = new ArrayList<>();
 
@@ -105,6 +110,32 @@ public class TagsSearchFragment
             tagView.setOnTagClickListener(mAllTagsClickListener);
 
             mAllTagsContainer.addView(tagView);
+        }
+    }
+
+    @Override
+    public void showProgress(boolean show) {
+        Timber.d("showProgress: %s", show);
+
+        mSearchFab.setImageResource(show ? R.drawable.ic_autorenew : R.drawable.ic_search);
+        mSearchFab.setColorFilter(Color.WHITE);
+
+        if (show) {
+            if (fabAnimator == null) {
+                fabAnimator = ObjectAnimator.ofFloat(mSearchFab, "rotation", 0, 360);
+                fabAnimator.setDuration(1000);
+                fabAnimator.setRepeatCount(ValueAnimator.INFINITE);
+            } else {
+                fabAnimator.removeAllListeners();
+                fabAnimator.end();
+                fabAnimator.cancel();
+            }
+            fabAnimator.start();
+        } else {
+            fabAnimator.removeAllListeners();
+            fabAnimator.end();
+            fabAnimator.cancel();
+            mSearchFab.setRotation(0);
         }
     }
 

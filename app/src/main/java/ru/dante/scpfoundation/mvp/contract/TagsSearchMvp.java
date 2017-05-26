@@ -15,6 +15,8 @@ public interface TagsSearchMvp extends DrawerMvp {
     interface View extends BaseMvp.View {
 
         void showAllTags(List<ArticleTag> data);
+
+        void showProgress(boolean show);
     }
 
     interface Presenter extends BaseMvp.Presenter<View> {
