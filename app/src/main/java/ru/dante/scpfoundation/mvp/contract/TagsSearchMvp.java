@@ -2,6 +2,7 @@ package ru.dante.scpfoundation.mvp.contract;
 
 import java.util.List;
 
+import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.db.model.ArticleTag;
 import ru.dante.scpfoundation.mvp.base.BaseMvp;
 
@@ -21,6 +22,8 @@ public interface TagsSearchMvp extends DrawerMvp {
         void enableSwipeRefresh(boolean enable);
 
         void showProgress(boolean show);
+
+        void showSearchResults(List<Article> data);
     }
 
     interface Presenter extends BaseMvp.Presenter<View> {

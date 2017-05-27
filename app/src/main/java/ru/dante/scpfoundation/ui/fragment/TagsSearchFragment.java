@@ -4,6 +4,8 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
@@ -18,9 +20,12 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
+import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.db.model.ArticleTag;
+import ru.dante.scpfoundation.mvp.contract.ObjectsRuArticles;
 import ru.dante.scpfoundation.mvp.contract.TagsSearchMvp;
 import ru.dante.scpfoundation.ui.base.BaseFragment;
+import ru.dante.scpfoundation.ui.dialog.PopupSettingsFragment;
 import ru.dante.scpfoundation.ui.view.TagView;
 import ru.dante.scpfoundation.util.DimensionUtils;
 import timber.log.Timber;
@@ -46,10 +51,13 @@ public class TagsSearchFragment
     FloatingActionButton mSearchFab;
     @BindView(R.id.swipeRefresh)
     SwipeRefreshLayout mSwipeRefreshLayout;
+    @BindView(R.id.listContainer)
+    View mListContainer;
 
     private ObjectAnimator fabAnimator;
 
     private List<ArticleTag> mTags = new ArrayList<>();
+    private BottomSheetBehavior<View> mBottomSheetListBehavior;
 
     public static TagsSearchFragment newInstance(List<String> tags) {
         TagsSearchFragment fragment = new TagsSearchFragment();
@@ -101,6 +109,40 @@ public class TagsSearchFragment
         mSwipeRefreshLayout.setProgressViewEndTarget(false, DimensionUtils.getActionBarHeight(getActivity()));
 
         mSearchFab.hide();
+
+        mBottomSheetListBehavior = BottomSheetBehavior.from(mListContainer);
+        mBottomSheetListBehavior.setPeekHeight(DimensionUtils.dpToPx(286));
+        mBottomSheetListBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        mBottomSheetListBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+//                Timber.d("state %s", newState);
+                switch (newState) {
+                    case BottomSheetBehavior.STATE_COLLAPSED:
+                        break;
+                    case BottomSheetBehavior.STATE_HIDDEN:
+                        break;
+                    case BottomSheetBehavior.STATE_EXPANDED:
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+//                Timber.d("slideOffSet %s", slideOffset);
+//                if (mToolbarBackground != null) {
+//                    mToolbarBackground.setBackgroundResource(slideOffset == 1.0f ? android.R.color.black : android.R.color.transparent);
+//                }
+            }
+        });
+
+        if (getChildFragmentManager().findFragmentById(R.id.listContainer) == null) {
+            getChildFragmentManager().beginTransaction()
+                    .add(R.id.listContainer, ObjectsRuArticlesFragment.newInstance(), ObjectsRuArticlesFragment.TAG)
+                    .commit();
+        }
     }
 
     @Override
@@ -116,6 +158,14 @@ public class TagsSearchFragment
 
             mAllTagsContainer.addView(tagView);
         }
+    }
+
+    @Override
+    public void showSearchResults(List<Article> data) {
+        Timber.d("showSearchResults: %s", data);
+
+//        PopupSettingsFragment.newInstance().show(getChildFragmentManager(), PopupSettingsFragment.TAG);
+        mBottomSheetListBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
     @OnClick(R.id.searchFAB)
