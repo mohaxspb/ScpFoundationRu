@@ -1791,8 +1791,21 @@ public class ApiClient {
         return bindWithUtils(mVpsServer.getLeaderboard());
     }
 
-    public Observable<List<ArticleFromSearchTagsOnSite>> getArticlesByTags(List<ArticleTag> tags) {
-        return bindWithUtils(mScpServer.getArticlesByTags(ArticleTag.getStringsFromTags(tags)));
+    public Observable<List<Article>> getArticlesByTags(List<ArticleTag> tags) {
+        return bindWithUtils(mScpServer.getArticlesByTags(ArticleTag.getStringsFromTags(tags)))
+                .map(ArticleFromSearchTagsOnSite::getArticlesFromSiteArticles)
+                .map(articles -> {
+                    for (Article article : articles) {
+                        if (!article.url.startsWith("http://")) {
+                            String start = BuildConfig.BASE_API_URL;
+                            if (!article.url.startsWith("/")) {
+                                start += "/";
+                            }
+                            article.url = start + article.url;
+                        }
+                    }
+                    return articles;
+                });
     }
 
     public Observable<List<ArticleTag>> getTagsFromSite() {
@@ -1804,45 +1817,5 @@ public class ApiClient {
                     }
                     return tags;
                 }));
-//        return bindWithUtils(Observable.<List<ArticleTag>>unsafeCreate(subscriber -> {
-//            Request request = new Request.Builder()
-//                    .url(Constants.Urls.TAGS_SEARCH_ON_SITE)
-//                    .build();
-//
-//            String responseBody = null;
-//            try {
-//                Response response = mOkHttpClient.newCall(request).execute();
-//                ResponseBody body = response.body();
-//                if (body != null) {
-//                    responseBody = body.string();
-//                } else {
-//                    subscriber.onError(new IOException(MyApplication.getAppInstance().getString(R.string.error_parse)));
-//                    return;
-//                }
-//            } catch (IOException e) {
-//                subscriber.onError(new IOException(MyApplication.getAppInstance().getString(R.string.error_connection)));
-//                return;
-//            }
-//            try {
-//                Timber.d("responseBody: %s", responseBody);
-//                Document doc = Jsoup.parse(responseBody);
-//                Element pageContent = doc.getElementsByClass("wikidot-tags-search__tags").first();
-//                if (pageContent == null) {
-//                    subscriber.onError(new ScpParseException(MyApplication.getAppInstance().getString(R.string.error_parse)));
-//                    return;
-//                }
-//
-//                List<ArticleTag> tags = new ArrayList<>();
-//                for (Element divWithTagData : pageContent.children()) {
-//                    tags.add(new ArticleTag(divWithTagData.attr("data-tag")));
-//                }
-//
-//                subscriber.onNext(tags);
-//                subscriber.onCompleted();
-//            } catch (Exception e) {
-//                Timber.e(e, "error while get arts list");
-//                subscriber.onError(e);
-//            }
-//        }));
     }
 }

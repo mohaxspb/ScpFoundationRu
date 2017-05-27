@@ -2,7 +2,10 @@ package ru.dante.scpfoundation.api.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import ru.dante.scpfoundation.db.model.Article;
 
 /**
  * Created by mohax on 25.05.2017.
@@ -10,8 +13,10 @@ import java.util.List;
  * for ScpFoundationRu
  */
 public class ArticleFromSearchTagsOnSite {
+
     public int id;
-    public String name;
+    @SerializedName("name")
+    public String url;
     public String title;
     @SerializedName("all_tags")
     public List<String> allTags;
@@ -20,9 +25,23 @@ public class ArticleFromSearchTagsOnSite {
     public String toString() {
         return "ArticleFromSearchTagsOnSite{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
+                ", url='" + url + '\'' +
                 ", title='" + title + '\'' +
                 ", allTags=" + allTags +
                 '}';
+    }
+
+    public static List<Article> getArticlesFromSiteArticles(List<ArticleFromSearchTagsOnSite> data) {
+        List<Article> articles = new ArrayList<>();
+        for (ArticleFromSearchTagsOnSite articleFromSearchTagsOnSite : data) {
+            Article article = new Article();
+            article.title = articleFromSearchTagsOnSite.title;
+            article.url = articleFromSearchTagsOnSite.url;
+
+            //TODO add tags
+
+            articles.add(article);
+        }
+        return articles;
     }
 }

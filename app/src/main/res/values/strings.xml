@@ -231,6 +231,7 @@
     <string name="tags_search">Поиск по тегам</string>
     <string name="tags_choosen">Выбранные теги</string>
     <string name="tags_all">Все теги</string>
+    <string name="tags_search_results">Результаты</string>
 
     <plurals name="plurals_score">
         <item quantity="zero">%1$d очков</item>

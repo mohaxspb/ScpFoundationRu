@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialogFragment;
+import android.support.v4.app.Fragment;
 import android.view.MenuItem;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.List;
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
+import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.db.model.ArticleTag;
 import ru.dante.scpfoundation.monetization.util.MyAdListener;
 import ru.dante.scpfoundation.mvp.base.MonetizationActions;
@@ -22,13 +24,14 @@ import ru.dante.scpfoundation.ui.dialog.TextSizeDialogFragment;
 import ru.dante.scpfoundation.ui.fragment.ArticleFragment;
 import ru.dante.scpfoundation.ui.fragment.FragmentMaterialsAll;
 import ru.dante.scpfoundation.ui.fragment.TagsSearchFragment;
+import ru.dante.scpfoundation.ui.fragment.TagsSearchResultsArticlesFragment;
 import timber.log.Timber;
 
 import static ru.dante.scpfoundation.ui.activity.MainActivity.EXTRA_SHOW_DISABLE_ADS;
 
 public class TagSearchActivity
         extends BaseDrawerActivity<TagsScreenMvp.View, TagsScreenMvp.Presenter>
-        implements TagsScreenMvp.View, ArticleFragment.ToolbarStateSetter {
+        implements TagsScreenMvp.View, ArticleFragment.ToolbarStateSetter, TagsSearchFragment.ShowTagsSearchResults {
 
     public static final String EXTRA_TAGS = "EXTRA_TAGS";
 
@@ -243,5 +246,14 @@ public class TagSearchActivity
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    public void showResults(List<Article> data, List<ArticleTag> tags) {
+        Fragment fragmentResults = TagsSearchResultsArticlesFragment.newInstance(data, tags);
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.content, fragmentResults, TagsSearchResultsArticlesFragment.TAG)
+                .addToBackStack(TagsSearchResultsArticlesFragment.TAG)
+                .commit();
     }
 }

@@ -1,11 +1,9 @@
 package ru.dante.scpfoundation.mvp.presenter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import ru.dante.scpfoundation.api.ApiClient;
 import ru.dante.scpfoundation.db.DbProviderFactory;
-import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.db.model.ArticleTag;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.mvp.base.BasePresenter;
@@ -100,7 +98,7 @@ public class TagsSearchFragmentPresenter
                             alreadyRefreshFromApi = true;
                             getView().showProgress(false);
 
-                            getView().showSearchResults(new ArrayList<>());
+                            getView().showSearchResults(tagsSearchResponse);
                         },
                         e -> {
                             Timber.e(e);

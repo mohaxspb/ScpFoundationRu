@@ -47,6 +47,7 @@ import ru.dante.scpfoundation.ui.fragment.RatedArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.RecentArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.SiteSearchArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.TagsSearchFragment;
+import ru.dante.scpfoundation.ui.fragment.TagsSearchResultsArticlesFragment;
 
 /**
  * Created by y.kuchanov on 21.12.16.
@@ -109,6 +110,8 @@ public interface AppComponent {
     void inject(Objects4ArticlesFragment fragment);
 
     void inject(TagsSearchFragment fragment);
+
+    void inject(TagsSearchResultsArticlesFragment fragment);
 
     void inject(TextSizeDialogFragment dialogFragment);
 

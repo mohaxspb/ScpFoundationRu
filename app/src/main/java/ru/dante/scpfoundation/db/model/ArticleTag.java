@@ -1,8 +1,11 @@
 package ru.dante.scpfoundation.db.model;
 
+import org.parceler.Parcel;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import io.realm.ArticleTagRealmProxy;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -11,6 +14,7 @@ import io.realm.annotations.PrimaryKey;
  * <p>
  * for ScpFoundationRu
  */
+@Parcel(implementations = {ArticleTagRealmProxy.class}, value = Parcel.Serialization.BEAN, analyze = {ArticleTag.class})
 public class ArticleTag extends RealmObject {
 
     public static final String FIELD_TITLE = "title";

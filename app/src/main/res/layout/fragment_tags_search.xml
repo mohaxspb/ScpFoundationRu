@@ -81,13 +81,4 @@
         app:layout_anchorGravity="bottom|end"
         />
 
-    <FrameLayout
-        android:id="@+id/listContainer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
-        >
-
-    </FrameLayout>
-
 </android.support.design.widget.CoordinatorLayout>
