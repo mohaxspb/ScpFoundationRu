@@ -134,7 +134,7 @@ public abstract class BaseBottomSheetDialogFragment extends BottomSheetDialogFra
                 snackbar = Snackbar.make(mRoot, R.string.sync_need_auth, Snackbar.LENGTH_LONG);
                 snackbar.setAction(R.string.authorize, v -> {
                     snackbar.dismiss();
-                    getBaseActivity().startLogin(Constants.Firebase.SocialProvider.VK);
+                    getBaseActivity().showLoginProvidersPopup();
                 });
                 break;
             default:

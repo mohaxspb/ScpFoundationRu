@@ -341,22 +341,7 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
 
             headerViewHolder.mLogin.setOnClickListener(view -> {
                 Timber.d("Login clicked");
-                final MaterialDialog dialog;
-                List<Constants.Firebase.SocialProvider> providers = Arrays.asList(Constants.Firebase.SocialProvider.values());
-                SocialLoginAdapter adapter = new SocialLoginAdapter();
-                dialog = new MaterialDialog.Builder(this)
-                        .title(R.string.dialog_social_login_title)
-                        .items(providers)
-                        .adapter(adapter, new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false))
-                        .positiveText(android.R.string.cancel)
-                        .build();
-                adapter.setItemClickListener(data -> {
-                    startLogin(data.getSocialProvider());
-                    dialog.dismiss();
-                });
-                adapter.setData(SocialLoginHolder.SocialLoginModel.getModels());
-                dialog.getRecyclerView().setOverScrollMode(View.OVER_SCROLL_NEVER);
-                dialog.show();
+
             });
 
             headerViewHolder.mLoginInfo.setOnClickListener(view -> new MaterialDialog.Builder(this)
