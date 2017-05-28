@@ -13,9 +13,9 @@ import io.realm.RealmObject;
  * from https://gist.github.com/cmelchior/72c35fcb55cec33a71e1
  */
 // Abstract class for working with RealmLists
-public abstract class RealmListParcelConverter<T extends RealmObject> extends CollectionParcelConverter<T, RealmList<T>> {
+abstract class RealmListParcelConverter<T extends RealmObject> extends CollectionParcelConverter<T, RealmList<T>> {
     @Override
     public RealmList<T> createCollection() {
-        return new RealmList<T>();
+        return new RealmList<>();
     }
 }

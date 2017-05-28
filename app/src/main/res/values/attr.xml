@@ -23,6 +23,8 @@
     <attr name="iconTextSizeDialog" format="reference"/>
     <attr name="iconArrowUp" format="reference"/>
     <attr name="iconArrowDown" format="reference"/>
+    <attr name="iconArrowUpSmall" format="reference"/>
+    <attr name="iconArrowDownSmall" format="reference"/>
     <attr name="iconOfflineAdd" format="reference"/>
     <attr name="iconOfflineRemove" format="reference"/>
     <attr name="iconEmptyImage" format="reference"/>

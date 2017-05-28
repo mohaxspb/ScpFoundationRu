@@ -54,6 +54,11 @@ public class TagSearchResultsArticlesPresenter
         return Observable.unsafeCreate(subscriber -> {
             mSearchData = data;
             getView().updateData(mSearchData);
+            getView().showCenterProgress(false);
+            getView().showSwipeProgress(false);
+            if (mSearchData.isEmpty()) {
+                getView().showMessage(R.string.error_no_search_results);
+            }
             subscriber.onNext(new Pair<>(data.size(), offset));
             subscriber.onCompleted();
         });

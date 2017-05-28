@@ -384,6 +384,7 @@ public class DownloadAllService extends Service {
                 .observeOn(Schedulers.io())
                 .flatMap(Observable::from)
                 .filter(article -> {
+                    //TODO use one realm instance
                     DbProvider dbProvider = mDbProviderFactory.getDbProvider();
                     Article articleInDb = dbProvider.getUnmanagedArticleSync(article.url);
                     dbProvider.close();

@@ -668,6 +668,17 @@ public class ApiClient {
                     }
                 }
 
+                //extract tags
+                RealmList<ArticleTag> articleTags = new RealmList<>();
+                Element tagsContainer = doc.getElementsByClass("page-tags").first();
+                Timber.d("tagsContainer: %s", tagsContainer);
+                if (tagsContainer != null) {
+                    for (Element a : tagsContainer./*getElementsByTag("span").first().*/getElementsByTag("a")) {
+                        articleTags.add(new ArticleTag(a.text()));
+                        Timber.d("tag: %s", articleTags.get(articleTags.size() - 1));
+                    }
+                }
+
                 //search for images and add it to separate field to be able to show it in arts lists
                 RealmList<RealmString> imgsUrls = null;
                 Elements imgsOfArticle = pageContent.getElementsByTag("img");
@@ -744,6 +755,8 @@ public class ApiClient {
                 article.textPartsTypes = textPartsTypes;
                 //images
                 article.imagesUrls = imgsUrls;
+                //tags
+                article.tags = articleTags;
 
                 subscriber.onNext(article);
                 subscriber.onCompleted();

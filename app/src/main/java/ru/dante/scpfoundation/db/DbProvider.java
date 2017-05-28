@@ -72,10 +72,10 @@ public class DbProvider {
                 realm -> {
                     //remove all aps from nominees if we update list
                     if (offset == 0) {
-                        List<Article> nomineesApps = realm.where(Article.class)
+                        List<Article> articles = realm.where(Article.class)
                                 .notEqualTo(Article.FIELD_IS_IN_RECENT, Article.ORDER_NONE)
                                 .findAll();
-                        for (Article application : nomineesApps) {
+                        for (Article application : articles) {
                             application.isInRecent = Article.ORDER_NONE;
                         }
                     }
@@ -87,7 +87,6 @@ public class DbProvider {
                                 .findFirst();
                         if (applicationInDb != null) {
                             applicationInDb.isInRecent = offset + i;
-//                                applicationInDb.title = applicationToWrite.title;
 
                             applicationInDb.rating = applicationToWrite.rating;
 
@@ -133,7 +132,6 @@ public class DbProvider {
                                 .findFirst();
                         if (applicationInDb != null) {
                             applicationInDb.isInMostRated = offset + i;
-//                                applicationInDb.title = applicationToWrite.title;
 
                             applicationInDb.rating = applicationToWrite.rating;
                         } else {
@@ -426,6 +424,11 @@ public class DbProvider {
             //update localUpdateTimeStamp to be able to sort arts by this value
             applicationInDb.localUpdateTimeStamp = System.currentTimeMillis();
 
+//            if (article.tags != null && !article.tags.isEmpty()) {
+                applicationInDb.tags.clear();
+                applicationInDb.tags = article.tags;
+//            }
+
             //update it in DB such way, as we add unmanaged items
             realm.insertOrUpdate(applicationInDb);
         } else {
@@ -472,7 +475,7 @@ public class DbProvider {
      * or error if no article found
      */
     public Observable<String> toggleReaden(String url) {
-        return Observable.create(subscriber -> mRealm.executeTransactionAsync(
+        return Observable.unsafeCreate(subscriber -> mRealm.executeTransactionAsync(
                 realm -> {
                     //check if we have app in db and update
                     Article article = realm.where(Article.class)
@@ -504,7 +507,7 @@ public class DbProvider {
     }
 
     public Observable<String> deleteArticlesText(String url) {
-        return Observable.create(subscriber -> mRealm.executeTransactionAsync(
+        return Observable.unsafeCreate(subscriber -> mRealm.executeTransactionAsync(
                 realm -> {
                     //check if we have app in db and update
                     Article applicationInDb = realm.where(Article.class)
@@ -529,8 +532,8 @@ public class DbProvider {
                     subscriber.onCompleted();
                     mRealm.close();
                 },
-                error -> {
-                    subscriber.onError(error);
+                e -> {
+                    subscriber.onError(e);
                     mRealm.close();
                 }));
     }
@@ -548,7 +551,7 @@ public class DbProvider {
     }
 
     public Observable<User> saveUser(User user) {
-        return Observable.create(subscriber -> mRealm.executeTransactionAsync(
+        return Observable.unsafeCreate(subscriber -> mRealm.executeTransactionAsync(
                 realm -> realm.insertOrUpdate(user),
                 () -> {
                     subscriber.onNext(user);
@@ -562,7 +565,7 @@ public class DbProvider {
     }
 
     private Observable<Void> deleteUserData() {
-        return Observable.create(subscriber -> mRealm.executeTransactionAsync(
+        return Observable.unsafeCreate(subscriber -> mRealm.executeTransactionAsync(
                 realm -> {
                     realm.delete(User.class);
                     List<Article> favs = realm.where(Article.class)
@@ -611,7 +614,7 @@ public class DbProvider {
     }
 
     public Observable<Void> saveImages(List<VkImage> vkImages) {
-        return Observable.create(subscriber -> mRealm.executeTransactionAsync(
+        return Observable.unsafeCreate(subscriber -> mRealm.executeTransactionAsync(
                 realm -> {
                     //clear
                     realm.delete(VkImage.class);
@@ -685,32 +688,11 @@ public class DbProvider {
         );
     }
 
-    public Observable<Void> deleteAllArticlesText() {
-        return Observable.create(subscriber -> mRealm.executeTransactionAsync(
-                realm -> {
-                    RealmResults<Article> articles = realm.where(Article.class).findAll();
-
-                    for (Article article : articles) {
-                        article.text = null;
-                    }
-                },
-                () -> {
-                    subscriber.onNext(null);
-                    subscriber.onCompleted();
-                    mRealm.close();
-                },
-                error -> {
-                    subscriber.onError(error);
-                    mRealm.close();
-                })
-        );
-    }
-
     public Observable<Article> setArticleSynced(Article article, boolean synced) {
         Timber.d("setArticleSynced url: %s, newState: %s", article.url, synced);
         boolean managed = article.isManaged();
         String url = article.url;
-        return Observable.create(subscriber -> mRealm.executeTransactionAsync(
+        return Observable.unsafeCreate(subscriber -> mRealm.executeTransactionAsync(
                 realm -> {
                     Article articleInDb = realm.where(Article.class).equalTo(Article.FIELD_URL, url).findFirst();
                     if (articleInDb != null) {
@@ -734,16 +716,6 @@ public class DbProvider {
         );
     }
 
-//    public Observable<List<Article>> getUnsyncedArticlesUnmanaged() {
-//        return mRealm.where(Article.class)
-//                .equalTo(Article.FIELD_SYNCED, Article.SYNCED_NEED)
-//                .findAll()
-//                .asObservable()
-//                .first()
-//                .flatMap(realmResults -> Observable.just(mRealm.copyFromRealm(realmResults)))
-//                .doOnCompleted(this::close);
-//    }
-
     public Observable<RealmResults<Article>> getUnsyncedArticlesManaged() {
         return mRealm.where(Article.class)
                 .equalTo(Article.FIELD_SYNCED, Article.SYNCED_NEED)
@@ -764,7 +736,7 @@ public class DbProvider {
             urls.add(article.url);
         }
         int articlesToSyncSize = articles.size();
-        return Observable.create(subscriber -> mRealm.executeTransactionAsync(
+        return Observable.unsafeCreate(subscriber -> mRealm.executeTransactionAsync(
                 realm -> {
                     for (String url : urls) {
                         Article articleInDb = realm.where(Article.class).equalTo(Article.FIELD_URL, url).findFirst();
@@ -778,8 +750,8 @@ public class DbProvider {
                     subscriber.onCompleted();
                     mRealm.close();
                 },
-                error -> {
-                    subscriber.onError(error);
+                e -> {
+                    subscriber.onError(e);
                     mRealm.close();
                 })
         );
@@ -787,7 +759,7 @@ public class DbProvider {
 
     public Observable<Integer> updateUserScore(int totalScore) {
         Timber.d("updateUserScore: %s", totalScore);
-        return Observable.create(subscriber -> mRealm.executeTransactionAsync(
+        return Observable.unsafeCreate(subscriber -> mRealm.executeTransactionAsync(
                 realm -> {
                     //check if we have app in db and update
                     User user = realm.where(User.class).findFirst();

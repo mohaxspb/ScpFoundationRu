@@ -8,7 +8,7 @@ apply plugin: 'me.tatarka.retrolambda'
 apply from: '../versioning.gradle'
 
 ext.supportLibraryVersion = '25.3.1'
-ext.googleLibraryVersion = '10.2.4'
+ext.googleLibraryVersion = '10.2.6'
 
 android {
     compileSdkVersion 25
@@ -245,6 +245,7 @@ dependencies {
     compile 'com.github.jakob-grabner:Circle-Progress-View:v1.3'
     //flowlayout
     compile 'org.apmem.tools:layouts:1.10@aar'
+    compile 'com.google.android:flexbox:0.3.0-alpha3'
     //leakcanary
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.1'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'

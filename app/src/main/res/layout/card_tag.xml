@@ -29,7 +29,6 @@
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingRight="@dimen/defaultMarginSmall"
             android:textSize="14sp"
             tools:text="Keter"
             />
@@ -38,9 +37,10 @@
             android:id="@+id/action"
             android:layout_width="@dimen/defaultMargin"
             android:layout_height="@dimen/defaultMargin"
+            android:layout_marginLeft="@dimen/defaultMarginSmall"
             android:src="@drawable/ic_add"
             android:tint="?android:attr/textColorSecondary"
-            tools:ignore="ContentDescription"
+            tools:ignore="ContentDescription,RtlHardcoded"
             />
 
     </LinearLayout>

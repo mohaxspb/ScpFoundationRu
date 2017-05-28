@@ -8,6 +8,7 @@ import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -20,6 +21,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.db.model.ArticleTag;
+import timber.log.Timber;
 
 /**
  * Created by mohax on 26.05.2017.
@@ -83,9 +85,14 @@ public class TagView extends FrameLayout {
         mTitle.setText(tag.title);
     }
 
+    public void setTagTextSize(int sizeInSp) {
+        mTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, sizeInSp);
+    }
+
     public void setActionImage(@DrawableRes @Action int actionImage) {
-        setVisibility(actionImage == Action.NONE ? GONE : VISIBLE);
+//        Timber.d("setActionImage: %s", actionImage == Action.NONE);
         mActionImage.setImageResource(actionImage);
+        mActionImage.setVisibility(actionImage == Action.NONE ? GONE : VISIBLE);
     }
 
     @Override

@@ -101,9 +101,9 @@ public class StorageModule {
                 schema.create(ArticleTag.class.getSimpleName())
                         .addField(ArticleTag.FIELD_TITLE, String.class, FieldAttribute.PRIMARY_KEY);
 
-//                schema.get(Article.class.getSimpleName())
-//                        .addField(Article.FIELD_IS_IN_OBJECTS_4, long.class)
-//                        .transform(obj -> obj.set(Article.FIELD_IS_IN_OBJECTS_4, Article.ORDER_NONE));
+                schema.get(Article.class.getSimpleName())
+                        .addRealmListField(Article.FIELD_TAGS, schema.get(ArticleTag.class.getSimpleName()));
+
                 oldVersion++;
             }
 

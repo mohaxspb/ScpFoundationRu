@@ -2,6 +2,7 @@ package ru.dante.scpfoundation.mvp.presenter;
 
 import java.util.List;
 
+import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.api.ApiClient;
 import ru.dante.scpfoundation.db.DbProviderFactory;
 import ru.dante.scpfoundation.db.model.ArticleTag;
@@ -98,7 +99,11 @@ public class TagsSearchFragmentPresenter
                             alreadyRefreshFromApi = true;
                             getView().showProgress(false);
 
-                            getView().showSearchResults(tagsSearchResponse);
+                            if (tagsSearchResponse.isEmpty()) {
+                                getView().showMessage(R.string.error_no_search_results);
+                            } else {
+                                getView().showSearchResults(tagsSearchResponse);
+                            }
                         },
                         e -> {
                             Timber.e(e);

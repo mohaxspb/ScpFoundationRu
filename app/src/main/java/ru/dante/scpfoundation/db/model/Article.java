@@ -15,6 +15,7 @@ import io.realm.ArticleRealmProxy;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
+import ru.dante.scpfoundation.db.util.RealmArticleTagListParcelConverter;
 import ru.dante.scpfoundation.db.util.RealmStringListParcelConverter;
 
 /**
@@ -49,6 +50,8 @@ public class Article extends RealmObject {
     public static final String FIELD_TEXT = "text";
 
     public static final String FIELD_SYNCED = "synced";
+
+    public static final String FIELD_TAGS = "tags";
 
     public static final int SYNCED_OK = 1;
     public static final int SYNCED_NEED = -1;
@@ -132,6 +135,9 @@ public class Article extends RealmObject {
 
     @ObjectType
     public String type = ObjectType.NONE;
+
+    @ParcelPropertyConverter(RealmArticleTagListParcelConverter.class)
+    public RealmList<ArticleTag> tags;
 
     public int rating;
 

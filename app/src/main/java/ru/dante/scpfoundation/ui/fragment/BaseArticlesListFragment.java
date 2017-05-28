@@ -12,14 +12,17 @@ import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.db.model.Article;
+import ru.dante.scpfoundation.db.model.ArticleTag;
 import ru.dante.scpfoundation.mvp.base.BaseArticlesListMvp;
 import ru.dante.scpfoundation.mvp.base.BaseListMvp;
 import ru.dante.scpfoundation.ui.activity.ArticleActivity;
+import ru.dante.scpfoundation.ui.activity.TagSearchActivity;
 import ru.dante.scpfoundation.ui.adapter.ArticlesListRecyclerAdapter;
 import ru.dante.scpfoundation.ui.base.BaseListFragment;
 import ru.dante.scpfoundation.ui.util.EndlessRecyclerViewScrollListener;
@@ -193,6 +196,12 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
             public void onOfflineClicked(Article article) {
                 Timber.d("onOfflineClicked: %s", article.title);
                 mPresenter.toggleOfflineState(article);
+            }
+
+            @Override
+            public void onTagClicked(ArticleTag tag) {
+                Timber.d("onTagClicked: %s", tag);
+                TagSearchActivity.startActivity(getActivity(), new ArrayList<>(Collections.singletonList(tag)));
             }
         });
         getAdapter().setHasStableIds(true);
