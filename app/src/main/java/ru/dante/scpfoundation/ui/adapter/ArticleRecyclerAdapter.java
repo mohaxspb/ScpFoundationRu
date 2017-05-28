@@ -185,7 +185,7 @@ public class ArticleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
     @Override
     public int getItemCount() {
-        return mArticlesTextParts == null ? 0 : mArticlesTextParts.size() + 1; //+1 for title
+        return mArticlesTextParts == null ? 0 : mArticlesTextParts.size() + 1 +1; //+1 for title and +1 for tags
     }
 
     @Override
