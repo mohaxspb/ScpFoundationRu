@@ -113,7 +113,6 @@ public class ArticleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         }
         String type = mArticlesTextPartsTypes.get(position - 1);//-1 for title
         switch (type) {
-            default:
             case ParseHtmlUtils.TextType.TEXT:
                 return TYPE_TEXT;
             case ParseHtmlUtils.TextType.IMAGE:
@@ -122,39 +121,36 @@ public class ArticleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 return TYPE_SPOILER;
             case ParseHtmlUtils.TextType.TABLE:
                 return TYPE_TABLE;
+            default:
+                throw new IllegalArgumentException("unexpected type: " + type);
         }
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        RecyclerView.ViewHolder viewHolder;
         View view;
         switch (viewType) {
-            default:
             case TYPE_TEXT:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_text, parent, false);
-                viewHolder = new ViewHolderText(view);
-                break;
+                return new ViewHolderText(view);
             case TYPE_IMAGE:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_r_img, parent, false);
-                viewHolder = new ViewHolderImage(view);
-                break;
+                return new ViewHolderImage(view);
             case TYPE_SPOILER:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_spoiler, parent, false);
-                viewHolder = new ViewHolderSpoiler(view);
-                break;
+                return new ViewHolderSpoiler(view);
             case TYPE_TITLE:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_title, parent, false);
-                viewHolder = new ViewHolderTitle(view);
-                break;
+                return new ViewHolderTitle(view);
             case TYPE_TABLE:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_table, parent, false);
-                viewHolder = new ViewHolderTable(view);
+                return new ViewHolderTable(view);
             case TYPE_TAGS:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_tags, parent, false);
-                viewHolder = new TagsViewHolder(view);
+                return new TagsViewHolder(view);
+            default:
+                throw new IllegalArgumentException("unexpected type: " + viewType);
         }
-        return viewHolder;
     }
 
     @Override
@@ -185,7 +181,7 @@ public class ArticleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
     @Override
     public int getItemCount() {
-        return mArticlesTextParts == null ? 0 : mArticlesTextParts.size() + 1 +1; //+1 for title and +1 for tags
+        return mArticlesTextParts == null ? 0 : mArticlesTextParts.size() + 1 + 1; //+1 for title and +1 for tags
     }
 
     @Override
