@@ -196,6 +196,9 @@ public class ArticleActivity
             case R.id.siteSearch:
                 link = Constants.Urls.SEARCH;
                 break;
+            case R.id.tagsSearch:
+                TagSearchActivity.startActivity(this);
+                return true;
             default:
                 Timber.e("unexpected item ID");
                 break;

@@ -42,7 +42,7 @@ import timber.log.Timber;
 
 /**
  * Created by y.kuchanov on 22.12.16.
- *
+ * <p>
  * for scp_ru
  */
 @Module
@@ -138,9 +138,13 @@ public class NetModule {
 
     @Provides
     @NonNull
+    @Named("vps")
     @Singleton
-    Retrofit providesRetrofit(@NonNull OkHttpClient okHttpClient, @NonNull Converter.Factory converterFactory,
-                              @NonNull CallAdapter.Factory callAdapterFactory) {
+    Retrofit providesVpsRetrofit(
+            @NonNull OkHttpClient okHttpClient,
+            @NonNull Converter.Factory converterFactory,
+            @NonNull CallAdapter.Factory callAdapterFactory
+    ) {
         return new Retrofit.Builder()
                 .baseUrl(BuildConfig.TOOLS_API_URL)
                 .client(okHttpClient)
@@ -151,12 +155,32 @@ public class NetModule {
 
     @Provides
     @NonNull
+    @Named("scp")
     @Singleton
-    ApiClient providerApiClient(@NonNull OkHttpClient okHttpClient,
-                                @NonNull Retrofit retrofit,
-                                @NonNull MyPreferenceManager preferencesManager,
-                                @NonNull Gson gson) {
-        return new ApiClient(okHttpClient, retrofit, preferencesManager, gson);
+    Retrofit providesScpRetrofit(
+            @NonNull OkHttpClient okHttpClient,
+            @NonNull Converter.Factory converterFactory,
+            @NonNull CallAdapter.Factory callAdapterFactory
+    ) {
+        return new Retrofit.Builder()
+                .baseUrl(BuildConfig.SCP_API_URL)
+                .client(okHttpClient)
+                .addConverterFactory(converterFactory)
+                .addCallAdapterFactory(callAdapterFactory)
+                .build();
+    }
+
+    @Provides
+    @NonNull
+    @Singleton
+    ApiClient providerApiClient(
+            @NonNull OkHttpClient okHttpClient,
+            @Named("vps") @NonNull Retrofit vpsRetrofit,
+            @Named("scp") @NonNull Retrofit scpRetrofit,
+            @NonNull MyPreferenceManager preferencesManager,
+            @NonNull Gson gson
+    ) {
+        return new ApiClient(okHttpClient, vpsRetrofit, scpRetrofit, preferencesManager, gson);
     }
 
     @Provides
@@ -195,7 +219,6 @@ public class NetModule {
     @NonNull
     @Singleton
     Gson providesGson() {
-        return new GsonBuilder()
-                .create();
+        return new GsonBuilder().create();
     }
 }

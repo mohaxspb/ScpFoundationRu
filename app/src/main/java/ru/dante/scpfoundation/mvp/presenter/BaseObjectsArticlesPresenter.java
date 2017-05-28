@@ -26,13 +26,13 @@ public abstract class BaseObjectsArticlesPresenter<V extends BaseArticlesListMvp
 
     private boolean isAlreadyTriedToLoadInitialData;
 
-    protected abstract String getObjectsInDbFieldName();
-
-    protected abstract String getObjectsLink();
-
     public BaseObjectsArticlesPresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
         super(myPreferencesManager, dbProviderFactory, apiClient);
     }
+
+    protected abstract String getObjectsInDbFieldName();
+
+    protected abstract String getObjectsLink();
 
     @Override
     protected Observable<RealmResults<Article>> getDbObservable() {

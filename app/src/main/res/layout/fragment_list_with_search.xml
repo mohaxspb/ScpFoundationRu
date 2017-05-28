@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/root"
+    android:background="?windowbackgroundOverrided"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     >
@@ -20,7 +21,6 @@
             android:layout_height="match_parent"
             android:scrollbars="vertical"
             />
-        <!--android:scrollbarThumbVertical="?scrollbar"-->
     </android.support.v4.widget.SwipeRefreshLayout>
 
     <xyz.danoz.recyclerviewfastscroller.vertical.VerticalRecyclerViewFastScroller

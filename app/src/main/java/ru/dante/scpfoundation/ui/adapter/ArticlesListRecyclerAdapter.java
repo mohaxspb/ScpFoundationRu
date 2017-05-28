@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.flexbox.FlexboxLayout;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,8 +25,10 @@ import butterknife.ButterKnife;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.db.model.Article;
+import ru.dante.scpfoundation.db.model.ArticleTag;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
+import ru.dante.scpfoundation.ui.view.TagView;
 import ru.dante.scpfoundation.util.AttributeGetter;
 import ru.dante.scpfoundation.util.DateUtils;
 import timber.log.Timber;
@@ -445,6 +448,7 @@ public class ArticlesListRecyclerAdapter extends RecyclerView.Adapter<ArticlesLi
     }
 
     class HolderWithImage extends HolderSimple {
+
         @BindView(R.id.typeIcon)
         ImageView typeIcon;
         @BindView(R.id.image)
@@ -453,6 +457,11 @@ public class ArticlesListRecyclerAdapter extends RecyclerView.Adapter<ArticlesLi
         TextView rating;
         @BindView(R.id.date)
         TextView date;
+
+        @BindView(R.id.tags)
+        FlexboxLayout mTagsContainer;
+        @BindView(R.id.tagsExpander)
+        TextView mTagsExpander;
 
         HolderWithImage(View itemView) {
             super(itemView);
@@ -489,6 +498,8 @@ public class ArticlesListRecyclerAdapter extends RecyclerView.Adapter<ArticlesLi
 
             rating.setText(article.rating != 0 ? context.getString(R.string.rating, article.rating) : null);
             date.setText(article.updatedDate != null ? DateUtils.getArticleDateShortFormat(article.updatedDate) : null);
+
+            showTags(article);
         }
 
         protected void setTypesIcons(Article article) {
@@ -514,9 +525,52 @@ public class ArticlesListRecyclerAdapter extends RecyclerView.Adapter<ArticlesLi
                     break;
             }
         }
+
+        private void showTags(Article article) {
+//            Timber.d("article.tags: %s", Arrays.toString(article.tags.toArray()));
+            Context context = itemView.getContext();
+//            Timber.d("mTagsContainer.getChildCount(): %s", mTagsContainer.getChildCount());
+            int childCount = mTagsContainer.getChildCount();
+            for (int i = childCount - 1; i > 0; i--) {
+                mTagsContainer.removeViewAt(i);
+            }
+//            Timber.d("mTagsContainer.getChildCount(): %s", mTagsContainer.getChildCount());
+            if (article.tags == null || article.tags.isEmpty()) {
+                mTagsContainer.setVisibility(View.GONE);
+            } else {
+                mTagsContainer.setVisibility(View.VISIBLE);
+
+                mTagsExpander.setCompoundDrawablesWithIntrinsicBounds(0, 0, AttributeGetter.getDrawableId(context, R.attr.iconArrowDown), 0);
+                mTagsExpander.setOnClickListener(v -> {
+                    if (mTagsContainer.getChildAt(1).getVisibility() == View.GONE) {
+                        mTagsExpander.setCompoundDrawablesWithIntrinsicBounds(0, 0, AttributeGetter.getDrawableId(context, R.attr.iconArrowUp), 0);
+                        for (int i = 1; i < mTagsContainer.getChildCount(); i++) {
+                            mTagsContainer.getChildAt(i).setVisibility(View.VISIBLE);
+                        }
+                    } else {
+                        mTagsExpander.setCompoundDrawablesWithIntrinsicBounds(0, 0, AttributeGetter.getDrawableId(context, R.attr.iconArrowDown), 0);
+                        for (int i = 1; i < mTagsContainer.getChildCount(); i++) {
+                            mTagsContainer.getChildAt(i).setVisibility(View.GONE);
+                        }
+                    }
+                });
+
+                for (ArticleTag tag : article.tags) {
+                    TagView tagView = new TagView(context);
+                    tagView.setTag(tag);
+                    tagView.setTagTextSize(11);
+                    tagView.setActionImage(TagView.Action.NONE);
+
+                    tagView.setOnTagClickListener((tagView1, tag1) -> mArticleClickListener.onTagClicked(tag1));
+                    tagView.setVisibility(View.GONE);
+
+                    mTagsContainer.addView(tagView);
+                }
+            }
+        }
     }
 
-    private class HolderMedium extends HolderWithImage {
+    class HolderMedium extends HolderWithImage {
 
         HolderMedium(View itemView) {
             super(itemView);
@@ -566,5 +620,7 @@ public class ArticlesListRecyclerAdapter extends RecyclerView.Adapter<ArticlesLi
         void toggleFavoriteState(Article article);
 
         void onOfflineClicked(Article article);
+
+        void onTagClicked(ArticleTag tag);
     }
 }

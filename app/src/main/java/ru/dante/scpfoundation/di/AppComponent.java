@@ -19,6 +19,7 @@ import ru.dante.scpfoundation.ui.activity.GalleryActivity;
 import ru.dante.scpfoundation.ui.activity.LicenceActivity;
 import ru.dante.scpfoundation.ui.activity.MainActivity;
 import ru.dante.scpfoundation.ui.activity.MaterialsActivity;
+import ru.dante.scpfoundation.ui.activity.TagSearchActivity;
 import ru.dante.scpfoundation.ui.adapter.ArticleRecyclerAdapter;
 import ru.dante.scpfoundation.ui.adapter.ArticlesListRecyclerAdapter;
 import ru.dante.scpfoundation.ui.adapter.SubscriptionsRecyclerAdapter;
@@ -45,6 +46,8 @@ import ru.dante.scpfoundation.ui.fragment.OfflineArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.RatedArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.RecentArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.SiteSearchArticlesFragment;
+import ru.dante.scpfoundation.ui.fragment.TagsSearchFragment;
+import ru.dante.scpfoundation.ui.fragment.TagsSearchResultsArticlesFragment;
 
 /**
  * Created by y.kuchanov on 21.12.16.
@@ -69,6 +72,8 @@ public interface AppComponent {
     void inject(MaterialsActivity activity);
 
     void inject(GalleryActivity activity);
+
+    void inject(TagSearchActivity activity);
 
     void inject(ArticleFragment fragment);
 
@@ -103,6 +108,10 @@ public interface AppComponent {
     void inject(MaterialsJokesFragment fragment);
 
     void inject(Objects4ArticlesFragment fragment);
+
+    void inject(TagsSearchFragment fragment);
+
+    void inject(TagsSearchResultsArticlesFragment fragment);
 
     void inject(TextSizeDialogFragment dialogFragment);
 

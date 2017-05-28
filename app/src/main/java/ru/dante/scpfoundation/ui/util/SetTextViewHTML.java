@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import ru.dante.scpfoundation.BuildConfig;
 import ru.dante.scpfoundation.R;
+import ru.dante.scpfoundation.db.model.ArticleTag;
 import ru.dante.scpfoundation.util.AttributeGetter;
 import timber.log.Timber;
 
@@ -181,5 +182,7 @@ public class SetTextViewHTML {
         void onMusicClicked(String link);
 
         void onExternalDomenUrlClicked(String link);
+
+        void onTagClicked(ArticleTag tag);
     }
 }

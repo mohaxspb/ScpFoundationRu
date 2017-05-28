@@ -17,7 +17,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,9 +35,6 @@ import com.vk.sdk.VKSdk;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Arrays;
-import java.util.List;
-
 import javax.inject.Inject;
 
 import butterknife.BindView;
@@ -51,12 +47,10 @@ import ru.dante.scpfoundation.db.model.User;
 import ru.dante.scpfoundation.monetization.util.InappHelper;
 import ru.dante.scpfoundation.mvp.contract.DrawerMvp;
 import ru.dante.scpfoundation.ui.activity.ArticleActivity;
-import ru.dante.scpfoundation.ui.adapter.SocialLoginAdapter;
 import ru.dante.scpfoundation.ui.dialog.LeaderboardDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
 import ru.dante.scpfoundation.ui.holder.HeaderViewHolderLogined;
 import ru.dante.scpfoundation.ui.holder.HeaderViewHolderUnlogined;
-import ru.dante.scpfoundation.ui.holder.SocialLoginHolder;
 import ru.dante.scpfoundation.util.SecureUtils;
 import timber.log.Timber;
 
@@ -339,25 +333,7 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
 
             HeaderViewHolderUnlogined headerViewHolder = new HeaderViewHolderUnlogined(headerUnlogined);
 
-            headerViewHolder.mLogin.setOnClickListener(view -> {
-                Timber.d("Login clicked");
-                final MaterialDialog dialog;
-                List<Constants.Firebase.SocialProvider> providers = Arrays.asList(Constants.Firebase.SocialProvider.values());
-                SocialLoginAdapter adapter = new SocialLoginAdapter();
-                dialog = new MaterialDialog.Builder(this)
-                        .title(R.string.dialog_social_login_title)
-                        .items(providers)
-                        .adapter(adapter, new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false))
-                        .positiveText(android.R.string.cancel)
-                        .build();
-                adapter.setItemClickListener(data -> {
-                    startLogin(data.getSocialProvider());
-                    dialog.dismiss();
-                });
-                adapter.setData(SocialLoginHolder.SocialLoginModel.getModels());
-                dialog.getRecyclerView().setOverScrollMode(View.OVER_SCROLL_NEVER);
-                dialog.show();
-            });
+            headerViewHolder.mLogin.setOnClickListener(view -> showLoginProvidersPopup());
 
             headerViewHolder.mLoginInfo.setOnClickListener(view -> new MaterialDialog.Builder(this)
                     .content(R.string.login_advantages)

@@ -22,27 +22,67 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:baselineAligned="false"
             android:orientation="horizontal"
             android:paddingRight="@dimen/defaultMargin"
-            tools:ignore="RtlSymmetry">
+            tools:ignore="RtlHardcoded,RtlSymmetry"
+            >
 
-            <TextView
-                android:id="@+id/title"
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
-                android:paddingLeft="@dimen/defaultMargin"
-                android:paddingRight="@dimen/defaultMargin"
-                android:paddingTop="@dimen/defaultMargin"
-                android:textColor="?newArticlesTextColor"
-                android:textSize="21sp"
-                tools:ignore="RtlHardcoded,RtlSymmetry"
-                tools:text="Ахуеть какой завлекающий заголовок"/>
+                android:orientation="vertical"
+                >
+
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="@dimen/defaultMargin"
+                    android:paddingRight="@dimen/defaultMargin"
+                    android:paddingTop="@dimen/defaultMargin"
+                    android:textColor="?newArticlesTextColor"
+                    android:textSize="21sp"
+                    tools:ignore="RtlHardcoded,RtlSymmetry"
+                    tools:text="Ахуеть какой завлекающий заголовок"
+                    />
+
+                <com.google.android.flexbox.FlexboxLayout
+                    android:id="@+id/tags"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="@dimen/defaultMarginSmall"
+                    android:paddingRight="@dimen/defaultMarginSmall"
+                    app:alignContent="flex_start"
+                    app:alignItems="flex_start"
+                    app:flexWrap="wrap"
+                    >
+
+                    <TextView
+                        android:id="@+id/tagsExpander"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/defaultMarginTiny"
+                        android:layout_marginRight="@dimen/defaultMarginSmall"
+                        android:layout_marginTop="@dimen/defaultMarginTiny"
+                        android:gravity="center_vertical"
+                        android:drawableRight="?iconArrowDown"
+                        android:background="?selectableItemBackground"
+                        android:padding="@dimen/defaultMarginSmall"
+                        android:text="@string/tags"
+                        android:textColor="?newArticlesTextColor"
+                        android:textSize="11sp"
+                        tools:ignore="RtlHardcoded,RtlSymmetry,SmallSp"
+                        />
+                </com.google.android.flexbox.FlexboxLayout>
+            </LinearLayout>
 
             <FrameLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingTop="@dimen/defaultMargin">
+                android:paddingTop="@dimen/defaultMargin"
+                >
 
                 <ImageView
                     android:id="@+id/image"
@@ -80,7 +120,7 @@
             android:textSize="17sp"
             android:visibility="gone"
             tools:text="Тут какое-то превью, которое показывается только в поиске по сайту"
-            tools:visibility="gone"
+            tools:visibility="visible"
             />
 
         <LinearLayout

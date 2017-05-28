@@ -84,7 +84,6 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
                             getView().showError(e);
                         }
                 );
-
     }
 
     @Override

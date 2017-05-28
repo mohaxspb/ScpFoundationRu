@@ -12,8 +12,9 @@ import ru.dante.scpfoundation.api.ApiClient;
 import ru.dante.scpfoundation.db.DbProviderFactory;
 import ru.dante.scpfoundation.db.error.ScpNoArticleForIdError;
 import ru.dante.scpfoundation.db.model.Article;
+import ru.dante.scpfoundation.db.model.ArticleTag;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
-import ru.dante.scpfoundation.mvp.contract.SiteSearchArticlesMvp;
+import ru.dante.scpfoundation.mvp.contract.TagsSearchResultsArticlesMvp;
 import rx.Observable;
 import rx.Subscriber;
 import timber.log.Timber;
@@ -23,47 +24,32 @@ import timber.log.Timber;
  * <p>
  * for TappAwards
  */
-public class SiteSearchArticlesPresenter
-        extends BaseListArticlesPresenter<SiteSearchArticlesMvp.View>
-        implements SiteSearchArticlesMvp.Presenter {
+public class TagSearchResultsArticlesPresenter
+        extends BaseListArticlesPresenter<TagsSearchResultsArticlesMvp.View>
+        implements TagsSearchResultsArticlesMvp.Presenter {
 
-    private String mQuery = "";
-
+    private List<ArticleTag> mQueryTags;
     private List<Article> mSearchData;
 
-    public SiteSearchArticlesPresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
+    public TagSearchResultsArticlesPresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
         super(myPreferencesManager, dbProviderFactory, apiClient);
     }
 
     @Override
-    public void setQuery(String query) {
-        mQuery = query;
-    }
-
-    @Override
-    public List<Article> getData() {
-        return mSearchData;
-    }
-
-    @Override
     protected Observable<RealmResults<Article>> getDbObservable() {
-        //we fo not save search results to db
-        return Observable
-                .<RealmResults<Article>>empty()
-                .doOnCompleted(() -> getView().showCenterProgress(false));
+        return Observable.<RealmResults<Article>>empty()
+                .doOnCompleted(() -> {
+                    if (mSearchData == null) {
+                        getDataFromApi(Constants.Api.ZERO_OFFSET);
+                    } else {
+                        getView().showSwipeProgress(false);
+                    }
+                });
     }
 
     @Override
     protected Observable<List<Article>> getApiObservable(int offset) {
-        Timber.d("getApiObservable with query: %s", mQuery);
-        return mApiClient.getSearchArticles(offset, mQuery)
-                .doOnSubscribe(() -> {
-                    if (offset != Constants.Api.ZERO_OFFSET) {
-                        getView().showSwipeProgress(false);
-                        getView().enableSwipeRefresh(true);
-                        getView().showBottomProgress(true);
-                    }
-                });
+        return mApiClient.getArticlesByTags(mQueryTags);
     }
 
     @Override
@@ -72,15 +58,36 @@ public class SiteSearchArticlesPresenter
         //but we need pass data to view...
         //so try to do it here
         return Observable.unsafeCreate(subscriber -> {
-            if (offset == 0) {
-                mSearchData = data;
-            } else {
-                mSearchData.addAll(data);
-            }
+            mSearchData = data;
             getView().updateData(mSearchData);
+            getView().showCenterProgress(false);
+            getView().showSwipeProgress(false);
+            if (mSearchData.isEmpty()) {
+                getView().showMessage(R.string.error_no_search_results);
+            }
             subscriber.onNext(new Pair<>(data.size(), offset));
             subscriber.onCompleted();
         });
+    }
+
+    @Override
+    public void setQueryTags(List<ArticleTag> queryTags) {
+        mQueryTags = queryTags;
+    }
+
+    @Override
+    public List<ArticleTag> getQueryTags() {
+        return mQueryTags;
+    }
+
+    @Override
+    public void setSearchData(List<Article> articles) {
+        mSearchData = articles;
+    }
+
+    @Override
+    public List<Article> getSearchData() {
+        return mSearchData;
     }
 
     @Override

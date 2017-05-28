@@ -21,6 +21,7 @@ import timber.log.Timber;
  */
 //TODO extend from baseListFragment to set all its advantages
 public class FragmentMaterialsAll extends Fragment {
+
     public static final String TAG = FragmentMaterialsAll.class.getSimpleName();
 
     public static FragmentMaterialsAll newInstance() {

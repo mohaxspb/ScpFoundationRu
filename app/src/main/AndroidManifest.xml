@@ -42,6 +42,8 @@
 
         <activity android:name=".ui.activity.GalleryActivity"/>
 
+        <activity android:name=".ui.activity.TagSearchActivity"/>
+
         <activity
             android:name=".ui.activity.SplashActivity"
             android:theme="@style/SplashTheme">

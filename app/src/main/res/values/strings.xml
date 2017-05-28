@@ -228,6 +228,11 @@
     <string name="dialog_social_login_title">Авторизация</string>
     <string name="social_provider_facebook_title">Facebook</string>
     <string name="error_login_firebase_user_collision">Ошибка - на этот email уже зарегистрирован другой пользователь.</string>
+    <string name="tags_search">Поиск по тегам</string>
+    <string name="tags_choosen">Выбранные теги</string>
+    <string name="tags_all">Все теги</string>
+    <string name="tags_search_results">Результаты</string>
+    <string name="tags">Теги:</string>
 
     <plurals name="plurals_score">
         <item quantity="zero">%1$d очков</item>

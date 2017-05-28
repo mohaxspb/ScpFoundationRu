@@ -82,7 +82,7 @@
         <item name="colorPrimaryDark">@android:color/black</item>
         <!--(индикаторы нажатий(если незадано иначе), цвет ссылок,дефолтный цвет прогрессбара)-->
         <item name="colorAccent">@color/material_amber_500</item>
-        <!--(цвет стандарного текста левого/правого меню,цdет верхнего тулбара(заголовка)-->
+        <!--(цвет стандарного текста, левого/правого меню, цвет верхнего тулбара(заголовка)-->
         <item name="android:textColorPrimary">@color/material_blue_gray_300</item>
         <!--(не ясно за что отвечает)-->
         <item name="android:textColorPrimaryInverse">@color/material_green_500</item>
@@ -157,53 +157,6 @@
     <style name="navigationStyleLight" parent="SCP.Theme.Light">
         <item name="colorControlHighlight">@color/material_grey_400</item>
         <item name="android:windowBackground">@color/material_blue_gray_50</item>
-    </style>
-
-    <style name="Base.Theme.Preference.Light" parent="Base.Theme.Light">
-        <item name="android:windowActionBarOverlay">false</item>
-        <item name="android:windowBackground">@color/scp_default_light</item>
-        <item name="android:windowNoTitle">false</item>
-        <item name="android:windowActionBar">true</item>
-        <item name="colorPrimary">@color/scp_default_light</item>
-        <item name="android:textColorPrimary">@color/material_blue_gray_50</item>
-        <item name="android:textColorSecondary">@color/material_blue_gray_50</item>
-        <!--<item name="android:textAppearanceLarge">@style/MyTextAppearanceLarge</item>-->
-        <item name="android:textColor">@color/material_blue_gray_50</item>
-        <!---->
-        <item name="android:dialogTheme">@style/MyDialogStyle</item>
-        <item name="android:alertDialogTheme">@style/MyDialogStyle</item>
-    </style>
-
-    <style name="MyDialogStyle" parent="Theme.AppCompat.Light.Dialog">
-        <item name="colorPrimary">@color/material_red_500</item>
-        <item name="colorPrimaryDark">@color/material_green_500</item>
-        <item name="colorAccent">@color/material_indigo_500</item>
-        <item name="android:textColor">@android:color/black</item>
-        <!--<item name="android:textColorPrimary">@color/material_amber_500</item>-->
-        <!--<item name="android:textColorSecondary">@color/material_amber_500</item>-->
-        <!--<item name="android:textColorTertiary">@color/material_indigo_500</item>-->
-        <!--<item name="android:background">@color/scp_default_light</item>-->
-        <item name="android:textColorAlertDialogListItem">@android:color/black</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-    </style>
-
-    <style name="Base.Theme.Preference.Dark" parent="Base.Theme.Dark">
-        <item name="android:windowActionBarOverlay">false</item>
-        <item name="android:windowBackground">@color/scp_default_dark</item>
-        <item name="android:windowNoTitle">false</item>
-        <item name="android:windowActionBar">true</item>
-        <item name="colorPrimary">@color/scp_default_dark</item>
-        <item name="android:textColorPrimary">@color/material_blue_gray_50</item>
-        <item name="android:textColorSecondary">@color/material_blue_gray_50</item>
-        <!--<item name="android:textAppearanceLarge">@style/MyTextAppearanceLarge</item>-->
-        <item name="android:textColor">@color/material_blue_gray_50</item>
-    </style>
-
-    <style name="Theme.Preference.Light" parent="Base.Theme.Preference.Light">
-    </style>
-
-    <style name="Theme.Preference.Dark" parent="Base.Theme.Preference.Dark">
-
     </style>
 
     <style name="MyTextAppearanceLarge" parent="android:style/TextAppearance.Large">

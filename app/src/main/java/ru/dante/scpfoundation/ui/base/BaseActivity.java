@@ -17,6 +17,7 @@ import android.support.annotation.StringRes;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -78,10 +79,12 @@ import ru.dante.scpfoundation.mvp.base.BaseActivityMvp;
 import ru.dante.scpfoundation.mvp.base.MonetizationActions;
 import ru.dante.scpfoundation.mvp.contract.DataSyncActions;
 import ru.dante.scpfoundation.service.DownloadAllService;
+import ru.dante.scpfoundation.ui.adapter.SocialLoginAdapter;
 import ru.dante.scpfoundation.ui.dialog.NewVersionDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
 import ru.dante.scpfoundation.ui.dialog.TextSizeDialogFragment;
+import ru.dante.scpfoundation.ui.holder.SocialLoginHolder;
 import ru.dante.scpfoundation.util.SecureUtils;
 import ru.dante.scpfoundation.util.SystemUtils;
 import timber.log.Timber;
@@ -206,6 +209,26 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
         initAndUpdateRemoteConfig();
 
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void showLoginProvidersPopup() {
+        MaterialDialog dialog;
+        List<Constants.Firebase.SocialProvider> providers = Arrays.asList(Constants.Firebase.SocialProvider.values());
+        SocialLoginAdapter adapter = new SocialLoginAdapter();
+        dialog = new MaterialDialog.Builder(this)
+                .title(R.string.dialog_social_login_title)
+                .items(providers)
+                .adapter(adapter, new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false))
+                .positiveText(android.R.string.cancel)
+                .build();
+        adapter.setItemClickListener(data -> {
+            startLogin(data.getSocialProvider());
+            dialog.dismiss();
+        });
+        adapter.setData(SocialLoginHolder.SocialLoginModel.getModels());
+        dialog.getRecyclerView().setOverScrollMode(View.OVER_SCROLL_NEVER);
+        dialog.show();
     }
 
     @Override
@@ -411,7 +434,7 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
                 snackbar = Snackbar.make(mRoot, R.string.sync_need_auth, Snackbar.LENGTH_LONG);
                 snackbar.setAction(R.string.authorize, v -> {
                     snackbar.dismiss();
-                    startLogin(Constants.Firebase.SocialProvider.VK);
+                    showLoginProvidersPopup();
                 });
                 break;
             default:
@@ -626,7 +649,7 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
                 .title(R.string.need_login)
                 .content(R.string.need_login_content)
                 .positiveText(R.string.authorize)
-                .onPositive((dialog, which) -> startLogin(Constants.Firebase.SocialProvider.VK))
+                .onPositive((dialog, which) -> showLoginProvidersPopup())
                 .negativeText(android.R.string.cancel)
                 .onNegative((dialog, which) -> dialog.dismiss())
                 .build()

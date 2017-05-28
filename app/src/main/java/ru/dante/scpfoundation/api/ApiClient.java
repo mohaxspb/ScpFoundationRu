@@ -64,12 +64,16 @@ import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.api.error.ScpException;
 import ru.dante.scpfoundation.api.error.ScpNoSearchResultsException;
 import ru.dante.scpfoundation.api.error.ScpParseException;
+import ru.dante.scpfoundation.api.model.ArticleFromSearchTagsOnSite;
 import ru.dante.scpfoundation.api.model.firebase.ArticleInFirebase;
 import ru.dante.scpfoundation.api.model.firebase.FirebaseObjectUser;
 import ru.dante.scpfoundation.api.model.response.LeaderBoardResponse;
 import ru.dante.scpfoundation.api.model.response.VkGalleryResponse;
 import ru.dante.scpfoundation.api.model.response.VkGroupJoinResponse;
+import ru.dante.scpfoundation.api.service.ScpServer;
+import ru.dante.scpfoundation.api.service.VpsServer;
 import ru.dante.scpfoundation.db.model.Article;
+import ru.dante.scpfoundation.db.model.ArticleTag;
 import ru.dante.scpfoundation.db.model.RealmString;
 import ru.dante.scpfoundation.db.model.SocialProviderModel;
 import ru.dante.scpfoundation.db.model.User;
@@ -96,12 +100,20 @@ public class ApiClient {
     private Gson mGson;
 
     private VpsServer mVpsServer;
+    private ScpServer mScpServer;
 
-    public ApiClient(OkHttpClient okHttpClient, Retrofit retrofit, MyPreferenceManager preferencesManager, Gson gson) {
+    public ApiClient(
+            OkHttpClient okHttpClient,
+            Retrofit vpsRetrofit,
+            Retrofit scpRetrofit,
+            MyPreferenceManager preferencesManager,
+            Gson gson
+    ) {
         mPreferencesManager = preferencesManager;
         mOkHttpClient = okHttpClient;
         mGson = gson;
-        mVpsServer = retrofit.create(VpsServer.class);
+        mVpsServer = vpsRetrofit.create(VpsServer.class);
+        mScpServer = scpRetrofit.create(ScpServer.class);
     }
 
     private <T> Observable<T> bindWithUtils(Observable<T> observable) {
@@ -656,6 +668,17 @@ public class ApiClient {
                     }
                 }
 
+                //extract tags
+                RealmList<ArticleTag> articleTags = new RealmList<>();
+                Element tagsContainer = doc.getElementsByClass("page-tags").first();
+                Timber.d("tagsContainer: %s", tagsContainer);
+                if (tagsContainer != null) {
+                    for (Element a : tagsContainer./*getElementsByTag("span").first().*/getElementsByTag("a")) {
+                        articleTags.add(new ArticleTag(a.text()));
+                        Timber.d("tag: %s", articleTags.get(articleTags.size() - 1));
+                    }
+                }
+
                 //search for images and add it to separate field to be able to show it in arts lists
                 RealmList<RealmString> imgsUrls = null;
                 Elements imgsOfArticle = pageContent.getElementsByTag("img");
@@ -732,6 +755,8 @@ public class ApiClient {
                 article.textPartsTypes = textPartsTypes;
                 //images
                 article.imagesUrls = imgsUrls;
+                //tags
+                article.tags = articleTags;
 
                 subscriber.onNext(article);
                 subscriber.onCompleted();
@@ -746,7 +771,7 @@ public class ApiClient {
                     //download all images
                     if (article.imagesUrls != null) {
                         for (RealmString realmString : article.imagesUrls) {
-                            Timber.d("load image by Glide: %s", realmString.val);
+//                            Timber.d("load image by Glide: %s", realmString.val);
                             Glide.with(MyApplication.getAppInstance())
                                     .load(realmString.val)
                                     .diskCacheStrategy(DiskCacheStrategy.SOURCE)
@@ -759,7 +784,7 @@ public class ApiClient {
 
                                         @Override
                                         public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                                            Timber.e("onResourceReady: %s/%s", resource.getIntrinsicWidth(), resource.getIntrinsicHeight());
+//                                            Timber.d("onResourceReady: %s/%s", resource.getIntrinsicWidth(), resource.getIntrinsicHeight());
                                             return false;
                                         }
                                     })
@@ -1777,5 +1802,33 @@ public class ApiClient {
 
     public Observable<LeaderBoardResponse> getLeaderboard() {
         return bindWithUtils(mVpsServer.getLeaderboard());
+    }
+
+    public Observable<List<Article>> getArticlesByTags(List<ArticleTag> tags) {
+        return bindWithUtils(mScpServer.getArticlesByTags(ArticleTag.getStringsFromTags(tags)))
+                .map(ArticleFromSearchTagsOnSite::getArticlesFromSiteArticles)
+                .map(articles -> {
+                    for (Article article : articles) {
+                        if (!article.url.startsWith("http://")) {
+                            String start = BuildConfig.BASE_API_URL;
+                            if (!article.url.startsWith("/")) {
+                                start += "/";
+                            }
+                            article.url = start + article.url;
+                        }
+                    }
+                    return articles;
+                });
+    }
+
+    public Observable<List<ArticleTag>> getTagsFromSite() {
+        return bindWithUtils(mScpServer.getTagsList()
+                .map(strings -> {
+                    List<ArticleTag> tags = new ArrayList<>();
+                    for (String divWithTagData : strings) {
+                        tags.add(new ArticleTag(divWithTagData));
+                    }
+                    return tags;
+                }));
     }
 }
