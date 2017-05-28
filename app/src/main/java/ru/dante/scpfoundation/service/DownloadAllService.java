@@ -16,6 +16,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -256,23 +257,26 @@ public class DownloadAllService extends Service {
                     }
                     return articles;
                 })
-                .flatMap(Observable::from)
                 //TODO refactor it - from here code is equal to objects one
-                .filter(article -> {
+                .map(articles -> {
+                    List<Article> articlesToDownload = new ArrayList<>();
                     DbProvider dbProvider = mDbProviderFactory.getDbProvider();
-                    Article articleInDb = dbProvider.getUnmanagedArticleSync(article.url);
-                    dbProvider.close();
-                    if (articleInDb == null || articleInDb.text == null) {
-                        return true;
-                    } else {
-                        mCurProgress++;
-                        Timber.d("already downloaded: %s", article.url);
-                        Timber.d("mCurProgress %s, mMaxProgress: %s", mCurProgress, mMaxProgress);
-                        showNotificationDownloadProgress(getString(R.string.download_recent_title),
-                                mCurProgress, mMaxProgress, mNumOfErrors);
-                        return false;
+                    for (Article article : articles) {
+                        Article articleInDb = dbProvider.getUnmanagedArticleSync(article.url);
+                        if (articleInDb == null || articleInDb.text == null) {
+                            articlesToDownload.add(article);
+                        } else {
+                            mCurProgress++;
+                            Timber.d("already downloaded: %s", article.url);
+                            Timber.d("mCurProgress %s, mMaxProgress: %s", mCurProgress, mMaxProgress);
+                            showNotificationDownloadProgress(getString(R.string.download_recent_title),
+                                    mCurProgress, mMaxProgress, mNumOfErrors);
+                        }
                     }
+                    dbProvider.close();
+                    return articlesToDownload;
                 })
+                .flatMap(Observable::from)
                 //try to load article
                 //on error increase counters and resume query, emiting onComplete to article observable
                 .flatMap(article -> mApiClient.getArticle(article.url)
@@ -382,22 +386,24 @@ public class DownloadAllService extends Service {
                         .flatMap(integerIntegerPair -> Observable.just(articles)))
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(Schedulers.io())
-                .flatMap(Observable::from)
-                .filter(article -> {
-                    //TODO use one realm instance
+                .map(articles -> {
+                    List<Article> articlesToDownload = new ArrayList<>();
                     DbProvider dbProvider = mDbProviderFactory.getDbProvider();
-                    Article articleInDb = dbProvider.getUnmanagedArticleSync(article.url);
-                    dbProvider.close();
-                    if (articleInDb == null || articleInDb.text == null) {
-                        return true;
-                    } else {
-                        mCurProgress++;
-                        Timber.d("already downloaded: %s", article.url);
-                        Timber.d("mCurProgress %s, mMaxProgress: %s", mCurProgress, mMaxProgress);
-                        showNotificationDownloadProgress(getString(R.string.download_objects_title), mCurProgress, mMaxProgress, mNumOfErrors);
-                        return false;
+                    for (Article article : articles) {
+                        Article articleInDb = dbProvider.getUnmanagedArticleSync(article.url);
+                        if (articleInDb == null || articleInDb.text == null) {
+                            articlesToDownload.add(article);
+                        } else {
+                            mCurProgress++;
+                            Timber.d("already downloaded: %s", article.url);
+                            Timber.d("mCurProgress %s, mMaxProgress: %s", mCurProgress, mMaxProgress);
+                            showNotificationDownloadProgress(getString(R.string.download_objects_title), mCurProgress, mMaxProgress, mNumOfErrors);
+                        }
                     }
+                    dbProvider.close();
+                    return articlesToDownload;
                 })
+                .flatMap(Observable::from)
                 //try to load article
                 //on error increase counters and resume query, emiting onComplete to article observable
                 .flatMap(article -> mApiClient.getArticle(article.url).onErrorResumeNext(throwable -> {

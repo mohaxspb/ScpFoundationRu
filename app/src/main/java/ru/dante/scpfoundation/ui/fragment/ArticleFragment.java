@@ -20,6 +20,8 @@ import org.jsoup.select.Elements;
 import org.parceler.Parcels;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
@@ -27,11 +29,13 @@ import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.db.model.Article;
+import ru.dante.scpfoundation.db.model.ArticleTag;
 import ru.dante.scpfoundation.db.model.RealmString;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.mvp.contract.ArticleMvp;
 import ru.dante.scpfoundation.ui.activity.ArticleActivity;
 import ru.dante.scpfoundation.ui.activity.MainActivity;
+import ru.dante.scpfoundation.ui.activity.TagSearchActivity;
 import ru.dante.scpfoundation.ui.adapter.ArticleRecyclerAdapter;
 import ru.dante.scpfoundation.ui.base.BaseFragment;
 import ru.dante.scpfoundation.ui.util.ReachBottomRecyclerScrollListener;
@@ -380,6 +384,11 @@ public class ArticleFragment
     @Override
     public void onExternalDomenUrlClicked(String link) {
         IntentUtils.openUrl(link);
+    }
+
+    @Override
+    public void onTagClicked(ArticleTag tag) {
+        TagSearchActivity.startActivity(getActivity(), new ArrayList<>(Collections.singletonList(tag)));
     }
 
     @Override

@@ -10,7 +10,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.apmem.tools.layouts.FlowLayout;
+import com.google.android.flexbox.FlexboxLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,9 +41,9 @@ public class TagsSearchFragment
     public static final String TAG = TagsSearchFragment.class.getSimpleName();
 
     @BindView(R.id.tagsSearch)
-    FlowLayout mSearchTagsContainer;
+    FlexboxLayout mSearchTagsContainer;
     @BindView(R.id.tagsAll)
-    FlowLayout mAllTagsContainer;
+    FlexboxLayout mAllTagsContainer;
     @BindView(R.id.searchFAB)
     FloatingActionButton mSearchFab;
     @BindView(R.id.swipeRefresh)

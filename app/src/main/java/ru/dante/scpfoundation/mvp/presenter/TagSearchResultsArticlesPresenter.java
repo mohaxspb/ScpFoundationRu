@@ -5,6 +5,7 @@ import android.util.Pair;
 import java.util.List;
 
 import io.realm.RealmResults;
+import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.api.ApiClient;
@@ -30,7 +31,6 @@ public class TagSearchResultsArticlesPresenter
     private List<ArticleTag> mQueryTags;
     private List<Article> mSearchData;
 
-
     public TagSearchResultsArticlesPresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
         super(myPreferencesManager, dbProviderFactory, apiClient);
     }
@@ -38,7 +38,13 @@ public class TagSearchResultsArticlesPresenter
     @Override
     protected Observable<RealmResults<Article>> getDbObservable() {
         return Observable.<RealmResults<Article>>empty()
-                .doOnCompleted(() -> getView().showSwipeProgress(false));
+                .doOnCompleted(() -> {
+                    if (mSearchData == null) {
+                        getDataFromApi(Constants.Api.ZERO_OFFSET);
+                    } else {
+                        getView().showSwipeProgress(false);
+                    }
+                });
     }
 
     @Override

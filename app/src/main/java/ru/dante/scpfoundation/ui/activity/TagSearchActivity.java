@@ -115,10 +115,14 @@ public class TagSearchActivity
         }
 
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.content, TagsSearchFragment.newInstance(ArticleTag.getStringsFromTags(mTags)), TagsSearchFragment.TAG)
-                    .addToBackStack(FragmentMaterialsAll.TAG)
-                    .commit();
+            if (mTags != null && !mTags.isEmpty()) {
+                showResults(null, mTags);
+            } else {
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.content, TagsSearchFragment.newInstance(ArticleTag.getStringsFromTags(mTags)), TagsSearchFragment.TAG)
+                        .addToBackStack(FragmentMaterialsAll.TAG)
+                        .commit();
+            }
         }
     }
 

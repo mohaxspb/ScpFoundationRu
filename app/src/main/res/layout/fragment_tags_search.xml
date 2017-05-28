@@ -38,13 +38,16 @@
                     android:textStyle="bold"
                     />
 
-                <org.apmem.tools.layouts.FlowLayout
+                <com.google.android.flexbox.FlexboxLayout
                     android:id="@+id/tagsSearch"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:minHeight="36dp"
                     android:paddingLeft="@dimen/defaultMarginSmall"
                     android:paddingRight="@dimen/defaultMarginSmall"
+                    app:alignContent="flex_start"
+                    app:alignItems="flex_start"
+                    app:flexWrap="wrap"
                     />
 
                 <TextView
@@ -56,13 +59,16 @@
                     android:textStyle="bold"
                     />
 
-                <org.apmem.tools.layouts.FlowLayout
+                <com.google.android.flexbox.FlexboxLayout
                     android:id="@+id/tagsAll"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:minHeight="36dp"
                     android:paddingLeft="@dimen/defaultMarginSmall"
                     android:paddingRight="@dimen/defaultMarginSmall"
+                    app:alignContent="flex_start"
+                    app:alignItems="flex_start"
+                    app:flexWrap="wrap"
                     />
             </LinearLayout>
 

@@ -58,12 +58,15 @@
             tools:text="Ахуеть какой завлекающий заголовок"
             />
 
-        <org.apmem.tools.layouts.FlowLayout
+        <com.google.android.flexbox.FlexboxLayout
             android:id="@+id/tags"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingLeft="@dimen/defaultMarginSmall"
             android:paddingRight="@dimen/defaultMarginSmall"
+            app:alignContent="flex_start"
+            app:alignItems="flex_start"
+            app:flexWrap="wrap"
             >
 
             <TextView
@@ -82,7 +85,7 @@
                 android:textSize="11sp"
                 tools:ignore="RtlHardcoded,RtlSymmetry,SmallSp"
                 />
-        </org.apmem.tools.layouts.FlowLayout>
+        </com.google.android.flexbox.FlexboxLayout>
 
         <TextView
             android:id="@+id/preview"

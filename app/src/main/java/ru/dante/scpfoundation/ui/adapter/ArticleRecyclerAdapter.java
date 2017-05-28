@@ -23,6 +23,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.google.android.flexbox.FlexboxLayout;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -39,9 +40,11 @@ import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.api.ParseHtmlUtils;
 import ru.dante.scpfoundation.db.model.Article;
+import ru.dante.scpfoundation.db.model.ArticleTag;
 import ru.dante.scpfoundation.db.model.RealmString;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.ui.util.SetTextViewHTML;
+import ru.dante.scpfoundation.ui.view.TagView;
 import ru.dante.scpfoundation.util.AttributeGetter;
 import ru.dante.scpfoundation.util.DialogUtils;
 import ru.dante.scpfoundation.util.DimensionUtils;
@@ -60,6 +63,7 @@ public class ArticleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     private static final int TYPE_IMAGE = 2;
     private static final int TYPE_TITLE = 3;
     private static final int TYPE_TABLE = 4;
+    private static final int TYPE_TAGS = 5;
 
     @Inject
     MyPreferenceManager mMyPreferenceManager;
@@ -104,7 +108,10 @@ public class ArticleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         if (position == 0) {
             return TYPE_TITLE;
         }
-        String type = mArticlesTextPartsTypes.get(position - 1);
+        if (position == getItemCount() - 1) {
+            return TYPE_TAGS;
+        }
+        String type = mArticlesTextPartsTypes.get(position - 1);//-1 for title
         switch (type) {
             default:
             case ParseHtmlUtils.TextType.TEXT:
@@ -143,6 +150,9 @@ public class ArticleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             case TYPE_TABLE:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_table, parent, false);
                 viewHolder = new ViewHolderTable(view);
+            case TYPE_TAGS:
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_tags, parent, false);
+                viewHolder = new TagsViewHolder(view);
         }
         return viewHolder;
     }
@@ -164,6 +174,9 @@ public class ArticleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 break;
             case TYPE_TABLE:
                 ((ViewHolderTable) holder).bind(mArticlesTextParts.get(position - 1));
+                break;
+            case TYPE_TAGS:
+                ((TagsViewHolder) holder).bind(mArticle.tags);
                 break;
             default:
                 throw new IllegalArgumentException("unexpected item type: " + getItemViewType(position));
@@ -451,6 +464,39 @@ public class ArticleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
             webView.loadUrl("about:blank");
             webView.loadData(fullHtml, "text/html; charset=UTF-8", null);
+        }
+    }
+
+    class TagsViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.tags)
+        TextView title;
+        @BindView(R.id.tagsContainer)
+        FlexboxLayout mTagsContainer;
+
+        TagsViewHolder(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
+
+        void bind(List<ArticleTag> data) {
+            Context context = itemView.getContext();
+            int textSizePrimary = context.getResources().getDimensionPixelSize(R.dimen.text_size_large);
+            float articleTextScale = mMyPreferenceManager.getArticleTextScale();
+            title.setTextSize(TypedValue.COMPLEX_UNIT_PX, articleTextScale * textSizePrimary);
+
+            CalligraphyUtils.applyFontToTextView(context, title, mMyPreferenceManager.getFontPath());
+
+            mTagsContainer.removeAllViews();
+            for (ArticleTag tag : data) {
+                TagView tagView = new TagView(context);
+                tagView.setTag(tag);
+//                tagView.setTagTextSize(11);
+                tagView.setActionImage(TagView.Action.NONE);
+
+                tagView.setOnTagClickListener((tagView1, tag1) -> mTextItemsClickListener.onTagClicked(tag1));
+
+                mTagsContainer.addView(tagView);
+            }
         }
     }
 }

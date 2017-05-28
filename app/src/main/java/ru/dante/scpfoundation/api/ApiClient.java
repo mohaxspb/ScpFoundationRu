@@ -771,7 +771,7 @@ public class ApiClient {
                     //download all images
                     if (article.imagesUrls != null) {
                         for (RealmString realmString : article.imagesUrls) {
-                            Timber.d("load image by Glide: %s", realmString.val);
+//                            Timber.d("load image by Glide: %s", realmString.val);
                             Glide.with(MyApplication.getAppInstance())
                                     .load(realmString.val)
                                     .diskCacheStrategy(DiskCacheStrategy.SOURCE)
@@ -784,7 +784,7 @@ public class ApiClient {
 
                                         @Override
                                         public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                                            Timber.e("onResourceReady: %s/%s", resource.getIntrinsicWidth(), resource.getIntrinsicHeight());
+//                                            Timber.d("onResourceReady: %s/%s", resource.getIntrinsicWidth(), resource.getIntrinsicHeight());
                                             return false;
                                         }
                                     })

@@ -1,7 +1,6 @@
 package ru.dante.scpfoundation.ui.adapter;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -15,10 +14,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.google.android.flexbox.FlexboxLayout;
 
-import org.apmem.tools.layouts.FlowLayout;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -531,20 +527,20 @@ public class ArticlesListRecyclerAdapter extends RecyclerView.Adapter<ArticlesLi
         }
 
         private void showTags(Article article) {
-            Timber.d("article.tags: %s", Arrays.toString(article.tags.toArray()));
+//            Timber.d("article.tags: %s", Arrays.toString(article.tags.toArray()));
             Context context = itemView.getContext();
-            Timber.d("mTagsContainer.getChildCount(): %s", mTagsContainer.getChildCount());
+//            Timber.d("mTagsContainer.getChildCount(): %s", mTagsContainer.getChildCount());
             int childCount = mTagsContainer.getChildCount();
             for (int i = childCount - 1; i > 0; i--) {
-//                mTagsContainer.removeViewAt(mTagsContainer.getChildCount() - 1);
                 mTagsContainer.removeViewAt(i);
             }
-            Timber.d("mTagsContainer.getChildCount(): %s", mTagsContainer.getChildCount());
+//            Timber.d("mTagsContainer.getChildCount(): %s", mTagsContainer.getChildCount());
             if (article.tags == null || article.tags.isEmpty()) {
                 mTagsContainer.setVisibility(View.GONE);
             } else {
                 mTagsContainer.setVisibility(View.VISIBLE);
 
+                mTagsExpander.setCompoundDrawablesWithIntrinsicBounds(0, 0, AttributeGetter.getDrawableId(context, R.attr.iconArrowDown), 0);
                 mTagsExpander.setOnClickListener(v -> {
                     if (mTagsContainer.getChildAt(1).getVisibility() == View.GONE) {
                         mTagsExpander.setCompoundDrawablesWithIntrinsicBounds(0, 0, AttributeGetter.getDrawableId(context, R.attr.iconArrowUp), 0);
@@ -559,9 +555,7 @@ public class ArticlesListRecyclerAdapter extends RecyclerView.Adapter<ArticlesLi
                     }
                 });
 
-                Timber.d("add tags: %s", article.tags.size());
                 for (ArticleTag tag : article.tags) {
-                    Timber.d("add tag: %s", tag.title);
                     TagView tagView = new TagView(context);
                     tagView.setTag(tag);
                     tagView.setTagTextSize(11);

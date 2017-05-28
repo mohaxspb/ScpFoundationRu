@@ -243,8 +243,7 @@ dependencies {
     compile 'xyz.danoz:recyclerviewfastscroller:0.1.3'
     //circular progress
     compile 'com.github.jakob-grabner:Circle-Progress-View:v1.3'
-    //flowlayout
-    compile 'org.apmem.tools:layouts:1.10@aar'
+    //tags layout
     compile 'com.google.android:flexbox:0.3.0-alpha3'
     //leakcanary
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.1'
