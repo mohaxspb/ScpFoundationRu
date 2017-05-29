@@ -11,12 +11,32 @@ import com.bumptech.glide.Glide;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
+import java.util.List;
+
+import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.api.ApiClient;
 import ru.dante.scpfoundation.db.DbProviderFactory;
+import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.service.DownloadAllService;
+import rx.Observable;
+import rx.Scheduler;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import timber.log.Timber;
+
+import static ru.dante.scpfoundation.service.DownloadAllService.DownloadType.TYPE_1;
+import static ru.dante.scpfoundation.service.DownloadAllService.DownloadType.TYPE_2;
+import static ru.dante.scpfoundation.service.DownloadAllService.DownloadType.TYPE_3;
+import static ru.dante.scpfoundation.service.DownloadAllService.DownloadType.TYPE_ALL;
+import static ru.dante.scpfoundation.service.DownloadAllService.DownloadType.TYPE_ARCHIVE;
+import static ru.dante.scpfoundation.service.DownloadAllService.DownloadType.TYPE_EXPERIMETS;
+import static ru.dante.scpfoundation.service.DownloadAllService.DownloadType.TYPE_INCIDENTS;
+import static ru.dante.scpfoundation.service.DownloadAllService.DownloadType.TYPE_INTERVIEWS;
+import static ru.dante.scpfoundation.service.DownloadAllService.DownloadType.TYPE_JOKES;
+import static ru.dante.scpfoundation.service.DownloadAllService.DownloadType.TYPE_OTHER;
+import static ru.dante.scpfoundation.service.DownloadAllService.DownloadType.TYPE_RU;
 
 /**
  * Created by mohax on 29.05.2017.
@@ -32,6 +52,7 @@ public class DialogUtils {
     public static final int TYPE_OBJ_3 = 2;
 
     public static final int TYPE_OBJ_RU = 3;
+
     public static final int TYPE_EXPERIMETS = 4;
     public static final int TYPE_OTHER = 5;
     public static final int TYPE_INCIDENTS = 6;
@@ -41,7 +62,7 @@ public class DialogUtils {
     public static final int TYPE_JOKES = 9;
     public static final int TYPE_ALL = 10;
 
-//    private final Context mContext;
+    //    private final Context mContext;
     private final MyPreferenceManager mPreferenceManager;
     private final DbProviderFactory mDbProviderFactory;
     private final ApiClient mApiClient;
@@ -76,6 +97,7 @@ public class DialogUtils {
                 .onPositive((dialog, which) -> {
                     Timber.d("onPositive clicked");
                     Timber.d("dialog.getSelectedIndex(): %s", dialog.getSelectedIndex());
+
                     @DownloadAllService.DownloadType
                     String type;
                     switch (dialog.getSelectedIndex()) {
@@ -120,7 +142,77 @@ public class DialogUtils {
                     bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, type);
                     FirebaseAnalytics.getInstance(mContext).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
 
-                    DownloadAllService.startDownloadWithType(mContext, type);
+                    String link;
+                    switch (type) {
+                        case DownloadAllService.DownloadType.TYPE_1:
+                            link = Constants.Urls.OBJECTS_1;
+                            break;
+                        case DownloadAllService.DownloadType.TYPE_2:
+                            link = Constants.Urls.OBJECTS_2;
+                            break;
+                        case DownloadAllService.DownloadType.TYPE_3:
+                            link = Constants.Urls.OBJECTS_3;
+                            break;
+                        case DownloadAllService.DownloadType.TYPE_RU:
+                            link = Constants.Urls.OBJECTS_RU;
+                            break;
+                        case DownloadAllService.DownloadType.TYPE_EXPERIMETS:
+                            link = Constants.Urls.PROTOCOLS;
+                            break;
+                        case DownloadAllService.DownloadType.TYPE_OTHER:
+                            link = Constants.Urls.OTHERS;
+                            break;
+                        case DownloadAllService.DownloadType.TYPE_INCIDENTS:
+                            link = Constants.Urls.INCEDENTS;
+                            break;
+                        case DownloadAllService.DownloadType.TYPE_INTERVIEWS:
+                            link = Constants.Urls.INTERVIEWS;
+                            break;
+                        case DownloadAllService.DownloadType.TYPE_ARCHIVE:
+                            link = Constants.Urls.ARCHIVE;
+                            break;
+                        case DownloadAllService.DownloadType.TYPE_JOKES:
+                            link = Constants.Urls.JOKES;
+                            break;
+                        case DownloadAllService.DownloadType.TYPE_ALL:
+                            link = DownloadAllService.DownloadType.TYPE_ALL;
+                            break;
+                        default:
+                            throw new IllegalArgumentException("unexpected type");
+                    }
+
+                    Observable<Integer> numOfArticlesObservable;
+                    Observable<List<Article>> articlesObservable;
+                    switch (link) {
+                        case DownloadAllService.DownloadType.TYPE_ALL:
+                            //TODO
+                            //simply start download all with popup for limit users,
+                            //in which tell, that we can't now how many arts he can load
+                            numOfArticlesObservable = Observable.just(Integer.MIN_VALUE);
+                            break;
+                        case Constants.Urls.ARCHIVE:
+                            articlesObservable = mApiClient.getMaterialsArchiveArticles();
+                            numOfArticlesObservable = articlesObservable.count();
+                            break;
+                        case Constants.Urls.JOKES:
+                            articlesObservable = mApiClient.getMaterialsJokesArticles();
+                            numOfArticlesObservable = articlesObservable.count();
+                            break;
+                        case Constants.Urls.OBJECTS_1:
+                        case Constants.Urls.OBJECTS_2:
+                        case Constants.Urls.OBJECTS_3:
+                        case Constants.Urls.OBJECTS_RU:
+                            articlesObservable = mApiClient.getObjectsArticles(link);
+                            numOfArticlesObservable = articlesObservable.count();
+                            break;
+                        default:
+                            articlesObservable = mApiClient.getMaterialsArticles(link);
+                            numOfArticlesObservable = articlesObservable.count();
+                            break;
+                    }
+
+                    //FIXME
+//                    DownloadAllService.startDownloadWithType(mContext, type);
                     dialog.dismiss();
                 })
                 .neutralText(R.string.stop_download)
@@ -142,6 +234,44 @@ public class DialogUtils {
         materialDialog.getRecyclerView().setOverScrollMode(View.OVER_SCROLL_NEVER);
 
         materialDialog.show();
+    }
+
+    private void loadArticlesAndCountThem(
+            Context context,
+            Observable<Integer> countObservable,
+            @DownloadAllService.DownloadType String type) {
+        MaterialDialog progress = new MaterialDialog.Builder(context)
+                .progress(true, 0)
+                .content(R.string.downlad_art_list)
+                .cancelable(false)
+                .build();
+
+        progress.show();
+
+        countObservable
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        numOfArts->{
+
+                        },
+                        e->{
+                            Timber.e(e);
+                            progress.dismiss();
+                        }
+                );
+    }
+
+    private void showProgressDialog(Context context, String content) {
+        new MaterialDialog.Builder(context)
+                .progress(true, 0)
+                .content(content)
+                .cancelable(false)
+                .show();
+    }
+
+    private void showRangeDialog() {
+
     }
 
     public void showFaqDialog(Context context) {
