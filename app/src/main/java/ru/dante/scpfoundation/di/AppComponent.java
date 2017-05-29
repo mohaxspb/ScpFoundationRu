@@ -4,6 +4,7 @@ import javax.inject.Singleton;
 
 import dagger.Component;
 import ru.dante.scpfoundation.di.module.AppModule;
+import ru.dante.scpfoundation.di.module.HelpersModule;
 import ru.dante.scpfoundation.di.module.NetModule;
 import ru.dante.scpfoundation.di.module.NotificationModule;
 import ru.dante.scpfoundation.di.module.PresentersModule;
@@ -60,7 +61,8 @@ import ru.dante.scpfoundation.ui.fragment.TagsSearchResultsArticlesFragment;
         StorageModule.class,
         PresentersModule.class,
         NetModule.class,
-        NotificationModule.class
+        NotificationModule.class,
+        HelpersModule.class
 })
 public interface AppComponent {
     void inject(MainActivity activity);

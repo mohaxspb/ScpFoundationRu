@@ -269,8 +269,8 @@ public class DownloadAllService extends Service {
                             mCurProgress++;
                             Timber.d("already downloaded: %s", article.url);
                             Timber.d("mCurProgress %s, mMaxProgress: %s", mCurProgress, mMaxProgress);
-                            showNotificationDownloadProgress(getString(R.string.download_recent_title),
-                                    mCurProgress, mMaxProgress, mNumOfErrors);
+//                            showNotificationDownloadProgress(getString(R.string.download_recent_title),
+//                                    mCurProgress, mMaxProgress, mNumOfErrors);
                         }
                     }
                     dbProvider.close();
@@ -290,8 +290,6 @@ public class DownloadAllService extends Service {
                             return Observable.empty();
                         })
                 )
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
                 .flatMap(article -> mDbProviderFactory.getDbProvider().saveArticleSync(article))
                 //TODO we can show notif here as we do it for articles lists
                 .flatMap(article -> {
@@ -308,6 +306,8 @@ public class DownloadAllService extends Service {
                         return Observable.just(article);
                     }
                 })
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
                 .subscribe(
                         article -> showNotificationDownloadProgress(getString(R.string.download_objects_title),
                                 mCurProgress, mMaxProgress, mNumOfErrors),
@@ -397,7 +397,7 @@ public class DownloadAllService extends Service {
                             mCurProgress++;
                             Timber.d("already downloaded: %s", article.url);
                             Timber.d("mCurProgress %s, mMaxProgress: %s", mCurProgress, mMaxProgress);
-                            showNotificationDownloadProgress(getString(R.string.download_objects_title), mCurProgress, mMaxProgress, mNumOfErrors);
+//                            showNotificationDownloadProgress(getString(R.string.download_objects_title), mCurProgress, mMaxProgress, mNumOfErrors);
                         }
                     }
                     dbProvider.close();
@@ -416,8 +416,6 @@ public class DownloadAllService extends Service {
                     );
                     return Observable.empty();
                 }))
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
                 .flatMap(article -> mDbProviderFactory.getDbProvider().saveArticleSync(article))
                 .flatMap(article -> {
                     Timber.d("downloaded: %s", article.url);
@@ -434,6 +432,8 @@ public class DownloadAllService extends Service {
                         return Observable.just(article);
                     }
                 })
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
                 .subscribe(
                         article -> showNotificationDownloadProgress(getString(R.string.download_objects_title),
                                 mCurProgress, mMaxProgress, mNumOfErrors),
