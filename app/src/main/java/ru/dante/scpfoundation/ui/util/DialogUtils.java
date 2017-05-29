@@ -8,11 +8,13 @@ import android.view.View;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
+import com.crystal.crystalrangeseekbar.widgets.CrystalRangeSeekbar;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.List;
 
+import butterknife.ButterKnife;
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.api.ApiClient;
@@ -21,22 +23,9 @@ import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.service.DownloadAllService;
 import rx.Observable;
-import rx.Scheduler;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
-
-import static ru.dante.scpfoundation.service.DownloadAllService.DownloadType.TYPE_1;
-import static ru.dante.scpfoundation.service.DownloadAllService.DownloadType.TYPE_2;
-import static ru.dante.scpfoundation.service.DownloadAllService.DownloadType.TYPE_3;
-import static ru.dante.scpfoundation.service.DownloadAllService.DownloadType.TYPE_ALL;
-import static ru.dante.scpfoundation.service.DownloadAllService.DownloadType.TYPE_ARCHIVE;
-import static ru.dante.scpfoundation.service.DownloadAllService.DownloadType.TYPE_EXPERIMETS;
-import static ru.dante.scpfoundation.service.DownloadAllService.DownloadType.TYPE_INCIDENTS;
-import static ru.dante.scpfoundation.service.DownloadAllService.DownloadType.TYPE_INTERVIEWS;
-import static ru.dante.scpfoundation.service.DownloadAllService.DownloadType.TYPE_JOKES;
-import static ru.dante.scpfoundation.service.DownloadAllService.DownloadType.TYPE_OTHER;
-import static ru.dante.scpfoundation.service.DownloadAllService.DownloadType.TYPE_RU;
 
 /**
  * Created by mohax on 29.05.2017.
@@ -47,25 +36,25 @@ public class DialogUtils {
 
     //download all consts
     //TODO need to refactor it and use one enum here and in service
-    public static final int TYPE_OBJ_1 = 0;
-    public static final int TYPE_OBJ_2 = 1;
-    public static final int TYPE_OBJ_3 = 2;
+    private static final int TYPE_OBJ_1 = 0;
+    private static final int TYPE_OBJ_2 = 1;
+    private static final int TYPE_OBJ_3 = 2;
 
-    public static final int TYPE_OBJ_RU = 3;
+    private static final int TYPE_OBJ_RU = 3;
 
-    public static final int TYPE_EXPERIMETS = 4;
-    public static final int TYPE_OTHER = 5;
-    public static final int TYPE_INCIDENTS = 6;
-    public static final int TYPE_INTERVIEWS = 7;
-    public static final int TYPE_ARCHIVE = 8;
+    private static final int TYPE_EXPERIMETS = 4;
+    private static final int TYPE_OTHER = 5;
+    private static final int TYPE_INCIDENTS = 6;
+    private static final int TYPE_INTERVIEWS = 7;
+    private static final int TYPE_ARCHIVE = 8;
 
-    public static final int TYPE_JOKES = 9;
-    public static final int TYPE_ALL = 10;
+    private static final int TYPE_JOKES = 9;
+    private static final int TYPE_ALL = 10;
 
     //    private final Context mContext;
-    private final MyPreferenceManager mPreferenceManager;
-    private final DbProviderFactory mDbProviderFactory;
-    private final ApiClient mApiClient;
+    private MyPreferenceManager mPreferenceManager;
+    private DbProviderFactory mDbProviderFactory;
+    private ApiClient mApiClient;
 
     public DialogUtils(
             MyPreferenceManager preferenceManager,
@@ -210,7 +199,7 @@ public class DialogUtils {
                             numOfArticlesObservable = articlesObservable.count();
                             break;
                     }
-
+                    loadArticlesAndCountThem(mContext, numOfArticlesObservable, type);
                     //FIXME
 //                    DownloadAllService.startDownloadWithType(mContext, type);
                     dialog.dismiss();
@@ -252,26 +241,33 @@ public class DialogUtils {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        numOfArts->{
-
+                        numOfArts -> {
+                            progress.dismiss();
+                            showRangeDialog(context, type, numOfArts);
                         },
-                        e->{
+                        e -> {
                             Timber.e(e);
                             progress.dismiss();
                         }
                 );
     }
 
-    private void showProgressDialog(Context context, String content) {
-        new MaterialDialog.Builder(context)
-                .progress(true, 0)
-                .content(content)
+    private void showRangeDialog(
+            Context context,
+            @DownloadAllService.DownloadType String type,
+            int numOfArticles) {
+        MaterialDialog dialog = new MaterialDialog.Builder(context)
+                .customView(R.layout.dialog_download_range, false)
+                .title(R.string.downlad_art_list_range)
                 .cancelable(false)
-                .show();
-    }
+                .build();
 
-    private void showRangeDialog() {
+        View view = dialog.getCustomView();
+        CrystalRangeSeekbar seekbar = ButterKnife.findById(view, R.id.rangeSeekbar);
+        seekbar.setMaxValue(numOfArticles);
+        seekbar.setFixGap(50);
 
+        dialog.show();
     }
 
     public void showFaqDialog(Context context) {

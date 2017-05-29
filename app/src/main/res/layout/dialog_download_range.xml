@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.crystal.crystalrangeseekbar.widgets.CrystalRangeSeekbar
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rangeSeekbar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/defaultMargin"
+    app:bar_color="?colorAccent"
+    app:bar_highlight_color="?colorAccent"
+    app:corner_radius="10"
+    app:data_type="_integer"
+    app:fix_gap="30"
+    app:left_thumb_color="?colorAccent"
+    app:left_thumb_color_pressed="?colorAccent"
+    app:max_value="100"
+    app:min_value="0"
+    app:right_thumb_color="?colorAccent"
+    app:right_thumb_color_pressed="?colorAccent"
+    />

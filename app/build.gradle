@@ -245,6 +245,8 @@ dependencies {
     compile 'com.github.jakob-grabner:Circle-Progress-View:v1.3'
     //tags layout
     compile 'com.google.android:flexbox:0.3.0-alpha3'
+    //range seekbar
+    compile 'com.crystal:crystalrangeseekbar:1.1.1'
     //leakcanary
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.1'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
