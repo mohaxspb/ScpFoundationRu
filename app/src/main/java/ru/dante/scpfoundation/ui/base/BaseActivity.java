@@ -659,7 +659,7 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
 
                 Bundle bundle = new Bundle();
                 bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.MENU);
-                FirebaseAnalytics.getInstance(BaseActivity.this).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+                FirebaseAnalytics.getInstance(this).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
                 return true;
             case R.id.night_mode_item:
                 mMyPreferenceManager.setIsNightMode(!mMyPreferenceManager.isNightMode());
@@ -854,16 +854,17 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
         if (mFirebaseRemoteConfig.getInfo().getConfigSettings().isDeveloperModeEnabled()) {
             cacheExpiration = 0;
         }
-        mFirebaseRemoteConfig.fetch(cacheExpiration).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                Timber.d("Fetch Succeeded");
-                // Once the config is successfully fetched it must be activated before newly fetched
-                // values are returned.
-                mFirebaseRemoteConfig.activateFetched();
-            } else {
-                Timber.d("Fetch Failed");
-            }
-        });
+        //FIXME!!!
+//        mFirebaseRemoteConfig.fetch(cacheExpiration).addOnCompleteListener(task -> {
+//            if (task.isSuccessful()) {
+//                Timber.d("Fetch Succeeded");
+//                // Once the config is successfully fetched it must be activated before newly fetched
+//                // values are returned.
+//                mFirebaseRemoteConfig.activateFetched();
+//            } else {
+//                Timber.d("Fetch Failed");
+//            }
+//        });
     }
 
     @Override

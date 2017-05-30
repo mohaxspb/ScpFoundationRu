@@ -425,8 +425,8 @@ public class DbProvider {
             applicationInDb.localUpdateTimeStamp = System.currentTimeMillis();
 
 //            if (article.tags != null && !article.tags.isEmpty()) {
-                applicationInDb.tags.clear();
-                applicationInDb.tags = article.tags;
+            applicationInDb.tags.clear();
+            applicationInDb.tags = article.tags;
 //            }
 
             //update it in DB such way, as we add unmanaged items
@@ -548,6 +548,13 @@ public class DbProvider {
                 .filter(RealmResults::isLoaded)
                 .filter(RealmResults::isValid)
                 .flatMap(users -> Observable.just(users.isEmpty() ? null : mRealm.copyFromRealm(users.first())));
+    }
+
+    /**
+     * @return Observable, that emits unmanaged user
+     */
+    public User getUserSync() {
+        return mRealm.where(User.class).findFirst();
     }
 
     public Observable<User> saveUser(User user) {

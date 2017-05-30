@@ -57,9 +57,18 @@ import static ru.dante.scpfoundation.service.DownloadAllService.DownloadType.TYP
 public class DownloadAllService extends Service {
 
     private static final int NOTIFICATION_ID = 42;
+
+    public static final int RANGE_NONE = Integer.MIN_VALUE;
+
     private static final String EXTRA_DOWNLOAD_TYPE = "EXTRA_DOWNLOAD_TYPE";
+    private static final String EXTRA_RANGE_START = "EXTRA_RANGE_START";
+    private static final String EXTRA_RANGE_END = "EXTRA_RANGE_END";
+
     private static final String ACTION_STOP = "ACTION_STOP";
     private static final String ACTION_START = "ACTION_START";
+
+    private int rangeStart;
+    private int rangeEnd;
 
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({
@@ -103,12 +112,19 @@ public class DownloadAllService extends Service {
         return instance != null;
     }
 
-    public static void startDownloadWithType(Context ctx, @DownloadType String type) {
+    public static void startDownloadWithType(
+            Context ctx,
+            @DownloadType String type,
+            int rangeStart,
+            int rangeEnd
+    ) {
         Intent intent = new Intent(ctx, DownloadAllService.class);
         intent.setAction(ACTION_START);
         Bundle bundle = new Bundle();
         bundle.putString(EXTRA_DOWNLOAD_TYPE, type);
         intent.putExtras(bundle);
+        intent.putExtra(EXTRA_RANGE_START, rangeStart);
+        intent.putExtra(EXTRA_RANGE_END, rangeEnd);
         ctx.startService(intent);
     }
 
@@ -161,6 +177,11 @@ public class DownloadAllService extends Service {
             stopDownloadAndRemoveNotif();
             return super.onStartCommand(intent, flags, startId);
         }
+
+        //TODO check for not being RANGE_NONE and use while download
+        rangeStart = intent.getIntExtra(EXTRA_RANGE_START, RANGE_NONE);
+        rangeEnd = intent.getIntExtra(EXTRA_RANGE_START, RANGE_NONE);
+
         @DownloadType
         String type = intent.getStringExtra(EXTRA_DOWNLOAD_TYPE);
         Timber.d("onStartCommand with type; %s", type);

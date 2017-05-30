@@ -234,6 +234,9 @@
     <string name="tags_search_results">Результаты</string>
     <string name="tags">Теги:</string>
     <string name="downlad_art_list_range">Сколько скачать?</string>
+    <string name="increase_limit">Увеличить/убрать лимит</string>
+    <string name="user_limit">Ваш лимит: %s</string>
+    <string name="no_limit">Без ограничений!</string>
 
     <plurals name="plurals_score">
         <item quantity="zero">%1$d очков</item>

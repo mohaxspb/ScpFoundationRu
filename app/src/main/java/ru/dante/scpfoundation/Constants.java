@@ -105,6 +105,7 @@ public interface Constants {
             //downloads
             String DOWNLOAD_ALL_ENABLED_FOR_FREE = "download_all_enabled_for_free";
             String DOWNLOAD_FREE_ARTICLES_LIMIT = "download_free_articles_limit";
+            String DOWNLOAD_SCORE_PER_ARTICLE = "download_score_per_article";
         }
 
         interface Analitics {
@@ -121,6 +122,7 @@ public interface Constants {
                 String FONT = "FONT";
                 String AUTO_SYNC_SNACKBAR = "AUTO_SYNC_SNACKBAR";
                 String AUTO_SYNC_FROM_SETTINGS = "AUTO_SYNC_FROM_SETTINGS";
+                String DOWNLOAD_DIALOG = "DOWNLOAD_DIALOG";
             }
 
             String INVITED_FIVE_FRIENDS = "INVITED_FIVE_FRIENDS";

@@ -132,15 +132,15 @@
     </entry>
     <entry>
         <key>score_action_vk_group</key>
-        <value>10</value>
+        <value>50</value>
     </entry>
     <entry>
         <key>score_action_our_app</key>
-        <value>20</value>
+        <value>50</value>
     </entry>
     <entry>
         <key>score_action_rewarded_video</key>
-        <value>30</value>
+        <value>50</value>
     </entry>
     <entry>
         <key>score_action_none</key>
@@ -191,12 +191,16 @@
     <!--download all-->
     <entry>
         <key>download_all_enabled_for_free</key>
-        <!--fix me test-->
-        <!--<value>false</value>-->
-        <value>true</value>
+        <!--fixme test-->
+        <value>false</value>
+        <!--<value>true</value>-->
     </entry>
     <entry>
         <key>download_free_articles_limit</key>
         <value>10</value>
+    </entry>
+    <entry>
+        <key>download_score_per_article</key>
+        <value>50</value>
     </entry>
 </defaultsMap>

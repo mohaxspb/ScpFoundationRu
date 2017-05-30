@@ -3,7 +3,11 @@ package ru.dante.scpfoundation.ui.util;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.design.widget.BottomSheetDialogFragment;
+import android.support.v4.util.Pair;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -11,17 +15,22 @@ import com.bumptech.glide.Glide;
 import com.crystal.crystalrangeseekbar.widgets.CrystalRangeSeekbar;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
 import java.util.List;
 
 import butterknife.ButterKnife;
 import ru.dante.scpfoundation.Constants;
+import ru.dante.scpfoundation.Constants.Firebase.RemoteConfigKeys;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.api.ApiClient;
+import ru.dante.scpfoundation.db.DbProvider;
 import ru.dante.scpfoundation.db.DbProviderFactory;
 import ru.dante.scpfoundation.db.model.Article;
+import ru.dante.scpfoundation.db.model.User;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.service.DownloadAllService;
+import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -181,27 +190,25 @@ public class DialogUtils {
                             break;
                         case Constants.Urls.ARCHIVE:
                             articlesObservable = mApiClient.getMaterialsArchiveArticles();
-                            numOfArticlesObservable = articlesObservable.count();
+                            numOfArticlesObservable = articlesObservable.map(List::size);
                             break;
                         case Constants.Urls.JOKES:
                             articlesObservable = mApiClient.getMaterialsJokesArticles();
-                            numOfArticlesObservable = articlesObservable.count();
+                            numOfArticlesObservable = articlesObservable.map(List::size);
                             break;
                         case Constants.Urls.OBJECTS_1:
                         case Constants.Urls.OBJECTS_2:
                         case Constants.Urls.OBJECTS_3:
                         case Constants.Urls.OBJECTS_RU:
                             articlesObservable = mApiClient.getObjectsArticles(link);
-                            numOfArticlesObservable = articlesObservable.count();
+                            numOfArticlesObservable = articlesObservable.map(List::size);
                             break;
                         default:
                             articlesObservable = mApiClient.getMaterialsArticles(link);
-                            numOfArticlesObservable = articlesObservable.count();
+                            numOfArticlesObservable = articlesObservable.map(List::size);
                             break;
                     }
                     loadArticlesAndCountThem(mContext, numOfArticlesObservable, type);
-                    //FIXME
-//                    DownloadAllService.startDownloadWithType(mContext, type);
                     dialog.dismiss();
                 })
                 .neutralText(R.string.stop_download)
@@ -228,7 +235,8 @@ public class DialogUtils {
     private void loadArticlesAndCountThem(
             Context context,
             Observable<Integer> countObservable,
-            @DownloadAllService.DownloadType String type) {
+            @DownloadAllService.DownloadType String type
+    ) {
         MaterialDialog progress = new MaterialDialog.Builder(context)
                 .progress(true, 0)
                 .content(R.string.downlad_art_list)
@@ -238,12 +246,33 @@ public class DialogUtils {
         progress.show();
 
         countObservable
+                .flatMap(numOfArts -> {
+                    DbProvider dbProvider = mDbProviderFactory.getDbProvider();
+
+                    FirebaseRemoteConfig remConf = FirebaseRemoteConfig.getInstance();
+                    int limit = (int) remConf.getLong(RemoteConfigKeys.DOWNLOAD_FREE_ARTICLES_LIMIT);
+                    int numOfScorePerArt = (int) remConf.getLong(RemoteConfigKeys.DOWNLOAD_SCORE_PER_ARTICLE);
+
+                    User user = mDbProviderFactory.getDbProvider().getUserSync();
+                    if (user != null) {
+                        limit += user.score / numOfScorePerArt;
+                    }
+                    dbProvider.close();
+                    return Observable.just(new Pair<>(numOfArts, limit));
+                })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        numOfArts -> {
+                        numOfArtsAndLimit -> {
                             progress.dismiss();
-                            showRangeDialog(context, type, numOfArts);
+                            FirebaseRemoteConfig remConf = FirebaseRemoteConfig.getInstance();
+                            Timber.d("mPreferenceManager.isHasSubscription(): %s",
+                                    mPreferenceManager.isHasSubscription());
+                            Timber.d("remConf.getBoolean(RemoteConfigKeys.DOWNLOAD_ALL_ENABLED_FOR_FREE): %s",
+                                    remConf.getBoolean(RemoteConfigKeys.DOWNLOAD_ALL_ENABLED_FOR_FREE));
+                            boolean ignoreLimit = mPreferenceManager.isHasSubscription()
+                                    || remConf.getBoolean(RemoteConfigKeys.DOWNLOAD_ALL_ENABLED_FOR_FREE);
+                            showRangeDialog(context, type, numOfArtsAndLimit.first, numOfArtsAndLimit.second, ignoreLimit);
                         },
                         e -> {
                             Timber.e(e);
@@ -255,17 +284,62 @@ public class DialogUtils {
     private void showRangeDialog(
             Context context,
             @DownloadAllService.DownloadType String type,
-            int numOfArticles) {
+            int numOfArticles,
+            int limit,
+            boolean ignoreLimit
+    ) {
+        Timber.d("showRangeDialog type/numOfArticles/limit/ignoreLimit: %s/%s/%s/%s",
+                type, numOfArticles, limit, ignoreLimit);
         MaterialDialog dialog = new MaterialDialog.Builder(context)
                 .customView(R.layout.dialog_download_range, false)
                 .title(R.string.downlad_art_list_range)
                 .cancelable(false)
+                .negativeText(android.R.string.cancel)
+                .onNegative((dialog1, which) -> dialog1.dismiss())
+                .positiveText(R.string.download)
+//                .onPositive((dialog1, which) -> DownloadAllService.startDownloadWithType(context, type))
                 .build();
 
         View view = dialog.getCustomView();
         CrystalRangeSeekbar seekbar = ButterKnife.findById(view, R.id.rangeSeekbar);
-        seekbar.setMaxValue(numOfArticles);
-        seekbar.setFixGap(50);
+        seekbar.setMaxValue(numOfArticles).apply();
+        ;
+        if (!ignoreLimit) {
+            if (limit < numOfArticles) {
+                seekbar.setFixGap(limit).apply();
+                ;
+                seekbar.setMinStartValue(0).apply();
+                seekbar.setMaxStartValue(limit).apply();
+            }
+        }
+
+        TextView min = ButterKnife.findById(view, R.id.min);
+        TextView max = ButterKnife.findById(view, R.id.max);
+        TextView userLimit = ButterKnife.findById(view, R.id.userLimit);
+        TextView increaseLimit = ButterKnife.findById(view, R.id.increaseLimit);
+
+        //TODO if we load all article, we must tell, that we'll load only most recent ones
+
+        increaseLimit.setVisibility(ignoreLimit ? View.INVISIBLE : View.VISIBLE);
+        increaseLimit.setOnClickListener(v -> {
+            BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
+            subsDF.show(((AppCompatActivity) context).getSupportFragmentManager(), subsDF.getTag());
+
+            Bundle bundle = new Bundle();
+            bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.DOWNLOAD_DIALOG);
+            FirebaseAnalytics.getInstance(context).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+        });
+
+        userLimit.setText(context.getString(R.string.user_limit, ignoreLimit
+                ? context.getString(R.string.no_limit) : String.valueOf(limit)));
+
+        seekbar.setOnRangeSeekbarChangeListener((minValue, maxValue) -> {
+            min.setText(String.valueOf(minValue));
+            max.setText(String.valueOf(maxValue));
+
+            dialog.getActionButton(DialogAction.POSITIVE)
+                    .setOnClickListener(v -> DownloadAllService.startDownloadWithType(context, type, (Integer) minValue, (Integer) maxValue));
+        });
 
         dialog.show();
     }
