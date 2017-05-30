@@ -21,17 +21,6 @@
         tools:text="Your offline limit: 50"
         />
 
-    <!--<TextView-->
-    <!--android:id="@+id/increaseLimit"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:background="?selectableItemBackground"-->
-    <!--android:padding="@dimen/defaultMargin"-->
-    <!--android:text="@string/increase_limit"-->
-    <!--android:textColor="@color/material_green_500"-->
-    <!--android:textStyle="bold"-->
-    <!--/>-->
-
     <com.crystal.crystalrangeseekbar.widgets.CrystalRangeSeekbar
         android:id="@+id/rangeSeekbar"
         android:layout_width="match_parent"
@@ -40,11 +29,11 @@
         app:bar_highlight_color="?colorAccent"
         app:corner_radius="10"
         app:data_type="_integer"
-        app:steps="1"
         app:left_thumb_color="?colorAccent"
         app:left_thumb_color_pressed="?colorAccent"
         app:right_thumb_color="?colorAccent"
         app:right_thumb_color_pressed="?colorAccent"
+        app:steps="1"
         />
 
     <LinearLayout
@@ -63,19 +52,13 @@
             tools:text="30"
             />
 
-        <!--<Space-->
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:layout_weight="1"-->
-        <!--/>-->
-
         <TextView
             android:id="@+id/increaseLimit"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="center"
             android:background="?selectableItemBackground"
+            android:gravity="center"
             android:padding="@dimen/defaultMargin"
             android:text="@string/increase_limit"
             android:textColor="@color/material_green_500"

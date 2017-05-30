@@ -306,10 +306,10 @@ public class DialogUtils {
         ;
         if (!ignoreLimit) {
             if (limit < numOfArticles) {
-                seekbar.setFixGap(limit).apply();
-                ;
                 seekbar.setMinStartValue(0).apply();
-                seekbar.setMaxStartValue(limit).apply();
+                seekbar.setMaxValue(numOfArticles).apply();
+
+                seekbar.setFixGap(limit).apply();
             }
         }
 
@@ -338,7 +338,10 @@ public class DialogUtils {
             max.setText(String.valueOf(maxValue));
 
             dialog.getActionButton(DialogAction.POSITIVE)
-                    .setOnClickListener(v -> DownloadAllService.startDownloadWithType(context, type, (Integer) minValue, (Integer) maxValue));
+                    .setOnClickListener(v -> {
+                        DownloadAllService.startDownloadWithType(context, type, minValue.intValue(), maxValue.intValue());
+                        dialog.dismiss();
+                    });
         });
 
         dialog.show();

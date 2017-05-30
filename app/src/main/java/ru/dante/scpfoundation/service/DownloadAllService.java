@@ -12,8 +12,6 @@ import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Pair;
 
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
@@ -33,6 +31,7 @@ import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
@@ -180,7 +179,8 @@ public class DownloadAllService extends Service {
 
         //TODO check for not being RANGE_NONE and use while download
         rangeStart = intent.getIntExtra(EXTRA_RANGE_START, RANGE_NONE);
-        rangeEnd = intent.getIntExtra(EXTRA_RANGE_START, RANGE_NONE);
+        rangeEnd = intent.getIntExtra(EXTRA_RANGE_END, RANGE_NONE);
+        Timber.d("rangeStart/rangeEnd: %s/%s", rangeStart, rangeEnd);
 
         @DownloadType
         String type = intent.getStringExtra(EXTRA_DOWNLOAD_TYPE);
@@ -258,26 +258,7 @@ public class DownloadAllService extends Service {
                 .toList()
 //                //test value
 //                .flatMap(list -> Observable.just(list.subList(0, mMaxProgress)))
-                .map(articles -> {
-                    mCurProgress = 0;
-                    mMaxProgress = articles.size();
-                    //if not have subscription
-                    //check if we have limit in downloads
-                    //if so - set maxProgress to limit
-                    //and use sub string of articles
-                    if (!mMyPreferenceManager.isHasSubscription()) {
-                        FirebaseRemoteConfig config = FirebaseRemoteConfig.getInstance();
-                        if (!config.getBoolean(Constants.Firebase.RemoteConfigKeys.DOWNLOAD_ALL_ENABLED_FOR_FREE)) {
-                            long limit = config.getLong(Constants.Firebase.RemoteConfigKeys.DOWNLOAD_FREE_ARTICLES_LIMIT);
-                            mMaxProgress = (int) limit;
-
-                            if (articles.size() > mMaxProgress) {
-                                articles = articles.subList(0, mMaxProgress);
-                            }
-                        }
-                    }
-                    return articles;
-                })
+                .map(limitArticles)
                 //TODO refactor it - from here code is equal to objects one
                 .map(articles -> {
                     List<Article> articlesToDownload = new ArrayList<>();
@@ -372,25 +353,7 @@ public class DownloadAllService extends Service {
         //just for test use just n elements
 //        final int testMaxProgress = 8;
         Subscription subscription = articlesObservable
-                .map(articles -> {
-                    mMaxProgress = articles.size();
-                    //if not have subscription
-                    //check if we have limit in downloads
-                    //if so - set maxProgress to limit
-                    //and use sub string of articles
-                    if (!mMyPreferenceManager.isHasSubscription()) {
-                        FirebaseRemoteConfig config = FirebaseRemoteConfig.getInstance();
-                        if (!config.getBoolean(Constants.Firebase.RemoteConfigKeys.DOWNLOAD_ALL_ENABLED_FOR_FREE)) {
-                            long limit = config.getLong(Constants.Firebase.RemoteConfigKeys.DOWNLOAD_FREE_ARTICLES_LIMIT);
-                            mMaxProgress = (int) limit;
-
-                            if (articles.size() > mMaxProgress) {
-                                articles = articles.subList(0, mMaxProgress);
-                            }
-                        }
-                    }
-                    return articles;
-                })
+                .map(limitArticles)
                 // just for test use just n elements
 //                .doOnNext(articles -> mMaxProgress = testMaxProgress)
                 .doOnError(throwable -> showNotificationSimple(
@@ -472,6 +435,36 @@ public class DownloadAllService extends Service {
         }
         mCompositeSubscription.add(subscription);
     }
+
+    private Func1<List<Article>, List<Article>> limitArticles = articles -> {
+//        mCurProgress = 0;
+//        mMaxProgress = articles.size();
+//        //if not have subscription
+//        //check if we have limit in downloads
+//        //if so - set maxProgress to limit
+//        //and use sub string of articles
+//
+//        if (!mMyPreferenceManager.isHasSubscription()) {
+//            FirebaseRemoteConfig config = FirebaseRemoteConfig.getInstance();
+//            if (!config.getBoolean(Constants.Firebase.RemoteConfigKeys.DOWNLOAD_ALL_ENABLED_FOR_FREE)) {
+//                long limit = config.getLong(Constants.Firebase.RemoteConfigKeys.DOWNLOAD_FREE_ARTICLES_LIMIT);
+//                mMaxProgress = (int) limit;
+//
+//                if (articles.size() > mMaxProgress) {
+//                    articles = articles.subList(mCurProgress, mMaxProgress);
+//                }
+//            }
+//        }
+//        return articles;
+
+//        mCurProgress = rangeStart;
+//        mMaxProgress = rangeEnd;
+        mCurProgress = 0;
+        mMaxProgress = rangeEnd - rangeStart;
+
+        articles = articles.subList(mCurProgress, mMaxProgress);
+        return articles;
+    };
 
     private void showNotificationDownloadList() {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
