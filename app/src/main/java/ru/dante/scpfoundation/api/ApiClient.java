@@ -488,6 +488,7 @@ public class ApiClient {
     }
 
     public Observable<Article> getArticle(String url) {
+        Timber.d("start download article: %s", url);
         return bindWithUtils(Observable.<Article>unsafeCreate(subscriber -> {
             Request request = new Request.Builder()
                     .url(url)
@@ -573,12 +574,12 @@ public class ApiClient {
                 //replace all spans with strike-through with <s>
                 Elements spansWithStrike = pageContent.select("span[style=text-decoration: line-through;]");
                 for (Element element : spansWithStrike) {
-                    Timber.d("element: %s", element);
+//                    Timber.d("element: %s", element);
                     element.tagName("s");
                     for (Attribute attribute : element.attributes()) {
                         element.removeAttr(attribute.getKey());
                     }
-                    Timber.d("element refactored: %s", element);
+//                    Timber.d("element refactored: %s", element);
                 }
                 //get title
                 Element titleEl = doc.getElementById("page-title");
@@ -593,7 +594,7 @@ public class ApiClient {
                 //todo need to use one method for rimg/limg and add loopeing through multiple rimg/limg tags in article
                 //parse multiple imgs in "rimg" tag
                 Element rimg = pageContent.getElementsByClass("rimg").first();
-                Timber.d("rimg: %s", rimg);
+//                Timber.d("rimg: %s", rimg);
                 if (rimg != null) {
                     Elements imgs = rimg.getElementsByTag("img");
                     Elements descriptions = rimg.getElementsByTag("span");
@@ -615,11 +616,11 @@ public class ApiClient {
                         rimg.remove();
                     }
                 }
-                Timber.d("pageContent.getElementsByClass(\"rimg\"): %s", pageContent.getElementsByClass("rimg"));
+//                Timber.d("pageContent.getElementsByClass(\"rimg\"): %s", pageContent.getElementsByClass("rimg"));
 
                 //parse multiple imgs in "limg" tag
                 Element limg = pageContent.getElementsByClass("limg").first();
-                Timber.d("limg: %s", limg);
+//                Timber.d("limg: %s", limg);
                 if (limg != null) {
                     Elements imgs = limg.getElementsByTag("img");
                     Elements descriptions = limg.getElementsByTag("span");
@@ -641,12 +642,12 @@ public class ApiClient {
                         limg.remove();
                     }
                 }
-                Timber.d("pageContent.getElementsByClass(\"limg\"): %s", pageContent.getElementsByClass("limg"));
+//                Timber.d("pageContent.getElementsByClass(\"limg\"): %s", pageContent.getElementsByClass("limg"));
 
                 //put all text which is not in any tag in div tag
                 for (Element element : pageContent.children()) {
                     Node nextSibling = element.nextSibling();
-                    Timber.d("child: ___%s___", nextSibling);
+//                    Timber.d("child: ___%s___", nextSibling);
 //                    Timber.d("nextSibling.nodeName(): %s", nextSibling.nodeName());
                     if (nextSibling != null && !nextSibling.toString().equals(" ") && nextSibling.nodeName().equals("#text")) {
                         element.after(new Element("div").appendChild(nextSibling));
@@ -671,11 +672,11 @@ public class ApiClient {
                 //extract tags
                 RealmList<ArticleTag> articleTags = new RealmList<>();
                 Element tagsContainer = doc.getElementsByClass("page-tags").first();
-                Timber.d("tagsContainer: %s", tagsContainer);
+//                Timber.d("tagsContainer: %s", tagsContainer);
                 if (tagsContainer != null) {
                     for (Element a : tagsContainer./*getElementsByTag("span").first().*/getElementsByTag("a")) {
                         articleTags.add(new ArticleTag(a.text()));
-                        Timber.d("tag: %s", articleTags.get(articleTags.size() - 1));
+//                        Timber.d("tag: %s", articleTags.get(articleTags.size() - 1));
                     }
                 }
 
@@ -745,13 +746,14 @@ public class ApiClient {
                 article.tabsTexts = tabsText;
                 //textParts
                 article.textParts = textParts;
-                if (article.textParts != null) {
-                    for (RealmString realmString : article.textParts) {
-                        Timber.d("part: %s", realmString.val);
-                    }
-                } else {
-                    Timber.d("article.textParts is NULL!");
-                }
+                //log
+//                if (article.textParts != null) {
+//                    for (RealmString realmString : article.textParts) {
+//                        Timber.d("part: %s", realmString.val);
+//                    }
+//                } else {
+//                    Timber.d("article.textParts is NULL!");
+//                }
                 article.textPartsTypes = textPartsTypes;
                 //images
                 article.imagesUrls = imgsUrls;
