@@ -184,7 +184,7 @@ public class DownloadAllService extends Service {
             return super.onStartCommand(intent, flags, startId);
         }
 
-        //TODO check for not being RANGE_NONE and use while download
+        //check for not being RANGE_NONE and use while download
         rangeStart = intent.getIntExtra(EXTRA_RANGE_START, RANGE_NONE);
         rangeEnd = intent.getIntExtra(EXTRA_RANGE_END, RANGE_NONE);
         Timber.d("rangeStart/rangeEnd: %s/%s", rangeStart, rangeEnd);
@@ -396,20 +396,18 @@ public class DownloadAllService extends Service {
                 //try to load article
                 //on error increase counters and resume query, emiting onComplete to article observable
                 .flatMap(article -> mApiClient.getArticle(article.second.url)
-                                .flatMap(article1 -> Observable.just(new Pair<>(article.first, article1)))
-                                .onErrorResumeNext(throwable -> {
-                                    Timber.e(throwable, "error while load article: %s", article.second.url);
-                                    mNumOfErrors++;
-                                    mCurProgress++;
-                                    showNotificationDownloadProgress(
-                                            getString(R.string.download_objects_title),
-                                            mCurProgress, mMaxProgress, mNumOfErrors
-                                    );
-                                    return Observable.empty();
-                                })
-//                        .flatMap(article1 -> mDbProviderFactory.getDbProvider().saveArticleSync(article))
+                        .flatMap(article1 -> Observable.just(new Pair<>(article.first, article1)))
+                        .onErrorResumeNext(throwable -> {
+                            Timber.e(throwable, "error while load article: %s", article.second.url);
+                            mNumOfErrors++;
+                            mCurProgress++;
+                            showNotificationDownloadProgress(
+                                    getString(R.string.download_objects_title),
+                                    mCurProgress, mMaxProgress, mNumOfErrors
+                            );
+                            return Observable.empty();
+                        })
                 )
-//                .flatMap(article -> mDbProviderFactory.getDbProvider().saveArticleSync(article))
                 .doOnNext(article -> {
                     Timber.d("downloaded: %s", article.second.url);
                     mCurProgress++;
@@ -417,23 +415,6 @@ public class DownloadAllService extends Service {
                     showNotificationDownloadProgress(getString(R.string.download_objects_title),
                             mCurProgress, mMaxProgress, mNumOfErrors);
                 })
-//                .flatMap(article -> {
-//                    Timber.d("downloaded: %s", article.url);
-//                    mCurProgress++;
-//                    Timber.d("mCurProgress %s, mMaxProgress: %s", mCurProgress, mMaxProgress);
-//                    if (mCurProgress == mMaxProgress) {
-//                        showNotificationSimple(
-//                                getString(R.string.download_complete_title),
-//                                getString(R.string.download_complete_title_content,
-//                                        mCurProgress - mNumOfErrors, mMaxProgress, mNumOfErrors)
-//                        );
-//                        return Observable.just(article).delay(5, TimeUnit.SECONDS);
-//                    } else {
-//                        showNotificationDownloadProgress(getString(R.string.download_objects_title),
-//                                mCurProgress, mMaxProgress, mNumOfErrors);
-//                        return Observable.just(article);
-//                    }
-//                })
                 //restore natural oder
                 .toList()
                 .flatMap(pairs -> {
@@ -452,8 +433,6 @@ public class DownloadAllService extends Service {
                                 getString(R.string.download_complete_title_content,
                                         mCurProgress - mNumOfErrors, mMaxProgress, mNumOfErrors)
                         ),
-//                                showNotificationDownloadProgress(getString(R.string.download_objects_title),
-//                                mCurProgress, mMaxProgress, mNumOfErrors),
                         e -> {
                             Timber.e(e, "error download objects");
                             stopDownloadAndRemoveNotif();
@@ -470,32 +449,13 @@ public class DownloadAllService extends Service {
     }
 
     private Func1<List<Article>, List<Article>> limitArticles = articles -> {
-//        mCurProgress = 0;
-//        mMaxProgress = articles.size();
-//        //if not have subscription
-//        //check if we have limit in downloads
-//        //if so - set maxProgress to limit
-//        //and use sub string of articles
-//
-//        if (!mMyPreferenceManager.isHasSubscription()) {
-//            FirebaseRemoteConfig config = FirebaseRemoteConfig.getInstance();
-//            if (!config.getBoolean(Constants.Firebase.RemoteConfigKeys.DOWNLOAD_ALL_ENABLED_FOR_FREE)) {
-//                long limit = config.getLong(Constants.Firebase.RemoteConfigKeys.DOWNLOAD_FREE_ARTICLES_LIMIT);
-//                mMaxProgress = (int) limit;
-//
-//                if (articles.size() > mMaxProgress) {
-//                    articles = articles.subList(mCurProgress, mMaxProgress);
-//                }
-//            }
-//        }
-//        return articles;
-
-//        mCurProgress = rangeStart;
-//        mMaxProgress = rangeEnd;
         mCurProgress = 0;
-        mMaxProgress = rangeEnd - rangeStart;
-
-        articles = articles.subList(rangeStart, rangeEnd);
+        if (rangeStart == RANGE_NONE && rangeEnd == RANGE_NONE) {
+            mMaxProgress = articles.size();
+        } else {
+            mMaxProgress = rangeEnd - rangeStart;
+            articles = articles.subList(rangeStart, rangeEnd);
+        }
         return articles;
     };
 

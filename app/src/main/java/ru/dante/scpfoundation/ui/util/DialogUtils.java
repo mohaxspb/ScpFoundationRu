@@ -297,7 +297,6 @@ public class DialogUtils {
                 .negativeText(android.R.string.cancel)
                 .onNegative((dialog1, which) -> dialog1.dismiss())
                 .positiveText(R.string.download)
-//                .onPositive((dialog1, which) -> DownloadAllService.startDownloadWithType(context, type))
                 .build();
 
         View view = dialog.getCustomView();
