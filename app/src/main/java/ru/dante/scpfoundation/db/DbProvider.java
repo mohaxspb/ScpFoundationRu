@@ -381,7 +381,16 @@ public class DbProvider {
                         .notEqualTo(Article.FIELD_URL, Constants.Urls.STORIES)
                         .count();
                 Timber.d("numOfArtsInDb: %s", numOfArtsInDb);
-                long limit = config.getLong(Constants.Firebase.RemoteConfigKeys.DOWNLOAD_FREE_ARTICLES_LIMIT);
+//                long limit = config.getLong(Constants.Firebase.RemoteConfigKeys.DOWNLOAD_FREE_ARTICLES_LIMIT);
+                FirebaseRemoteConfig remConf = FirebaseRemoteConfig.getInstance();
+                int limit = (int) remConf.getLong(Constants.Firebase.RemoteConfigKeys.DOWNLOAD_FREE_ARTICLES_LIMIT);
+                int numOfScorePerArt = (int) remConf.getLong(Constants.Firebase.RemoteConfigKeys.DOWNLOAD_SCORE_PER_ARTICLE);
+
+                User user = realm.where(User.class).findFirst();
+                if (user != null) {
+                    limit += user.score / numOfScorePerArt;
+                }
+
                 Timber.d("limit: %s", limit);
                 if (numOfArtsInDb + 1 > limit) {
                     int numOfArtsToDelete = (int) (numOfArtsInDb + 1 - limit);
