@@ -237,11 +237,10 @@ public class DownloadAllService extends Service {
         showNotificationDownloadList();
         //download list
         Subscription subscription = mApiClient.getRecentArticlesPageCount()
-                .doOnNext(pageCount -> {
-                    mMaxProgress = pageCount;
-                    //test value
-//                    mMaxProgress = 3;
-                })
+                //if we have limit we must not load all lists of articles
+                .map(pageCount -> (rangeStart != RANGE_NONE && rangeEnd != RANGE_NONE)
+                        ? (int) Math.ceil((double) rangeEnd / Constants.Api.NUM_OF_ARTICLES_ON_RECENT_PAGE) : pageCount)
+                .doOnNext(pageCount -> mMaxProgress = pageCount)
                 .doOnError(throwable -> showNotificationSimple(
                         getString(R.string.error_notification_title),
                         getString(R.string.error_notification_recent_list_download_content)

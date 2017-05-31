@@ -237,6 +237,7 @@
     <string name="increase_limit">Увеличить/убрать лимит</string>
     <string name="user_limit">Ваш лимит: %s</string>
     <string name="no_limit">Без ограничений!</string>
+    <string name="download_all_with_limit">Будут скачаны последние %d статей из списка последних изменённых статей (список \"Новые статьи\")</string>
 
     <plurals name="plurals_score">
         <item quantity="zero">%1$d очков</item>

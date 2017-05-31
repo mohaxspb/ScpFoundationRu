@@ -183,7 +183,6 @@ public class DialogUtils {
                     Observable<List<Article>> articlesObservable;
                     switch (link) {
                         case DownloadAllService.DownloadType.TYPE_ALL:
-                            //TODO
                             //simply start download all with popup for limit users,
                             //in which tell, that we can't now how many arts he can load
                             numOfArticlesObservable = Observable.just(Integer.MIN_VALUE);
@@ -272,7 +271,26 @@ public class DialogUtils {
                                     remConf.getBoolean(RemoteConfigKeys.DOWNLOAD_ALL_ENABLED_FOR_FREE));
                             boolean ignoreLimit = mPreferenceManager.isHasSubscription()
                                     || remConf.getBoolean(RemoteConfigKeys.DOWNLOAD_ALL_ENABLED_FOR_FREE);
-                            showRangeDialog(context, type, numOfArtsAndLimit.first, numOfArtsAndLimit.second, ignoreLimit);
+
+                            if (type.equals(DownloadAllService.DownloadType.TYPE_ALL)) {
+                                if(!ignoreLimit) {
+                                    //simply start download all with popup for limit users,
+                                    //in which tell, that we can't now how many arts he can load
+                                    new MaterialDialog.Builder(context)
+                                            .title(R.string.download_all)
+                                            .content(context.getString(R.string.download_all_with_limit, numOfArtsAndLimit.second))
+                                            .positiveText(R.string.download)
+                                            .onPositive((dialog, which) ->
+                                                    DownloadAllService.startDownloadWithType(context, type, 0, numOfArtsAndLimit.second))
+                                            .negativeText(android.R.string.cancel)
+                                            .build()
+                                            .show();
+                                } else {
+                                    DownloadAllService.startDownloadWithType(context, type, DownloadAllService.RANGE_NONE, DownloadAllService.RANGE_NONE);
+                                }
+                            } else {
+                                showRangeDialog(context, type, numOfArtsAndLimit.first, numOfArtsAndLimit.second, ignoreLimit);
+                            }
                         },
                         e -> {
                             Timber.e(e);
@@ -302,7 +320,7 @@ public class DialogUtils {
         View view = dialog.getCustomView();
         CrystalRangeSeekbar seekbar = ButterKnife.findById(view, R.id.rangeSeekbar);
         seekbar.setMaxValue(numOfArticles).apply();
-        ;
+
         if (!ignoreLimit) {
             if (limit < numOfArticles) {
                 seekbar.setMinStartValue(0).apply();
@@ -310,14 +328,15 @@ public class DialogUtils {
 
                 seekbar.setFixGap(limit).apply();
             }
+        } else {
+            seekbar.setMinStartValue(0).apply();
+            seekbar.setMaxStartValue(numOfArticles).apply();
         }
 
         TextView min = ButterKnife.findById(view, R.id.min);
         TextView max = ButterKnife.findById(view, R.id.max);
         TextView userLimit = ButterKnife.findById(view, R.id.userLimit);
         TextView increaseLimit = ButterKnife.findById(view, R.id.increaseLimit);
-
-        //TODO if we load all article, we must tell, that we'll load only most recent ones
 
         increaseLimit.setVisibility(ignoreLimit ? View.INVISIBLE : View.VISIBLE);
         increaseLimit.setOnClickListener(v -> {

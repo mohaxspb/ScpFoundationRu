@@ -191,9 +191,9 @@
     <!--download all-->
     <entry>
         <key>download_all_enabled_for_free</key>
-        <!--fixme test-->
-        <value>false</value>
-        <!--<value>true</value>-->
+        <!--fi xme test-->
+        <!--<value>false</value>-->
+        <value>true</value>
     </entry>
     <entry>
         <key>download_free_articles_limit</key>
