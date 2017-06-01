@@ -853,6 +853,7 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
         if (mFirebaseRemoteConfig.getInfo().getConfigSettings().isDeveloperModeEnabled()) {
             cacheExpiration = 60 *5;//for 5 min
         }
+        //comment this if you want to use local data
         mFirebaseRemoteConfig.fetch(cacheExpiration).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 Timber.d("Fetch Succeeded");

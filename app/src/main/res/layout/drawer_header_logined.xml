@@ -29,7 +29,7 @@
             android:gravity="center_vertical"
             android:textColor="@color/material_blue_gray_50"
             android:textSize="17sp"
-            tools:text="@string/access_level"
+            tools:text="3 уровень допуска"
             />
 
         <ImageView

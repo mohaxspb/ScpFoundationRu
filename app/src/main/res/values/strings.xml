@@ -1,5 +1,9 @@
 <resources>
-    <string name="app_name">SCP Foundation RU On/Offline</string>
+    <!--no need to translate-->
+    <string name="app_name" translatable="false">SCP Foundation RU On/Offline</string>
+    <string name="market_url" translatable="false">market://details?id=%s</string>
+    <string name="social_provider_facebook_title" translatable="false">Facebook</string>
+    <string name="social_provider_google_title" translatable="false">Google</string>
     <!--drawer items-->
     <string name="drawer_item_1">Об организации</string>
     <string name="drawer_item_2">Новости</string>
@@ -22,7 +26,7 @@
     <string name="settings">Настройки</string>
     <string name="night_mode">Ночной режим</string>
     <string name="text_size">Размер текста</string>
-    <string name="in_apps">Отключить рекламу</string>
+    <string name="in_apps">Расширенная версия</string>
     <string name="day_mode">Дневной режим</string>
     <string name="unsupported_link">Эта ссылка не поддерживается</string>
     <string name="share">Поделиться</string>
@@ -48,7 +52,6 @@
     <string name="stories">Рассказы</string>
 
     <!--utils-->
-    <string name="scrollAwareFABBehavior">ru.kuchanov.scp2.ui.util.ScrollAwareFABBehavior</string>
     <string name="search_hint">Введите запрос</string>
     <string name="error_no_search_results">По вашему запросу ничего не найдено</string>
     <string name="start_download">Статьи нет в базе данных. Начинаю загрузку</string>
@@ -57,7 +60,6 @@
     <string name="downlad_art_list">Загрузка списка статей</string>
     <string name="download_all_title">Что скачать?</string>
     <string name="download">Скачать</string>
-    <string name="cancel">Отмена</string>
     <string name="stop_download">Остановить загрузку</string>
     <string name="download_objects_title">Загрузка объектов</string>
     <string name="error_notification_title">Ошибка</string>
@@ -107,7 +109,6 @@
     <string name="login_advantages_title">Зачем авторизация?</string>
     <string name="login_greetings">Добро пожаловать, агент %s</string>
     <string name="error_login_no_email">Невозможно авторизоваться без информации о e-mail</string>
-    <string name="access_level">3 уровень доступа (секретно)</string>
     <string name="materials">Материалы</string>
     <string name="only_premium">Только для подписавшихся</string>
     <string name="activate">Активировать</string>
@@ -159,7 +160,6 @@
         11. Таблица рейтинга агентов показывается при нажатии на аватарку. Она обновляется раз в несколько минут. Обычно 5 минут.</item>
     </string-array>
 
-    <string name="market_url" translatable="false">market://details?id=%s</string>
     <string name="free">Бесплатно</string>
     <string name="dialog_free_ads_disable_title">Отлючение рекламы</string>
     <string name="start_market_error">Не удалось запустить PlayMarket</string>
@@ -225,9 +225,7 @@
     <string name="sort">Сортировка</string>
     <string name="dialog_sort_title">Сортировка и фильтр</string>
     <string name="social_provider_vk_title">Вконтакте</string>
-    <string name="social_provider_google_title">Google</string>
     <string name="dialog_social_login_title">Авторизация</string>
-    <string name="social_provider_facebook_title">Facebook</string>
     <string name="error_login_firebase_user_collision">Ошибка - на этот email уже зарегистрирован другой пользователь.</string>
     <string name="tags_search">Поиск по тегам</string>
     <string name="tags_choosen">Выбранные теги</string>
@@ -236,10 +234,11 @@
     <string name="tags">Теги:</string>
     <string name="downlad_art_list_range">Сколько скачать?</string>
     <string name="increase_limit">Увеличить/убрать лимит</string>
-    <string name="user_limit">Ваш лимит: %s</string>
+    <string name="user_limit">Ваш лимит:\n%s</string>
     <string name="no_limit">Без ограничений!</string>
     <string name="download_all_with_limit">Будут скачаны последние %d статей из списка последних изменённых статей (список \"Новые статьи\")</string>
-    <string name="limit_description">Лимит ограничивает максимальное количество статей, которые могут быть сохранены на устройстве для чтения в offline режиме. Сейчас для вас никакого ограничения нет! А если у вас приобретена подписка - то и не будет) Если подписки у вас нет, то однажды лимит будет ограничен 10 статьями для неаторизованных агентов и 10 + (кол-во очков/%d) для авторизованных.</string>
+    <string name="limit_description">Лимит ограничивает максимальное количество статей, которые могут быть сохранены на устройстве для чтения в offline режиме. Сейчас для вас никакого ограничения нет! А если у вас приобретена подписка - то и не будет) Если подписки у вас нет, то однажды лимит будет ограничен %1$d статьями для неаторизованных агентов и %2$d + (кол-во очков/%3$d) для авторизованных.</string>
+    <string name="limit_description_disabled_free_downloads">Лимит ограничивает максимальное количество статей, которые могут быть сохранены на устройстве для чтения в offline режиме. Минимальный лимит статей - %1$d. Лимит можно полностью убрать купив подписку или повышать его, авторизовавшись и зарабатывая очки. За каждые %2$d очков вы сможете хранить на одну статью больше!</string>
 
     <plurals name="plurals_score">
         <item quantity="zero">%1$d очков</item>

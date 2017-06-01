@@ -92,7 +92,7 @@ public class DialogUtils {
                 })
                 .alwaysCallSingleChoiceCallback()
                 .positiveText(R.string.download)
-                .negativeText(R.string.cancel)
+                .negativeText(android.R.string.cancel)
                 .autoDismiss(false)
                 .onNegative((dialog, which) -> dialog.dismiss())
                 .onPositive((dialog, which) -> {
@@ -348,13 +348,19 @@ public class DialogUtils {
 
         FirebaseRemoteConfig remConf = FirebaseRemoteConfig.getInstance();
         int scorePerArt = (int) remConf.getLong(RemoteConfigKeys.DOWNLOAD_SCORE_PER_ARTICLE);
+        int freeOfflineLimit = (int) remConf.getLong(RemoteConfigKeys.DOWNLOAD_FREE_ARTICLES_LIMIT);
 
-        String limitDescriptionText = context.getString(ignoreLimit ? R.string.limit_description : R.string.limit_description_disabled_free_downloads
-                info.setOnClickListener(view1 -> new MaterialDialog.Builder(context)
-                        .title(R.string.info)
-                        .content()
-                        .positiveText(android.R.string.ok)
-                        .show());
+        String limitDescriptionText;
+        if (ignoreLimit) {
+            limitDescriptionText = context.getString(R.string.limit_description, freeOfflineLimit, freeOfflineLimit, scorePerArt);
+        } else {
+            limitDescriptionText = context.getString(R.string.limit_description_disabled_free_downloads, freeOfflineLimit, scorePerArt);
+        }
+        info.setOnClickListener(view1 -> new MaterialDialog.Builder(context)
+                .title(R.string.info)
+                .content(limitDescriptionText)
+                .positiveText(android.R.string.ok)
+                .show());
 
         increaseLimit.setVisibility(ignoreLimit ? View.INVISIBLE : View.VISIBLE);
         increaseLimit.setOnClickListener(v -> {

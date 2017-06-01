@@ -22,10 +22,13 @@
             android:id="@+id/userLimit"
             android:layout_width="0dp"
             android:layout_weight="1"
+            android:layout_gravity="center_vertical"
             android:layout_height="wrap_content"
             android:padding="@dimen/defaultMargin"
+            android:lineSpacingExtra="3dp"
             android:textSize="16sp"
-            tools:text="Your offline limit: 50"
+            android:gravity="center"
+            tools:text="Your offline limit:\nБез ограничений!"
             />
 
         <ImageView
@@ -33,6 +36,7 @@
             android:src="@drawable/ic_info_outline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            tools:tint="@color/zbs_color_red"
             android:padding="@dimen/defaultMargin"
             android:background="?selectableItemBackgroundBorderless"
             tools:ignore="ContentDescription"
