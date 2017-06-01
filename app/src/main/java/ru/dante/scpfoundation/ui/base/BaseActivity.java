@@ -778,7 +778,6 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
                 }
             } else {
                 // Signed out, show unauthenticated UI.
-                //TODO
                 mPresenter.logoutUser();
             }
         } else {
@@ -852,19 +851,18 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
         // throttling is in progress. The default expiration duration is 43200 (12 hours).
         long cacheExpiration = 20000; //default 43200
         if (mFirebaseRemoteConfig.getInfo().getConfigSettings().isDeveloperModeEnabled()) {
-            cacheExpiration = 0;
+            cacheExpiration = 60 *5;//for 5 min
         }
-        //FIXME!!!
-//        mFirebaseRemoteConfig.fetch(cacheExpiration).addOnCompleteListener(task -> {
-//            if (task.isSuccessful()) {
-//                Timber.d("Fetch Succeeded");
-//                // Once the config is successfully fetched it must be activated before newly fetched
-//                // values are returned.
-//                mFirebaseRemoteConfig.activateFetched();
-//            } else {
-//                Timber.d("Fetch Failed");
-//            }
-//        });
+        mFirebaseRemoteConfig.fetch(cacheExpiration).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Timber.d("Fetch Succeeded");
+                // Once the config is successfully fetched it must be activated before newly fetched
+                // values are returned.
+                mFirebaseRemoteConfig.activateFetched();
+            } else {
+                Timber.d("Fetch Failed");
+            }
+        });
     }
 
     @Override

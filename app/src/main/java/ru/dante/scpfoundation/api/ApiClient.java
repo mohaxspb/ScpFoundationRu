@@ -983,12 +983,16 @@ public class ApiClient {
                 for (String arrayItem : arrayOfArticles) {
 //                    Timber.d("arrayItem: %s", arrayItem);
                     doc = Jsoup.parse(arrayItem);
-                    String imageURL = doc.getElementsByTag("img").first().attr("src");
+                    String imageURL = null;
+                    Elements img = doc.getElementsByTag("img");
+                    if (img != null && !img.isEmpty()) {
+                        imageURL = img.first().attr("src");
+                    }
                     String url = BuildConfig.BASE_API_URL + doc.getElementsByTag("a").first().attr("href");
                     String title = doc.text();
 
                     @Article.ObjectType
-                    String type = getObjectTypeByImageUrl(imageURL);
+                    String type = imageURL != null ? getObjectTypeByImageUrl(imageURL) : Article.ObjectType.NONE;
 
                     Article article = new Article();
                     article.url = url;
