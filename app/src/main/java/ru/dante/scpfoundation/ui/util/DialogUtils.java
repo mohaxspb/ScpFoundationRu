@@ -2,11 +2,14 @@ package ru.dante.scpfoundation.ui.util;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialogFragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
@@ -273,7 +276,7 @@ public class DialogUtils {
                                     || remConf.getBoolean(RemoteConfigKeys.DOWNLOAD_ALL_ENABLED_FOR_FREE);
 
                             if (type.equals(DownloadAllService.DownloadType.TYPE_ALL)) {
-                                if(!ignoreLimit) {
+                                if (!ignoreLimit) {
                                     //simply start download all with popup for limit users,
                                     //in which tell, that we can't now how many arts he can load
                                     new MaterialDialog.Builder(context)
@@ -337,6 +340,21 @@ public class DialogUtils {
         TextView max = ButterKnife.findById(view, R.id.max);
         TextView userLimit = ButterKnife.findById(view, R.id.userLimit);
         TextView increaseLimit = ButterKnife.findById(view, R.id.increaseLimit);
+        ImageView info = ButterKnife.findById(view, R.id.info);
+
+        boolean isNightMode = mPreferenceManager.isNightMode();
+        int tint = isNightMode ? Color.WHITE : ContextCompat.getColor(context, R.color.zbs_color_red);
+        info.setColorFilter(tint);
+
+        FirebaseRemoteConfig remConf = FirebaseRemoteConfig.getInstance();
+        int scorePerArt = (int) remConf.getLong(RemoteConfigKeys.DOWNLOAD_SCORE_PER_ARTICLE);
+
+        String limitDescriptionText = context.getString(ignoreLimit ? R.string.limit_description : R.string.limit_description_disabled_free_downloads
+                info.setOnClickListener(view1 -> new MaterialDialog.Builder(context)
+                        .title(R.string.info)
+                        .content()
+                        .positiveText(android.R.string.ok)
+                        .show());
 
         increaseLimit.setVisibility(ignoreLimit ? View.INVISIBLE : View.VISIBLE);
         increaseLimit.setOnClickListener(v -> {

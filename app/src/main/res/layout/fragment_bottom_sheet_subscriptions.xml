@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:padding="@dimen/defaultMargin"
             android:background="?selectableItemBackgroundBorderless"
-            android:contentDescription="@string/app_name"
+            tools:ignore="ContentDescription"
             />
 
     </LinearLayout>
