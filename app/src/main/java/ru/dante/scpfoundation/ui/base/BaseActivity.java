@@ -43,6 +43,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.hannesdorfmann.mosby.mvp.MvpActivity;
@@ -741,7 +742,14 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
                 //Пользователь успешно авторизовался
                 Timber.d("Auth successful: %s", vkAccessToken.email);
                 if (vkAccessToken.email != null) {
-                    mPresenter.startFirebaseLogin(Constants.Firebase.SocialProvider.VK, VKAccessToken.currentToken().accessToken);
+                    //here can be case, when we login via Google or Facebook, but try to join group to receive reward
+                    //in this case we have firebase user already, so no need to login to firebase
+                    //FIXME TODO add support of connect vk acc to firebase acc as social provider
+                    if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+                        Timber.e("Firebase user exists, do nothing as we do not implement connect VK acc to Firebase as social provider");
+                    } else {
+                        mPresenter.startFirebaseLogin(Constants.Firebase.SocialProvider.VK, VKAccessToken.currentToken().accessToken);
+                    }
                 } else {
                     Toast.makeText(BaseActivity.this, R.string.error_login_no_email, Toast.LENGTH_SHORT).show();
                     mPresenter.logoutUser();
@@ -783,7 +791,6 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
         } else {
             super.onActivityResult(requestCode, resultCode, data);
             mCallbackManager.onActivityResult(requestCode, resultCode, data);
-
         }
     }
 
@@ -851,7 +858,7 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
         // throttling is in progress. The default expiration duration is 43200 (12 hours).
         long cacheExpiration = 20000; //default 43200
         if (mFirebaseRemoteConfig.getInfo().getConfigSettings().isDeveloperModeEnabled()) {
-            cacheExpiration = 60 *5;//for 5 min
+            cacheExpiration = 60 * 5;//for 5 min
         }
         //comment this if you want to use local data
         mFirebaseRemoteConfig.fetch(cacheExpiration).addOnCompleteListener(task -> {
