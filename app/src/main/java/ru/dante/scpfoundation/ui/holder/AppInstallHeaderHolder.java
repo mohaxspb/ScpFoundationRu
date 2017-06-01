@@ -27,8 +27,5 @@ public class AppInstallHeaderHolder extends BaseHolder<BaseModel, BaseAdapterCli
         super.bind(data);
 
         title.setText(data.title);
-
-//        title.setCompoundDrawablePadding(DimensionUtils.getDefaultMargin());
-//        title.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_shop, 0, 0, 0);
     }
 }

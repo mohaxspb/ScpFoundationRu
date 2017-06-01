@@ -37,10 +37,6 @@ public class FreeAdsDisableRecyclerAdapter extends BaseRecyclerAdapter<
     private static final int TYPE_VK_GROUP_TO_JOIN_HEADER = 4;
     private static final int TYPE_VK_GROUP_TO_JOIN = 5;
 
-    public FreeAdsDisableRecyclerAdapter() {
-        Timber.d("FreeAdsDisableRecyclerAdapter constructor");
-    }
-
     @Override
     public BaseHolder<BaseModel, BaseAdapterClickListener<BaseModel>> onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView;

@@ -55,8 +55,7 @@ public class SubscriptionsRecyclerAdapter extends RecyclerView.Adapter<Subscript
     @Override
     public SubscriptionsRecyclerAdapter.ViewHolderText onCreateViewHolder(ViewGroup parent, int viewType) {
         SubscriptionsRecyclerAdapter.ViewHolderText viewHolder;
-        View view;
-        view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_subscription, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_subscription, parent, false);
         viewHolder = new ViewHolderText(view);
         return viewHolder;
     }
@@ -75,8 +74,6 @@ public class SubscriptionsRecyclerAdapter extends RecyclerView.Adapter<Subscript
 
         @BindView(R.id.title)
         TextView title;
-//        @BindView(R.id.preview)
-//        TextView preview;
 
         ViewHolderText(View itemView) {
             super(itemView);
@@ -84,17 +81,12 @@ public class SubscriptionsRecyclerAdapter extends RecyclerView.Adapter<Subscript
         }
 
         void bind(Subscription article) {
-            Timber.d("binf with date: %s", article);
+            Timber.d("bind with date: %s", article);
             Context context = itemView.getContext();
             float uiTextScale = mMyPreferenceManager.getUiTextScale();
             int textSizePrimary = context.getResources().getDimensionPixelSize(R.dimen.text_size_primary);
-            int textSizeTertiary = context.getResources().getDimensionPixelSize(R.dimen.text_size_tertiary);
 
-            itemView.setOnClickListener(v -> {
-                if (mArticleClickListener != null) {
-                    mArticleClickListener.onSubscriptionClicked(article);
-                }
-            });
+            itemView.setOnClickListener(v -> mArticleClickListener.onSubscriptionClicked(article));
 
             title.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * textSizePrimary);
             String text = article.title.replace("(" + context.getString(R.string.app_name) + ")", "") + " - " + article.price;

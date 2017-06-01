@@ -7,9 +7,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.vk.sdk.VKSdk;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -366,6 +368,20 @@ public class DbProvider {
         return Observable.just(article);
     }
 
+    /**
+     * @param articles obj to save
+     * @return Observable that emits unmanaged saved article on successful insert or throws error
+     */
+    public Observable<List<Article>> saveMultipleArticlesSync(List<Article> articles) {
+        mRealm.executeTransaction(realm -> {
+            for (Article article : articles) {
+                saveArticleToRealm(article, realm);
+            }
+        });
+        mRealm.close();
+        return Observable.just(articles);
+    }
+
     private void saveArticleToRealm(Article article, Realm realm) {
         //if not have subscription
         //check if we have limit in downloads
@@ -381,7 +397,16 @@ public class DbProvider {
                         .notEqualTo(Article.FIELD_URL, Constants.Urls.STORIES)
                         .count();
                 Timber.d("numOfArtsInDb: %s", numOfArtsInDb);
-                long limit = config.getLong(Constants.Firebase.RemoteConfigKeys.DOWNLOAD_FREE_ARTICLES_LIMIT);
+//                long limit = config.getLong(Constants.Firebase.RemoteConfigKeys.DOWNLOAD_FREE_ARTICLES_LIMIT);
+                FirebaseRemoteConfig remConf = FirebaseRemoteConfig.getInstance();
+                int limit = (int) remConf.getLong(Constants.Firebase.RemoteConfigKeys.DOWNLOAD_FREE_ARTICLES_LIMIT);
+                int numOfScorePerArt = (int) remConf.getLong(Constants.Firebase.RemoteConfigKeys.DOWNLOAD_SCORE_PER_ARTICLE);
+
+                User user = realm.where(User.class).findFirst();
+                if (user != null) {
+                    limit += user.score / numOfScorePerArt;
+                }
+
                 Timber.d("limit: %s", limit);
                 if (numOfArtsInDb + 1 > limit) {
                     int numOfArtsToDelete = (int) (numOfArtsInDb + 1 - limit);
@@ -404,6 +429,10 @@ public class DbProvider {
             }
         }
 
+        long timeStamp = System.currentTimeMillis();
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS", Locale.getDefault());
+        Timber.d("insert/update: %s/%s", article.title, sdf.format(timeStamp));
+
         //check if we have app in db and update
         Article applicationInDb = realm.where(Article.class)
                 .equalTo(Article.FIELD_URL, article.url)
@@ -422,16 +451,18 @@ public class DbProvider {
             //images
             applicationInDb.imagesUrls = article.imagesUrls;
             //update localUpdateTimeStamp to be able to sort arts by this value
-            applicationInDb.localUpdateTimeStamp = System.currentTimeMillis();
+            applicationInDb.localUpdateTimeStamp = timeStamp;
 
 //            if (article.tags != null && !article.tags.isEmpty()) {
-                applicationInDb.tags.clear();
-                applicationInDb.tags = article.tags;
+            applicationInDb.tags.clear();
+            applicationInDb.tags = article.tags;
 //            }
 
             //update it in DB such way, as we add unmanaged items
             realm.insertOrUpdate(applicationInDb);
         } else {
+            //update localUpdateTimeStamp to be able to sort arts by this value
+            article.localUpdateTimeStamp = timeStamp;
             realm.insertOrUpdate(article);
         }
     }
@@ -548,6 +579,13 @@ public class DbProvider {
                 .filter(RealmResults::isLoaded)
                 .filter(RealmResults::isValid)
                 .flatMap(users -> Observable.just(users.isEmpty() ? null : mRealm.copyFromRealm(users.first())));
+    }
+
+    /**
+     * @return Observable, that emits unmanaged user
+     */
+    public User getUserSync() {
+        return mRealm.where(User.class).findFirst();
     }
 
     public Observable<User> saveUser(User user) {

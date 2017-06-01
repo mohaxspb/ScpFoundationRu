@@ -137,7 +137,7 @@ public class PreRate {
                         showFeedbackDialog();
                     }
                 })
-                .negativeText(R.string.cancel)
+                .negativeText(android.R.string.cancel)
                 .onNegative((dialog, which) -> lastDialog.dismiss());
         lastDialog = builder.build();
         lastDialog.show();
@@ -167,7 +167,7 @@ public class PreRate {
                         cntxRef.get().startActivity(Intent.createChooser(intentEmail, cntxRef.get().getString(R.string.choose_email_provider)));
                     }
                 })
-                .negativeText(R.string.cancel)
+                .negativeText(android.R.string.cancel)
                 .onNegative((dialog, which) -> lastDialog.dismiss());
 
         lastDialog = builder.build();

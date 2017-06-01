@@ -35,11 +35,10 @@
             android:layout_height="wrap_content"
             android:padding="@dimen/defaultMargin"
             android:background="?selectableItemBackgroundBorderless"
-            android:contentDescription="@string/app_name"
+            tools:ignore="ContentDescription"
             />
 
     </LinearLayout>
-
 
     <android.support.v7.widget.CardView
         android:id="@+id/removeAdsOneDay"
@@ -53,6 +52,7 @@
         >
 
         <TextView
+            android:id="@+id/freeActions"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
@@ -103,31 +103,10 @@
             android:visibility="gone"
             >
 
-            <!--<TextView-->
-            <!--android:id="@+id/currentSubscriptionTitle"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:padding="@dimen/defaultMarginSmall"-->
-            <!--android:paddingLeft="@dimen/defaultMargin"-->
-            <!--android:text="@string/current_subscription"-->
-            <!--android:textSize="19sp"-->
-            <!--tools:ignore="RtlHardcoded,RtlSymmetry"-->
-            <!--/>-->
-
-            <!--<TextView-->
-            <!--android:id="@+id/currentSubscriptionValue"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:padding="@dimen/defaultMarginSmall"-->
-            <!--android:paddingLeft="@dimen/defaultMargin"-->
-            <!--android:textSize="16sp"-->
-            <!--tools:ignore="RtlHardcoded,RtlSymmetry"-->
-            <!--tools:text="Подписка за 30р"-->
-            <!--/>-->
-
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recyclerView"
                 android:layout_width="match_parent"
+                android:scrollbars="vertical"
                 android:layout_height="match_parent"
                 />
 

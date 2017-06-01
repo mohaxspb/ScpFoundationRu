@@ -19,12 +19,14 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.vending.billing.IInAppBillingService;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,6 +35,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.manager.InAppBillingServiceConnectionObservable;
@@ -63,11 +66,16 @@ public class SubscriptionsFragmentDialog
     RecyclerView recyclerView;
     @BindView(R.id.info)
     ImageView info;
+    @BindView(R.id.dialogTitle)
+    TextView dialogTitle;
+    @BindView(R.id.freeActions)
+    TextView freeActions;
 
     @Inject
     MyPreferenceManager mMyPreferenceManager;
 
     private IInAppBillingService mInAppBillingService;
+
     private boolean isDataLoaded;
 
     public static SubscriptionsFragmentDialog newInstance() {
@@ -97,14 +105,22 @@ public class SubscriptionsFragmentDialog
 
         getMarketData();
 
+        FirebaseRemoteConfig remConf = FirebaseRemoteConfig.getInstance();
+        boolean freeDownloadEnabled = remConf.getBoolean(Constants.Firebase.RemoteConfigKeys.DOWNLOAD_ALL_ENABLED_FOR_FREE);
+
         boolean isNightMode = mMyPreferenceManager.isNightMode();
         int tint = isNightMode ? Color.WHITE : ContextCompat.getColor(getActivity(), R.color.zbs_color_red);
         info.setColorFilter(tint);
         info.setOnClickListener(view -> new MaterialDialog.Builder(getActivity())
                 .title(R.string.info)
-                .content(R.string.subs_info)
+                .content(freeDownloadEnabled ? R.string.subs_info : R.string.subs_info_disabled_free_downloads)
                 .positiveText(android.R.string.ok)
                 .show());
+
+        dialogTitle.setText(freeDownloadEnabled
+                ? R.string.dialog_title_subscriptions : R.string.dialog_title_subscriptions_disabled_free_downloads);
+        freeActions.setText(freeDownloadEnabled
+                ? R.string.remove_ads_for_free : R.string.remove_ads_for_free_disabled_free_downloads);
     }
 
     @OnClick(R.id.removeAdsOneDay)
@@ -157,14 +173,14 @@ public class SubscriptionsFragmentDialog
                             adapter.setArticleClickListener(SubscriptionsFragmentDialog.this);
                             recyclerView.setAdapter(adapter);
                         },
-                        error -> {
+                        e -> {
                             if (!isAdded()) {
                                 return;
                             }
-                            Timber.e(error, "error getting cur subs");
+                            Timber.e(e, "error getting cur subs");
                             isDataLoaded = false;
 
-                            Snackbar.make(mRoot, error.getMessage(), Snackbar.LENGTH_SHORT).show();
+                            Snackbar.make(mRoot, e.getMessage(), Snackbar.LENGTH_SHORT).show();
                             progressCenter.setVisibility(View.GONE);
                             refresh.setVisibility(View.VISIBLE);
                         }

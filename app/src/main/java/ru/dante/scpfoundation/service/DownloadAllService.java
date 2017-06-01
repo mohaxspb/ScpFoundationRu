@@ -12,11 +12,10 @@ import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Pair;
 
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -33,6 +32,7 @@ import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
@@ -57,9 +57,18 @@ import static ru.dante.scpfoundation.service.DownloadAllService.DownloadType.TYP
 public class DownloadAllService extends Service {
 
     private static final int NOTIFICATION_ID = 42;
+
+    public static final int RANGE_NONE = Integer.MIN_VALUE;
+
     private static final String EXTRA_DOWNLOAD_TYPE = "EXTRA_DOWNLOAD_TYPE";
+    private static final String EXTRA_RANGE_START = "EXTRA_RANGE_START";
+    private static final String EXTRA_RANGE_END = "EXTRA_RANGE_END";
+
     private static final String ACTION_STOP = "ACTION_STOP";
     private static final String ACTION_START = "ACTION_START";
+
+    private int rangeStart;
+    private int rangeEnd;
 
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({
@@ -97,18 +106,30 @@ public class DownloadAllService extends Service {
     private int mMaxProgress;
     private int mNumOfErrors;
 
+    /**
+     * use it to write arts to db in natural order
+     */
+    private int mNaturalOrder;
+
     private CompositeSubscription mCompositeSubscription;
 
     public static boolean isRunning() {
         return instance != null;
     }
 
-    public static void startDownloadWithType(Context ctx, @DownloadType String type) {
+    public static void startDownloadWithType(
+            Context ctx,
+            @DownloadType String type,
+            int rangeStart,
+            int rangeEnd
+    ) {
         Intent intent = new Intent(ctx, DownloadAllService.class);
         intent.setAction(ACTION_START);
         Bundle bundle = new Bundle();
         bundle.putString(EXTRA_DOWNLOAD_TYPE, type);
         intent.putExtras(bundle);
+        intent.putExtra(EXTRA_RANGE_START, rangeStart);
+        intent.putExtra(EXTRA_RANGE_END, rangeEnd);
         ctx.startService(intent);
     }
 
@@ -144,6 +165,7 @@ public class DownloadAllService extends Service {
         mCurProgress = 0;
         mMaxProgress = 0;
         mNumOfErrors = 0;
+        mNaturalOrder = 0;
         if (mCompositeSubscription != null && !mCompositeSubscription.isUnsubscribed()) {
             mCompositeSubscription.unsubscribe();
         }
@@ -161,6 +183,12 @@ public class DownloadAllService extends Service {
             stopDownloadAndRemoveNotif();
             return super.onStartCommand(intent, flags, startId);
         }
+
+        //check for not being RANGE_NONE and use while download
+        rangeStart = intent.getIntExtra(EXTRA_RANGE_START, RANGE_NONE);
+        rangeEnd = intent.getIntExtra(EXTRA_RANGE_END, RANGE_NONE);
+        Timber.d("rangeStart/rangeEnd: %s/%s", rangeStart, rangeEnd);
+
         @DownloadType
         String type = intent.getStringExtra(EXTRA_DOWNLOAD_TYPE);
         Timber.d("onStartCommand with type; %s", type);
@@ -209,11 +237,10 @@ public class DownloadAllService extends Service {
         showNotificationDownloadList();
         //download list
         Subscription subscription = mApiClient.getRecentArticlesPageCount()
-                .doOnNext(pageCount -> {
-                    mMaxProgress = pageCount;
-                    //test value
-//                    mMaxProgress = 3;
-                })
+                //if we have limit we must not load all lists of articles
+                .map(pageCount -> (rangeStart != RANGE_NONE && rangeEnd != RANGE_NONE)
+                        ? (int) Math.ceil((double) rangeEnd / Constants.Api.NUM_OF_ARTICLES_ON_RECENT_PAGE) : pageCount)
+                .doOnNext(pageCount -> mMaxProgress = pageCount)
                 .doOnError(throwable -> showNotificationSimple(
                         getString(R.string.error_notification_title),
                         getString(R.string.error_notification_recent_list_download_content)
@@ -237,26 +264,7 @@ public class DownloadAllService extends Service {
                 .toList()
 //                //test value
 //                .flatMap(list -> Observable.just(list.subList(0, mMaxProgress)))
-                .map(articles -> {
-                    mCurProgress = 0;
-                    mMaxProgress = articles.size();
-                    //if not have subscription
-                    //check if we have limit in downloads
-                    //if so - set maxProgress to limit
-                    //and use sub string of articles
-                    if (!mMyPreferenceManager.isHasSubscription()) {
-                        FirebaseRemoteConfig config = FirebaseRemoteConfig.getInstance();
-                        if (!config.getBoolean(Constants.Firebase.RemoteConfigKeys.DOWNLOAD_ALL_ENABLED_FOR_FREE)) {
-                            long limit = config.getLong(Constants.Firebase.RemoteConfigKeys.DOWNLOAD_FREE_ARTICLES_LIMIT);
-                            mMaxProgress = (int) limit;
-
-                            if (articles.size() > mMaxProgress) {
-                                articles = articles.subList(0, mMaxProgress);
-                            }
-                        }
-                    }
-                    return articles;
-                })
+                .map(limitArticles)
                 //TODO refactor it - from here code is equal to objects one
                 .map(articles -> {
                     List<Article> articlesToDownload = new ArrayList<>();
@@ -269,8 +277,8 @@ public class DownloadAllService extends Service {
                             mCurProgress++;
                             Timber.d("already downloaded: %s", article.url);
                             Timber.d("mCurProgress %s, mMaxProgress: %s", mCurProgress, mMaxProgress);
-                            showNotificationDownloadProgress(getString(R.string.download_recent_title),
-                                    mCurProgress, mMaxProgress, mNumOfErrors);
+//                            showNotificationDownloadProgress(getString(R.string.download_recent_title),
+//                                    mCurProgress, mMaxProgress, mNumOfErrors);
                         }
                     }
                     dbProvider.close();
@@ -290,8 +298,6 @@ public class DownloadAllService extends Service {
                             return Observable.empty();
                         })
                 )
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
                 .flatMap(article -> mDbProviderFactory.getDbProvider().saveArticleSync(article))
                 //TODO we can show notif here as we do it for articles lists
                 .flatMap(article -> {
@@ -308,6 +314,8 @@ public class DownloadAllService extends Service {
                         return Observable.just(article);
                     }
                 })
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
                 .subscribe(
                         article -> showNotificationDownloadProgress(getString(R.string.download_objects_title),
                                 mCurProgress, mMaxProgress, mNumOfErrors),
@@ -351,34 +359,11 @@ public class DownloadAllService extends Service {
         //just for test use just n elements
 //        final int testMaxProgress = 8;
         Subscription subscription = articlesObservable
-                .map(articles -> {
-                    mMaxProgress = articles.size();
-                    //if not have subscription
-                    //check if we have limit in downloads
-                    //if so - set maxProgress to limit
-                    //and use sub string of articles
-                    if (!mMyPreferenceManager.isHasSubscription()) {
-                        FirebaseRemoteConfig config = FirebaseRemoteConfig.getInstance();
-                        if (!config.getBoolean(Constants.Firebase.RemoteConfigKeys.DOWNLOAD_ALL_ENABLED_FOR_FREE)) {
-                            long limit = config.getLong(Constants.Firebase.RemoteConfigKeys.DOWNLOAD_FREE_ARTICLES_LIMIT);
-                            mMaxProgress = (int) limit;
-
-                            if (articles.size() > mMaxProgress) {
-                                articles = articles.subList(0, mMaxProgress);
-                            }
-                        }
-                    }
-                    return articles;
-                })
-                // just for test use just n elements
-//                .doOnNext(articles -> mMaxProgress = testMaxProgress)
                 .doOnError(throwable -> showNotificationSimple(
                         getString(R.string.error_notification_title),
                         getString(R.string.error_notification_objects_list_download_content)
                 ))
                 .onExceptionResumeNext(Observable.<List<Article>>empty().delay(5, TimeUnit.SECONDS))
-                //just for test use just n elements
-//                .map(list -> list.subList(0, testMaxProgress))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(articles -> mDbProviderFactory.getDbProvider()
@@ -386,6 +371,7 @@ public class DownloadAllService extends Service {
                         .flatMap(integerIntegerPair -> Observable.just(articles)))
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(Schedulers.io())
+                .map(limitArticles)
                 .map(articles -> {
                     List<Article> articlesToDownload = new ArrayList<>();
                     DbProvider dbProvider = mDbProviderFactory.getDbProvider();
@@ -397,46 +383,55 @@ public class DownloadAllService extends Service {
                             mCurProgress++;
                             Timber.d("already downloaded: %s", article.url);
                             Timber.d("mCurProgress %s, mMaxProgress: %s", mCurProgress, mMaxProgress);
-                            showNotificationDownloadProgress(getString(R.string.download_objects_title), mCurProgress, mMaxProgress, mNumOfErrors);
+//                            showNotificationDownloadProgress(getString(R.string.download_objects_title), mCurProgress, mMaxProgress, mNumOfErrors);
                         }
                     }
                     dbProvider.close();
                     return articlesToDownload;
                 })
                 .flatMap(Observable::from)
+                //use pair to sort by proper order after loading
+                .flatMap(article -> Observable.just(new Pair<>(++mNaturalOrder, article)))
                 //try to load article
                 //on error increase counters and resume query, emiting onComplete to article observable
-                .flatMap(article -> mApiClient.getArticle(article.url).onErrorResumeNext(throwable -> {
-                    Timber.e(throwable, "error while load article: %s", article.url);
-                    mNumOfErrors++;
-                    mCurProgress++;
-                    showNotificationDownloadProgress(
-                            getString(R.string.download_objects_title),
-                            mCurProgress, mMaxProgress, mNumOfErrors
-                    );
-                    return Observable.empty();
-                }))
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .flatMap(article -> mDbProviderFactory.getDbProvider().saveArticleSync(article))
-                .flatMap(article -> {
-                    Timber.d("downloaded: %s", article.url);
+                .flatMap(article -> mApiClient.getArticle(article.second.url)
+                        .flatMap(article1 -> Observable.just(new Pair<>(article.first, article1)))
+                        .onErrorResumeNext(throwable -> {
+                            Timber.e(throwable, "error while load article: %s", article.second.url);
+                            mNumOfErrors++;
+                            mCurProgress++;
+                            showNotificationDownloadProgress(
+                                    getString(R.string.download_objects_title),
+                                    mCurProgress, mMaxProgress, mNumOfErrors
+                            );
+                            return Observable.empty();
+                        })
+                )
+                .doOnNext(article -> {
+                    Timber.d("downloaded: %s", article.second.url);
                     mCurProgress++;
                     Timber.d("mCurProgress %s, mMaxProgress: %s", mCurProgress, mMaxProgress);
-                    if (mCurProgress == mMaxProgress) {
-                        showNotificationSimple(
+                    showNotificationDownloadProgress(getString(R.string.download_objects_title),
+                            mCurProgress, mMaxProgress, mNumOfErrors);
+                })
+                //restore natural oder
+                .toList()
+                .flatMap(pairs -> {
+                    Collections.sort(pairs, (t, t1) -> t.first - t1.first);
+                    return Observable.just(pairs);
+                })
+                .flatMap(Observable::from)
+                .flatMap(integerArticlePair -> Observable.just(integerArticlePair.second))
+                .toList()
+                .flatMap(articles -> mDbProviderFactory.getDbProvider().saveMultipleArticlesSync(articles))
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .subscribe(
+                        article -> showNotificationSimple(
                                 getString(R.string.download_complete_title),
                                 getString(R.string.download_complete_title_content,
                                         mCurProgress - mNumOfErrors, mMaxProgress, mNumOfErrors)
-                        );
-                        return Observable.just(article).delay(5, TimeUnit.SECONDS);
-                    } else {
-                        return Observable.just(article);
-                    }
-                })
-                .subscribe(
-                        article -> showNotificationDownloadProgress(getString(R.string.download_objects_title),
-                                mCurProgress, mMaxProgress, mNumOfErrors),
+                        ),
                         e -> {
                             Timber.e(e, "error download objects");
                             stopDownloadAndRemoveNotif();
@@ -451,6 +446,17 @@ public class DownloadAllService extends Service {
         }
         mCompositeSubscription.add(subscription);
     }
+
+    private Func1<List<Article>, List<Article>> limitArticles = articles -> {
+        mCurProgress = 0;
+        if (rangeStart == RANGE_NONE && rangeEnd == RANGE_NONE) {
+            mMaxProgress = articles.size();
+        } else {
+            mMaxProgress = rangeEnd - rangeStart;
+            articles = articles.subList(rangeStart, rangeEnd);
+        }
+        return articles;
+    };
 
     private void showNotificationDownloadList() {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);

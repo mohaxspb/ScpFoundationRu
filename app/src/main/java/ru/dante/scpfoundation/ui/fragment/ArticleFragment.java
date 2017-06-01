@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
@@ -38,9 +40,9 @@ import ru.dante.scpfoundation.ui.activity.MainActivity;
 import ru.dante.scpfoundation.ui.activity.TagSearchActivity;
 import ru.dante.scpfoundation.ui.adapter.ArticleRecyclerAdapter;
 import ru.dante.scpfoundation.ui.base.BaseFragment;
+import ru.dante.scpfoundation.ui.util.DialogUtils;
 import ru.dante.scpfoundation.ui.util.ReachBottomRecyclerScrollListener;
 import ru.dante.scpfoundation.ui.util.SetTextViewHTML;
-import ru.dante.scpfoundation.util.DialogUtils;
 import ru.dante.scpfoundation.util.IntentUtils;
 import timber.log.Timber;
 
@@ -70,6 +72,9 @@ public class ArticleFragment
 
     @BindView(R.id.tabLayout)
     TabLayout tabLayout;
+
+    @Inject
+    DialogUtils mDialogUtils;
 
     //tabs
     private int mCurrentSelectedTab = 0;
@@ -359,7 +364,10 @@ public class ArticleFragment
 
     @Override
     public void onImageClicked(String link) {
-        DialogUtils.showImageDialog(getActivity(), link);
+        if (!isAdded()) {
+            return;
+        }
+        mDialogUtils.showImageDialog(getActivity(), link);
     }
 
     @Override

@@ -46,7 +46,6 @@ import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.ui.util.SetTextViewHTML;
 import ru.dante.scpfoundation.ui.view.TagView;
 import ru.dante.scpfoundation.util.AttributeGetter;
-import ru.dante.scpfoundation.util.DialogUtils;
 import ru.dante.scpfoundation.util.DimensionUtils;
 import timber.log.Timber;
 import uk.co.chrisjenx.calligraphy.CalligraphyUtils;
@@ -322,7 +321,7 @@ public class ArticleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
                             imageView.setScaleType(ImageView.ScaleType.FIT_XY);
 
-                            imageView.setOnClickListener(v -> DialogUtils.showImageDialog(context, imageUrl));
+                            imageView.setOnClickListener(v -> mTextItemsClickListener.onImageClicked(imageUrl));
                             return false;
                         }
                     })

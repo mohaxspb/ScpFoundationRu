@@ -25,7 +25,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.vending.billing.IInAppBillingService;
 import com.appodeal.ads.Appodeal;
@@ -44,6 +43,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.hannesdorfmann.mosby.mvp.MvpActivity;
@@ -78,13 +78,13 @@ import ru.dante.scpfoundation.monetization.util.MySkippableVideoCallbacks;
 import ru.dante.scpfoundation.mvp.base.BaseActivityMvp;
 import ru.dante.scpfoundation.mvp.base.MonetizationActions;
 import ru.dante.scpfoundation.mvp.contract.DataSyncActions;
-import ru.dante.scpfoundation.service.DownloadAllService;
 import ru.dante.scpfoundation.ui.adapter.SocialLoginAdapter;
 import ru.dante.scpfoundation.ui.dialog.NewVersionDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
 import ru.dante.scpfoundation.ui.dialog.TextSizeDialogFragment;
 import ru.dante.scpfoundation.ui.holder.SocialLoginHolder;
+import ru.dante.scpfoundation.ui.util.DialogUtils;
 import ru.dante.scpfoundation.util.SecureUtils;
 import ru.dante.scpfoundation.util.SystemUtils;
 import timber.log.Timber;
@@ -103,10 +103,13 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
     //google login
     private static final int RC_SIGN_IN = 5555;
     protected GoogleApiClient mGoogleApiClient;
+    //facebook
+    private CallbackManager mCallbackManager = CallbackManager.Factory.create();
     ///////////
 
     @BindView(R.id.root)
     protected View mRoot;
+
     @BindView(R.id.content)
     protected View mContent;
 
@@ -115,33 +118,19 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
     protected Toolbar mToolbar;
     @Inject
     protected P mPresenter;
-    @Inject
-    protected MyPreferenceManager mMyPreferenceManager;
 
     @Inject
+    protected MyPreferenceManager mMyPreferenceManager;
+    @Inject
     protected MyNotificationManager mMyNotificationManager;
+    @Inject
+    protected DialogUtils mDialogUtils;
     //inapps and ads
     private IInAppBillingService mService;
     private List<Item> mOwnedMarketSubscriptions = new ArrayList<>();
+
     private InterstitialAd mInterstitialAd;
-
     private MaterialDialog mProgressDialog;
-    //download all consts
-    //TODO need to refactor it and use one enum here and in service
-    public static final int TYPE_OBJ_1 = 0;
-    public static final int TYPE_OBJ_2 = 1;
-    public static final int TYPE_OBJ_3 = 2;
-
-    public static final int TYPE_OBJ_RU = 3;
-    public static final int TYPE_EXPERIMETS = 4;
-    public static final int TYPE_OTHER = 5;
-    public static final int TYPE_INCIDENTS = 6;
-    public static final int TYPE_INTERVIEWS = 7;
-    public static final int TYPE_ARCHIVE = 8;
-
-    public static final int TYPE_JOKES = 9;
-    public static final int TYPE_ALL = 10;
-    private CallbackManager mCallbackManager = CallbackManager.Factory.create();
 
     @NonNull
     @Override
@@ -671,7 +660,7 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
 
                 Bundle bundle = new Bundle();
                 bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.MENU);
-                FirebaseAnalytics.getInstance(BaseActivity.this).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+                FirebaseAnalytics.getInstance(this).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
                 return true;
             case R.id.night_mode_item:
                 mMyPreferenceManager.setIsNightMode(!mMyPreferenceManager.isNightMode());
@@ -685,34 +674,15 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
                 dialogFragment.show(getFragmentManager(), NewVersionDialogFragment.TAG);
                 return true;
             case R.id.menuItemDownloadAll:
-                showDownloadDialog();
+                mDialogUtils.showDownloadDialog(this);
                 return true;
             case R.id.faq:
-                showFaqDialog();
+                mDialogUtils.showFaqDialog(this);
                 return true;
             default:
                 Timber.wtf("unexpected id: %s", item.getItemId());
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    private void showFaqDialog() {
-        new MaterialDialog.Builder(this)
-                .title(R.string.faq)
-                .positiveText(R.string.close)
-                .items(R.array.fag_items)
-                .alwaysCallSingleChoiceCallback()
-                .itemsCallback((dialog, itemView, position, text) -> {
-                    Timber.d("itemsCallback: %s", text);
-                    new MaterialDialog.Builder(this)
-                            .title(text)
-                            .content(getResources().getStringArray(R.array.fag_items_content)[position])
-                            .positiveText(R.string.close)
-                            .build()
-                            .show();
-                })
-                .build()
-                .show();
     }
 
     @Override
@@ -772,7 +742,14 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
                 //Пользователь успешно авторизовался
                 Timber.d("Auth successful: %s", vkAccessToken.email);
                 if (vkAccessToken.email != null) {
-                    mPresenter.startFirebaseLogin(Constants.Firebase.SocialProvider.VK, VKAccessToken.currentToken().accessToken);
+                    //here can be case, when we login via Google or Facebook, but try to join group to receive reward
+                    //in this case we have firebase user already, so no need to login to firebase
+                    //FIXME TODO add support of connect vk acc to firebase acc as social provider
+                    if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+                        Timber.e("Firebase user exists, do nothing as we do not implement connect VK acc to Firebase as social provider");
+                    } else {
+                        mPresenter.startFirebaseLogin(Constants.Firebase.SocialProvider.VK, VKAccessToken.currentToken().accessToken);
+                    }
                 } else {
                     Toast.makeText(BaseActivity.this, R.string.error_login_no_email, Toast.LENGTH_SHORT).show();
                     mPresenter.logoutUser();
@@ -809,105 +786,12 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
                 }
             } else {
                 // Signed out, show unauthenticated UI.
-                //TODO
                 mPresenter.logoutUser();
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
             mCallbackManager.onActivityResult(requestCode, resultCode, data);
-
         }
-    }
-
-    public void showDownloadDialog() {
-        MaterialDialog materialDialog;
-        materialDialog = new MaterialDialog.Builder(this)
-                .title(R.string.download_all_title)
-                .items(R.array.download_types)
-                .itemsCallbackSingleChoice(-1, (dialog, itemView, which, text) -> {
-                    Timber.d("which: %s, text: %s", which, text);
-                    if (!DownloadAllService.isRunning()) {
-                        dialog.getActionButton(DialogAction.POSITIVE).setEnabled(true);
-                    }
-                    return true;
-                })
-                .alwaysCallSingleChoiceCallback()
-                .positiveText(R.string.download)
-                .negativeText(R.string.cancel)
-                .autoDismiss(false)
-                .onNegative((dialog, which) -> {
-                    Timber.i("onNegative clicked");
-                    dialog.dismiss();
-                })
-                .onPositive((dialog, which) -> {
-                    Timber.d("onPositive clicked");
-                    Timber.d("dialog.getSelectedIndex(): %s", dialog.getSelectedIndex());
-                    @DownloadAllService.DownloadType
-                    String type;
-                    switch (dialog.getSelectedIndex()) {
-                        case TYPE_OBJ_1:
-                            type = DownloadAllService.DownloadType.TYPE_1;
-                            break;
-                        case TYPE_OBJ_2:
-                            type = DownloadAllService.DownloadType.TYPE_2;
-                            break;
-                        case TYPE_OBJ_3:
-                            type = DownloadAllService.DownloadType.TYPE_3;
-                            break;
-                        case TYPE_OBJ_RU:
-                            type = DownloadAllService.DownloadType.TYPE_RU;
-                            break;
-                        case TYPE_EXPERIMETS:
-                            type = DownloadAllService.DownloadType.TYPE_EXPERIMETS;
-                            break;
-                        case TYPE_OTHER:
-                            type = DownloadAllService.DownloadType.TYPE_OTHER;
-                            break;
-                        case TYPE_INCIDENTS:
-                            type = DownloadAllService.DownloadType.TYPE_INCIDENTS;
-                            break;
-                        case TYPE_INTERVIEWS:
-                            type = DownloadAllService.DownloadType.TYPE_INTERVIEWS;
-                            break;
-                        case TYPE_ARCHIVE:
-                            type = DownloadAllService.DownloadType.TYPE_ARCHIVE;
-                            break;
-                        case TYPE_JOKES:
-                            type = DownloadAllService.DownloadType.TYPE_JOKES;
-                            break;
-                        case TYPE_ALL:
-                            type = DownloadAllService.DownloadType.TYPE_ALL;
-                            break;
-                        default:
-                            throw new IllegalArgumentException("unexpected type: " + dialog.getSelectedIndex());
-                    }
-
-                    Bundle bundle = new Bundle();
-                    bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, type);
-                    FirebaseAnalytics.getInstance(this).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
-
-                    DownloadAllService.startDownloadWithType(this, type);
-                    dialog.dismiss();
-                })
-                .neutralText(R.string.stop_download)
-                .onNeutral((dialog, which) -> {
-                    Timber.d("onNeutral clicked");
-                    DownloadAllService.stopDownload(this);
-                    dialog.dismiss();
-                })
-                .build();
-
-        materialDialog.getActionButton(DialogAction.POSITIVE).setEnabled(false);
-
-        if (DownloadAllService.isRunning()) {
-            materialDialog.getActionButton(DialogAction.NEUTRAL).setEnabled(true);
-        } else {
-            materialDialog.getActionButton(DialogAction.NEUTRAL).setEnabled(false);
-        }
-
-        materialDialog.getRecyclerView().setOverScrollMode(View.OVER_SCROLL_NEVER);
-
-        materialDialog.show();
     }
 
     @Override
@@ -974,8 +858,9 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
         // throttling is in progress. The default expiration duration is 43200 (12 hours).
         long cacheExpiration = 20000; //default 43200
         if (mFirebaseRemoteConfig.getInfo().getConfigSettings().isDeveloperModeEnabled()) {
-            cacheExpiration = 0;
+            cacheExpiration = 60 * 5;//for 5 min
         }
+        //comment this if you want to use local data
         mFirebaseRemoteConfig.fetch(cacheExpiration).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 Timber.d("Fetch Succeeded");

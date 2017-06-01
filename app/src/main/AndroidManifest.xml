@@ -28,6 +28,7 @@
         android:label="@string/app_name"
         android:supportsRtl="false"
         android:theme="@style/SCP.Theme.Light"
+        tools:replace="android:supportsRtl,android:allowBackup"
         tools:ignore="GoogleAppIndexingWarning,HardcodedDebugMode">
 
         <!--<meta-data-->
