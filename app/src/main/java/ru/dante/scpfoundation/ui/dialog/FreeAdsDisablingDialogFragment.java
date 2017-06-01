@@ -87,7 +87,9 @@ public class FreeAdsDisablingDialogFragment extends DialogFragment {
             long numOfMillis = FirebaseRemoteConfig.getInstance()
                     .getLong(Constants.Firebase.RemoteConfigKeys.REWARDED_VIDEO_COOLDOWN_IN_MILLIS);
             long hours = numOfMillis / 1000 / 60 / 60;
-            data.add(new RewardedVideo(getString(R.string.watch_video_to_disable_ads, hours)));
+            int score = (int) FirebaseRemoteConfig.getInstance()
+                    .getLong(Constants.Firebase.RemoteConfigKeys.SCORE_ACTION_REWARDED_VIDEO);
+            data.add(new RewardedVideo(getString(R.string.watch_video_to_disable_ads, hours, score)));
         }
         if (config.getBoolean(Constants.Firebase.RemoteConfigKeys.FREE_INVITES_ENABLED)) {
             data.add(new AppInviteModel(getString(R.string.invite_friends)));
@@ -117,7 +119,9 @@ public class FreeAdsDisablingDialogFragment extends DialogFragment {
                     long numOfMillis = FirebaseRemoteConfig.getInstance()
                             .getLong(Constants.Firebase.RemoteConfigKeys.APP_INSTALL_REWARD_IN_MILLIS);
                     long hours = numOfMillis / 1000 / 60 / 60;
-                    data.add(new AppInstallHeader(getString(R.string.app_install_ads_disable_title, hours)));
+                    int score = (int) FirebaseRemoteConfig.getInstance()
+                            .getLong(Constants.Firebase.RemoteConfigKeys.SCORE_ACTION_OUR_APP);
+                    data.add(new AppInstallHeader(getString(R.string.app_install_ads_disable_title, hours, score)));
                     data.addAll(availableAppsToInstall);
                 }
             }
@@ -144,7 +148,9 @@ public class FreeAdsDisablingDialogFragment extends DialogFragment {
                     long numOfMillis = FirebaseRemoteConfig.getInstance()
                             .getLong(Constants.Firebase.RemoteConfigKeys.FREE_VK_GROUPS_JOIN_REWARD);
                     long hours = numOfMillis / 1000 / 60 / 60;
-                    data.add(new AppInstallHeader(getString(R.string.vk_group_join_ads_disable_title, hours)));
+                    int score = (int) FirebaseRemoteConfig.getInstance()
+                            .getLong(Constants.Firebase.RemoteConfigKeys.SCORE_ACTION_VK_GROUP);
+                    data.add(new AppInstallHeader(getString(R.string.vk_group_join_ads_disable_title, hours, score)));
                     data.addAll(availableItems);
                 }
             }

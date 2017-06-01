@@ -68,11 +68,14 @@ public class SubscriptionsFragmentDialog
     ImageView info;
     @BindView(R.id.dialogTitle)
     TextView dialogTitle;
+    @BindView(R.id.freeActions)
+    TextView freeActions;
 
     @Inject
     MyPreferenceManager mMyPreferenceManager;
 
     private IInAppBillingService mInAppBillingService;
+
     private boolean isDataLoaded;
 
     public static SubscriptionsFragmentDialog newInstance() {
@@ -116,6 +119,8 @@ public class SubscriptionsFragmentDialog
 
         dialogTitle.setText(freeDownloadEnabled
                 ? R.string.dialog_title_subscriptions : R.string.dialog_title_subscriptions_disabled_free_downloads);
+        freeActions.setText(freeDownloadEnabled
+                ? R.string.remove_ads_for_free : R.string.remove_ads_for_free_disabled_free_downloads);
     }
 
     @OnClick(R.id.removeAdsOneDay)
@@ -168,14 +173,14 @@ public class SubscriptionsFragmentDialog
                             adapter.setArticleClickListener(SubscriptionsFragmentDialog.this);
                             recyclerView.setAdapter(adapter);
                         },
-                        error -> {
+                        e -> {
                             if (!isAdded()) {
                                 return;
                             }
-                            Timber.e(error, "error getting cur subs");
+                            Timber.e(e, "error getting cur subs");
                             isDataLoaded = false;
 
-                            Snackbar.make(mRoot, error.getMessage(), Snackbar.LENGTH_SHORT).show();
+                            Snackbar.make(mRoot, e.getMessage(), Snackbar.LENGTH_SHORT).show();
                             progressCenter.setVisibility(View.GONE);
                             refresh.setVisibility(View.VISIBLE);
                         }

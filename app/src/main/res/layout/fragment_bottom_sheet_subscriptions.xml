@@ -40,7 +40,6 @@
 
     </LinearLayout>
 
-
     <android.support.v7.widget.CardView
         android:id="@+id/removeAdsOneDay"
         android:layout_width="match_parent"
@@ -53,6 +52,7 @@
         >
 
         <TextView
+            android:id="@+id/freeActions"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"

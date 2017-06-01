@@ -92,7 +92,8 @@
     <string name="remove_ads">Отключить рекламу?</string>
     <string name="yes_bliad">Да!</string>
     <string name="app_info">О приложении</string>
-    <string name="remove_ads_for_free">Отключить рекламу бесплатно!</string>
+    <string name="remove_ads_for_free">Отключить рекламу и заработать очки бесплатно!</string>
+    <string name="remove_ads_for_free_disabled_free_downloads">Отключить рекламу, увеличить лимит статей и заработать очки бесплатно!</string>
     <string name="ads_reward_gained">Ура! Никакой рекламы на %d часа!</string>
     <string name="wait">Подождите…</string>
     <string name="dialog_download">Загрузка</string>
@@ -168,9 +169,9 @@
     <string name="invitation_cta">Прочти секретные документы!</string>
     <string name="invitation_title">Секретные материалы фонда SCP!</string>
     <string name="invite_friends">Пригласи 5 друзей в приложение!</string>
-    <string name="watch_video_to_disable_ads">Посмотри видео для отключения рекламы на %d часа</string>
-    <string name="app_install_ads_disable_title">Установи другие наши приложения для отключения рекламы на %d часа!</string>
-    <string name="vk_group_join_ads_disable_title">Вступи в группу ВК для отключения рекламы на %d часа!</string>
+    <string name="watch_video_to_disable_ads">Посмотри видео для отключения рекламы на %1$d часа и получения %2$d очков</string>
+    <string name="app_install_ads_disable_title">Установи другие наши приложения для отключения рекламы на %1$d часа и получения %2$d очков!</string>
+    <string name="vk_group_join_ads_disable_title">Вступи в группу ВК для отключения рекламы на %1$d часа и получения %2$d очков!</string>
     <string name="need_vk_group_access">Требуется разрешение на доступ к группам. Авторизуйтесь заново.</string>
     <string name="gallery">Галерея</string>
     <string name="error_login_firebase_connection">Ошибка логина. Попробуйте ещё раз. %s</string>
@@ -179,7 +180,6 @@
     <string name="error_while_sync">Не удалось сохранить статью в облаке</string>
     <string name="sync_fav_success">Статья синхронизирована</string>
     <string name="app_cracked">Зарегистрирована попытка взлома базы данных Фонда. Карантинный режим активирован.</string>
-    <string name="deleting_data">Удаляю секретные данные…</string>
     <string name="auto_sync_disabled">Автоматическая синхронизация отключена</string>
     <string name="turn_on">Включить</string>
     <string name="enable_auto_sync">Активировать автоматическую синхронизацию</string>
