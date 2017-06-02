@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 import ru.dante.scpfoundation.BuildConfig;
+import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.monetization.model.Item;
 import ru.dante.scpfoundation.monetization.model.Subscription;
 import rx.Observable;
@@ -104,7 +105,10 @@ public class InappHelper {
         });
     }
 
-    public static Observable<List<Subscription>> getInappsListToBuyObserveble(Context context, IInAppBillingService mInAppBillingService) {
+    public static Observable<List<Subscription>> getInappsListToBuyObserveble(
+            Context context,
+            IInAppBillingService mInAppBillingService
+    ) {
         return Observable.unsafeCreate(subscriber -> {
             try {
                 //get all subs detailed info
@@ -141,6 +145,21 @@ public class InappHelper {
                     subscriber.onError(new IllegalStateException("ownedItemsBundle.getInt(\"RESPONSE_CODE\") is not 0"));
                 }
             } catch (RemoteException | JSONException e) {
+                subscriber.onError(e);
+            }
+        });
+    }
+
+    public static Observable<Integer> consumeInapp(
+            String token,
+            IInAppBillingService mInAppBillingService
+    ) {
+        return Observable.unsafeCreate(subscriber -> {
+            try {
+                int response = mInAppBillingService.consumePurchase(3, MyApplication.getAppInstance().getPackageName(), token);
+                subscriber.onNext(response);
+                subscriber.onCompleted();
+            } catch (RemoteException e) {
                 subscriber.onError(e);
             }
         });

@@ -236,6 +236,7 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
                             .neutralText(android.R.string.cancel)
                             .positiveText(R.string.dialog_level_up_ok_text)
                             .onPositive((dialog1, which) -> {
+                                Timber.d("onPositive");
                                 try {
                                     Bundle buyIntentBundle = getIInAppBillingService().getBuyIntent(
                                             3,
@@ -245,7 +246,10 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
                                             String.valueOf(System.currentTimeMillis()));
                                     PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
                                     if (pendingIntent != null) {
+                                        Timber.d("startIntentSenderForResult");
                                         startIntentSenderForResult(pendingIntent.getIntentSender(), REQUEST_CODE_INAPP, new Intent(), 0, 0, 0, null);
+                                    } else {
+                                        Timber.e("pendingIntent is NULL!");
                                     }
                                 } catch (Exception e) {
                                     Timber.e(e, "error ");
@@ -351,10 +355,11 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Timber.d("called in fragment");
+        Timber.d("onActivityResult requestCode/resultCode: %s/%s",requestCode, resultCode);
         if (requestCode == REQUEST_CODE_INAPP) {
             if (resultCode == Activity.RESULT_OK) {
                 if (data == null) {
+                    Timber.d("error_inapp data is NULL");
                     showMessage(R.string.error_inapp);
                     return;
                 }
