@@ -52,6 +52,8 @@ import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
 import ru.dante.scpfoundation.ui.holder.HeaderViewHolderLogined;
 import ru.dante.scpfoundation.ui.holder.HeaderViewHolderUnlogined;
 import ru.dante.scpfoundation.util.SecureUtils;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 /**
@@ -229,7 +231,7 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
                 headerViewHolder.relogin.setVisibility(View.GONE);
             }
 
-            headerViewHolder.levelUp.setOnClickListener(view -> InappHelper.getInappsListToBuyObserveble(view.getContext(), getIInAppBillingService()).subscribe(
+            headerViewHolder.levelUp.setOnClickListener(view -> InappHelper.getInappsListToBuyObserveble(getIInAppBillingService()).subscribe(
                     items -> new MaterialDialog.Builder(view.getContext())
                             .title(R.string.dialog_level_up_title)
                             .content(R.string.dialog_level_up_content)
@@ -245,11 +247,26 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
                                             "inapp",
                                             String.valueOf(System.currentTimeMillis()));
                                     PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
+                                    for (String key : buyIntentBundle.keySet()) {
+                                        Timber.d("%s: %s", key, buyIntentBundle.get(key));
+                                    }
                                     if (pendingIntent != null) {
                                         Timber.d("startIntentSenderForResult");
                                         startIntentSenderForResult(pendingIntent.getIntentSender(), REQUEST_CODE_INAPP, new Intent(), 0, 0, 0, null);
                                     } else {
                                         Timber.e("pendingIntent is NULL!");
+                                        InappHelper.getOwnedInappsObserveble(getIInAppBillingService())
+                                                .flatMap(itemsOwned -> InappHelper.consumeInapp(itemsOwned.get(0).purchaseData.purchaseToken, getIInAppBillingService()))
+                                                .subscribeOn(Schedulers.io())
+                                                .observeOn(AndroidSchedulers.mainThread())
+                                                .subscribe(
+                                                        result -> {
+                                                            Timber.d("consumed result: %s", result);
+                                                        },
+                                                        e -> {
+                                                            Timber.e(e);
+                                                        }
+                                                );
                                     }
                                 } catch (Exception e) {
                                     Timber.e(e, "error ");
@@ -355,7 +372,7 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Timber.d("onActivityResult requestCode/resultCode: %s/%s",requestCode, resultCode);
+        Timber.d("onActivityResult requestCode/resultCode: %s/%s", requestCode, resultCode);
         if (requestCode == REQUEST_CODE_INAPP) {
             if (resultCode == Activity.RESULT_OK) {
                 if (data == null) {

@@ -62,6 +62,42 @@ public class InappHelper {
         });
     }
 
+    public static Observable<List<Item>> getOwnedInappsObserveble(IInAppBillingService mInAppBillingService) {
+        return Observable.unsafeCreate(subscriber -> {
+            try {
+                Bundle ownedItemsBundle = mInAppBillingService.getPurchases(3, MyApplication.getAppInstance().getPackageName(), "inapp", null);
+
+                Timber.d("ownedItems bundle: %s", ownedItemsBundle);
+                if (ownedItemsBundle.getInt("RESPONSE_CODE") == 0) {
+                    List<String> ownedSkus = ownedItemsBundle.getStringArrayList("INAPP_PURCHASE_ITEM_LIST");
+                    List<String> purchaseDataList = ownedItemsBundle.getStringArrayList("INAPP_PURCHASE_DATA_LIST");
+                    List<String> signatureList = ownedItemsBundle.getStringArrayList("INAPP_DATA_SIGNATURE_LIST");
+                    String continuationToken = ownedItemsBundle.getString("INAPP_CONTINUATION_TOKEN");
+
+                    if (ownedSkus == null || purchaseDataList == null || signatureList == null) {
+                        subscriber.onError(new IllegalStateException("some of owned items info is null while get owned items"));
+                    } else {
+                        List<Item> ownedItemsList = new ArrayList<>();
+                        for (int i = 0; i < purchaseDataList.size(); ++i) {
+                            String purchaseData = purchaseDataList.get(i);
+                            String signature = signatureList.get(i);
+                            String sku = ownedSkus.get(i);
+                            ownedItemsList.add(new Item(purchaseData, signature, sku, continuationToken));
+                        }
+                        Timber.d("ownedItemsList: %s", ownedItemsList);
+                        subscriber.onNext(ownedItemsList);
+                        subscriber.onCompleted();
+                    }
+                } else {
+                    subscriber.onError(new IllegalStateException("ownedItemsBundle.getInt(\"RESPONSE_CODE\") is not 0"));
+                }
+            } catch (RemoteException e) {
+                Timber.e(e);
+                subscriber.onError(e);
+            }
+        });
+    }
+
     public static Observable<List<Subscription>> getSubsListToBuyObserveble(Context context, IInAppBillingService mInAppBillingService) {
         return Observable.unsafeCreate(subscriber -> {
             try {
@@ -105,10 +141,7 @@ public class InappHelper {
         });
     }
 
-    public static Observable<List<Subscription>> getInappsListToBuyObserveble(
-            Context context,
-            IInAppBillingService mInAppBillingService
-    ) {
+    public static Observable<List<Subscription>> getInappsListToBuyObserveble(IInAppBillingService mInAppBillingService) {
         return Observable.unsafeCreate(subscriber -> {
             try {
                 //get all subs detailed info
@@ -120,7 +153,7 @@ public class InappHelper {
 
                 Bundle querySkus = new Bundle();
                 querySkus.putStringArrayList("ITEM_ID_LIST", (ArrayList<String>) skuList);
-                Bundle skuDetails = mInAppBillingService.getSkuDetails(3, context.getPackageName(), "inapp", querySkus);
+                Bundle skuDetails = mInAppBillingService.getSkuDetails(3, MyApplication.getAppInstance().getPackageName(), "inapp", querySkus);
                 Timber.d("skuDetails: %s", skuDetails);
                 if (skuDetails.getInt("RESPONSE_CODE") == 0) {
                     List<String> responseList = skuDetails.getStringArrayList("DETAILS_LIST");
@@ -130,7 +163,7 @@ public class InappHelper {
                     }
 
                     for (String thisResponse : responseList) {
-//                            Timber.d(thisResponse);
+                        Timber.d(thisResponse);
                         JSONObject object = new JSONObject(thisResponse);
                         String sku = object.getString("productId");
                         String price = object.getString("price");

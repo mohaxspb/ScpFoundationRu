@@ -1,5 +1,7 @@
 package ru.dante.scpfoundation.monetization.model;
 
+import com.google.gson.GsonBuilder;
+
 /**
  * Created by mohax on 14.01.2017.
  * <p>
@@ -7,13 +9,13 @@ package ru.dante.scpfoundation.monetization.model;
  */
 public class Item {
 
-    public String purchaseData;
+    public PurchaseData purchaseData;
     public String signature;
     public String sku;
     public String continuationToken;
 
     public Item(String purchaseData, String signature, String sku, String continuationToken) {
-        this.purchaseData = purchaseData;
+        this.purchaseData = new GsonBuilder().create().fromJson(purchaseData, PurchaseData.class);
         this.signature = signature;
         this.sku = sku;
         this.continuationToken = continuationToken;
