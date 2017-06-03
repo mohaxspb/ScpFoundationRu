@@ -193,6 +193,7 @@ public class GalleryActivity
             }
             adRequest.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
         }
+
         if (mMyPreferenceManager.isHasSubscription()) {
             mAdView.setVisibility(View.GONE);
         } else {
@@ -334,7 +335,6 @@ public class GalleryActivity
         mRecyclerAdapter.setData(data);
 
         mViewPager.setCurrentItem(mCurPosition);
-//        mRecyclerView.smoothScrollToPosition(mCurPosition);
     }
 
     @Override
