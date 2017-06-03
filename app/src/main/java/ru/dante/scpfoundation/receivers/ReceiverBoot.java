@@ -4,26 +4,23 @@ package ru.dante.scpfoundation.receivers;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
-import ru.dante.scpfoundation.utils.NotificationUtils;
+import javax.inject.Inject;
 
-public class ReceiverBoot extends BroadcastReceiver
-{
-    private static final String LOG = ReceiverBoot.class.getName();
-//    private Context ctx;
+import ru.dante.scpfoundation.MyApplication;
+import ru.dante.scpfoundation.manager.MyNotificationManager;
+import timber.log.Timber;
+
+public class ReceiverBoot extends BroadcastReceiver {
+
+    @Inject
+    protected MyNotificationManager mMyNotificationManager;
 
     @Override
-    public void onReceive(Context ctx, Intent intent)
-    {
-        Log.d(LOG, "onReceive " + intent.getAction());
-//        if (Build.VERSION.SDK_INT<Build.VERSION_CODES.KITKAT){
-//            return;
-//        }
+    public void onReceive(Context ctx, Intent intent) {
+        Timber.d("onReceive with action: %s", intent.getAction());
 
-//        this.ctx = ctx;
-
-        NotificationUtils.checkAlarm(ctx);
+        MyApplication.getAppComponent().inject(this);
+        mMyNotificationManager.checkAlarm();
     }
-
 }

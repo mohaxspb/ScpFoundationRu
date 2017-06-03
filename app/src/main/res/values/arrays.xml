@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string-array name="pref_about_list_titles">pref_about_list_titles</string-array>
-    <string-array name="pref_about_list_values">pref_about_list_values</string-array>
-</resources>
