@@ -35,11 +35,13 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import ru.dante.scpfoundation.BuildConfig;
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.manager.InAppBillingServiceConnectionObservable;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
+import ru.dante.scpfoundation.monetization.model.Item;
 import ru.dante.scpfoundation.monetization.model.Subscription;
 import ru.dante.scpfoundation.monetization.util.InappHelper;
 import ru.dante.scpfoundation.ui.adapter.SubscriptionsRecyclerAdapter;
@@ -157,6 +159,22 @@ public class SubscriptionsFragmentDialog
                             }
                             Timber.d("items: %s", ownedItemsAndSubscriptions.first);
                             Timber.d("subs: %s", ownedItemsAndSubscriptions.second);
+
+                            if (ownedItemsAndSubscriptions.first.contains(new Item(null, null, BuildConfig.INAPP_SKUS[0], null))) {
+                                Timber.d("has level inapp, so consume it");
+                                InappHelper.consumeInapp(BuildConfig.INAPP_SKUS[0], mInAppBillingService)
+                                        .subscribeOn(Schedulers.io())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe(
+                                                result -> {
+                                                    Timber.d("consumed result: %s", result);
+                                                },
+                                                e -> {
+                                                    Timber.e(e);
+                                                }
+                                        );
+                            }
+
                             isDataLoaded = true;
                             refresh.setVisibility(View.GONE);
                             progressCenter.setVisibility(View.GONE);
