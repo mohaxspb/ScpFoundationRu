@@ -82,6 +82,9 @@ android {
             resValue('string', 'ad_unit_id_gallery_banner', apiKeysProperties.get("adsBannerIdGallery"))
             buildConfigField('String', 'AD_UNIT_ID_GALLERY_BANNER', '"' + apiKeysProperties.get("adsBannerIdGallery") + '"')
 
+            resValue('string', 'ad_unit_id_article_screen_banner', apiKeysProperties.get("adsBannerIdArticleScreen"))
+            buildConfigField('String', 'AD_UNIT_ID_ARTICLE_SCREEN_BANNER', '"' + apiKeysProperties.get("adsBannerIdArticleScreen") + '"')
+
             resValue('integer', 'com_vk_sdk_AppId', apiKeysProperties.get("vkSdkAppId"))
             buildConfigField('int', 'VK_SDK_APP_ID', apiKeysProperties.get("vkSdkAppId"))
 

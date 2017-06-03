@@ -1772,7 +1772,7 @@ public class ApiClient {
                     .child(firebaseUser.getUid())
                     .child(Constants.Firebase.Refs.INAPP)
                     .child(sku);
-            reference.setValue(true, (databaseError, databaseReference) -> {
+            reference.push().setValue(true, (databaseError, databaseReference) -> {
                 if (databaseError == null) {
                     subscriber.onNext(null);
                     subscriber.onCompleted();

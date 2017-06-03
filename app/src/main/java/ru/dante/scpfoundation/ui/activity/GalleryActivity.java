@@ -153,33 +153,20 @@ public class GalleryActivity
             }
         });
 
-        mRecyclerAdapter = new
-
-                ImagesRecyclerAdapter();
-        mRecyclerView.setLayoutManager(new
-
-                LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        mRecyclerAdapter = new ImagesRecyclerAdapter();
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         mRecyclerView.setAdapter(mRecyclerAdapter);
         mRecyclerAdapter.setImageClickListener((position, v) -> mViewPager.setCurrentItem(position));
 
-//        if (mPresenter.getData() != null && !mPresenter.getData().isEmpty()) {
-//            showData(mPresenter.getData());
-//        }
-
         mViewPager.setCurrentItem(mCurPosition);
-//        mRecyclerView.smoothScrollToPosition(mCurPosition);
 
         //ads
         initAds();
 
-        if (mPresenter.getData() != null)
-
-        {
+        if (mPresenter.getData() != null) {
             mAdapter.setData(mPresenter.getData());
             mRecyclerAdapter.setData(mPresenter.getData());
-        } else
-
-        {
+        } else {
             mPresenter.getDataFromDb();
             mPresenter.updateData();
         }
