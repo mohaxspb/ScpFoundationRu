@@ -1,16 +1,24 @@
 package ru.dante.scpfoundation.ui.activity;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v4.view.ViewPager;
 import android.view.MenuItem;
+import android.view.View;
+
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import ru.dante.scpfoundation.BuildConfig;
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
@@ -23,8 +31,10 @@ import ru.dante.scpfoundation.ui.base.BaseDrawerActivity;
 import ru.dante.scpfoundation.ui.dialog.TextSizeDialogFragment;
 import ru.dante.scpfoundation.ui.fragment.ArticleFragment;
 import ru.dante.scpfoundation.util.IntentUtils;
+import ru.dante.scpfoundation.util.SystemUtils;
 import timber.log.Timber;
 
+import static ru.dante.scpfoundation.Constants.Firebase.RemoteConfigKeys.GALLERY_BANNER_DISABLED;
 import static ru.dante.scpfoundation.ui.activity.MainActivity.EXTRA_SHOW_DISABLE_ADS;
 
 public class ArticleActivity
@@ -36,6 +46,9 @@ public class ArticleActivity
 
     @BindView(R.id.content)
     ViewPager mViewPager;
+
+    @BindView(R.id.banner)
+    AdView mAdView;
 
     private int mCurPosition;
     private List<String> mUrls;
@@ -115,6 +128,39 @@ public class ArticleActivity
             @DataSyncActions.ScoreAction
             String action = DataSyncActions.ScoreAction.INTERSTITIAL_SHOWN;
             mPresenter.updateUserScoreForScoreAction(action);
+        }
+
+        //ads
+        initAds();
+    }
+
+    @Override
+    public void initAds() {
+        super.initAds();
+
+        if (!isAdsLoaded()) {
+            requestNewInterstitial();
+        }
+
+        AdRequest.Builder adRequest = new AdRequest.Builder();
+
+        if (BuildConfig.DEBUG) {
+            @SuppressLint("HardwareIds")
+            String androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+            String deviceId;
+            deviceId = SystemUtils.MD5(androidId);
+            if (deviceId != null) {
+                deviceId = deviceId.toUpperCase();
+                adRequest.addTestDevice(deviceId);
+            }
+            adRequest.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
+        }
+        FirebaseRemoteConfig remoteConfig = FirebaseRemoteConfig.getInstance();
+        if (mMyPreferenceManager.isHasSubscription() || remoteConfig.getBoolean(GALLERY_BANNER_DISABLED)) {
+            mAdView.setVisibility(View.GONE);
+        } else {
+            mAdView.setVisibility(View.VISIBLE);
+            mAdView.loadAd(adRequest.build());
         }
     }
 

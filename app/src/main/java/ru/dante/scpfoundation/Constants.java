@@ -106,6 +106,7 @@ public interface Constants {
             String DOWNLOAD_ALL_ENABLED_FOR_FREE = "download_all_enabled_for_free";
             String DOWNLOAD_FREE_ARTICLES_LIMIT = "download_free_articles_limit";
             String DOWNLOAD_SCORE_PER_ARTICLE = "download_score_per_article";
+            String GALLERY_BANNER_DISABLED = "gallery_banner_disabled";
         }
 
         interface Analitics {

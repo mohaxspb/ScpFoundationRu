@@ -203,4 +203,8 @@
         <key>download_score_per_article</key>
         <value>50</value>
     </entry>
+    <entry>
+        <key>gallery_banner_disabled</key>
+        <value>true</value>
+    </entry>
 </defaultsMap>
