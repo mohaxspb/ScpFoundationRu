@@ -32,9 +32,6 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.gson.Gson;
 import com.vk.sdk.VKSdk;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import javax.inject.Inject;
 
 import butterknife.BindView;
@@ -44,6 +41,7 @@ import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.api.model.remoteconfig.LevelsJson;
 import ru.dante.scpfoundation.api.model.response.LeaderBoardResponse;
 import ru.dante.scpfoundation.db.model.User;
+import ru.dante.scpfoundation.monetization.model.PurchaseData;
 import ru.dante.scpfoundation.monetization.util.InappHelper;
 import ru.dante.scpfoundation.mvp.contract.DrawerMvp;
 import ru.dante.scpfoundation.ui.activity.ArticleActivity;
@@ -383,32 +381,38 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
 //            int responseCode = data.getIntExtra("RESPONSE_CODE", 0);
                 String purchaseData = data.getStringExtra("INAPP_PURCHASE_DATA");
 //            String dataSignature = data.getStringExtra("INAPP_DATA_SIGNATURE");
-                try {
-                    JSONObject jo = new JSONObject(purchaseData);
-                    String sku = jo.getString("productId");
-                    Timber.d("You have bought the %s", sku);
+                Timber.d("purchaseData %s", purchaseData);
+                PurchaseData item = mGson.fromJson(purchaseData, PurchaseData.class);
+                Timber.d("You have bought the %s", item.productId);
 
-                    Bundle bundle = new Bundle();
-                    bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, sku);
-                    bundle.putFloat(FirebaseAnalytics.Param.PRICE, .5f);
-                    FirebaseAnalytics.getInstance(this).logEvent(FirebaseAnalytics.Event.ECOMMERCE_PURCHASE, bundle);
+                Bundle bundle = new Bundle();
+                bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, item.productId);
+                bundle.putFloat(FirebaseAnalytics.Param.PRICE, .5f);
+                FirebaseAnalytics.getInstance(this).logEvent(FirebaseAnalytics.Event.ECOMMERCE_PURCHASE, bundle);
 
-                    if (SecureUtils.checkCrack(this)) {
-                        Bundle args = new Bundle();
-                        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-                        args.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "CRACK_" + sku + ((firebaseUser != null) ? firebaseUser.getUid() : ""));
-                        FirebaseAnalytics.getInstance(this).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, args);
-                    } else {
-                        if (sku.equals(BuildConfig.INAPP_SKUS[0])) {
-                            //levelUp 5
-//                            mMyPreferenceManager.setHasLevelUpInapp(true);
-                            //add 10 000 score
-                            mPresenter.updateUserScoreForInapp(sku);
-                        }
+                if (SecureUtils.checkCrack(this)) {
+                    Bundle args = new Bundle();
+                    FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+                    args.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "CRACK_" + item.productId + ((firebaseUser != null) ? firebaseUser.getUid() : ""));
+                    FirebaseAnalytics.getInstance(this).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, args);
+                } else {
+                    if (item.productId.equals(BuildConfig.INAPP_SKUS[0])) {
+                        //levelUp 5
+                        //add 10 000 score
+                        InappHelper.consumeInapp(item.purchaseToken, getIInAppBillingService())
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(
+                                        result -> {
+                                            Timber.d("consume inapp successful, so update user score");
+                                            mPresenter.updateUserScoreForInapp(item.productId);
+                                        },
+                                        e -> {
+                                            Timber.e(e, "error while consume inapp... X3 what to do)))");
+                                            showError(e);
+                                        }
+                                );
                     }
-                } catch (JSONException e) {
-                    Timber.e(e, "Failed to parse purchase data.");
-                    showError(e);
                 }
             }
         } else {

@@ -389,7 +389,7 @@ public abstract class BasePresenter<V extends BaseMvp.View>
                 //show call to action
                 mMyPreferencesManager.setNumOfAttemptsToAutoSync(0);
                 //do not show for adding score after showing ads
-                if(!action.equals(ScoreAction.INTERSTITIAL_SHOWN)) {
+                if (!action.equals(ScoreAction.INTERSTITIAL_SHOWN)) {
                     getView().showSnackBarWithAction(Constants.Firebase.CallToActionReason.ENABLE_AUTO_SYNC);
                 }
             } else {
@@ -434,13 +434,8 @@ public abstract class BasePresenter<V extends BaseMvp.View>
         }
 
         mApiClient
-                .isUserGainedSkoreFromInapp(sku)
-                .flatMap(isUserGainedScoreFromInapp -> isUserGainedScoreFromInapp ?
-                        Observable.empty() :
-                        mApiClient
-                                .incrementScoreInFirebaseObservable(totalScoreToAdd)
-                                .flatMap(newTotalScore -> mApiClient.addRewardedInapp(sku).flatMap(aVoid -> mDbProviderFactory.getDbProvider().updateUserScore(newTotalScore)))
-                )
+                .incrementScoreInFirebaseObservable(totalScoreToAdd)
+                .flatMap(newTotalScore -> mApiClient.addRewardedInapp(sku).flatMap(aVoid -> mDbProviderFactory.getDbProvider().updateUserScore(newTotalScore)))
                 //TODO need to realize it as we realize vk groups and apps - write inapps to json and check if we need to add score for it
                 .subscribe(
                         newTotalScore -> Timber.d("new total score is: %s", newTotalScore),
