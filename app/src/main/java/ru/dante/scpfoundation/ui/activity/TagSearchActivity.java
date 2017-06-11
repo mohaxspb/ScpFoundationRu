@@ -22,7 +22,7 @@ import ru.dante.scpfoundation.mvp.contract.TagsScreenMvp;
 import ru.dante.scpfoundation.ui.base.BaseDrawerActivity;
 import ru.dante.scpfoundation.ui.dialog.TextSizeDialogFragment;
 import ru.dante.scpfoundation.ui.fragment.ArticleFragment;
-import ru.dante.scpfoundation.ui.fragment.FragmentMaterialsAll;
+import ru.dante.scpfoundation.ui.fragment.MaterialsAllFragment;
 import ru.dante.scpfoundation.ui.fragment.TagsSearchFragment;
 import ru.dante.scpfoundation.ui.fragment.TagsSearchResultsArticlesFragment;
 import timber.log.Timber;
@@ -120,7 +120,7 @@ public class TagSearchActivity
             } else {
                 getSupportFragmentManager().beginTransaction()
                         .add(R.id.content, TagsSearchFragment.newInstance(ArticleTag.getStringsFromTags(mTags)), TagsSearchFragment.TAG)
-                        .addToBackStack(FragmentMaterialsAll.TAG)
+                        .addToBackStack(MaterialsAllFragment.TAG)
                         .commit();
             }
         }
