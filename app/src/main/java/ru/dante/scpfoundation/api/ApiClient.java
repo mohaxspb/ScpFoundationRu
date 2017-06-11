@@ -644,6 +644,32 @@ public class ApiClient {
                 }
 //                Timber.d("pageContent.getElementsByClass(\"limg\"): %s", pageContent.getElementsByClass("limg"));
 
+                //parse multiple imgs in "cimg" tag
+                Element cimg = pageContent.getElementsByClass("cimg").first();
+//                Timber.d("cimg: %s", cimg);
+                if (cimg != null) {
+                    Elements imgs = cimg.getElementsByTag("img");
+                    Elements descriptions = cimg.getElementsByTag("span");
+                    List<Element> rimgsToAdd = new ArrayList<>();
+                    if (imgs != null && imgs.size() > 1 && descriptions.size() == imgs.size()) {
+                        for (int i = 0; i < imgs.size(); i++) {
+                            Element img = imgs.get(i);
+                            Element description = descriptions.get(i);
+                            Element newRimg = new Element("div");
+                            newRimg.addClass("cimg");
+                            newRimg.appendChild(img).appendChild(description);
+                            rimgsToAdd.add(newRimg);
+                        }
+                        Element rimgLast = cimg;
+                        for (Element newRimg : rimgsToAdd) {
+                            rimgLast.after(newRimg);
+                            rimgLast = newRimg;
+                        }
+                        cimg.remove();
+                    }
+                }
+//                Timber.d("pageContent.getElementsByClass(\"cimg\"): %s", pageContent.getElementsByClass("cimg"));
+
                 //put all text which is not in any tag in div tag
                 for (Element element : pageContent.children()) {
                     Node nextSibling = element.nextSibling();
