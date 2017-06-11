@@ -20,6 +20,10 @@ android {
         }
     }
 
+    packagingOptions {
+        exclude 'META-INF/rxjava.properties'
+    }
+
     defaultConfig {
         applicationId "ru.dante.scpfoundation"
         minSdkVersion 17
