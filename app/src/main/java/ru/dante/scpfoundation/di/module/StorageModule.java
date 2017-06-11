@@ -119,6 +119,8 @@ public class StorageModule {
     @Singleton
     RealmConfiguration providesRealmConfiguration(@NonNull RealmMigration realmMigration) {
         return new RealmConfiguration.Builder()
+                //TODO use predefined location
+//                .directory()
                 .schemaVersion(BuildConfig.REALM_VERSION)
                 .migration(realmMigration)
                 .build();

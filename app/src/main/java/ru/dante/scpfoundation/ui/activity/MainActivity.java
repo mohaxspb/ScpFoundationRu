@@ -3,7 +3,10 @@ package ru.dante.scpfoundation.ui.activity;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.DocumentsContract;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -133,7 +136,7 @@ public class MainActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
-        
+
         if ("ru.dante.scpfoundation.open.NEW".equals(intent.getAction())) {
             mCurrentSelectedDrawerItemId = (R.id.mostRecentArticles);
         } else if ("ru.dante.scpfoundation.open.FAVORITES".equals(intent.getAction())) {
@@ -142,7 +145,7 @@ public class MainActivity
             mCurrentSelectedDrawerItemId = (R.id.random_page);
         }
 
-       setDrawerFromIntent(intent);
+        setDrawerFromIntent(intent);
 
         if (getSupportFragmentManager().findFragmentById(mContent.getId()) == null) {
             onNavigationItemClicked(mCurrentSelectedDrawerItemId);
@@ -187,9 +190,22 @@ public class MainActivity
         setToolbarTitleByDrawerItemId(id);
         switch (id) {
             case R.id.about:
-                mCurrentSelectedDrawerItemId = id;
-                showFragment(ArticleFragment.newInstance(Constants.Urls.ABOUT_SCP),
-                        ArticleFragment.TAG + "#" + Constants.Urls.ABOUT_SCP);
+//                mCurrentSelectedDrawerItemId = id;
+//                showFragment(ArticleFragment.newInstance(Constants.Urls.ABOUT_SCP),
+//                        ArticleFragment.TAG + "#" + Constants.Urls.ABOUT_SCP);
+                //FIXME test
+//                Uri selectedUri = Uri.parse(Environment.getExternalStorageDirectory() + "/myFolder/");
+                Uri selectedUri = Uri.parse(Environment.getExternalStorageDirectory().getAbsolutePath());
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+//                intent.setType(DocumentsContract.Document.MIME_TYPE_DIR);
+                intent.setDataAndType(selectedUri, DocumentsContract.Document.MIME_TYPE_DIR);
+
+                if (intent.resolveActivityInfo(getPackageManager(), 0) != null) {
+                    startActivity(intent);
+                } else {
+                    // if you reach this place, it means there is no any file
+                    // explorer app installed on your device
+                }
                 return true;
             case R.id.news:
                 mCurrentSelectedDrawerItemId = id;
