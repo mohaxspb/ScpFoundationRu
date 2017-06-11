@@ -42,6 +42,7 @@ import ru.dante.scpfoundation.util.StorageUtils;
 import ru.dante.scpfoundation.util.SystemUtils;
 import timber.log.Timber;
 
+import static ru.dante.scpfoundation.Constants.Firebase.RemoteConfigKeys.GALLERY_BANNER_DISABLED;
 import static ru.dante.scpfoundation.ui.activity.MainActivity.EXTRA_SHOW_DISABLE_ADS;
 
 public class GalleryActivity
@@ -194,7 +195,8 @@ public class GalleryActivity
             adRequest.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
         }
 
-        if (mMyPreferenceManager.isHasSubscription()) {
+        FirebaseRemoteConfig remoteConfig = FirebaseRemoteConfig.getInstance();
+        if (mMyPreferenceManager.isHasSubscription() || remoteConfig.getBoolean(GALLERY_BANNER_DISABLED)) {
             mAdView.setVisibility(View.GONE);
         } else {
             mAdView.setVisibility(View.VISIBLE);
