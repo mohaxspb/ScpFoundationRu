@@ -57,11 +57,26 @@ public class MainActivity
 
         setIntent(intent);
 
-        setDrawerItemFromLink(intent.getStringExtra(EXTRA_LINK));
+        setDrawerFromIntent(Intent intent);
 
         mNavigationView.setCheckedItem(mCurrentSelectedDrawerItemId);
         onNavigationItemClicked(mCurrentSelectedDrawerItemId);
         setToolbarTitleByDrawerItemId(mCurrentSelectedDrawerItemId);
+    }
+
+    private void setDrawerFromIntent(Intent intent) {
+        if (intent.hasExtra(EXTRA_LINK)) {
+            setDrawerItemFromLink(intent.getStringExtra(EXTRA_LINK));
+        } else if (intent.getAction() != null && intent.getAction().equals(Intent.ACTION_VIEW)) {
+            String link = intent.getDataString();
+            for (String pressedLink : Constants.Urls.ALL_LINKS_ARRAY) {
+                if (link.equals(pressedLink)) {
+                    setDrawerItemFromLink(link);
+                    return;
+                }
+            }
+            ArticleActivity.startActivity(this, link);
+        }
     }
 
     private void setDrawerItemFromLink(String link) {
@@ -127,18 +142,7 @@ public class MainActivity
             mCurrentSelectedDrawerItemId = (R.id.random_page);
         }
 
-        if (intent.hasExtra(EXTRA_LINK)) {
-            setDrawerItemFromLink(intent.getStringExtra(EXTRA_LINK));
-        } else if (intent.getAction() != null && intent.getAction().equals(Intent.ACTION_VIEW)) {
-            String link = intent.getDataString();
-            for (String pressedLink : Constants.Urls.ALL_LINKS_ARRAY) {
-                if (link.equals(pressedLink)) {
-                    setDrawerItemFromLink(link);
-                    break;
-                }
-            }
-
-        }
+       setDrawerFromIntent(intent);
 
         if (getSupportFragmentManager().findFragmentById(mContent.getId()) == null) {
             onNavigationItemClicked(mCurrentSelectedDrawerItemId);
