@@ -224,7 +224,8 @@ dependencies {
     //facebook
     compile 'com.facebook.android:facebook-android-sdk:[4,5)'
     //dialogs
-    compile 'com.afollestad.material-dialogs:core:0.9.4.3'
+    compile 'com.afollestad.material-dialogs:core:0.9.4.5'
+    compile 'com.afollestad.material-dialogs:commons:0.9.4.5'
     //fonts
     compile 'uk.co.chrisjenx:calligraphy:2.3.0'
     //firebase

@@ -14,7 +14,7 @@ import ru.dante.scpfoundation.monetization.model.ApplicationsResponse;
 import ru.dante.scpfoundation.monetization.model.PlayMarketApplication;
 import ru.dante.scpfoundation.monetization.model.VkGroupToJoin;
 import ru.dante.scpfoundation.monetization.model.VkGroupsToJoinResponse;
-import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
+import ru.dante.scpfoundation.ui.dialog.SettingsBottomSheetDialogFragment;
 import timber.log.Timber;
 
 /**
@@ -100,17 +100,17 @@ public class MyPreferenceManager {
 
     //design settings
     public boolean isDesignListNewEnabled() {
-        return !mPreferences.getString(Keys.DESIGN_LIST_TYPE, SetttingsBottomSheetDialogFragment.ListItemType.MIDDLE).equals(SetttingsBottomSheetDialogFragment.ListItemType.MIN);
+        return !mPreferences.getString(Keys.DESIGN_LIST_TYPE, SettingsBottomSheetDialogFragment.ListItemType.MIDDLE).equals(SettingsBottomSheetDialogFragment.ListItemType.MIN);
     }
 
-    public void setListDesignType(@SetttingsBottomSheetDialogFragment.ListItemType String type) {
+    public void setListDesignType(@SettingsBottomSheetDialogFragment.ListItemType String type) {
         mPreferences.edit().putString(Keys.DESIGN_LIST_TYPE, type).apply();
     }
 
-    @SetttingsBottomSheetDialogFragment.ListItemType
+    @SettingsBottomSheetDialogFragment.ListItemType
     public String getListDesignType() {
-        @SetttingsBottomSheetDialogFragment.ListItemType
-        String type = mPreferences.getString(Keys.DESIGN_LIST_TYPE, SetttingsBottomSheetDialogFragment.ListItemType.MIDDLE);
+        @SettingsBottomSheetDialogFragment.ListItemType
+        String type = mPreferences.getString(Keys.DESIGN_LIST_TYPE, SettingsBottomSheetDialogFragment.ListItemType.MIDDLE);
         return type;
     }
 

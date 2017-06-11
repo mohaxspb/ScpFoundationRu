@@ -249,6 +249,13 @@
     <string name="filter_euclid">Евклид</string>
     <string name="filter_keter">Кетер</string>
     <string name="filter_thaumiel">Таумиэль</string>
+    <string name="choose">Выбрать</string>
+    <string name="new_folder_button_title">Создать</string>
+    <string name="db_location">Расоложение БД:</string>
+    <string name="delete_all_db_data">Очистить БД</string>
+    <string name="db_options">База данных</string>
+    <string name="db_location_change">Сменить расположение БД</string>
+    <string name="db_size">Размер БД</string>
 
     <plurals name="plurals_score">
         <item quantity="zero">%1$d очков</item>

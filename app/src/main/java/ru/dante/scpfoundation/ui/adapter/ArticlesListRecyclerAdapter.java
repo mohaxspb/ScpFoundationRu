@@ -17,7 +17,7 @@ import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.db.model.ArticleTag;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
-import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
+import ru.dante.scpfoundation.ui.dialog.SettingsBottomSheetDialogFragment;
 import ru.dante.scpfoundation.ui.holder.HolderMedium;
 import ru.dante.scpfoundation.ui.holder.HolderSimple;
 import ru.dante.scpfoundation.ui.holder.HolderWithImage;
@@ -207,12 +207,12 @@ public class ArticlesListRecyclerAdapter extends RecyclerView.Adapter<HolderSimp
     @Override
     public int getItemViewType(int position) {
         switch (mMyPreferenceManager.getListDesignType()) {
-            case SetttingsBottomSheetDialogFragment.ListItemType.MIN:
+            case SettingsBottomSheetDialogFragment.ListItemType.MIN:
                 return TYPE_MIN;
             default:
-            case SetttingsBottomSheetDialogFragment.ListItemType.MIDDLE:
+            case SettingsBottomSheetDialogFragment.ListItemType.MIDDLE:
                 return TYPE_MIDDLE;
-            case SetttingsBottomSheetDialogFragment.ListItemType.MAX:
+            case SettingsBottomSheetDialogFragment.ListItemType.MAX:
                 return TYPE_MAX;
         }
     }

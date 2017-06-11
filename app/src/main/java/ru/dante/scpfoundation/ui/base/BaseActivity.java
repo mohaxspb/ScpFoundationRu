@@ -26,6 +26,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.afollestad.materialdialogs.folderselector.FolderChooserDialog;
 import com.android.vending.billing.IInAppBillingService;
 import com.appodeal.ads.Appodeal;
 import com.facebook.CallbackManager;
@@ -54,6 +55,7 @@ import com.vk.sdk.VKSdk;
 import com.vk.sdk.api.VKError;
 import com.yandex.metrica.YandexMetrica;
 
+import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -80,7 +82,7 @@ import ru.dante.scpfoundation.mvp.base.MonetizationActions;
 import ru.dante.scpfoundation.mvp.contract.DataSyncActions;
 import ru.dante.scpfoundation.ui.adapter.SocialLoginAdapter;
 import ru.dante.scpfoundation.ui.dialog.NewVersionDialogFragment;
-import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
+import ru.dante.scpfoundation.ui.dialog.SettingsBottomSheetDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
 import ru.dante.scpfoundation.ui.dialog.TextSizeDialogFragment;
 import ru.dante.scpfoundation.ui.holder.SocialLoginHolder;
@@ -98,7 +100,8 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends BaseActivityMvp.Presenter<V>>
         extends MvpActivity<V, P>
         implements BaseActivityMvp.View, MonetizationActions,
-        SharedPreferences.OnSharedPreferenceChangeListener, GoogleApiClient.OnConnectionFailedListener {
+        SharedPreferences.OnSharedPreferenceChangeListener, GoogleApiClient.OnConnectionFailedListener,
+        FolderChooserDialog.FolderCallback {
 
     //google login
     private static final int RC_SIGN_IN = 5555;
@@ -650,8 +653,8 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
         switch (item.getItemId()) {
             case R.id.settings:
                 Timber.d("settings pressed");
-                BottomSheetDialogFragment settingsDF = SetttingsBottomSheetDialogFragment.newInstance();
-                settingsDF.show(getSupportFragmentManager(), settingsDF.getTag());
+                BottomSheetDialogFragment settingsDF = SettingsBottomSheetDialogFragment.newInstance();
+                settingsDF.show(getSupportFragmentManager(), SettingsBottomSheetDialogFragment.TAG);
                 return true;
             case R.id.subscribe:
                 Timber.d("subscribe pressed");
@@ -876,5 +879,20 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Timber.e("onConnectionFailed: %s", connectionResult);
+    }
+
+    @Override
+    public void onFolderSelection(@NonNull FolderChooserDialog dialog, @NonNull File folder) {
+        Timber.d("onFolderSelection: %s", folder.toString());
+
+        SettingsBottomSheetDialogFragment fragment = (SettingsBottomSheetDialogFragment) getSupportFragmentManager().findFragmentByTag(SettingsBottomSheetDialogFragment.TAG);
+        if (fragment != null) {
+            fragment.onFolderSelection(dialog, folder);
+        }
+    }
+
+    @Override
+    public void onFolderChooserDismissed(@NonNull FolderChooserDialog dialog) {
+        Timber.d("onFolderChooserDismissed");
     }
 }

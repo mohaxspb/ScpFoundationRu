@@ -1,7 +1,9 @@
 package ru.dante.scpfoundation.ui.dialog;
 
+import android.Manifest;
 import android.app.Dialog;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -11,6 +13,7 @@ import android.support.annotation.StringDef;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.BottomSheetDialogFragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.SwitchCompat;
 import android.view.View;
 import android.widget.AdapterView;
@@ -19,9 +22,11 @@ import android.widget.FrameLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.folderselector.FolderChooserDialog;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.io.File;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
@@ -47,9 +52,12 @@ import uk.co.chrisjenx.calligraphy.CalligraphyUtils;
  * <p>
  * for scp_ru
  */
-public class SetttingsBottomSheetDialogFragment
+public class SettingsBottomSheetDialogFragment
         extends BaseBottomSheetDialogFragment
-        implements SharedPreferences.OnSharedPreferenceChangeListener {
+        implements SharedPreferences.OnSharedPreferenceChangeListener, FolderChooserDialog.FolderCallback {
+
+    public static final String TAG = SettingsBottomSheetDialogFragment.class.getSimpleName();
+    private static final int REQUEST_CODE_MEMORY_PERMISIION = 4242;
 
     @StringDef({
             ListItemType.MIN,
@@ -87,13 +95,18 @@ public class SetttingsBottomSheetDialogFragment
     @BindView(R.id.buy)
     TextView mActivateAutoSync;
 
+    @BindView(R.id.dbLocationCurrent)
+    TextView dbLocationCurrent;
+    @BindView(R.id.dbSizeCurrent)
+    TextView dbSizeCurrent;
+
     @Inject
     protected MyPreferenceManager mMyPreferenceManager;
     @Inject
     protected MyNotificationManager mMyNotificationManager;
 
     public static BottomSheetDialogFragment newInstance() {
-        return new SetttingsBottomSheetDialogFragment();
+        return new SettingsBottomSheetDialogFragment();
     }
 
     @Override
@@ -290,6 +303,60 @@ public class SetttingsBottomSheetDialogFragment
                 break;
             default:
                 //do nothing
+                break;
+        }
+    }
+
+    @OnClick(R.id.dbLocationChange)
+    void onDbLocationChangeClick() {
+        Timber.d("onDbLocationChangeClicked");
+
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    REQUEST_CODE_MEMORY_PERMISIION
+            );
+            return;
+        }
+
+        new FolderChooserDialog.Builder(getBaseActivity())
+                .chooseButton(R.string.choose)  // changes label of the choose button
+                .allowNewFolder(true, R.string.new_folder_button_title)
+                .show();
+    }
+
+    @OnClick(R.id.deleteAllDbData)
+    void onDeleteAllDbDataClick() {
+        Timber.d("onDeleteAllDbDataClick");
+        //TODO
+    }
+
+    @Override
+    public void onFolderSelection(@NonNull FolderChooserDialog dialog, @NonNull File folder) {
+        Timber.d("onFolderSelection: %s", folder.toString());
+    }
+
+    @Override
+    public void onFolderChooserDismissed(@NonNull FolderChooserDialog dialog) {
+        Timber.d("onFolderChooserDismissed");
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_CODE_MEMORY_PERMISIION:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                        && grantResults[1] == PackageManager.PERMISSION_GRANTED
+                        ) {
+                    Timber.d("Permission memory granted!");
+                } else {
+                    Timber.d("Permission memory denied!");
+                }
+                break;
+            default:
+                Timber.wtf("unexpected request code: %s", requestCode);
                 break;
         }
     }
