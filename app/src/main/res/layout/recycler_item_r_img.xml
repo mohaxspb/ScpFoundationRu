@@ -25,11 +25,11 @@
             android:id="@+id/image"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:contentDescription="@string/app_name"
             android:foreground="?selectableItemBackground"
             android:minHeight="@dimen/listImageHeight"
             android:scaleType="center"
             android:src="?iconEmptyImage"
+            tools:ignore="ContentDescription"
             />
 
         <TextView
@@ -45,4 +45,5 @@
             />
 
     </LinearLayout>
+
 </android.support.v7.widget.CardView>
