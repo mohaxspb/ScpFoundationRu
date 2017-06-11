@@ -54,6 +54,7 @@ import ru.dante.scpfoundation.ui.holder.ArticleSpoilerHolder;
 import ru.dante.scpfoundation.ui.holder.ArticleTagsHolder;
 import ru.dante.scpfoundation.ui.holder.ArticleTextHolder;
 import ru.dante.scpfoundation.ui.holder.ArticleTitleHolder;
+import ru.dante.scpfoundation.ui.holder.HolderSimple;
 
 /**
  * Created by y.kuchanov on 21.12.16.
@@ -147,6 +148,8 @@ public interface AppComponent {
     void inject(ArticleTextHolder holder);
 
     void inject(ArticleSpoilerHolder holder);
+
+    void inject(HolderSimple holder);
 
     void inject(DownloadAllService service);
 

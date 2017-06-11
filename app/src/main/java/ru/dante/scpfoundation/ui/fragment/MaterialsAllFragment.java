@@ -20,12 +20,12 @@ import timber.log.Timber;
  * Created for MyApplication by Dante on 16.01.2016  22:45.
  */
 //TODO extend from baseListFragment to set all its advantages
-public class FragmentMaterialsAll extends Fragment {
+public class MaterialsAllFragment extends Fragment {
 
-    public static final String TAG = FragmentMaterialsAll.class.getSimpleName();
+    public static final String TAG = MaterialsAllFragment.class.getSimpleName();
 
-    public static FragmentMaterialsAll newInstance() {
-        return new FragmentMaterialsAll();
+    public static MaterialsAllFragment newInstance() {
+        return new MaterialsAllFragment();
     }
 
     @Nullable

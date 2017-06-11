@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ru.dante.scpfoundation.db.model.Article;
+import ru.dante.scpfoundation.ui.holder.HolderSimple;
 
 /**
  * Created by Dante on 17.01.2016.
@@ -42,6 +43,8 @@ public class ArticlesListWithSearchRecyclerAdapter extends ArticlesListRecyclerA
     @Override
     public void onBindViewHolder(HolderSimple holder, int position) {
         holder.bind(mSortedData.get(position));
+        holder.setShouldShowPreview(shouldShowPreview);
+        holder.setShouldShowPopupOnFavoriteClick(shouldShowPopupOnFavoriteClick);
     }
 
     @Override
