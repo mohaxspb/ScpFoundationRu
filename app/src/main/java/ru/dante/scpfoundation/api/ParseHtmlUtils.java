@@ -17,6 +17,7 @@ import java.util.List;
  * for scp_ru
  */
 public class ParseHtmlUtils {
+
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({TextType.TEXT, TextType.SPOILER, TextType.IMAGE, TextType.TABLE})
     public @interface TextType {
@@ -63,9 +64,10 @@ public class ParseHtmlUtils {
                 listOfTextTypes.add(TextType.TABLE);
                 continue;
             }
-            if (ourElement.className().equals("rimg") ||
-                    ourElement.className().equals("limg") ||
-                    ourElement.classNames().contains("scp-image-block")) {
+            if (ourElement.className().equals("rimg")
+                    || ourElement.className().equals("limg")
+                    || ourElement.className().equals("cimg")
+                    || ourElement.classNames().contains("scp-image-block")) {
                 listOfTextTypes.add(TextType.IMAGE);
                 continue;
             }
