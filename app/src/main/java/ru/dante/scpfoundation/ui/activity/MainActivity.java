@@ -57,7 +57,7 @@ public class MainActivity
 
         setIntent(intent);
 
-        setDrawerFromIntent(Intent intent);
+        setDrawerFromIntent(intent);
 
         mNavigationView.setCheckedItem(mCurrentSelectedDrawerItemId);
         onNavigationItemClicked(mCurrentSelectedDrawerItemId);
