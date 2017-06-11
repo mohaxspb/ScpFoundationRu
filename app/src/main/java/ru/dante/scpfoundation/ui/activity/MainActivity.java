@@ -57,16 +57,30 @@ public class MainActivity
 
         setIntent(intent);
 
-        setDrawerItemFromIntent();
+        setDrawerFromIntent(intent);
 
         mNavigationView.setCheckedItem(mCurrentSelectedDrawerItemId);
         onNavigationItemClicked(mCurrentSelectedDrawerItemId);
         setToolbarTitleByDrawerItemId(mCurrentSelectedDrawerItemId);
     }
 
-    private void setDrawerItemFromIntent() {
-        String link = getIntent().getStringExtra(EXTRA_LINK);
-        Timber.d("setDrawerItemFromIntent: %s", link);
+    private void setDrawerFromIntent(Intent intent) {
+        if (intent.hasExtra(EXTRA_LINK)) {
+            setDrawerItemFromLink(intent.getStringExtra(EXTRA_LINK));
+        } else if (intent.getAction() != null && intent.getAction().equals(Intent.ACTION_VIEW)) {
+            String link = intent.getDataString();
+            for (String pressedLink : Constants.Urls.ALL_LINKS_ARRAY) {
+                if (link.equals(pressedLink)) {
+                    setDrawerItemFromLink(link);
+                    return;
+                }
+            }
+            ArticleActivity.startActivity(this, link);
+        }
+    }
+
+    private void setDrawerItemFromLink(String link) {
+        Timber.d("setDrawerItemFromLink: %s", link);
         switch (link) {
             case Constants.Urls.ABOUT_SCP:
                 mCurrentSelectedDrawerItemId = (R.id.about);
@@ -118,18 +132,17 @@ public class MainActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Intent intent = getIntent();
         
-        if ("ru.dante.scpfoundation.open.NEW".equals(getIntent().getAction())) {
+        if ("ru.dante.scpfoundation.open.NEW".equals(intent.getAction())) {
             mCurrentSelectedDrawerItemId = (R.id.mostRecentArticles);
-        } else if ("ru.dante.scpfoundation.open.FAVORITES".equals(getIntent().getAction())) {
+        } else if ("ru.dante.scpfoundation.open.FAVORITES".equals(intent.getAction())) {
             mCurrentSelectedDrawerItemId = (R.id.favorite);
-        } else if ("ru.dante.scpfoundation.open.RANDOM".equals(getIntent().getAction())) {
+        } else if ("ru.dante.scpfoundation.open.RANDOM".equals(intent.getAction())) {
             mCurrentSelectedDrawerItemId = (R.id.random_page);
         }
 
-        if (getIntent().hasExtra(EXTRA_LINK)) {
-            setDrawerItemFromIntent();
-        }
+       setDrawerFromIntent(intent);
 
         if (getSupportFragmentManager().findFragmentById(mContent.getId()) == null) {
             onNavigationItemClicked(mCurrentSelectedDrawerItemId);
