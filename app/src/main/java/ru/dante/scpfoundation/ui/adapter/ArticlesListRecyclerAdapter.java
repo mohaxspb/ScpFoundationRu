@@ -1,6 +1,7 @@
 package ru.dante.scpfoundation.ui.adapter;
 
 import android.content.Context;
+import android.support.annotation.StringRes;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -45,70 +46,36 @@ public class ArticlesListRecyclerAdapter extends RecyclerView.Adapter<ArticlesLi
         return mSortType;
     }
 
-    //TODO use res, not hacdcoded strings
     public enum SortType {
-        NONE {
-            @Override
-            public String toString() {
-                return "Без фильтра";
-            }
-        },
-        NEUTRAL_OR_NOT_ADDED {
-            @Override
-            public String toString() {
-                return "Не назначен или нейтрализован";
-            }
-        },
-        SAFE {
-            @Override
-            public String toString() {
-                return "Безопасный";
-            }
-        },
-        EUCLID {
-            @Override
-            public String toString() {
-                return "Евклид";
-            }
-        },
-        KETER {
-            @Override
-            public String toString() {
-                return "Кетер";
-            }
-        },
-        THAUMIEL {
-            @Override
-            public String toString() {
-                return "Таумиэль";
-            }
-        },
-        NOT_READ {
-            @Override
-            public String toString() {
-                return "Непрочитанные";
-            }
-        },
-        READ {
-            @Override
-            public String toString() {
-                return "Прочитанные";
-            }
-        },
-        RATING {
-            @Override
-            public String toString() {
-                return "По рейтингу";
-            }
-        },
-        TITLE {
-            @Override
-            public String toString() {
-                return "По названию";
-            }
+
+        NONE(R.string.filter_none),
+
+        NEUTRAL_OR_NOT_ADDED(R.string.filter_neutral_or_not_added),
+        SAFE(R.string.filter_save),
+        EUCLID(R.string.filter_euclid),
+        KETER(R.string.filter_keter),
+        THAUMIEL(R.string.filter_thaumiel),
+
+        NOT_READ(R.string.filter_not_read),
+        READ(R.string.filter_read),
+        RATING(R.string.filter_rating),
+        TITLE(R.string.filter_title);
+
+        @StringRes
+        private final int title;
+
+        SortType(int title) {
+            this.title = title;
         }
-        //        DATE_CREATED,
-        //        DATE_UPDATED,
+
+        public int getTitle() {
+            return title;
+        }
+
+        @Override
+        public String toString() {
+            return MyApplication.getAppInstance().getString(title);
+        }
     }
 
     private static final int TYPE_MIN = 0;
