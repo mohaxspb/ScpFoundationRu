@@ -2,8 +2,8 @@ package ru.dante.scpfoundation.ui.holder;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -108,10 +108,13 @@ public class ArticleImageHolder extends RecyclerView.ViewHolder {
         } else if (!document.getElementsByClass("scp-image-caption").isEmpty()) {
             title = document.getElementsByClass("scp-image-caption").first().html();
         }
-        //TODO add settings for it
-//            titleTextView.setTextIsSelectable(true);
+
         if (!TextUtils.isEmpty(title)) {
-            titleTextView.setText(Html.fromHtml(title));
+            titleTextView.setLinksClickable(true);
+            titleTextView.setMovementMethod(LinkMovementMethod.getInstance());
+            //TODO add settings for it
+//            textView.setTextIsSelectable(true);
+            SetTextViewHTML.setText(titleTextView, title, mTextItemsClickListener);
         }
     }
 }
