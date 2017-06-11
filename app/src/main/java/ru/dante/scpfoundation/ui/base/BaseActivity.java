@@ -613,7 +613,7 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
     public void showProgressDialog(String title) {
         mProgressDialog = new MaterialDialog.Builder(this)
                 .progress(true, 0)
-                .title(title)
+                .content(title)
                 .cancelable(false)
                 .show();
     }
