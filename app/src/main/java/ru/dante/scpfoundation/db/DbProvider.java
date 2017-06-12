@@ -7,6 +7,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.vk.sdk.VKSdk;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -841,9 +842,30 @@ public class DbProvider {
                     subscriber.onNext(data);
                     subscriber.onCompleted();
                 },
-                error -> {
+                e -> {
                     mRealm.close();
-                    subscriber.onError(error);
+                    subscriber.onError(e);
+                })
+        );
+    }
+
+    public boolean moveRealmInstance() {
+        mRealm.writeCopyTo(new File(mMyPreferenceManager.getDbPath() + "/default.realm"));
+        mRealm.close();
+        return true;
+    }
+
+    public Observable<Void> deleteAllArticles() {
+        return Observable.unsafeCreate(subscriber -> mRealm.executeTransactionAsync(
+                realm -> realm.deleteAll(),
+                () -> {
+                    subscriber.onNext(null);
+                    subscriber.onCompleted();
+                    mRealm.close();
+                },
+                e -> {
+                    subscriber.onError(e);
+                    mRealm.close();
                 })
         );
     }

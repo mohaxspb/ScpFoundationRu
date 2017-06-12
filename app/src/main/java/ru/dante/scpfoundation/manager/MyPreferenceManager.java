@@ -171,7 +171,7 @@ public class MyPreferenceManager {
     }
 
     public String getDbPath() {
-        return mPreferences.getString(Keys.DB_PATH, mContext.getFilesDir().getAbsolutePath()/* + "default.realm"*/);
+        return mPreferences.getString(Keys.DB_PATH, mContext.getFilesDir().getAbsolutePath());
     }
 
 

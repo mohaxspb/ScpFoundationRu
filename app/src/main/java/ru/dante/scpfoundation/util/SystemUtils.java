@@ -2,16 +2,18 @@ package ru.dante.scpfoundation.util;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
-import android.support.v7.app.AppCompatActivity;
+import android.os.Build;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentActivity;
 import android.util.Base64;
 
 import com.vk.sdk.util.VKUtil;
 
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 import ru.dante.scpfoundation.MyApplication;
 import timber.log.Timber;
@@ -63,5 +65,23 @@ public class SystemUtils {
             Timber.e(e);
         }
         return null;
+    }
+
+    public static void killApp(FragmentActivity activity) {
+        //эмулируем нажатие на HOME, сворачивая приложение
+        Intent i = new Intent(Intent.ACTION_MAIN);
+        i.addCategory(Intent.CATEGORY_HOME);
+        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        activity.startActivity(i);
+
+        //в зависимости от версии оси намертво убиваем приложение
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            activity.finishAndRemoveTask();
+        } else {
+            ActivityCompat.finishAffinity(activity);
+        }
+
+        //и контрольный в голову
+        android.os.Process.killProcess(android.os.Process.myPid());
     }
 }

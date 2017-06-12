@@ -22,6 +22,7 @@ import android.widget.FrameLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.folderselector.FolderChooserDialog;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
@@ -36,15 +37,22 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
+import ru.dante.scpfoundation.db.DbProvider;
 import ru.dante.scpfoundation.db.DbProviderFactory;
 import ru.dante.scpfoundation.manager.MyNotificationManager;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.ui.adapter.SettingsSpinnerAdapter;
 import ru.dante.scpfoundation.ui.base.BaseBottomSheetDialogFragment;
 import ru.dante.scpfoundation.util.AttributeGetter;
+import ru.dante.scpfoundation.util.SystemUtils;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import timber.log.Timber;
 import uk.co.chrisjenx.calligraphy.CalligraphyUtils;
 
@@ -240,6 +248,31 @@ public class SettingsBottomSheetDialogFragment
 
         //hide activate subs for good users
         mActivateAutoSync.setVisibility(getBaseActivity().getOwnedItems().isEmpty() ? View.VISIBLE : View.GONE);
+
+        DbProvider dbProvider = mDbProviderFactory.getDbProvider();
+        String path = dbProvider.getRealm().getPath();
+        dbProvider.close();
+        dbLocationCurrent.setText(path);
+
+        updateDbSize();
+    }
+
+    private void updateDbSize() {
+        Timber.d("updateDbSize");
+        DbProvider dbProvider = mDbProviderFactory.getDbProvider();
+        String path = dbProvider.getRealm().getPath();
+        dbProvider.close();
+        File file = new File(path);
+        // Get length of file in bytes
+        long fileSizeInBytes = file.length();
+        // Convert the bytes to Kilobytes (1 KB = 1024 Bytes)
+        double fileSizeInKB = (double) fileSizeInBytes / 1024d;
+        // Convert the KB to MegaBytes (1 MB = 1024 KBytes)
+        double fileSizeInMB = fileSizeInKB / 1024d;
+
+        String size = fileSizeInMB + " Mb";
+        Timber.d("updateDbSize: %s", size);
+        dbSizeCurrent.setText(size);
     }
 
     @OnClick(R.id.buy)
@@ -323,16 +356,45 @@ public class SettingsBottomSheetDialogFragment
             return;
         }
 
-        new FolderChooserDialog.Builder(getBaseActivity())
-                .chooseButton(R.string.choose)  // changes label of the choose button
-                .allowNewFolder(true, R.string.new_folder_button_title)
+        new MaterialDialog.Builder(getBaseActivity())
+                .title(R.string.db_location_change_title)
+                .content(R.string.db_location_change_content)
+                .positiveText(R.string.i_undestand)
+                .onPositive((dialog, which) -> new FolderChooserDialog.Builder(getBaseActivity())
+                        .chooseButton(R.string.choose)  // changes label of the choose button
+                        .allowNewFolder(true, R.string.new_folder_button_title)
+                        .show())
+                .negativeText(android.R.string.cancel)
+                .onNegative((dialog, which) -> dialog.dismiss())
+                .build()
                 .show();
     }
 
     @OnClick(R.id.deleteAllDbData)
     void onDeleteAllDbDataClick() {
         Timber.d("onDeleteAllDbDataClick");
-        //TODO
+        int count = Realm.getGlobalInstanceCount(mDbProviderFactory.getDbProvider().getRealm().getConfiguration());
+        Timber.d("realms count: %s", count);
+
+        for (int i = 0; i < count; i++) {
+            Realm.getDefaultInstance().close();
+        }
+        Realm realm = Realm.getDefaultInstance();
+        RealmConfiguration configuration = realm.getConfiguration();
+        realm.close();
+        Realm.deleteRealm(configuration);
+
+        mDbProviderFactory.getDbProvider().deleteAllArticles()
+                .subscribe(
+                        aVoid -> {
+                            Timber.d("all articles deleted");
+                            updateDbSize();
+                        },
+                        e -> {
+                            Timber.e(e);
+                            getBaseActivity().showError(e);
+                        }
+                );
     }
 
     @Override
@@ -340,7 +402,30 @@ public class SettingsBottomSheetDialogFragment
         Timber.d("onFolderSelection: %s", folder.getAbsolutePath());
         mMyPreferenceManager.setDbPath(folder.getAbsolutePath());
 
-        mDbProviderFactory.getDbProvider().getRealm().writeCopyTo(new File(folder.getAbsolutePath() + "/default.realm"));
+//        mDbProviderFactory.getDbProvider().getRealm().writeCopyTo(new File(folder.getAbsolutePath() + "/default.realm"));
+//        Observable
+//                .just(42)
+//                .flatMap(integer -> mDbProviderFactory.getDbProvider().moveRealmInstance())
+        Observable
+                .fromCallable(() -> mDbProviderFactory.getDbProvider().moveRealmInstance())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        aVoid -> {
+                            Timber.d("Db moved successfully");
+                            new MaterialDialog.Builder(getBaseActivity())
+                                    .title(R.string.force_close_title)
+                                    .content(R.string.force_close_title_content)
+                                    .positiveText(R.string.force_close_button)
+                                    .onPositive((d, which) -> SystemUtils.killApp(getActivity()))
+                                    .build()
+                                    .show();
+                        },
+                        e -> {
+                            Timber.e(e);
+                            getBaseActivity().showError(e);
+                        }
+                );
     }
 
     @Override
