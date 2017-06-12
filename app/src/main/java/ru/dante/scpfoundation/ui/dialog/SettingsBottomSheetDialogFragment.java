@@ -39,6 +39,7 @@ import butterknife.OnClick;
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
+import ru.dante.scpfoundation.db.DbProviderFactory;
 import ru.dante.scpfoundation.manager.MyNotificationManager;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.ui.adapter.SettingsSpinnerAdapter;
@@ -104,6 +105,8 @@ public class SettingsBottomSheetDialogFragment
     protected MyPreferenceManager mMyPreferenceManager;
     @Inject
     protected MyNotificationManager mMyNotificationManager;
+    @Inject
+    DbProviderFactory mDbProviderFactory;
 
     public static BottomSheetDialogFragment newInstance() {
         return new SettingsBottomSheetDialogFragment();
@@ -334,7 +337,10 @@ public class SettingsBottomSheetDialogFragment
 
     @Override
     public void onFolderSelection(@NonNull FolderChooserDialog dialog, @NonNull File folder) {
-        Timber.d("onFolderSelection: %s", folder.toString());
+        Timber.d("onFolderSelection: %s", folder.getAbsolutePath());
+        mMyPreferenceManager.setDbPath(folder.getAbsolutePath());
+
+        mDbProviderFactory.getDbProvider().getRealm().writeCopyTo(new File(folder.getAbsolutePath() + "/default.realm"));
     }
 
     @Override

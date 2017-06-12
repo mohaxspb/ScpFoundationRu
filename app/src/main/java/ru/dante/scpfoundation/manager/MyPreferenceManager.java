@@ -63,13 +63,15 @@ public class MyPreferenceManager {
         String APP_VK_GROUP_JOINED_LAST_TIME_CHECKED = "APP_VK_GROUP_JOINED_LAST_TIME_CHECKED";
         String APP_VK_GROUP_JOINED = "APP_VK_GROUP_JOINED";
         String NEED_RELOGIN_POPUP_LAST_TIME_CHECKED = "NEED_RELOGIN_POPUP_LAST_TIME_CHECKED";
+        String DB_PATH = "DB_PATH";
     }
 
     private Gson mGson;
-
     private SharedPreferences mPreferences;
+    private Context mContext;
 
     public MyPreferenceManager(Context context, Gson gson) {
+        mContext = context;
         mPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         mGson = gson;
     }
@@ -162,6 +164,16 @@ public class MyPreferenceManager {
     public void setNotificationSoundEnabled(boolean enabled) {
         mPreferences.edit().putBoolean(Keys.NOTIFICATION_SOUND_IS_ON, enabled).apply();
     }
+
+    //DB
+    public void setDbPath(String path) {
+        mPreferences.edit().putString(Keys.DB_PATH, path).apply();
+    }
+
+    public String getDbPath() {
+        return mPreferences.getString(Keys.DB_PATH, mContext.getFilesDir().getAbsolutePath()/* + "default.realm"*/);
+    }
+
 
     //ads
     public boolean isTimeToShowAds() {
@@ -367,7 +379,7 @@ public class MyPreferenceManager {
         return System.currentTimeMillis() - getLastTimeNeedReloginPopupShown() >= PERIOD_BETWEEN_NEED_RELOGIN_POPUP_IN_MILLIS;
     }
 
-    // secure
+    //secure
     public boolean isAppCracked() {
         return mPreferences.getBoolean(Keys.APP_IS_CRACKED, false);
     }

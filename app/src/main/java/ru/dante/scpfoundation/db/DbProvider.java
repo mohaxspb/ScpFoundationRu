@@ -40,6 +40,12 @@ public class DbProvider {
     DbProvider(MyPreferenceManager myPreferenceManager) {
         mRealm = Realm.getDefaultInstance();
         mMyPreferenceManager = myPreferenceManager;
+
+        Timber.d("realm path: %s", mRealm.getPath());
+    }
+
+    public Realm getRealm() {
+        return mRealm;
     }
 
     public void close() {

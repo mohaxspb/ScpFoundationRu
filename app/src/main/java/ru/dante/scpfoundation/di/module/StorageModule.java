@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
 
+import java.io.File;
 import java.util.Locale;
 
 import javax.inject.Singleton;
@@ -117,10 +118,13 @@ public class StorageModule {
     @Provides
     @NonNull
     @Singleton
-    RealmConfiguration providesRealmConfiguration(@NonNull RealmMigration realmMigration) {
+    RealmConfiguration providesRealmConfiguration(
+            @NonNull RealmMigration realmMigration,
+            @NonNull MyPreferenceManager preferenceManager
+    ) {
         return new RealmConfiguration.Builder()
                 //TODO use predefined location
-//                .directory()
+                .directory(new File(preferenceManager.getDbPath()))
                 .schemaVersion(BuildConfig.REALM_VERSION)
                 .migration(realmMigration)
                 .build();
