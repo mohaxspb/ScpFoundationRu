@@ -25,6 +25,7 @@ import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.api.ApiClient;
+import ru.dante.scpfoundation.api.error.ScpParseException;
 import ru.dante.scpfoundation.db.DbProvider;
 import ru.dante.scpfoundation.db.DbProviderFactory;
 import ru.dante.scpfoundation.db.model.Article;
@@ -389,40 +390,50 @@ public class DownloadAllService extends Service {
                     dbProvider.close();
                     return articlesToDownload;
                 })
-                .flatMap(Observable::from)
-                //use pair to sort by proper order after loading
-                .flatMap(article -> Observable.just(new Pair<>(++mNaturalOrder, article)))
-                //try to load article
-                //on error increase counters and resume query, emiting onComplete to article observable
-                .flatMap(article -> mApiClient.getArticle(article.second.url)
-                        .flatMap(article1 -> Observable.just(new Pair<>(article.first, article1)))
-                        .onErrorResumeNext(throwable -> {
-                            Timber.e(throwable, "error while load article: %s", article.second.url);
-                            mNumOfErrors++;
-                            mCurProgress++;
-                            showNotificationDownloadProgress(
-                                    getString(R.string.download_objects_title),
-                                    mCurProgress, mMaxProgress, mNumOfErrors
-                            );
-                            return Observable.empty();
-                        })
-                )
-                .doOnNext(article -> {
-                    Timber.d("downloaded: %s", article.second.url);
-                    mCurProgress++;
-                    Timber.d("mCurProgress %s, mMaxProgress: %s", mCurProgress, mMaxProgress);
-                    showNotificationDownloadProgress(getString(R.string.download_objects_title),
-                            mCurProgress, mMaxProgress, mNumOfErrors);
+                .flatMap(articles -> {
+                    for (int i = 0; i < articles.size(); i++) {
+                        Article articleToDownload = articles.get(i);
+                        try {
+                            Article articleDownloaded = mApiClient.getArticleFromApi(articleToDownload.url);
+                        } catch (Exception | ScpParseException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 })
-                //restore natural oder
-                .toList()
-                .flatMap(pairs -> {
-                    Collections.sort(pairs, (t, t1) -> t.first - t1.first);
-                    return Observable.just(pairs);
-                })
-                .flatMap(Observable::from)
-                .flatMap(integerArticlePair -> Observable.just(integerArticlePair.second))
-                .toList()
+//                .flatMap(Observable::from)
+//                //use pair to sort by proper order after loading
+//                .flatMap(article -> Observable.just(new Pair<>(++mNaturalOrder, article)))
+//                //try to load article
+//                //on error increase counters and resume query, emiting onComplete to article observable
+//                .flatMap(article -> mApiClient.getArticle(article.second.url)
+//                        .flatMap(article1 -> Observable.just(new Pair<>(article.first, article1)))
+//                        .onErrorResumeNext(throwable -> {
+//                            Timber.e(throwable, "error while load article: %s", article.second.url);
+//                            mNumOfErrors++;
+//                            mCurProgress++;
+//                            showNotificationDownloadProgress(
+//                                    getString(R.string.download_objects_title),
+//                                    mCurProgress, mMaxProgress, mNumOfErrors
+//                            );
+//                            return Observable.empty();
+//                        })
+//                )
+//                .doOnNext(article -> {
+//                    Timber.d("downloaded: %s", article.second.url);
+//                    mCurProgress++;
+//                    Timber.d("mCurProgress %s, mMaxProgress: %s", mCurProgress, mMaxProgress);
+//                    showNotificationDownloadProgress(getString(R.string.download_objects_title),
+//                            mCurProgress, mMaxProgress, mNumOfErrors);
+//                })
+//                //restore natural oder
+//                .toList()
+//                .flatMap(pairs -> {
+//                    Collections.sort(pairs, (t, t1) -> t.first - t1.first);
+//                    return Observable.just(pairs);
+//                })
+//                .flatMap(Observable::from)
+//                .flatMap(integerArticlePair -> Observable.just(integerArticlePair.second))
+//                .toList()
                 .flatMap(articles -> mDbProviderFactory.getDbProvider().saveMultipleArticlesSync(articles))
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())

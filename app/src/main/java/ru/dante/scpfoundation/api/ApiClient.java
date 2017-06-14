@@ -1,6 +1,7 @@
 package ru.dante.scpfoundation.api;
 
 import android.net.Uri;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Pair;
 
@@ -487,292 +488,286 @@ public class ApiClient {
         }));
     }
 
-    public Observable<Article> getArticle(String url) {
-        Timber.d("start download article: %s", url);
-        return bindWithUtils(Observable.<Article>unsafeCreate(subscriber -> {
-            Request request = new Request.Builder()
-                    .url(url)
-                    .build();
+    @Nullable
+    public Article getArticleFromApi(String url) throws Exception, ScpParseException {
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
 
-            String responseBody = null;
-            try {
-                Response response = mOkHttpClient.newCall(request).execute();
-                ResponseBody body = response.body();
-                if (body != null) {
-                    responseBody = body.string();
-                } else {
-                    subscriber.onError(new IOException(MyApplication.getAppInstance().getString(R.string.error_parse)));
-                    return;
+        String responseBody;
+        try {
+            Response response = mOkHttpClient.newCall(request).execute();
+            ResponseBody body = response.body();
+            if (body != null) {
+                responseBody = body.string();
+            } else {
+                throw new IOException(MyApplication.getAppInstance().getString(R.string.error_parse));
+            }
+        } catch (IOException e) {
+            throw new IOException(MyApplication.getAppInstance().getString(R.string.error_connection));
+        }
+
+        try {
+            Document doc = Jsoup.parse(responseBody);
+            Element pageContent = doc.getElementById("page-content");
+            if (pageContent == null) {
+                throw new ScpParseException(MyApplication.getAppInstance().getString(R.string.error_parse));
+            }
+            Element p404 = pageContent.getElementById("404-message");
+            if (p404 != null) {
+                Article article = new Article();
+                article.url = url;
+                article.text = p404.outerHtml();
+                article.title = "404";
+
+                return article;
+            }
+            //замена ссылок в сносках
+            Elements footnoterefs = pageContent.getElementsByClass("footnoteref");
+            for (Element snoska : footnoterefs) {
+                Element aTag = snoska.getElementsByTag("a").first();
+                String digits = "";
+                for (char c : aTag.id().toCharArray()) {
+                    if (TextUtils.isDigitsOnly(String.valueOf(c))) {
+                        digits += String.valueOf(c);
+                    }
                 }
-            } catch (IOException e) {
-                subscriber.onError(new IOException(MyApplication.getAppInstance().getString(R.string.error_connection)));
-                return;
+                aTag.attr("href", "scp://" + digits);
+            }
+            Elements footnoterefsFooter = pageContent.getElementsByClass("footnote-footer");
+            for (Element snoska : footnoterefsFooter) {
+                Element aTag = snoska.getElementsByTag("a").first();
+                snoska.prependText(aTag.text());
+                aTag.remove();
+//                    aTag.replaceWith(new Element(Tag.valueOf("pizda"), aTag.text()));
             }
 
-            try {
-                Document doc = Jsoup.parse(responseBody);
-                Element pageContent = doc.getElementById("page-content");
-                if (pageContent == null) {
-                    subscriber.onError(new ScpParseException(MyApplication.getAppInstance().getString(R.string.error_parse)));
-                    return;
-                }
-                Element p404 = pageContent.getElementById("404-message");
-                if (p404 != null) {
-                    Article article = new Article();
-                    article.url = url;
-                    article.text = p404.outerHtml();
-                    article.title = "404";
+            //замена ссылок в библиографии
+            Elements bibliographi = pageContent.getElementsByClass("bibcite");
+            for (Element snoska : bibliographi) {
+                Element aTag = snoska.getElementsByTag("a").first();
+                String onclickAttr = aTag.attr("onclick");
 
-                    subscriber.onNext(article);
-                    subscriber.onCompleted();
-                    return;
-                }
-                //замена ссылок в сносках
-                Elements footnoterefs = pageContent.getElementsByClass("footnoteref");
-                for (Element snoska : footnoterefs) {
-                    Element aTag = snoska.getElementsByTag("a").first();
-                    String digits = "";
-                    for (char c : aTag.id().toCharArray()) {
-                        if (TextUtils.isDigitsOnly(String.valueOf(c))) {
-                            digits += String.valueOf(c);
-                        }
-                    }
-                    aTag.attr("href", "scp://" + digits);
-                }
-                Elements footnoterefsFooter = pageContent.getElementsByClass("footnote-footer");
-                for (Element snoska : footnoterefsFooter) {
-                    Element aTag = snoska.getElementsByTag("a").first();
-                    snoska.prependText(aTag.text());
-                    aTag.remove();
-//                    aTag.replaceWith(new Element(Tag.valueOf("pizda"), aTag.text()));
-                }
-
-                //замена ссылок в библиографии
-                Elements bibliographi = pageContent.getElementsByClass("bibcite");
-                for (Element snoska : bibliographi) {
-                    Element aTag = snoska.getElementsByTag("a").first();
-                    String onclickAttr = aTag.attr("onclick");
-
-                    String id = onclickAttr.substring(onclickAttr.indexOf("bibitem-"), onclickAttr.lastIndexOf("'"));
-                    aTag.attr("href", id);
-                }
-                //remove rating bar
-                Element rateDiv = pageContent.getElementsByClass("page-rate-widget-box").first();
-                if (rateDiv != null) {
-                    Element span1 = rateDiv.getElementsByClass("rateup").first();
-                    span1.remove();
-                    Element span2 = rateDiv.getElementsByClass("ratedown").first();
-                    span2.remove();
-                    Element span3 = rateDiv.getElementsByClass("cancel").first();
-                    span3.remove();
-                }
-                //remove something more
-                Element svernut = pageContent.getElementById("toc-action-bar");
-                if (svernut != null) {
-                    svernut.remove();
-                }
-                //replace all spans with strike-through with <s>
-                Elements spansWithStrike = pageContent.select("span[style=text-decoration: line-through;]");
-                for (Element element : spansWithStrike) {
+                String id = onclickAttr.substring(onclickAttr.indexOf("bibitem-"), onclickAttr.lastIndexOf("'"));
+                aTag.attr("href", id);
+            }
+            //remove rating bar
+            Element rateDiv = pageContent.getElementsByClass("page-rate-widget-box").first();
+            if (rateDiv != null) {
+                Element span1 = rateDiv.getElementsByClass("rateup").first();
+                span1.remove();
+                Element span2 = rateDiv.getElementsByClass("ratedown").first();
+                span2.remove();
+                Element span3 = rateDiv.getElementsByClass("cancel").first();
+                span3.remove();
+            }
+            //remove something more
+            Element svernut = pageContent.getElementById("toc-action-bar");
+            if (svernut != null) {
+                svernut.remove();
+            }
+            //replace all spans with strike-through with <s>
+            Elements spansWithStrike = pageContent.select("span[style=text-decoration: line-through;]");
+            for (Element element : spansWithStrike) {
 //                    Timber.d("element: %s", element);
-                    element.tagName("s");
-                    for (Attribute attribute : element.attributes()) {
-                        element.removeAttr(attribute.getKey());
-                    }
+                element.tagName("s");
+                for (Attribute attribute : element.attributes()) {
+                    element.removeAttr(attribute.getKey());
+                }
 //                    Timber.d("element refactored: %s", element);
-                }
-                //get title
-                Element titleEl = doc.getElementById("page-title");
-                String title = "";
-                if (titleEl != null) {
-                    title = titleEl.text();
-                }
-                Element upperDivWithLink = doc.getElementById("breadcrumbs");
-                if (upperDivWithLink != null) {
-                    pageContent.prependChild(upperDivWithLink);
-                }
-                //todo need to use one method for rimg/limg and add loopeing through multiple rimg/limg tags in article
-                //parse multiple imgs in "rimg" tag
-                Element rimg = pageContent.getElementsByClass("rimg").first();
+            }
+            //get title
+            Element titleEl = doc.getElementById("page-title");
+            String title = "";
+            if (titleEl != null) {
+                title = titleEl.text();
+            }
+            Element upperDivWithLink = doc.getElementById("breadcrumbs");
+            if (upperDivWithLink != null) {
+                pageContent.prependChild(upperDivWithLink);
+            }
+            //todo need to use one method for rimg/limg and add loopeing through multiple rimg/limg tags in article
+            //parse multiple imgs in "rimg" tag
+            Element rimg = pageContent.getElementsByClass("rimg").first();
 //                Timber.d("rimg: %s", rimg);
-                if (rimg != null) {
-                    Elements imgs = rimg.getElementsByTag("img");
-                    Elements descriptions = rimg.getElementsByTag("span");
-                    List<Element> rimgsToAdd = new ArrayList<>();
-                    if (imgs != null && imgs.size() > 1 && descriptions.size() == imgs.size()) {
-                        for (int i = 0; i < imgs.size(); i++) {
-                            Element img = imgs.get(i);
-                            Element description = descriptions.get(i);
-                            Element newRimg = new Element("div");
-                            newRimg.addClass("rimg");
-                            newRimg.appendChild(img).appendChild(description);
-                            rimgsToAdd.add(newRimg);
-                        }
-                        Element rimgLast = rimg;
-                        for (Element newRimg : rimgsToAdd) {
-                            rimgLast.after(newRimg);
-                            rimgLast = newRimg;
-                        }
-                        rimg.remove();
+            if (rimg != null) {
+                Elements imgs = rimg.getElementsByTag("img");
+                Elements descriptions = rimg.getElementsByTag("span");
+                List<Element> rimgsToAdd = new ArrayList<>();
+                if (imgs != null && imgs.size() > 1 && descriptions.size() == imgs.size()) {
+                    for (int i = 0; i < imgs.size(); i++) {
+                        Element img = imgs.get(i);
+                        Element description = descriptions.get(i);
+                        Element newRimg = new Element("div");
+                        newRimg.addClass("rimg");
+                        newRimg.appendChild(img).appendChild(description);
+                        rimgsToAdd.add(newRimg);
                     }
+                    Element rimgLast = rimg;
+                    for (Element newRimg : rimgsToAdd) {
+                        rimgLast.after(newRimg);
+                        rimgLast = newRimg;
+                    }
+                    rimg.remove();
                 }
+            }
 //                Timber.d("pageContent.getElementsByClass(\"rimg\"): %s", pageContent.getElementsByClass("rimg"));
 
-                //parse multiple imgs in "limg" tag
-                Element limg = pageContent.getElementsByClass("limg").first();
+            //parse multiple imgs in "limg" tag
+            Element limg = pageContent.getElementsByClass("limg").first();
 //                Timber.d("limg: %s", limg);
-                if (limg != null) {
-                    Elements imgs = limg.getElementsByTag("img");
-                    Elements descriptions = limg.getElementsByTag("span");
-                    List<Element> rimgsToAdd = new ArrayList<>();
-                    if (imgs != null && imgs.size() > 1 && descriptions.size() == imgs.size()) {
-                        for (int i = 0; i < imgs.size(); i++) {
-                            Element img = imgs.get(i);
-                            Element description = descriptions.get(i);
-                            Element newRimg = new Element("div");
-                            newRimg.addClass("limg");
-                            newRimg.appendChild(img).appendChild(description);
-                            rimgsToAdd.add(newRimg);
-                        }
-                        Element rimgLast = limg;
-                        for (Element newRimg : rimgsToAdd) {
-                            rimgLast.after(newRimg);
-                            rimgLast = newRimg;
-                        }
-                        limg.remove();
+            if (limg != null) {
+                Elements imgs = limg.getElementsByTag("img");
+                Elements descriptions = limg.getElementsByTag("span");
+                List<Element> rimgsToAdd = new ArrayList<>();
+                if (imgs != null && imgs.size() > 1 && descriptions.size() == imgs.size()) {
+                    for (int i = 0; i < imgs.size(); i++) {
+                        Element img = imgs.get(i);
+                        Element description = descriptions.get(i);
+                        Element newRimg = new Element("div");
+                        newRimg.addClass("limg");
+                        newRimg.appendChild(img).appendChild(description);
+                        rimgsToAdd.add(newRimg);
                     }
+                    Element rimgLast = limg;
+                    for (Element newRimg : rimgsToAdd) {
+                        rimgLast.after(newRimg);
+                        rimgLast = newRimg;
+                    }
+                    limg.remove();
                 }
+            }
 //                Timber.d("pageContent.getElementsByClass(\"limg\"): %s", pageContent.getElementsByClass("limg"));
 
-                //parse multiple imgs in "cimg" tag
-                Element cimg = pageContent.getElementsByClass("cimg").first();
+            //parse multiple imgs in "cimg" tag
+            Element cimg = pageContent.getElementsByClass("cimg").first();
 //                Timber.d("cimg: %s", cimg);
-                if (cimg != null) {
-                    Elements imgs = cimg.getElementsByTag("img");
-                    Elements descriptions = cimg.getElementsByTag("span");
-                    List<Element> rimgsToAdd = new ArrayList<>();
-                    if (imgs != null && imgs.size() > 1 && descriptions.size() == imgs.size()) {
-                        for (int i = 0; i < imgs.size(); i++) {
-                            Element img = imgs.get(i);
-                            Element description = descriptions.get(i);
-                            Element newRimg = new Element("div");
-                            newRimg.addClass("cimg");
-                            newRimg.appendChild(img).appendChild(description);
-                            rimgsToAdd.add(newRimg);
-                        }
-                        Element rimgLast = cimg;
-                        for (Element newRimg : rimgsToAdd) {
-                            rimgLast.after(newRimg);
-                            rimgLast = newRimg;
-                        }
-                        cimg.remove();
+            if (cimg != null) {
+                Elements imgs = cimg.getElementsByTag("img");
+                Elements descriptions = cimg.getElementsByTag("span");
+                List<Element> rimgsToAdd = new ArrayList<>();
+                if (imgs != null && imgs.size() > 1 && descriptions.size() == imgs.size()) {
+                    for (int i = 0; i < imgs.size(); i++) {
+                        Element img = imgs.get(i);
+                        Element description = descriptions.get(i);
+                        Element newRimg = new Element("div");
+                        newRimg.addClass("cimg");
+                        newRimg.appendChild(img).appendChild(description);
+                        rimgsToAdd.add(newRimg);
                     }
+                    Element rimgLast = cimg;
+                    for (Element newRimg : rimgsToAdd) {
+                        rimgLast.after(newRimg);
+                        rimgLast = newRimg;
+                    }
+                    cimg.remove();
                 }
+            }
 //                Timber.d("pageContent.getElementsByClass(\"cimg\"): %s", pageContent.getElementsByClass("cimg"));
 
-                //put all text which is not in any tag in div tag
-                for (Element element : pageContent.children()) {
-                    Node nextSibling = element.nextSibling();
+            //put all text which is not in any tag in div tag
+            for (Element element : pageContent.children()) {
+                Node nextSibling = element.nextSibling();
 //                    Timber.d("child: ___%s___", nextSibling);
 //                    Timber.d("nextSibling.nodeName(): %s", nextSibling.nodeName());
-                    if (nextSibling != null && !nextSibling.toString().equals(" ") && nextSibling.nodeName().equals("#text")) {
-                        element.after(new Element("div").appendChild(nextSibling));
-                    }
-
-                    //also fix scp-3000, where image and spoiler are in div tag, fucking shit! Web monkeys, ARGH!!!
-                    if (!element.children().isEmpty() && element.children().size() == 2
-                            && element.child(0).tagName().equals("img") && element.child(1).className().equals("collapsible-block")) {
-                        element.before(element.childNode(0));
-                        element.after(element.childNode(1));
-                        element.remove();
-                    }
+                if (nextSibling != null && !nextSibling.toString().equals(" ") && nextSibling.nodeName().equals("#text")) {
+                    element.after(new Element("div").appendChild(nextSibling));
                 }
 
-                //search for relative urls to add domain
-                for (Element a : pageContent.getElementsByTag("a")) {
-                    if (a.attr("href").startsWith("/")) {
-                        a.attr("href", BuildConfig.BASE_API_URL + a.attr("href"));
-                    }
+                //also fix scp-3000, where image and spoiler are in div tag, fucking shit! Web monkeys, ARGH!!!
+                if (!element.children().isEmpty() && element.children().size() == 2
+                        && element.child(0).tagName().equals("img") && element.child(1).className().equals("collapsible-block")) {
+                    element.before(element.childNode(0));
+                    element.after(element.childNode(1));
+                    element.remove();
                 }
+            }
 
-                //extract tags
-                RealmList<ArticleTag> articleTags = new RealmList<>();
-                Element tagsContainer = doc.getElementsByClass("page-tags").first();
+            //search for relative urls to add domain
+            for (Element a : pageContent.getElementsByTag("a")) {
+                if (a.attr("href").startsWith("/")) {
+                    a.attr("href", BuildConfig.BASE_API_URL + a.attr("href"));
+                }
+            }
+
+            //extract tags
+            RealmList<ArticleTag> articleTags = new RealmList<>();
+            Element tagsContainer = doc.getElementsByClass("page-tags").first();
 //                Timber.d("tagsContainer: %s", tagsContainer);
-                if (tagsContainer != null) {
-                    for (Element a : tagsContainer./*getElementsByTag("span").first().*/getElementsByTag("a")) {
-                        articleTags.add(new ArticleTag(a.text()));
+            if (tagsContainer != null) {
+                for (Element a : tagsContainer./*getElementsByTag("span").first().*/getElementsByTag("a")) {
+                    articleTags.add(new ArticleTag(a.text()));
 //                        Timber.d("tag: %s", articleTags.get(articleTags.size() - 1));
-                    }
                 }
+            }
 
-                //search for images and add it to separate field to be able to show it in arts lists
-                RealmList<RealmString> imgsUrls = null;
-                Elements imgsOfArticle = pageContent.getElementsByTag("img");
-                if (!imgsOfArticle.isEmpty()) {
-                    imgsUrls = new RealmList<>();
-                    for (Element img : imgsOfArticle) {
-                        imgsUrls.add(new RealmString(img.attr("src")));
-                    }
+            //search for images and add it to separate field to be able to show it in arts lists
+            RealmList<RealmString> imgsUrls = null;
+            Elements imgsOfArticle = pageContent.getElementsByTag("img");
+            if (!imgsOfArticle.isEmpty()) {
+                imgsUrls = new RealmList<>();
+                for (Element img : imgsOfArticle) {
+                    imgsUrls.add(new RealmString(img.attr("src")));
                 }
+            }
 
-                //type TODO fucking unformatted info!
+            //type TODO fucking unformatted info!
 
-                //this we store aas article text
-                String rawText = pageContent.toString();
+            //this we store aas article text
+            String rawText = pageContent.toString();
 
-                //tabs
-                boolean hasTabs = false;
-                RealmList<RealmString> tabsText = null;
-                RealmList<RealmString> tabsTitles = null;
-                //articles textParts
-                RealmList<RealmString> textParts = null;
-                RealmList<RealmString> textPartsTypes = null;
+            //tabs
+            boolean hasTabs = false;
+            RealmList<RealmString> tabsText = null;
+            RealmList<RealmString> tabsTitles = null;
+            //articles textParts
+            RealmList<RealmString> textParts = null;
+            RealmList<RealmString> textPartsTypes = null;
 
-                Document document = Jsoup.parse(rawText);
+            Document document = Jsoup.parse(rawText);
 
-                Element yuiNavset = document.getElementsByAttributeValueStarting("class", "yui-navset").first();
-                if (yuiNavset != null) {
-                    hasTabs = true;
+            Element yuiNavset = document.getElementsByAttributeValueStarting("class", "yui-navset").first();
+            if (yuiNavset != null) {
+                hasTabs = true;
 
-                    Element titles = yuiNavset.getElementsByClass("yui-nav").first();
-                    Elements liElements = titles.getElementsByTag("li");
-                    Element yuiContent = yuiNavset.getElementsByClass("yui-content").first();
+                Element titles = yuiNavset.getElementsByClass("yui-nav").first();
+                Elements liElements = titles.getElementsByTag("li");
+                Element yuiContent = yuiNavset.getElementsByClass("yui-content").first();
 
-                    tabsTitles = new RealmList<>();
-                    for (Element li : liElements) {
-                        tabsTitles.add(new RealmString(li.text()));
-                    }
-                    //TODO add supporting inner articles
-                    tabsText = new RealmList<>();
-                    for (Element tab : yuiContent.children()) {
-                        tabsText.add(new RealmString(tab.html()));
-                    }
-                } else {
-                    List<String> rawTextParts = ParseHtmlUtils.getArticlesTextParts(rawText);
-                    textParts = new RealmList<>();
-                    for (String value : rawTextParts) {
-                        textParts.add(new RealmString(value));
-                    }
-                    textPartsTypes = new RealmList<>();
-                    for (@ParseHtmlUtils.TextType String value : ParseHtmlUtils.getListOfTextTypes(rawTextParts)) {
-                        textPartsTypes.add(new RealmString(value));
-                    }
+                tabsTitles = new RealmList<>();
+                for (Element li : liElements) {
+                    tabsTitles.add(new RealmString(li.text()));
                 }
+                //TODO add supporting inner articles
+                tabsText = new RealmList<>();
+                for (Element tab : yuiContent.children()) {
+                    tabsText.add(new RealmString(tab.html()));
+                }
+            } else {
+                List<String> rawTextParts = ParseHtmlUtils.getArticlesTextParts(rawText);
+                textParts = new RealmList<>();
+                for (String value : rawTextParts) {
+                    textParts.add(new RealmString(value));
+                }
+                textPartsTypes = new RealmList<>();
+                for (@ParseHtmlUtils.TextType String value : ParseHtmlUtils.getListOfTextTypes(rawTextParts)) {
+                    textPartsTypes.add(new RealmString(value));
+                }
+            }
 
-                //finally fill article info
-                Article article = new Article();
+            //finally fill article info
+            Article article = new Article();
 
-                article.url = url;
-                article.text = rawText;
-                article.title = title;
-                //tabs
-                article.hasTabs = hasTabs;
-                article.tabsTitles = tabsTitles;
-                article.tabsTexts = tabsText;
-                //textParts
-                article.textParts = textParts;
-                //log
+            article.url = url;
+            article.text = rawText;
+            article.title = title;
+            //tabs
+            article.hasTabs = hasTabs;
+            article.tabsTitles = tabsTitles;
+            article.tabsTexts = tabsText;
+            //textParts
+            article.textParts = textParts;
+            //log
 //                if (article.textParts != null) {
 //                    for (RealmString realmString : article.textParts) {
 //                        Timber.d("part: %s", realmString.val);
@@ -780,16 +775,27 @@ public class ApiClient {
 //                } else {
 //                    Timber.d("article.textParts is NULL!");
 //                }
-                article.textPartsTypes = textPartsTypes;
-                //images
-                article.imagesUrls = imgsUrls;
-                //tags
-                article.tags = articleTags;
+            article.textPartsTypes = textPartsTypes;
+            //images
+            article.imagesUrls = imgsUrls;
+            //tags
+            article.tags = articleTags;
 
+            return article;
+        } catch (Exception e) {
+            Timber.e(e);
+            throw e;
+        }
+    }
+
+    public Observable<Article> getArticle(String url) {
+        Timber.d("start download article: %s", url);
+        return bindWithUtils(Observable.<Article>unsafeCreate(subscriber -> {
+            try {
+                Article article = getArticleFromApi(url);
                 subscriber.onNext(article);
                 subscriber.onCompleted();
-            } catch (Exception e) {
-                Timber.e(e, "error while get arts list");
+            } catch (Exception | ScpParseException e) {
                 subscriber.onError(e);
             }
         }))
