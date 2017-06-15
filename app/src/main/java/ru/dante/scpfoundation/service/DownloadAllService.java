@@ -391,14 +391,38 @@ public class DownloadAllService extends Service {
                     return articlesToDownload;
                 })
                 .flatMap(articles -> {
+                    DbProvider dbProvider = mDbProviderFactory.getDbProvider();
                     for (int i = 0; i < articles.size(); i++) {
                         Article articleToDownload = articles.get(i);
                         try {
                             Article articleDownloaded = mApiClient.getArticleFromApi(articleToDownload.url);
+                            if (articleDownloaded != null) {
+                                dbProvider.saveArticleSync(articleDownloaded, false);
+                                Timber.d("downloaded: %s", articleDownloaded.url);
+                                mCurProgress++;
+                                Timber.d("mCurProgress %s, mMaxProgress: %s", mCurProgress, mMaxProgress);
+                                showNotificationDownloadProgress(getString(R.string.download_objects_title),
+                                        mCurProgress, mMaxProgress, mNumOfErrors);
+                            } else {
+                                mNumOfErrors++;
+                                mCurProgress++;
+                                showNotificationDownloadProgress(
+                                        getString(R.string.download_objects_title),
+                                        mCurProgress, mMaxProgress, mNumOfErrors
+                                );
+                            }
                         } catch (Exception | ScpParseException e) {
-                            e.printStackTrace();
+                            Timber.e(e);
+                            mNumOfErrors++;
+                            mCurProgress++;
+                            showNotificationDownloadProgress(
+                                    getString(R.string.download_objects_title),
+                                    mCurProgress, mMaxProgress, mNumOfErrors
+                            );
                         }
                     }
+                    dbProvider.close();
+                    return Observable.just(articles);
                 })
 //                .flatMap(Observable::from)
 //                //use pair to sort by proper order after loading
@@ -434,7 +458,7 @@ public class DownloadAllService extends Service {
 //                .flatMap(Observable::from)
 //                .flatMap(integerArticlePair -> Observable.just(integerArticlePair.second))
 //                .toList()
-                .flatMap(articles -> mDbProviderFactory.getDbProvider().saveMultipleArticlesSync(articles))
+//                .flatMap(articles -> mDbProviderFactory.getDbProvider().saveMultipleArticlesSync(articles))
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .subscribe(

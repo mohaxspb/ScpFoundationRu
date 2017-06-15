@@ -485,7 +485,7 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
     @Override
     public void updateOwnedMarketItems() {
         Timber.d("updateOwnedMarketItems");
-        InappHelper.getOwnedSubsObserveble(this, mService).subscribe(
+        InappHelper.getOwnedSubsObserveble(mService).subscribe(
                 items -> {
                     Timber.d("market items: %s", items);
                     mOwnedMarketSubscriptions = items;
