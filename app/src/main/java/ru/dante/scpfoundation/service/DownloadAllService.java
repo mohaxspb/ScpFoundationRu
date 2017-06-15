@@ -15,7 +15,6 @@ import android.util.Pair;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -242,6 +241,8 @@ public class DownloadAllService extends Service {
                 .map(pageCount -> (rangeStart != RANGE_NONE && rangeEnd != RANGE_NONE)
                         ? (int) Math.ceil((double) rangeEnd / Constants.Api.NUM_OF_ARTICLES_ON_RECENT_PAGE) : pageCount)
                 .doOnNext(pageCount -> mMaxProgress = pageCount)
+                //FI XME for test do not load all arts lists
+//                .doOnNext(pageCount -> mMaxProgress = 7)
                 .doOnError(throwable -> showNotificationSimple(
                         getString(R.string.error_notification_title),
                         getString(R.string.error_notification_recent_list_download_content)
@@ -285,41 +286,48 @@ public class DownloadAllService extends Service {
                     dbProvider.close();
                     return articlesToDownload;
                 })
-                .flatMap(Observable::from)
-                //try to load article
-                //on error increase counters and resume query, emiting onComplete to article observable
-                .flatMap(article -> mApiClient.getArticle(article.url)
-                        .onErrorResumeNext(throwable -> {
-                            Timber.e(throwable, "error while load article: %s", article.url);
+                .flatMap(articles -> {
+                    DbProvider dbProvider = mDbProviderFactory.getDbProvider();
+                    for (int i = 0; i < articles.size(); i++) {
+                        Article articleToDownload = articles.get(i);
+                        try {
+                            Article articleDownloaded = mApiClient.getArticleFromApi(articleToDownload.url);
+                            if (articleDownloaded != null) {
+                                dbProvider.saveArticleSync(articleDownloaded, false);
+                                Timber.d("downloaded: %s", articleDownloaded.url);
+                                mCurProgress++;
+                                Timber.d("mCurProgress %s, mMaxProgress: %s", mCurProgress, mMaxProgress);
+                                showNotificationDownloadProgress(getString(R.string.download_objects_title),
+                                        mCurProgress, mMaxProgress, mNumOfErrors);
+                            } else {
+                                mNumOfErrors++;
+                                mCurProgress++;
+                                showNotificationDownloadProgress(
+                                        getString(R.string.download_objects_title),
+                                        mCurProgress, mMaxProgress, mNumOfErrors
+                                );
+                            }
+                        } catch (Exception | ScpParseException e) {
+                            Timber.e(e);
                             mNumOfErrors++;
                             mCurProgress++;
-                            showNotificationDownloadProgress(getString(R.string.download_recent_title),
+                            showNotificationDownloadProgress(
+                                    getString(R.string.download_objects_title),
                                     mCurProgress, mMaxProgress, mNumOfErrors
                             );
-                            return Observable.empty();
-                        })
-                )
-                .flatMap(article -> mDbProviderFactory.getDbProvider().saveArticleSync(article))
-                //TODO we can show notif here as we do it for articles lists
-                .flatMap(article -> {
-                    mCurProgress++;
-                    Timber.d("mCurProgress %s, mMaxProgress: %s", mCurProgress, mMaxProgress);
-                    if (mCurProgress == mMaxProgress) {
-                        showNotificationSimple(
-                                getString(R.string.download_complete_title),
-                                getString(R.string.download_complete_title_content,
-                                        mCurProgress - mNumOfErrors, mMaxProgress, mNumOfErrors)
-                        );
-                        return Observable.just(article).delay(5, TimeUnit.SECONDS);
-                    } else {
-                        return Observable.just(article);
+                        }
                     }
+                    dbProvider.close();
+                    return Observable.just(null);
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .subscribe(
-                        article -> showNotificationDownloadProgress(getString(R.string.download_objects_title),
-                                mCurProgress, mMaxProgress, mNumOfErrors),
+                        article -> showNotificationSimple(
+                                getString(R.string.download_complete_title),
+                                getString(R.string.download_complete_title_content,
+                                        mCurProgress - mNumOfErrors, mMaxProgress, mNumOfErrors)
+                        ),
                         e -> {
                             Timber.e(e, "error download objects");
                             stopDownloadAndRemoveNotif();
@@ -424,41 +432,6 @@ public class DownloadAllService extends Service {
                     dbProvider.close();
                     return Observable.just(articles);
                 })
-//                .flatMap(Observable::from)
-//                //use pair to sort by proper order after loading
-//                .flatMap(article -> Observable.just(new Pair<>(++mNaturalOrder, article)))
-//                //try to load article
-//                //on error increase counters and resume query, emiting onComplete to article observable
-//                .flatMap(article -> mApiClient.getArticle(article.second.url)
-//                        .flatMap(article1 -> Observable.just(new Pair<>(article.first, article1)))
-//                        .onErrorResumeNext(throwable -> {
-//                            Timber.e(throwable, "error while load article: %s", article.second.url);
-//                            mNumOfErrors++;
-//                            mCurProgress++;
-//                            showNotificationDownloadProgress(
-//                                    getString(R.string.download_objects_title),
-//                                    mCurProgress, mMaxProgress, mNumOfErrors
-//                            );
-//                            return Observable.empty();
-//                        })
-//                )
-//                .doOnNext(article -> {
-//                    Timber.d("downloaded: %s", article.second.url);
-//                    mCurProgress++;
-//                    Timber.d("mCurProgress %s, mMaxProgress: %s", mCurProgress, mMaxProgress);
-//                    showNotificationDownloadProgress(getString(R.string.download_objects_title),
-//                            mCurProgress, mMaxProgress, mNumOfErrors);
-//                })
-//                //restore natural oder
-//                .toList()
-//                .flatMap(pairs -> {
-//                    Collections.sort(pairs, (t, t1) -> t.first - t1.first);
-//                    return Observable.just(pairs);
-//                })
-//                .flatMap(Observable::from)
-//                .flatMap(integerArticlePair -> Observable.just(integerArticlePair.second))
-//                .toList()
-//                .flatMap(articles -> mDbProviderFactory.getDbProvider().saveMultipleArticlesSync(articles))
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .subscribe(
