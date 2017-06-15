@@ -368,6 +368,13 @@ public class DbProvider {
         return Observable.just(article);
     }
 
+    public void saveArticleSync(Article article, boolean closeRealm) {
+        mRealm.executeTransaction(realm -> saveArticleToRealm(article, realm));
+        if (closeRealm) {
+            mRealm.close();
+        }
+    }
+
     /**
      * @param articles obj to save
      * @return Observable that emits unmanaged saved article on successful insert or throws error

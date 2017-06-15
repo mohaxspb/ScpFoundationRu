@@ -147,8 +147,8 @@ public class SubscriptionsFragmentDialog
         refresh.setVisibility(View.GONE);
         progressCenter.setVisibility(View.VISIBLE);
 
-        InappHelper.getOwnedSubsObserveble(getActivity(), mInAppBillingService)
-                .flatMap(ownedItems -> InappHelper.getSubsListToBuyObserveble(getActivity(), mInAppBillingService)
+        InappHelper.getOwnedSubsObserveble(mInAppBillingService)
+                .flatMap(ownedItems -> InappHelper.getSubsListToBuyObserveble(mInAppBillingService)
                         .flatMap(toBuy -> Observable.just(new Pair<>(ownedItems, toBuy))))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
