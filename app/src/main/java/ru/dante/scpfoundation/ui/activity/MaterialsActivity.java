@@ -21,7 +21,7 @@ import ru.dante.scpfoundation.mvp.contract.MaterialsScreenMvp;
 import ru.dante.scpfoundation.ui.base.BaseDrawerActivity;
 import ru.dante.scpfoundation.ui.dialog.TextSizeDialogFragment;
 import ru.dante.scpfoundation.ui.fragment.ArticleFragment;
-import ru.dante.scpfoundation.ui.fragment.FragmentMaterialsAll;
+import ru.dante.scpfoundation.ui.fragment.MaterialsAllFragment;
 import ru.dante.scpfoundation.ui.fragment.MaterialsArchiveFragment;
 import ru.dante.scpfoundation.ui.fragment.MaterialsExperimentsFragment;
 import ru.dante.scpfoundation.ui.fragment.MaterialsIncidentsFragment;
@@ -80,8 +80,8 @@ public class MaterialsActivity
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.content, FragmentMaterialsAll.newInstance(), FragmentMaterialsAll.TAG)
-                    .addToBackStack(FragmentMaterialsAll.TAG)
+                    .add(R.id.content, MaterialsAllFragment.newInstance(), MaterialsAllFragment.TAG)
+                    .addToBackStack(MaterialsAllFragment.TAG)
                     .commit();
         }
     }
@@ -147,7 +147,7 @@ public class MaterialsActivity
                 link = Constants.Urls.OBJECTS_RU;
                 break;
             case R.id.files:
-                getSupportFragmentManager().popBackStackImmediate(FragmentMaterialsAll.TAG, 0);
+                getSupportFragmentManager().popBackStackImmediate(MaterialsAllFragment.TAG, 0);
                 return false;
             case R.id.stories:
                 link = Constants.Urls.STORIES;

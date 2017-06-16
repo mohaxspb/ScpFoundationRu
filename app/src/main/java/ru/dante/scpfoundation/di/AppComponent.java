@@ -23,8 +23,8 @@ import ru.dante.scpfoundation.ui.activity.MaterialsActivity;
 import ru.dante.scpfoundation.ui.activity.TagSearchActivity;
 import ru.dante.scpfoundation.ui.adapter.ArticleRecyclerAdapter;
 import ru.dante.scpfoundation.ui.adapter.ArticlesListRecyclerAdapter;
-import ru.dante.scpfoundation.ui.adapter.SubscriptionsRecyclerAdapter;
 import ru.dante.scpfoundation.ui.adapter.SettingsSpinnerAdapter;
+import ru.dante.scpfoundation.ui.adapter.SubscriptionsRecyclerAdapter;
 import ru.dante.scpfoundation.ui.dialog.FreeAdsDisablingDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.NewVersionDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
@@ -49,6 +49,12 @@ import ru.dante.scpfoundation.ui.fragment.RecentArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.SiteSearchArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.TagsSearchFragment;
 import ru.dante.scpfoundation.ui.fragment.TagsSearchResultsArticlesFragment;
+import ru.dante.scpfoundation.ui.holder.ArticleImageHolder;
+import ru.dante.scpfoundation.ui.holder.ArticleSpoilerHolder;
+import ru.dante.scpfoundation.ui.holder.ArticleTagsHolder;
+import ru.dante.scpfoundation.ui.holder.ArticleTextHolder;
+import ru.dante.scpfoundation.ui.holder.ArticleTitleHolder;
+import ru.dante.scpfoundation.ui.holder.HolderSimple;
 
 /**
  * Created by y.kuchanov on 21.12.16.
@@ -123,15 +129,27 @@ public interface AppComponent {
 
     void inject(FreeAdsDisablingDialogFragment dialogFragment);
 
-    void inject(SetttingsBottomSheetDialogFragment bottomSheetDialogFragment);
+    void inject(SetttingsBottomSheetDialogFragment dialogFragment);
 
-    void inject(ArticlesListRecyclerAdapter adapterNewArticles);
+    void inject(ArticlesListRecyclerAdapter adapter);
 
-    void inject(ArticleRecyclerAdapter adapterNewArticles);
+    void inject(ArticleRecyclerAdapter adapter);
 
-    void inject(SubscriptionsRecyclerAdapter adapterSubscriptions);
+    void inject(SubscriptionsRecyclerAdapter adapter);
 
     void inject(SettingsSpinnerAdapter adapter);
+
+    void inject(ArticleImageHolder holder);
+
+    void inject(ArticleTagsHolder holder);
+
+    void inject(ArticleTitleHolder holder);
+
+    void inject(ArticleTextHolder holder);
+
+    void inject(ArticleSpoilerHolder holder);
+
+    void inject(HolderSimple holder);
 
     void inject(DownloadAllService service);
 

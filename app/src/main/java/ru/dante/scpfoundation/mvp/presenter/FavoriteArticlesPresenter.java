@@ -33,6 +33,7 @@ public class FavoriteArticlesPresenter
 
     @Override
     protected Observable<List<Article>> getApiObservable(int offset) {
+        isLoading = false;
         return Observable.empty();
     }
 

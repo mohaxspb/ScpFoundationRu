@@ -207,4 +207,8 @@
         <key>gallery_banner_disabled</key>
         <value>true</value>
     </entry>
+    <entry>
+        <key>article_banner_disabled</key>
+        <value>true</value>
+    </entry>
 </defaultsMap>

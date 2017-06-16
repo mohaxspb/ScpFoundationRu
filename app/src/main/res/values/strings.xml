@@ -239,6 +239,16 @@
     <string name="download_all_with_limit">Будут скачаны последние %d статей из списка последних изменённых статей (список \"Новые статьи\")</string>
     <string name="limit_description">Лимит ограничивает максимальное количество статей, которые могут быть сохранены на устройстве для чтения в offline режиме. Сейчас для вас никакого ограничения нет! А если у вас приобретена подписка - то и не будет) Если подписки у вас нет, то однажды лимит будет ограничен %1$d статьями для неаторизованных агентов и %2$d + (кол-во очков/%3$d) для авторизованных.</string>
     <string name="limit_description_disabled_free_downloads">Лимит ограничивает максимальное количество статей, которые могут быть сохранены на устройстве для чтения в offline режиме. Минимальный лимит статей - %1$d. Лимит можно полностью убрать купив подписку или повышать его, авторизовавшись и зарабатывая очки. За каждые %2$d очков вы сможете хранить на одну статью больше!</string>
+    <string name="filter_none">Без фильтра</string>
+    <string name="filter_not_read">Непрочитанные</string>
+    <string name="filter_read">Прочитанные</string>
+    <string name="filter_rating">По рейтингу</string>
+    <string name="filter_title">По названию</string>
+    <string name="filter_neutral_or_not_added">Не назначен или нейтрализован</string>
+    <string name="filter_save">Безопасный</string>
+    <string name="filter_euclid">Евклид</string>
+    <string name="filter_keter">Кетер</string>
+    <string name="filter_thaumiel">Таумиэль</string>
 
     <plurals name="plurals_score">
         <item quantity="zero">%1$d очков</item>
