@@ -286,6 +286,7 @@ public class DownloadAllService extends Service {
                     dbProvider.close();
                     return articlesToDownload;
                 })
+                //download all articles and save them to DB
                 .flatMap(articles -> {
                     DbProvider dbProvider = mDbProviderFactory.getDbProvider();
                     for (int i = 0; i < articles.size(); i++) {
