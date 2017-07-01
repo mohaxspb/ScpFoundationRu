@@ -15,6 +15,7 @@ import ru.dante.scpfoundation.monetization.model.PlayMarketApplication;
 import ru.dante.scpfoundation.monetization.model.VkGroupToJoin;
 import ru.dante.scpfoundation.monetization.model.VkGroupsToJoinResponse;
 import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
+import ru.kuchanov.library.MyPreferenceManagerModel;
 import timber.log.Timber;
 
 /**
@@ -22,7 +23,7 @@ import timber.log.Timber;
  * <p>
  * for scp_ru
  */
-public class MyPreferenceManager {
+public class MyPreferenceManager implements MyPreferenceManagerModel {
 
     /**
      * check if user joined app vk group each 2 hours
@@ -255,6 +256,21 @@ public class MyPreferenceManager {
         return mPreferences.getBoolean(Keys.HAS_SUBSCRIPTION, false);
 ////       FIX ME test
 //        return true;
+    }
+
+    @Override
+    public boolean isDownloadAllEnabledForFree() {
+        return FirebaseRemoteConfig.getInstance().getBoolean(Constants.Firebase.RemoteConfigKeys.DOWNLOAD_ALL_ENABLED_FOR_FREE);
+    }
+
+    @Override
+    public int getScorePerArt() {
+        return (int) FirebaseRemoteConfig.getInstance().getLong(Constants.Firebase.RemoteConfigKeys.DOWNLOAD_SCORE_PER_ARTICLE);
+    }
+
+    @Override
+    public int getFreeOfflineLimit() {
+        return (int) FirebaseRemoteConfig.getInstance().getLong(Constants.Firebase.RemoteConfigKeys.DOWNLOAD_FREE_ARTICLES_LIMIT);
     }
 
     //auto sync

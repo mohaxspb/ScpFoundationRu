@@ -68,11 +68,12 @@
         <activity android:name=".ui.activity.LicenceActivity" />
 
         <!--service-->
-        <service android:name="ru.dante.scpfoundation.service.DownloadAllService"/>
+        <service android:name=".service.DownloadAllService"/>
+        <service android:name=".service.DownloadAllServiceTest"/>
 
         <!--receiver-->
         <receiver
-            android:name="ru.dante.scpfoundation.receivers.ReceiverTimer"
+            android:name=".receivers.ReceiverTimer"
             android:exported="false">
             <intent-filter>
                 <action android:name="ru.dante.scpfoundation.receivers.ReceiverTimer"/>
@@ -80,7 +81,7 @@
         </receiver>
 
         <receiver
-            android:name="ru.dante.scpfoundation.receivers.ReceiverBoot"
+            android:name=".receivers.ReceiverBoot"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>

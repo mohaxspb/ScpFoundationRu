@@ -24,6 +24,7 @@ import ru.dante.scpfoundation.db.model.ArticleTag;
 import ru.dante.scpfoundation.db.model.User;
 import ru.dante.scpfoundation.db.model.VkImage;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
+import ru.kuchanov.library.DbProviderModel;
 import rx.Observable;
 import timber.log.Timber;
 
@@ -32,7 +33,7 @@ import timber.log.Timber;
  * <p>
  * for TappAwards
  */
-public class DbProvider {
+public class DbProvider implements DbProviderModel<Article> {
 
     private Realm mRealm;
     private MyPreferenceManager mMyPreferenceManager;
@@ -45,6 +46,12 @@ public class DbProvider {
     public void close() {
         Timber.d("close");
         mRealm.close();
+    }
+
+    @Override
+    public int getScore() {
+        User user = getUserSync();
+        return user == null ? 0 : user.score;
     }
 
     public Observable<RealmResults<Article>> getArticlesSortedAsync(String field, Sort order) {
@@ -588,9 +595,6 @@ public class DbProvider {
                 .flatMap(users -> Observable.just(users.isEmpty() ? null : mRealm.copyFromRealm(users.first())));
     }
 
-    /**
-     * @return Observable, that emits unmanaged user
-     */
     public User getUserSync() {
         return mRealm.where(User.class).findFirst();
     }

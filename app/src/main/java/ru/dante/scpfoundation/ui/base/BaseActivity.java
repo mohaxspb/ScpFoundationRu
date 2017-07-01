@@ -78,6 +78,7 @@ import ru.dante.scpfoundation.monetization.util.MySkippableVideoCallbacks;
 import ru.dante.scpfoundation.mvp.base.BaseActivityMvp;
 import ru.dante.scpfoundation.mvp.base.MonetizationActions;
 import ru.dante.scpfoundation.mvp.contract.DataSyncActions;
+import ru.dante.scpfoundation.service.DownloadAllServiceTest;
 import ru.dante.scpfoundation.ui.adapter.SocialLoginAdapter;
 import ru.dante.scpfoundation.ui.dialog.NewVersionDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
@@ -85,6 +86,7 @@ import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
 import ru.dante.scpfoundation.ui.dialog.TextSizeDialogFragment;
 import ru.dante.scpfoundation.ui.holder.SocialLoginHolder;
 import ru.dante.scpfoundation.ui.util.DialogUtils;
+import ru.dante.scpfoundation.ui.util.DialogUtilsTest;
 import ru.dante.scpfoundation.util.SecureUtils;
 import ru.dante.scpfoundation.util.SystemUtils;
 import timber.log.Timber;
@@ -125,6 +127,9 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
     protected MyNotificationManager mMyNotificationManager;
     @Inject
     protected DialogUtils mDialogUtils;
+    //FIXME test
+    @Inject
+    protected DialogUtilsTest mDialogUtilsTest;
     //inapps and ads
     private IInAppBillingService mService;
     private List<Item> mOwnedMarketSubscriptions = new ArrayList<>();
@@ -674,7 +679,16 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
                 dialogFragment.show(getFragmentManager(), NewVersionDialogFragment.TAG);
                 return true;
             case R.id.menuItemDownloadAll:
-                mDialogUtils.showDownloadDialog(this);
+//                mDialogUtils.showDownloadDialog(this);
+                mDialogUtilsTest.showDownloadDialog(this, selectedItemPosition -> {
+                    DownloadAllServiceTest.startDownloadWithType(
+                            this,
+                            mDialogUtilsTest.getDownloadTypesEntries(this).get(0).resId,
+                            0,
+                            70,
+                            DownloadAllServiceTest.class
+                    );
+                });
                 return true;
             case R.id.faq:
                 mDialogUtils.showFaqDialog(this);

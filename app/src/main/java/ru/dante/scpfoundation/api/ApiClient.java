@@ -83,6 +83,7 @@ import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.monetization.model.PlayMarketApplication;
 import ru.dante.scpfoundation.monetization.model.VkGroupToJoin;
 import ru.dante.scpfoundation.util.DimensionUtils;
+import ru.kuchanov.library.ApiClientModel;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -93,7 +94,7 @@ import timber.log.Timber;
  * <p>
  * for scp_ru
  */
-public class ApiClient {
+public class ApiClient implements ApiClientModel<Article> {
 
     @SuppressWarnings("unused")
     private MyPreferenceManager mPreferencesManager;
@@ -489,7 +490,7 @@ public class ApiClient {
     }
 
     @Nullable
-    public Article getArticleFromApi(String url) throws Exception, ScpParseException {
+    public Article getArticleFromApi(String url) throws Exception, ru.kuchanov.library.ScpParseException {
         Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -511,7 +512,7 @@ public class ApiClient {
             Document doc = Jsoup.parse(responseBody);
             Element pageContent = doc.getElementById("page-content");
             if (pageContent == null) {
-                throw new ScpParseException(MyApplication.getAppInstance().getString(R.string.error_parse));
+                throw new ru.kuchanov.library.ScpParseException(MyApplication.getAppInstance().getString(R.string.error_parse));
             }
             Element p404 = pageContent.getElementById("404-message");
             if (p404 != null) {
@@ -795,7 +796,7 @@ public class ApiClient {
                 Article article = getArticleFromApi(url);
                 subscriber.onNext(article);
                 subscriber.onCompleted();
-            } catch (Exception | ScpParseException e) {
+            } catch (Exception | ru.kuchanov.library.ScpParseException e) {
                 subscriber.onError(e);
             }
         }))
