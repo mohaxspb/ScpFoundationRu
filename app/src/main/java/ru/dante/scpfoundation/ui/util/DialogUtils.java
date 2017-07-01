@@ -63,7 +63,6 @@ public class DialogUtils {
     private static final int TYPE_JOKES = 9;
     private static final int TYPE_ALL = 10;
 
-    //    private final Context mContext;
     private MyPreferenceManager mPreferenceManager;
     private DbProviderFactory mDbProviderFactory;
     private ApiClient mApiClient;

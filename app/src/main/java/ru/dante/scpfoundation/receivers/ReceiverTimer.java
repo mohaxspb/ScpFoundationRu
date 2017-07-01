@@ -132,6 +132,7 @@ public class ReceiverTimer extends BroadcastReceiver {
             //newQuont = "10";
             String[] events = new String[dataFromWeb.size()];
             // Sets a title for the Inbox in expanded layout
+            //TODO move to res as in ENG
             inboxStyle.setBigContentTitle("Новые статьи: " + dataFromWeb.size());
             // Moves events into the expanded layout
             for (int i = 0; i < events.length; i++) {

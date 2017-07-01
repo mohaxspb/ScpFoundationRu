@@ -42,7 +42,6 @@
     <string name="text_size_dialog_title">Настройки размера текста</string>
     <string name="close">Закрыть</string>
     <string name="delete">Удалить</string>
-    <string name="download_all">Скачать всё</string>
     <string name="search">Поиск</string>
 
     <!--drawer items -->
@@ -58,6 +57,7 @@
 
     <!--downloads-->
     <string name="downlad_art_list">Загрузка списка статей</string>
+    <string name="download_all">Скачать всё</string>
     <string name="download_all_title">Что скачать?</string>
     <string name="download">Скачать</string>
     <string name="stop_download">Остановить загрузку</string>
