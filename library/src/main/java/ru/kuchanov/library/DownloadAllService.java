@@ -169,7 +169,7 @@ public abstract class DownloadAllService<T extends ArticleModel> extends Service
 
     protected abstract Observable<List<T>> getRecentArticlesForPage(int page);
 
-    protected abstract DbProviderModel getDbProviderModel();
+    protected abstract DbProviderModel<T> getDbProviderModel();
 
     protected abstract T getArticleFromApi(String id)  throws Exception, ScpParseException;
 
