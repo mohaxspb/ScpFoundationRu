@@ -160,7 +160,8 @@ public class ApiClient implements ApiClientModel<Article> {
         }));
     }
 
-    public Observable<Integer> getRecentArticlesPageCount() {
+    @Override
+    public Observable<Integer> getRecentArticlesPageCountObservable() {
         return bindWithUtils(Observable.<Integer>unsafeCreate(subscriber -> {
             Request request = new Request.Builder()
                     .url(BuildConfig.BASE_API_URL + Constants.Api.MOST_RECENT_URL + 1)

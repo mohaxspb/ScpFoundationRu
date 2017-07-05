@@ -1,5 +1,11 @@
 package ru.kuchanov.library;
 
+import android.util.Pair;
+
+import java.util.List;
+
+import rx.Observable;
+
 /**
  * Created by mohax on 24.06.2017.
  * <p>
@@ -7,7 +13,7 @@ package ru.kuchanov.library;
  */
 public interface DbProviderModel<T extends ArticleModel> {
 
-    ArticleModel getUnmanagedArticleSync(String id);
+    T getUnmanagedArticleSync(String id);
 
 //    void saveArticleSync(ArticleModel articleModel, boolean closeDbConnection);
 
@@ -16,4 +22,6 @@ public interface DbProviderModel<T extends ArticleModel> {
     void close();
 
     int getScore();
+
+    Observable<Pair<Integer, Integer>> saveObjectsArticlesList(List<T> articles, String dbField);
 }

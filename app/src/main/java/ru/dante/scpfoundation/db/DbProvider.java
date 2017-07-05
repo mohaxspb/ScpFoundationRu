@@ -160,6 +160,7 @@ public class DbProvider implements DbProviderModel<Article> {
                 }));
     }
 
+    @Override
     public Observable<Pair<Integer, Integer>> saveObjectsArticlesList(List<Article> data, String inDbField) {
         return Observable.unsafeCreate(subscriber -> mRealm.executeTransactionAsync(
                 realm -> {

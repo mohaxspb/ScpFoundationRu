@@ -3,9 +3,6 @@ package ru.dante.scpfoundation.service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -16,10 +13,10 @@ import ru.dante.scpfoundation.api.ApiClient;
 import ru.dante.scpfoundation.db.DbProviderFactory;
 import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
+import ru.kuchanov.library.ApiClientModel;
 import ru.kuchanov.library.DbProviderModel;
 import ru.kuchanov.library.DownloadAllService;
 import ru.kuchanov.library.DownloadEntry;
-import rx.Observable;
 import timber.log.Timber;
 
 /**
@@ -57,6 +54,10 @@ public class DownloadAllServiceTest extends DownloadAllService<Article> {
         MyApplication.getAppComponent().inject(this);
     }
 
+    @Override
+    public ApiClientModel<Article> getApiClient() {
+        return mApiClient;
+    }
 
     @Override
     protected void download(DownloadEntry type) {
@@ -64,22 +65,10 @@ public class DownloadAllServiceTest extends DownloadAllService<Article> {
             case R.string.type_all:
                 downloadAll();
                 break;
-            case R.string.type_1:
-            case R.string.type_2:
-            case R.string.type_3:
-            case R.string.type_4:
-            case R.string.type_ru:
-                //TODO
-                break;
             default:
-                Timber.e("unexpected type: %s/%s", type, getString(type.resId));
+                downloadObjects(type);
                 break;
         }
-    }
-
-    @Override
-    protected Observable<Integer> getRecentArticlesPageCountObservable() {
-        return mApiClient.getRecentArticlesPageCount();
     }
 
     @Override
@@ -88,12 +77,7 @@ public class DownloadAllServiceTest extends DownloadAllService<Article> {
     }
 
     @Override
-    protected Observable<List<Article>> getRecentArticlesForPage(int page) {
-        return mApiClient.getRecentArticlesForPage(page);
-    }
-
-    @Override
-    protected DbProviderModel getDbProviderModel() {
+    protected DbProviderModel<Article> getDbProviderModel() {
         return mDbProviderFactory.getDbProvider();
     }
 

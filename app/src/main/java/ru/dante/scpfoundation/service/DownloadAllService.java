@@ -24,7 +24,6 @@ import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.api.ApiClient;
-import ru.dante.scpfoundation.api.error.ScpParseException;
 import ru.dante.scpfoundation.db.DbProvider;
 import ru.dante.scpfoundation.db.DbProviderFactory;
 import ru.dante.scpfoundation.db.model.Article;
@@ -200,7 +199,7 @@ public class DownloadAllService extends Service {
                 downloadObjects(Constants.Urls.OBJECTS_RU, Article.FIELD_IS_IN_OBJECTS_RU);
                 break;
             case TYPE_EXPERIMETS:
-                downloadObjects(Constants.Urls.PROTOCOLS, Article.FIELD_IS_IN_EXPERIMETS);
+                downloadObjects(Constants.Urls.EXPERIMENTS, Article.FIELD_IS_IN_EXPERIMETS);
                 break;
             case TYPE_OTHER:
                 downloadObjects(Constants.Urls.OTHERS, Article.FIELD_IS_IN_OTHER);
@@ -230,7 +229,7 @@ public class DownloadAllService extends Service {
         Timber.d("downloadAll");
         showNotificationDownloadList();
         //download list
-        Subscription subscription = mApiClient.getRecentArticlesPageCount()
+        Subscription subscription = mApiClient.getRecentArticlesPageCountObservable()
                 //if we have limit we must not load all lists of articles
                 .map(pageCount -> (rangeStart != RANGE_NONE && rangeEnd != RANGE_NONE)
                         ? (int) Math.ceil((double) rangeEnd / Constants.Api.NUM_OF_ARTICLES_ON_RECENT_PAGE) : pageCount)

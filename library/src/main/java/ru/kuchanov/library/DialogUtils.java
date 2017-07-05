@@ -229,6 +229,7 @@ public abstract class DialogUtils {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         numOfArtsAndLimit -> {
+                            Timber.d("numOfArtsAndLimit: %s/%s", numOfArtsAndLimit.first, numOfArtsAndLimit.second);
                             progress.dismiss();
                             Timber.d("mPreferenceManager.isHasSubscription(): %s",
                                     mPreferenceManager.isHasSubscription());
@@ -246,7 +247,6 @@ public abstract class DialogUtils {
                                             .content(context.getString(R.string.download_all_with_limit, numOfArtsAndLimit.second))
                                             .positiveText(R.string.download)
                                             .onPositive((dialog, which) ->
-//                                                    DownloadAllService.startDownloadWithType(context, type, 0, numOfArtsAndLimit.second)
                                                     DownloadAllService.startDownloadWithType(
                                                             context,
                                                             type,
@@ -260,7 +260,6 @@ public abstract class DialogUtils {
                                             .build()
                                             .show();
                                 } else {
-//                                    DownloadAllService.startDownloadWithType(context, type, DownloadAllService.RANGE_NONE, DownloadAllService.RANGE_NONE);
                                     DownloadAllService.startDownloadWithType(
                                             context,
                                             type,

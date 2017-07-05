@@ -10,17 +10,19 @@ import java.io.Serializable;
  * <p>
  * for ScpDownloads
  */
-public class DownloadEntry implements Serializable{
+public class DownloadEntry implements Serializable {
 
     @StringRes
     public int resId;
     public String name;
     public String url;
+    public String dbField;
 
-    public DownloadEntry(@StringRes int resId, @NonNull String name, @NonNull String url) {
+    public DownloadEntry(@StringRes int resId, @NonNull String name, @NonNull String url, String dbField) {
         this.resId = resId;
         this.name = name;
         this.url = url;
+        this.dbField = dbField;
     }
 
     @Override

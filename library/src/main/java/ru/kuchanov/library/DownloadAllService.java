@@ -6,10 +6,9 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.util.Pair;
 import android.text.TextUtils;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
 import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
@@ -132,21 +132,23 @@ public abstract class DownloadAllService<T extends ArticleModel> extends Service
 
     protected abstract void download(DownloadEntry type);
 
-    protected abstract Observable<Integer> getRecentArticlesPageCountObservable();
+//    protected abstract Observable<Integer> getRecentArticlesPageCountObservable();
+
+    public abstract ApiClientModel<T> getApiClient();
 
     protected abstract int getNumOfArticlesOnRecentPage();
 
-    protected abstract Observable<List<T>> getRecentArticlesForPage(int page);
+//    protected abstract Observable<List<T>> getRecentArticlesForPage(int page);
 
     protected abstract DbProviderModel<T> getDbProviderModel();
 
-    protected abstract T getArticleFromApi(String id)  throws Exception, ScpParseException;
+    protected abstract T getArticleFromApi(String id) throws Exception, ScpParseException;
 
     protected void downloadAll() {
         Timber.d("downloadAll");
         showNotificationDownloadList();
         //download list
-        Subscription subscription = getRecentArticlesPageCountObservable()
+        Subscription subscription = getApiClient().getRecentArticlesPageCountObservable()
                 //if we have limit we must not load all lists of articles
                 .map(pageCount -> (rangeStart != RANGE_NONE && rangeEnd != RANGE_NONE)
                         ? (int) Math.ceil((double) rangeEnd / getNumOfArticlesOnRecentPage()) : pageCount)
@@ -159,7 +161,7 @@ public abstract class DownloadAllService<T extends ArticleModel> extends Service
                 ))
                 .onExceptionResumeNext(Observable.<Integer>empty().delay(5, TimeUnit.SECONDS))
                 .flatMap(integer -> Observable.range(1, mMaxProgress))
-                .flatMap(integer -> getRecentArticlesForPage(integer)
+                .flatMap(integer -> getApiClient().getRecentArticlesForPage(integer)
                         .doOnNext(list -> {
                             mCurProgress = integer;
                             showNotificationDownloadProgress(getString(R.string.notification_recent_list_title),
@@ -197,11 +199,11 @@ public abstract class DownloadAllService<T extends ArticleModel> extends Service
                 })
                 //download all articles and save them to DB
                 .flatMap(articles -> {
-                    DbProviderModel dbProvider = getDbProviderModel();
+                    DbProviderModel<T> dbProvider = getDbProviderModel();
                     for (int i = 0; i < articles.size(); i++) {
                         ArticleModel articleToDownload = articles.get(i);
                         try {
-                            ArticleModel articleDownloaded = getArticleFromApi(articleToDownload.getUrl());
+                            T articleDownloaded = getArticleFromApi(articleToDownload.getUrl());
                             if (articleDownloaded != null) {
                                 dbProvider.saveArticleSync(articleDownloaded, false);
                                 Timber.d("downloaded: %s", articleDownloaded.getUrl());
@@ -253,44 +255,23 @@ public abstract class DownloadAllService<T extends ArticleModel> extends Service
         mCompositeSubscription.add(subscription);
     }
 
-    private void downloadObjects(DownloadEntry type, String dbField) {
+    protected void downloadObjects(DownloadEntry type) {
         showNotificationDownloadList();
         //download lists
-        Observable<List<ArticleModel>> articlesObservable;
-        switch (type) {
-            case Constants.Urls.ARCHIVE:
-                articlesObservable = mApiClient.getMaterialsArchiveArticles();
-                break;
-            case Constants.Urls.JOKES:
-                articlesObservable = mApiClient.getMaterialsJokesArticles();
-                break;
-            case Constants.Urls.OBJECTS_1:
-            case Constants.Urls.OBJECTS_2:
-            case Constants.Urls.OBJECTS_3:
-            case Constants.Urls.OBJECTS_RU:
-                articlesObservable = mApiClient.getObjectsArticles(link);
-                break;
-            default:
-                articlesObservable = mApiClient.getMaterialsArticles(link);
-                break;
-        }
+        Observable<List<T>> articlesObservable;
 
-       if (type.resId == R.string.type_archive) {
-            articlesObservable = mApiClient.getMaterialsArchiveArticles();
-            numOfArticlesObservable = articlesObservable.map(List::size);
+        if (type.resId == R.string.type_archive) {
+            articlesObservable = getApiClient().getMaterialsArchiveArticles();
         } else if (type.resId == R.string.type_jokes) {
-            articlesObservable = mApiClient.getMaterialsJokesArticles();
-            numOfArticlesObservable = articlesObservable.map(List::size);
+            articlesObservable = getApiClient().getMaterialsJokesArticles();
         } else if (type.resId == R.string.type_1
                 || type.resId == R.string.type_2
                 || type.resId == R.string.type_3
                 || type.resId == R.string.type_4
                 || type.resId == R.string.type_ru) {
-            articlesObservable = mApiClient.getObjectsArticles(type.url);
-            numOfArticlesObservable = articlesObservable.map(List::size);
+            articlesObservable = getApiClient().getObjectsArticles(type.url);
         } else {
-            articlesObservable = mApiClient.getMaterialsArticles(type.url);
-            numOfArticlesObservable = articlesObservable.map(List::size);
+            articlesObservable = getApiClient().getMaterialsArticles(type.url);
         }
 
         //just for test use just n elements
@@ -300,25 +281,25 @@ public abstract class DownloadAllService<T extends ArticleModel> extends Service
                         getString(R.string.error_notification_title),
                         getString(R.string.error_notification_objects_list_download_content)
                 ))
-                .onExceptionResumeNext(Observable.<List<Article>>empty().delay(5, TimeUnit.SECONDS))
+                .onExceptionResumeNext(Observable.<List<T>>empty().delay(5, TimeUnit.SECONDS))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .flatMap(articles -> mDbProviderFactory.getDbProvider()
-                        .<Pair<Integer, Integer>>saveObjectsArticlesList(articles, dbField)
+                .flatMap(articles -> getDbProviderModel()
+                        .<Pair<Integer, Integer>>saveObjectsArticlesList(articles, type.dbField)
                         .flatMap(integerIntegerPair -> Observable.just(articles)))
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(Schedulers.io())
                 .map(limitArticles)
                 .map(articles -> {
-                    List<Article> articlesToDownload = new ArrayList<>();
-                    DbProvider dbProvider = mDbProviderFactory.getDbProvider();
-                    for (Article article : articles) {
-                        Article articleInDb = dbProvider.getUnmanagedArticleSync(article.url);
-                        if (articleInDb == null || articleInDb.text == null) {
+                    List<T> articlesToDownload = new ArrayList<>();
+                    DbProviderModel<T> dbProvider = getDbProviderModel();
+                    for (T article : articles) {
+                        T articleInDb = dbProvider.getUnmanagedArticleSync(article.getUrl());
+                        if (articleInDb == null || articleInDb.getText() == null) {
                             articlesToDownload.add(article);
                         } else {
                             mCurProgress++;
-                            Timber.d("already downloaded: %s", article.url);
+                            Timber.d("already downloaded: %s", article.getUrl());
                             Timber.d("mCurProgress %s, mMaxProgress: %s", mCurProgress, mMaxProgress);
 //                            showNotificationDownloadProgress(getString(R.string.download_objects_title), mCurProgress, mMaxProgress, mNumOfErrors);
                         }
@@ -327,14 +308,14 @@ public abstract class DownloadAllService<T extends ArticleModel> extends Service
                     return articlesToDownload;
                 })
                 .flatMap(articles -> {
-                    DbProvider dbProvider = mDbProviderFactory.getDbProvider();
+                    DbProviderModel<T> dbProvider = getDbProviderModel();
                     for (int i = 0; i < articles.size(); i++) {
-                        Article articleToDownload = articles.get(i);
+                        T articleToDownload = articles.get(i);
                         try {
-                            Article articleDownloaded = mApiClient.getArticleFromApi(articleToDownload.url);
+                            T articleDownloaded = getApiClient().getArticleFromApi(articleToDownload.getUrl());
                             if (articleDownloaded != null) {
                                 dbProvider.saveArticleSync(articleDownloaded, false);
-                                Timber.d("downloaded: %s", articleDownloaded.url);
+                                Timber.d("downloaded: %s", articleDownloaded.getUrl());
                                 mCurProgress++;
                                 Timber.d("mCurProgress %s, mMaxProgress: %s", mCurProgress, mMaxProgress);
                                 showNotificationDownloadProgress(getString(R.string.download_objects_title),
@@ -347,7 +328,7 @@ public abstract class DownloadAllService<T extends ArticleModel> extends Service
                                         mCurProgress, mMaxProgress, mNumOfErrors
                                 );
                             }
-                        } catch (Exception e) {
+                        } catch (Exception | ScpParseException e) {
                             Timber.e(e);
                             mNumOfErrors++;
                             mCurProgress++;

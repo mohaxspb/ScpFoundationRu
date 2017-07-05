@@ -157,7 +157,7 @@ public class DialogUtils {
                             link = Constants.Urls.OBJECTS_RU;
                             break;
                         case DownloadAllService.DownloadType.TYPE_EXPERIMETS:
-                            link = Constants.Urls.PROTOCOLS;
+                            link = Constants.Urls.EXPERIMENTS;
                             break;
                         case DownloadAllService.DownloadType.TYPE_OTHER:
                             link = Constants.Urls.OTHERS;
