@@ -121,7 +121,6 @@ public abstract class DownloadAllService<T extends ArticleModel> extends Service
     @Override
     public void onCreate() {
         Timber.d("onCreate");
-        Log.e(TAG, "onCreate");
         super.onCreate();
         instance = this;
     }

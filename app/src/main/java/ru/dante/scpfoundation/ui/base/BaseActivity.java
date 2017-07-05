@@ -78,7 +78,6 @@ import ru.dante.scpfoundation.monetization.util.MySkippableVideoCallbacks;
 import ru.dante.scpfoundation.mvp.base.BaseActivityMvp;
 import ru.dante.scpfoundation.mvp.base.MonetizationActions;
 import ru.dante.scpfoundation.mvp.contract.DataSyncActions;
-import ru.dante.scpfoundation.service.DownloadAllServiceTest;
 import ru.dante.scpfoundation.ui.adapter.SocialLoginAdapter;
 import ru.dante.scpfoundation.ui.dialog.NewVersionDialogFragment;
 import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
@@ -680,15 +679,7 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
                 return true;
             case R.id.menuItemDownloadAll:
 //                mDialogUtils.showDownloadDialog(this);
-                mDialogUtilsTest.showDownloadDialog(this, selectedItemPosition -> {
-                    DownloadAllServiceTest.startDownloadWithType(
-                            this,
-                            mDialogUtilsTest.getDownloadTypesEntries(this).get(0).resId,
-                            0,
-                            70,
-                            DownloadAllServiceTest.class
-                    );
-                });
+                mDialogUtilsTest.showDownloadDialog(this);
                 return true;
             case R.id.faq:
                 mDialogUtils.showFaqDialog(this);

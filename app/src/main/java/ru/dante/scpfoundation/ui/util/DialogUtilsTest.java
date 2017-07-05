@@ -39,20 +39,20 @@ public class DialogUtilsTest extends DialogUtils<DownloadAllServiceTest> {
     public List<DownloadEntry> getDownloadTypesEntries(Context context) {
         List<DownloadEntry> downloadEntries = new ArrayList<>();
 
-        downloadEntries.add(new DownloadEntry(R.string.type_1, context.getString(R.string.type_1)));
-        downloadEntries.add(new DownloadEntry(R.string.type_2, context.getString(R.string.type_2)));
-        downloadEntries.add(new DownloadEntry(R.string.type_3, context.getString(R.string.type_3)));
-        downloadEntries.add(new DownloadEntry(R.string.type_4, context.getString(R.string.type_4)));
-        downloadEntries.add(new DownloadEntry(R.string.type_ru, context.getString(R.string.type_ru)));
+        downloadEntries.add(new DownloadEntry(R.string.type_1, context.getString(R.string.type_1), Constants.Urls.OBJECTS_1));
+        downloadEntries.add(new DownloadEntry(R.string.type_2, context.getString(R.string.type_2), Constants.Urls.OBJECTS_2));
+        downloadEntries.add(new DownloadEntry(R.string.type_3, context.getString(R.string.type_3), Constants.Urls.OBJECTS_3));
+        downloadEntries.add(new DownloadEntry(R.string.type_4, context.getString(R.string.type_4), Constants.Urls.OBJECTS_4));
+        downloadEntries.add(new DownloadEntry(R.string.type_ru, context.getString(R.string.type_ru), Constants.Urls.OBJECTS_RU));
 
-        downloadEntries.add(new DownloadEntry(R.string.type_experiments, context.getString(R.string.type_experiments)));
-        downloadEntries.add(new DownloadEntry(R.string.type_incidents, context.getString(R.string.type_incidents)));
-        downloadEntries.add(new DownloadEntry(R.string.type_interviews, context.getString(R.string.type_interviews)));
-        downloadEntries.add(new DownloadEntry(R.string.type_jokes, context.getString(R.string.type_jokes)));
-        downloadEntries.add(new DownloadEntry(R.string.type_archive, context.getString(R.string.type_archive)));
-        downloadEntries.add(new DownloadEntry(R.string.type_other, context.getString(R.string.type_other)));
+        downloadEntries.add(new DownloadEntry(R.string.type_experiments, context.getString(R.string.type_experiments), Constants.Urls.PROTOCOLS));
+        downloadEntries.add(new DownloadEntry(R.string.type_incidents, context.getString(R.string.type_incidents), Constants.Urls.INCEDENTS));
+        downloadEntries.add(new DownloadEntry(R.string.type_interviews, context.getString(R.string.type_interviews), Constants.Urls.INTERVIEWS));
+        downloadEntries.add(new DownloadEntry(R.string.type_jokes, context.getString(R.string.type_jokes), Constants.Urls.JOKES));
+        downloadEntries.add(new DownloadEntry(R.string.type_archive, context.getString(R.string.type_archive), Constants.Urls.ARCHIVE));
+        downloadEntries.add(new DownloadEntry(R.string.type_other, context.getString(R.string.type_other), Constants.Urls.OTHERS));
 
-        downloadEntries.add(new DownloadEntry(R.string.type_all, context.getString(R.string.type_all)));
+        downloadEntries.add(new DownloadEntry(R.string.type_all, context.getString(R.string.type_all), Constants.Urls.NEW_ARTICLES));
         return downloadEntries;
     }
 

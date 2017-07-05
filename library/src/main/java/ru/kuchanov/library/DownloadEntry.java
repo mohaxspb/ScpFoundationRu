@@ -13,10 +13,12 @@ public class DownloadEntry {
     @StringRes
     public int resId;
     public String name;
+    public String url;
 
-    public DownloadEntry(int resId, @NonNull String name) {
+    public DownloadEntry(@StringRes int resId, @NonNull String name, @NonNull String url) {
         this.resId = resId;
         this.name = name;
+        this.url = url;
     }
 
     @Override

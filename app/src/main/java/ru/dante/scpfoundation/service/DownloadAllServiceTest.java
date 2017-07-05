@@ -64,7 +64,7 @@ public class DownloadAllServiceTest extends DownloadAllService<Article> {
                 downloadAll();
                 break;
             default:
-                Timber.e("unexpected type: %s", type);
+                Timber.e("unexpected type: %s/%s", type, getString(type));
                 break;
         }
     }
@@ -90,7 +90,7 @@ public class DownloadAllServiceTest extends DownloadAllService<Article> {
     }
 
     @Override
-    protected Article getArticleFromApi(String id)  throws Exception, ru.kuchanov.library.ScpParseException{
+    protected Article getArticleFromApi(String id) throws Exception, ru.kuchanov.library.ScpParseException {
         return mApiClient.getArticleFromApi(id);
     }
 }

@@ -2,7 +2,6 @@ package ru.kuchanov.library;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.util.Pair;
 import android.view.View;
@@ -13,7 +12,6 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.crystal.crystalrangeseekbar.widgets.CrystalRangeSeekbar;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import rx.Observable;
@@ -130,11 +128,7 @@ public abstract class DialogUtils<S extends DownloadAllService> {
 
     public abstract List<DownloadEntry> getDownloadTypesEntries(Context context);
 
-    public interface OnDownloadPositiveClickListener {
-        void onPositiveClick(int selectedItemPosition);
-    }
-
-    public void showDownloadDialog(Context context, OnDownloadPositiveClickListener onDownloadPositiveClickListener) {
+    public void showDownloadDialog(Context context) {
         List<DownloadEntry> entries = getDownloadTypesEntries(context);
 
         MaterialDialog materialDialog;
@@ -156,80 +150,36 @@ public abstract class DialogUtils<S extends DownloadAllService> {
                 .onPositive((dialog, which) -> {
                     Timber.d("onPositive clicked");
                     Timber.d("dialog.getSelectedIndex(): %s", dialog.getSelectedIndex());
-                    onDownloadPositiveClickListener.onPositiveClick(dialog.getSelectedIndex());
-//
-//                    DownloadType type = entries.get(dialog.getSelectedIndex()).getType();
-//
-//                    logDownloadAttempt(type);
-//
-//                    String link;
-//                    switch (entries.get(dialog.getSelectedIndex()).getType()) {
-//                        case TYPE_1:
-//                            link = Constants.Urls.OBJECTS_1;
-//                            break;
-//                        case TYPE_2:
-//                            link = Constants.Urls.OBJECTS_2;
-//                            break;
-//                        case TYPE_3:
-//                            link = Constants.Urls.OBJECTS_3;
-//                            break;
-//                        case TYPE_RU:
-//                            link = Constants.Urls.OBJECTS_RU;
-//                            break;
-//                        case TYPE_EXPERIMENTS:
-//                            link = Constants.Urls.PROTOCOLS;
-//                            break;
-//                        case TYPE_OTHER:
-//                            link = Constants.Urls.OTHERS;
-//                            break;
-//                        case TYPE_INCIDENTS:
-//                            link = Constants.Urls.INCEDENTS;
-//                            break;
-//                        case TYPE_INTERVIEWS:
-//                            link = Constants.Urls.INTERVIEWS;
-//                            break;
-//                        case TYPE_ARCHIVE:
-//                            link = Constants.Urls.ARCHIVE;
-//                            break;
-//                        case TYPE_JOKES:
-//                            link = Constants.Urls.JOKES;
-//                            break;
-//                        case TYPE_ALL:
-//                            link = TYPE_ALL.toString();
-//                            break;
-//                        default:
-//                            throw new IllegalArgumentException("unexpected type");
-//                    }
-//
-//                    Observable<Integer> numOfArticlesObservable;
-//                    Observable<List<ArticleModel>> articlesObservable;
-//                    switch (link) {
-//                        case DownloadAllService.DownloadType.TYPE_ALL:
-//                            //simply start download all with popup for limit users,
-//                            //in which tell, that we can't now how many arts he can load
-//                            numOfArticlesObservable = Observable.just(Integer.MIN_VALUE);
-//                            break;
-//                        case Constants.Urls.ARCHIVE:
-//                            articlesObservable = mApiClient.getMaterialsArchiveArticles();
-//                            numOfArticlesObservable = articlesObservable.map(List::size);
-//                            break;
-//                        case Constants.Urls.JOKES:
-//                            articlesObservable = mApiClient.getMaterialsJokesArticles();
-//                            numOfArticlesObservable = articlesObservable.map(List::size);
-//                            break;
-//                        case Constants.Urls.OBJECTS_1:
-//                        case Constants.Urls.OBJECTS_2:
-//                        case Constants.Urls.OBJECTS_3:
-//                        case Constants.Urls.OBJECTS_RU:
-//                            articlesObservable = mApiClient.getObjectsArticles(link);
-//                            numOfArticlesObservable = articlesObservable.map(List::size);
-//                            break;
-//                        default:
-//                            articlesObservable = mApiClient.getMaterialsArticles(link);
-//                            numOfArticlesObservable = articlesObservable.map(List::size);
-//                            break;
-//                    }
-//                    loadArticlesAndCountThem(context, numOfArticlesObservable, type);
+//                    onDownloadPositiveClickListener.onPositiveClick(dialog.getSelectedIndex());
+
+                    DownloadEntry type = entries.get(dialog.getSelectedIndex());
+
+                    logDownloadAttempt(type);
+
+                    Observable<Integer> numOfArticlesObservable;
+                    Observable<List<ArticleModel>> articlesObservable;
+                    if (type.resId == R.string.type_all) {
+                        //simply start download all with popup for limit users,
+                        //in which tell, that we can't now how many arts he can load
+                        numOfArticlesObservable = Observable.just(Integer.MIN_VALUE);
+                    } else if (type.resId == R.string.type_archive) {
+                        articlesObservable = mApiClient.getMaterialsArchiveArticles();
+                        numOfArticlesObservable = articlesObservable.map(List::size);
+                    } else if (type.resId == R.string.type_jokes) {
+                        articlesObservable = mApiClient.getMaterialsJokesArticles();
+                        numOfArticlesObservable = articlesObservable.map(List::size);
+                    } else if (type.resId == R.string.type_1
+                            || type.resId == R.string.type_2
+                            || type.resId == R.string.type_3
+                            || type.resId == R.string.type_4
+                            || type.resId == R.string.type_ru) {
+                        articlesObservable = mApiClient.getObjectsArticles(type.url);
+                        numOfArticlesObservable = articlesObservable.map(List::size);
+                    } else {
+                        articlesObservable = mApiClient.getMaterialsArticles(type.url);
+                        numOfArticlesObservable = articlesObservable.map(List::size);
+                    }
+                    loadArticlesAndCountThem(context, numOfArticlesObservable, type);
                     dialog.dismiss();
                 })
                 .neutralText(R.string.stop_download)
@@ -288,25 +238,41 @@ public abstract class DialogUtils<S extends DownloadAllService> {
                             boolean ignoreLimit = mPreferenceManager.isHasSubscription()
                                     || mPreferenceManager.isDownloadAllEnabledForFree();
 
-//                            if (type.equals(DownloadAllService.DownloadType.TYPE_ALL)) {
-//                                if (!ignoreLimit) {
-//                                    //simply start download all with popup for limit users,
-//                                    //in which tell, that we can't now how many arts he can load
-//                                    new MaterialDialog.Builder(context)
-//                                            .title(R.string.download_all)
-//                                            .content(context.getString(R.string.download_all_with_limit, numOfArtsAndLimit.second))
-//                                            .positiveText(R.string.download)
-//                                            .onPositive((dialog, which) ->
-//                                                    DownloadAllService.startDownloadWithType(context, type, 0, numOfArtsAndLimit.second))
-//                                            .negativeText(android.R.string.cancel)
-//                                            .build()
-//                                            .show();
-//                                } else {
+                            if (type.resId == R.string.type_all) {
+                                if (!ignoreLimit) {
+                                    //simply start download all with popup for limit users,
+                                    //in which tell, that we can't now how many arts he can load
+                                    new MaterialDialog.Builder(context)
+                                            .title(R.string.download_all)
+                                            .content(context.getString(R.string.download_all_with_limit, numOfArtsAndLimit.second))
+                                            .positiveText(R.string.download)
+                                            .onPositive((dialog, which) ->
+//                                                    DownloadAllService.startDownloadWithType(context, type, 0, numOfArtsAndLimit.second)
+                                                    DownloadAllService.startDownloadWithType(
+                                                            context,
+                                                            type.resId,
+                                                            0,
+                                                            numOfArtsAndLimit.second,
+                                                            clazz
+                                                    )
+                                            )
+                                            //TODO add increase/remove limit button
+                                            .negativeText(android.R.string.cancel)
+                                            .build()
+                                            .show();
+                                } else {
 //                                    DownloadAllService.startDownloadWithType(context, type, DownloadAllService.RANGE_NONE, DownloadAllService.RANGE_NONE);
-//                                }
-//                            } else {
-//                                showRangeDialog(context, type, numOfArtsAndLimit.first, numOfArtsAndLimit.second, ignoreLimit);
-//                            }
+                                    DownloadAllService.startDownloadWithType(
+                                            context,
+                                            type.resId,
+                                            DownloadAllService.RANGE_NONE,
+                                            DownloadAllService.RANGE_NONE,
+                                            clazz
+                                    );
+                                }
+                            } else {
+                                showRangeDialog(context, type, numOfArtsAndLimit.first, numOfArtsAndLimit.second, ignoreLimit);
+                            }
                         },
                         e -> {
                             Timber.e(e);
