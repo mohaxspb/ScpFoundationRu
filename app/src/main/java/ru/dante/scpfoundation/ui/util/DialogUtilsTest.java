@@ -24,7 +24,7 @@ import timber.log.Timber;
  * <p>
  * for ScpFoundationRu
  */
-public class DialogUtilsTest extends DialogUtils<DownloadAllServiceTest> {
+public class DialogUtilsTest extends DialogUtils {
 
     public DialogUtilsTest(
             MyPreferenceManagerModel preferenceManager,

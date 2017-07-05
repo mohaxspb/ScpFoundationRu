@@ -18,6 +18,7 @@ import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.kuchanov.library.DbProviderModel;
 import ru.kuchanov.library.DownloadAllService;
+import ru.kuchanov.library.DownloadEntry;
 import rx.Observable;
 import timber.log.Timber;
 
@@ -58,13 +59,20 @@ public class DownloadAllServiceTest extends DownloadAllService<Article> {
 
 
     @Override
-    protected void download(@StringRes int type) {
-        switch (type) {
+    protected void download(DownloadEntry type) {
+        switch (type.resId) {
             case R.string.type_all:
                 downloadAll();
                 break;
+            case R.string.type_1:
+            case R.string.type_2:
+            case R.string.type_3:
+            case R.string.type_4:
+            case R.string.type_ru:
+                //TODO
+                break;
             default:
-                Timber.e("unexpected type: %s/%s", type, getString(type));
+                Timber.e("unexpected type: %s/%s", type, getString(type.resId));
                 break;
         }
     }

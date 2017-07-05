@@ -24,7 +24,7 @@ import timber.log.Timber;
  * <p>
  * for ScpFoundationRu
  */
-public abstract class DialogUtils<S extends DownloadAllService> {
+public abstract class DialogUtils {
 
     //download all consts
     //TODO need to refactor it and use one enum here and in service
@@ -150,7 +150,6 @@ public abstract class DialogUtils<S extends DownloadAllService> {
                 .onPositive((dialog, which) -> {
                     Timber.d("onPositive clicked");
                     Timber.d("dialog.getSelectedIndex(): %s", dialog.getSelectedIndex());
-//                    onDownloadPositiveClickListener.onPositiveClick(dialog.getSelectedIndex());
 
                     DownloadEntry type = entries.get(dialog.getSelectedIndex());
 
@@ -250,7 +249,7 @@ public abstract class DialogUtils<S extends DownloadAllService> {
 //                                                    DownloadAllService.startDownloadWithType(context, type, 0, numOfArtsAndLimit.second)
                                                     DownloadAllService.startDownloadWithType(
                                                             context,
-                                                            type.resId,
+                                                            type,
                                                             0,
                                                             numOfArtsAndLimit.second,
                                                             clazz
@@ -264,7 +263,7 @@ public abstract class DialogUtils<S extends DownloadAllService> {
 //                                    DownloadAllService.startDownloadWithType(context, type, DownloadAllService.RANGE_NONE, DownloadAllService.RANGE_NONE);
                                     DownloadAllService.startDownloadWithType(
                                             context,
-                                            type.resId,
+                                            type,
                                             DownloadAllService.RANGE_NONE,
                                             DownloadAllService.RANGE_NONE,
                                             clazz
@@ -351,7 +350,7 @@ public abstract class DialogUtils<S extends DownloadAllService> {
             max.setText(String.valueOf(maxValue));
 
             dialog.getActionButton(DialogAction.POSITIVE).setOnClickListener(v -> {
-                DownloadAllService.startDownloadWithType(context, type.resId, minValue.intValue(), maxValue.intValue(), clazz);
+                DownloadAllService.startDownloadWithType(context, type, minValue.intValue(), maxValue.intValue(), clazz);
                 dialog.dismiss();
             });
         });
