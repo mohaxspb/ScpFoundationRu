@@ -1,10 +1,15 @@
 package ru.dante.scpfoundation.ui.util;
 
 import android.content.Context;
+import android.os.Bundle;
+
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import ru.dante.scpfoundation.Constants;
+import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.service.DownloadAllServiceTest;
 import ru.kuchanov.library.ApiClientModel;
@@ -33,7 +38,6 @@ public class DialogUtilsTest extends DialogUtils<DownloadAllServiceTest> {
     @Override
     public List<DownloadEntry> getDownloadTypesEntries(Context context) {
         List<DownloadEntry> downloadEntries = new ArrayList<>();
-        downloadEntries.add(new DownloadEntry(R.string.type_all, context.getString(R.string.type_all)));
 
         downloadEntries.add(new DownloadEntry(R.string.type_1, context.getString(R.string.type_1)));
         downloadEntries.add(new DownloadEntry(R.string.type_2, context.getString(R.string.type_2)));
@@ -48,6 +52,7 @@ public class DialogUtilsTest extends DialogUtils<DownloadAllServiceTest> {
         downloadEntries.add(new DownloadEntry(R.string.type_archive, context.getString(R.string.type_archive)));
         downloadEntries.add(new DownloadEntry(R.string.type_other, context.getString(R.string.type_other)));
 
+        downloadEntries.add(new DownloadEntry(R.string.type_all, context.getString(R.string.type_all)));
         return downloadEntries;
     }
 
@@ -65,6 +70,9 @@ public class DialogUtilsTest extends DialogUtils<DownloadAllServiceTest> {
     @Override
     protected void logDownloadAttempt(DownloadEntry type) {
         Timber.d("logDownloadAttempt: %s", type);
-        //TODO
+
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.DOWNLOAD_DIALOG);
+        FirebaseAnalytics.getInstance(MyApplication.getAppInstance()).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
     }
 }

@@ -363,12 +363,12 @@ public class DialogUtils {
 
         increaseLimit.setVisibility(ignoreLimit ? View.INVISIBLE : View.VISIBLE);
         increaseLimit.setOnClickListener(v -> {
-            BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
-            subsDF.show(((AppCompatActivity) context).getSupportFragmentManager(), subsDF.getTag());
-
             Bundle bundle = new Bundle();
             bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.DOWNLOAD_DIALOG);
             FirebaseAnalytics.getInstance(context).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+
+            BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
+            subsDF.show(((AppCompatActivity) context).getSupportFragmentManager(), subsDF.getTag());
         });
 
         userLimit.setText(context.getString(R.string.user_limit, ignoreLimit

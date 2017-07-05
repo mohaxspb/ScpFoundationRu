@@ -253,8 +253,6 @@ public abstract class DialogUtils<S extends DownloadAllService> {
         materialDialog.show();
     }
 
-    protected abstract boolean isServiceRunning();
-
     private void loadArticlesAndCountThem(
             Context context,
             Observable<Integer> countObservable,
@@ -394,6 +392,8 @@ public abstract class DialogUtils<S extends DownloadAllService> {
 
         dialog.show();
     }
+
+    protected abstract boolean isServiceRunning();
 
     /**
      * show dialog with subscriptions

@@ -37,8 +37,8 @@
     <string name="type_experiments">Протоколы экспериментов</string>
     <string name="type_other">Отчёты об инцидентах</string>
     <string name="type_incidents">Интервью с очевидцами</string>
-    <string name="type_interviews">>Шуточные SCP</string>
-    <string name="type_archive">>Архивные SCP</string>
+    <string name="type_interviews">Шуточные SCP</string>
+    <string name="type_archive">Архивные SCP</string>
     <string name="type_jokes">Прочие материалы</string>
 
     <string name="type_all">Все</string>

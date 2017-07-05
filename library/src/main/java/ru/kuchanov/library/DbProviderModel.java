@@ -11,7 +11,7 @@ public interface DbProviderModel<T extends ArticleModel> {
 
 //    void saveArticleSync(ArticleModel articleModel, boolean closeDbConnection);
 
-   void saveArticleSync(T articleModel, boolean closeDbConnection);
+    void saveArticleSync(T articleModel, boolean closeDbConnection);
 
     void close();
 
