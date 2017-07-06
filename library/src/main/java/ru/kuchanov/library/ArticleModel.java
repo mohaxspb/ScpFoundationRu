@@ -10,6 +10,4 @@ public interface ArticleModel {
     String getUrl();
 
     String getText();
-
-
 }

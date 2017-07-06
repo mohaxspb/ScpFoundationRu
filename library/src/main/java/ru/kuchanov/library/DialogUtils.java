@@ -62,7 +62,6 @@ public abstract class DialogUtils<T extends ArticleModel> {
                 .autoDismiss(false)
                 .onNegative((dialog, which) -> dialog.dismiss())
                 .onPositive((dialog, which) -> {
-                    Timber.d("onPositive clicked");
                     Timber.d("dialog.getSelectedIndex(): %s", dialog.getSelectedIndex());
 
                     DownloadEntry type = entries.get(dialog.getSelectedIndex());

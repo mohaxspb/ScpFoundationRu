@@ -304,7 +304,7 @@ public abstract class DownloadAllService<T extends ArticleModel> extends Service
                             getString(R.string.error_notification_title),
                             getString(R.string.error_notification_download_failed, e.getMessage()));
                 })
-                .onErrorResumeNext(Observable.<List<T>>just(Collections.EMPTY_LIST).delay(DELAY_BEFORE_HIDE_NOTIFICATION, TimeUnit.SECONDS))
+                .onErrorResumeNext(Observable.<List<T>>just(Collections.emptyList()).delay(DELAY_BEFORE_HIDE_NOTIFICATION, TimeUnit.SECONDS))
                 .doOnNext(articles -> showNotificationSimple(
                         getString(R.string.download_complete_title),
                         getString(R.string.download_complete_title_content,

@@ -15,8 +15,6 @@ public interface DbProviderModel<T extends ArticleModel> {
 
     T getUnmanagedArticleSync(String id);
 
-//    void saveArticleSync(ArticleModel articleModel, boolean closeDbConnection);
-
     void saveArticleSync(T articleModel, boolean closeDbConnection);
 
     void close();
