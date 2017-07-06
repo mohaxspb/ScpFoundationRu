@@ -150,17 +150,20 @@ public abstract class DownloadAllService<T extends ArticleModel> extends Service
         showNotificationDownloadList();
         //download list
         Subscription subscription = getApiClient().getRecentArticlesPageCountObservable()
+                .doOnError(e -> {
+                    Timber.e(e);
+                    showNotificationSimple(
+                            getString(R.string.error_notification_title),
+                            getString(R.string.error_notification_recent_list_download_content)
+                    );
+                })
+                .onExceptionResumeNext(Observable.<Integer>empty().delay(DELAY_BEFORE_HIDE_NOTIFICATION, TimeUnit.SECONDS))
                 //if we have limit we must not load all lists of articles
                 .map(pageCount -> (rangeStart != RANGE_NONE && rangeEnd != RANGE_NONE)
                         ? (int) Math.ceil((double) rangeEnd / getNumOfArticlesOnRecentPage()) : pageCount)
                 .doOnNext(pageCount -> mMaxProgress = pageCount)
-                //FI XME for test do not load all arts lists
-//                .doOnNext(pageCount -> mMaxProgress = 7)
-                .doOnError(throwable -> showNotificationSimple(
-                        getString(R.string.error_notification_title),
-                        getString(R.string.error_notification_recent_list_download_content)
-                ))
-                .onExceptionResumeNext(Observable.<Integer>empty().delay(DELAY_BEFORE_HIDE_NOTIFICATION, TimeUnit.SECONDS))
+                //FIXME for test do not load all arts lists
+                .doOnNext(pageCount -> mMaxProgress = 2)
                 .flatMap(integer -> Observable.range(1, mMaxProgress))
                 .flatMap(integer -> getApiClient().getRecentArticlesForPage(integer)
                         .doOnNext(list -> {
@@ -177,7 +180,7 @@ public abstract class DownloadAllService<T extends ArticleModel> extends Service
                         })
                         .onExceptionResumeNext(Observable.empty()))
                 .toList()
-//                //test value
+//                //FIX ME test value
 //                .flatMap(list -> Observable.just(list.subList(0, mMaxProgress)))
                 .flatMap(this::downloadAndSaveArticles)
                 .subscribe(
@@ -192,7 +195,7 @@ public abstract class DownloadAllService<T extends ArticleModel> extends Service
         mCompositeSubscription.add(subscription);
     }
 
-    private Observable<List<T>> downloadAndSaveArticles(List<T> articlesToDwonload){
+    private Observable<List<T>> downloadAndSaveArticles(List<T> articlesToDwonload) {
         return Observable.just(articlesToDwonload)
                 .map(limitArticles)
                 .map(articles -> {
