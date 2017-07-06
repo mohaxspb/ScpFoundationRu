@@ -42,4 +42,5 @@
     <string name="type_other">Прочие материалы</string>
 
     <string name="type_all">Все</string>
+    <string name="error_notification_download_failed">Произошла ошибка: %s</string>
 </resources>

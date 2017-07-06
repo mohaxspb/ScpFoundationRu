@@ -11,6 +11,7 @@ import android.support.v4.util.Pair;
 import android.text.TextUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -31,12 +32,15 @@ public abstract class DownloadAllService<T extends ArticleModel> extends Service
 
     private static final int NOTIFICATION_ID = 42;
 
+    private static final int DELAY_BEFORE_HIDE_NOTIFICATION = 5;
+
     public static final int RANGE_NONE = Integer.MIN_VALUE;
     private static final String EXTRA_DOWNLOAD_TYPE = "EXTRA_DOWNLOAD_TYPE";
-    private static final String EXTRA_RANGE_START = "EXTRA_RANGE_START";
 
+    private static final String EXTRA_RANGE_START = "EXTRA_RANGE_START";
     private static final String EXTRA_RANGE_END = "EXTRA_RANGE_END";
     private static final String ACTION_STOP = "ACTION_STOP";
+
     private static final String ACTION_START = "ACTION_START";
 
     protected static DownloadAllService instance = null;
@@ -97,6 +101,7 @@ public abstract class DownloadAllService<T extends ArticleModel> extends Service
     }
 
     private void stopDownloadAndRemoveNotif() {
+        Timber.d("stopDownloadAndRemoveNotif");
         mCurProgress = 0;
         mMaxProgress = 0;
         mNumOfErrors = 0;
@@ -132,13 +137,9 @@ public abstract class DownloadAllService<T extends ArticleModel> extends Service
 
     protected abstract void download(DownloadEntry type);
 
-//    protected abstract Observable<Integer> getRecentArticlesPageCountObservable();
-
     public abstract ApiClientModel<T> getApiClient();
 
     protected abstract int getNumOfArticlesOnRecentPage();
-
-//    protected abstract Observable<List<T>> getRecentArticlesForPage(int page);
 
     protected abstract DbProviderModel<T> getDbProviderModel();
 
@@ -159,7 +160,7 @@ public abstract class DownloadAllService<T extends ArticleModel> extends Service
                         getString(R.string.error_notification_title),
                         getString(R.string.error_notification_recent_list_download_content)
                 ))
-                .onExceptionResumeNext(Observable.<Integer>empty().delay(5, TimeUnit.SECONDS))
+                .onExceptionResumeNext(Observable.<Integer>empty().delay(DELAY_BEFORE_HIDE_NOTIFICATION, TimeUnit.SECONDS))
                 .flatMap(integer -> Observable.range(1, mMaxProgress))
                 .flatMap(integer -> getApiClient().getRecentArticlesForPage(integer)
                         .doOnNext(list -> {
@@ -190,8 +191,6 @@ public abstract class DownloadAllService<T extends ArticleModel> extends Service
                             mCurProgress++;
                             Timber.d("already downloaded: %s", article.getUrl());
                             Timber.d("mCurProgress %s, mMaxProgress: %s", mCurProgress, mMaxProgress);
-//                            showNotificationDownloadProgress(getString(R.string.download_recent_title),
-//                                    mCurProgress, mMaxProgress, mNumOfErrors);
                         }
                     }
                     dbProvider.close();
@@ -243,10 +242,6 @@ public abstract class DownloadAllService<T extends ArticleModel> extends Service
                         e -> {
                             Timber.e(e, "error download objects");
                             stopDownloadAndRemoveNotif();
-                        },
-                        () -> {
-                            Timber.d("onCompleted");
-                            stopDownloadAndRemoveNotif();
                         }
                 );
         if (mCompositeSubscription == null) {
@@ -256,6 +251,7 @@ public abstract class DownloadAllService<T extends ArticleModel> extends Service
     }
 
     protected void downloadObjects(DownloadEntry type) {
+        Timber.d("downloadObjects: %s", type);
         showNotificationDownloadList();
         //download lists
         Observable<List<T>> articlesObservable;
@@ -281,7 +277,7 @@ public abstract class DownloadAllService<T extends ArticleModel> extends Service
                         getString(R.string.error_notification_title),
                         getString(R.string.error_notification_objects_list_download_content)
                 ))
-                .onExceptionResumeNext(Observable.<List<T>>empty().delay(5, TimeUnit.SECONDS))
+                .onExceptionResumeNext(Observable.<List<T>>empty().delay(DELAY_BEFORE_HIDE_NOTIFICATION, TimeUnit.SECONDS))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(articles -> getDbProviderModel()
@@ -301,7 +297,6 @@ public abstract class DownloadAllService<T extends ArticleModel> extends Service
                             mCurProgress++;
                             Timber.d("already downloaded: %s", article.getUrl());
                             Timber.d("mCurProgress %s, mMaxProgress: %s", mCurProgress, mMaxProgress);
-//                            showNotificationDownloadProgress(getString(R.string.download_objects_title), mCurProgress, mMaxProgress, mNumOfErrors);
                         }
                     }
                     dbProvider.close();
@@ -343,18 +338,22 @@ public abstract class DownloadAllService<T extends ArticleModel> extends Service
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
+                .doOnError(e -> {
+                    Timber.e(e);
+                    showNotificationSimple(
+                            getString(R.string.error_notification_title),
+                            getString(R.string.error_notification_download_failed, e.getMessage()));
+                })
+                .onErrorResumeNext(Observable.<List<T>>just(Collections.EMPTY_LIST).delay(DELAY_BEFORE_HIDE_NOTIFICATION, TimeUnit.SECONDS))
+                .doOnNext(articles -> showNotificationSimple(
+                        getString(R.string.download_complete_title),
+                        getString(R.string.download_complete_title_content,
+                                mCurProgress - mNumOfErrors, mMaxProgress, mNumOfErrors)
+                ))
+                .flatMap(articles -> Observable.just(articles).delay(DELAY_BEFORE_HIDE_NOTIFICATION, TimeUnit.SECONDS))
                 .subscribe(
-                        article -> showNotificationSimple(
-                                getString(R.string.download_complete_title),
-                                getString(R.string.download_complete_title_content,
-                                        mCurProgress - mNumOfErrors, mMaxProgress, mNumOfErrors)
-                        ),
-                        e -> {
-                            Timber.e(e, "error download objects");
-                            stopDownloadAndRemoveNotif();
-                        },
-                        () -> {
-                            Timber.d("onCompleted");
+                        article -> {
+                            Timber.d("download complete");
                             stopDownloadAndRemoveNotif();
                         }
                 );

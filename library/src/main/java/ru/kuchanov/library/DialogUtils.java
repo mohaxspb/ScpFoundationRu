@@ -269,7 +269,17 @@ public abstract class DialogUtils {
                                     );
                                 }
                             } else {
-                                showRangeDialog(context, type, numOfArtsAndLimit.first, numOfArtsAndLimit.second, ignoreLimit);
+                                if (numOfArtsAndLimit.first == 1) {
+                                    DownloadAllService.startDownloadWithType(
+                                            context,
+                                            type,
+                                            0,
+                                            1,
+                                            clazz
+                                    );
+                                } else {
+                                    showRangeDialog(context, type, numOfArtsAndLimit.first, numOfArtsAndLimit.second, ignoreLimit);
+                                }
                             }
                         },
                         e -> {
@@ -288,6 +298,7 @@ public abstract class DialogUtils {
     ) {
         Timber.d("showRangeDialog type/numOfArticles/limit/ignoreLimit: %s/%s/%s/%s",
                 type, numOfArticles, limit, ignoreLimit);
+
         MaterialDialog dialog = new MaterialDialog.Builder(context)
                 .customView(R.layout.dialog_download_range, false)
                 .title(R.string.downlad_art_list_range)
@@ -349,7 +360,13 @@ public abstract class DialogUtils {
             max.setText(String.valueOf(maxValue));
 
             dialog.getActionButton(DialogAction.POSITIVE).setOnClickListener(v -> {
-                DownloadAllService.startDownloadWithType(context, type, minValue.intValue(), maxValue.intValue(), clazz);
+                DownloadAllService.startDownloadWithType(
+                        context,
+                        type,
+                        minValue.intValue(),
+                        maxValue.intValue(),
+                        clazz
+                );
                 dialog.dismiss();
             });
         });
