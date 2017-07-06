@@ -183,6 +183,8 @@ public abstract class DownloadAllService<T extends ArticleModel> extends Service
 //                //FIX ME test value
 //                .flatMap(list -> Observable.just(list.subList(0, mMaxProgress)))
                 .flatMap(this::downloadAndSaveArticles)
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
                 .subscribe(
                         article -> {
                             Timber.d("download complete");
