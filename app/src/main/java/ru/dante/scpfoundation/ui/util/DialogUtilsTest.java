@@ -2,6 +2,8 @@ package ru.dante.scpfoundation.ui.util;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.design.widget.BottomSheetDialogFragment;
+import android.support.v7.app.AppCompatActivity;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 
@@ -13,7 +15,9 @@ import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.service.DownloadAllServiceTest;
+import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
 import ru.kuchanov.library.ApiClientModel;
+import ru.kuchanov.library.ArticleModel;
 import ru.kuchanov.library.DbProviderFactoryModel;
 import ru.kuchanov.library.DialogUtils;
 import ru.kuchanov.library.DownloadEntry;
@@ -25,12 +29,12 @@ import timber.log.Timber;
  * <p>
  * for ScpFoundationRu
  */
-public class DialogUtilsTest extends DialogUtils {
+public class DialogUtilsTest extends DialogUtils<Article> {
 
     public DialogUtilsTest(
             MyPreferenceManagerModel preferenceManager,
             DbProviderFactoryModel dbProviderFactory,
-            ApiClientModel apiClient,
+            ApiClientModel<Article> apiClient,
             Class clazz
     ) {
         super(preferenceManager, dbProviderFactory, apiClient, clazz);
@@ -63,9 +67,14 @@ public class DialogUtilsTest extends DialogUtils {
     }
 
     @Override
-    protected void onIncreaseLimitClick() {
+    protected void onIncreaseLimitClick(Context context) {
         Timber.d("onIncreaseLimitClick");
-        //TODO
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.DOWNLOAD_DIALOG);
+        FirebaseAnalytics.getInstance(context).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+
+        BottomSheetDialogFragment subsDF = SubscriptionsFragmentDialog.newInstance();
+        subsDF.show(((AppCompatActivity) context).getSupportFragmentManager(), subsDF.getTag());
     }
 
     @Override

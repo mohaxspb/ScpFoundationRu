@@ -80,9 +80,4 @@ public class DownloadAllServiceTest extends DownloadAllService<Article> {
     protected DbProviderModel<Article> getDbProviderModel() {
         return mDbProviderFactory.getDbProvider();
     }
-
-    @Override
-    protected Article getArticleFromApi(String id) throws Exception, ru.kuchanov.library.ScpParseException {
-        return mApiClient.getArticleFromApi(id);
-    }
 }

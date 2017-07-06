@@ -24,109 +24,23 @@ import timber.log.Timber;
  * <p>
  * for ScpFoundationRu
  */
-public abstract class DialogUtils {
-
-    //download all consts
-    //TODO need to refactor it and use one enum here and in service
-//    private static final int TYPE_OBJ_1 = 0;
-//    private static final int TYPE_OBJ_2 = 1;
-//    private static final int TYPE_OBJ_3 = 2;
-//
-//    private static final int TYPE_OBJ_RU = 3;
-//
-//    private static final int TYPE_EXPERIMETS = 4;
-//    private static final int TYPE_OTHER = 5;
-//    private static final int TYPE_INCIDENTS = 6;
-//    private static final int TYPE_INTERVIEWS = 7;
-//    private static final int TYPE_ARCHIVE = 8;
-//
-//    private static final int TYPE_JOKES = 9;
-//    private static final int TYPE_ALL = 10;
-
-//    public enum DownloadType {
-//
-//        TYPE_1(R.string.type_1),
-//        TYPE_2(R.string.type_2),
-//        TYPE_3(R.string.type_3),
-//        TYPE_4(R.string.type_4),
-//        TYPE_RU(R.string.type_ru),
-//
-//        TYPE_EXPERIMENTS(R.string.type_experiments),
-//        TYPE_OTHER(R.string.type_other),
-//        TYPE_INCIDENTS(R.string.type_incidents),
-//        TYPE_INTERVIEWS(R.string.type_interviews),
-//        TYPE_ARCHIVE(R.string.type_archive),
-//        TYPE_JOKES(R.string.type_jokes),
-//
-//        TYPE_ALL(R.string.type_all);
-//
-//        @StringRes
-//        private final int mTitle;
-//
-//        DownloadType(@StringRes int title) {
-//            this.mTitle = title;
-//        }
-//
-//        @StringRes
-//        public int getTitle() {
-//            return mTitle;
-//        }
-//
-//        class Entry {
-//            private Context mContext;
-//
-//            Entry(Context context) {
-//                mContext = context;
-//            }
-//
-//            @Override
-//            public String toString() {
-//                return mContext.getString(mTitle);
-//            }
-//
-//            public DownloadType getType() {
-//                return DownloadType.this;
-//            }
-//        }
-//
-//        public List<Entry> getEntries(Context context) {
-//            List<Entry> entries = new ArrayList<>();
-//
-//            for (DownloadType downloadType : DownloadType.values()) {
-//                entries.add(new Entry(context));
-//            }
-//
-//            return entries;
-//        }
-//
-//        public List<Entry> getEntries(List<DownloadType> downloadTypes, Context context) {
-//            List<Entry> entries = new ArrayList<>();
-//
-//            for (DownloadType downloadType : downloadTypes) {
-//                entries.add(new Entry(context));
-//            }
-//
-//            return entries;
-//        }
-//    }
+public abstract class DialogUtils<T extends ArticleModel> {
 
     private MyPreferenceManagerModel mPreferenceManager;
     private DbProviderFactoryModel mDbProviderFactory;
-    private ApiClientModel mApiClient;
+    private ApiClientModel<T> mApiClient;
     private Class clazz;
 
     public DialogUtils(
             MyPreferenceManagerModel preferenceManager,
             DbProviderFactoryModel dbProviderFactory,
-            ApiClientModel apiClient,
+            ApiClientModel<T> apiClient,
             Class clazz) {
         mPreferenceManager = preferenceManager;
         mDbProviderFactory = dbProviderFactory;
         mApiClient = apiClient;
         this.clazz = clazz;
     }
-
-    public abstract List<DownloadEntry> getDownloadTypesEntries(Context context);
 
     public void showDownloadDialog(Context context) {
         List<DownloadEntry> entries = getDownloadTypesEntries(context);
@@ -156,7 +70,7 @@ public abstract class DialogUtils {
                     logDownloadAttempt(type);
 
                     Observable<Integer> numOfArticlesObservable;
-                    Observable<List<ArticleModel>> articlesObservable;
+                    Observable<List<T>> articlesObservable;
                     if (type.resId == R.string.type_all) {
                         //simply start download all with popup for limit users,
                         //in which tell, that we can't now how many arts he can load
@@ -350,7 +264,7 @@ public abstract class DialogUtils {
                 .show());
 
         increaseLimit.setVisibility(ignoreLimit ? View.INVISIBLE : View.VISIBLE);
-        increaseLimit.setOnClickListener(v -> onIncreaseLimitClick());
+        increaseLimit.setOnClickListener(v -> onIncreaseLimitClick(context));
 
         userLimit.setText(context.getString(R.string.user_limit, ignoreLimit
                 ? context.getString(R.string.no_limit) : String.valueOf(limit)));
@@ -374,12 +288,14 @@ public abstract class DialogUtils {
         dialog.show();
     }
 
+    public abstract List<DownloadEntry> getDownloadTypesEntries(Context context);
+
     protected abstract boolean isServiceRunning();
 
     /**
      * show dialog with subscriptions
      */
-    protected abstract void onIncreaseLimitClick();
+    protected abstract void onIncreaseLimitClick(Context context);
 
     protected abstract void logDownloadAttempt(DownloadEntry type);
 }
