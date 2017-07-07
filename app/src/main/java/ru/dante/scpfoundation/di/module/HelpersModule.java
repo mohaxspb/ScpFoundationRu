@@ -9,9 +9,9 @@ import dagger.Provides;
 import ru.dante.scpfoundation.api.ApiClient;
 import ru.dante.scpfoundation.db.DbProviderFactory;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
-import ru.dante.scpfoundation.service.DownloadAllServiceTest;
+import ru.dante.scpfoundation.service.DownloadAllServiceImpl;
 import ru.dante.scpfoundation.ui.util.DialogUtils;
-import ru.dante.scpfoundation.ui.util.DialogUtilsTest;
+import ru.dante.scpfoundation.ui.util.DownloadAllChooser;
 
 /**
  * Created by y.kuchanov on 22.12.16.
@@ -35,11 +35,11 @@ public class HelpersModule {
     @Provides
     @NonNull
     @Singleton
-    DialogUtilsTest providesDialogUtilsTest(
+    DownloadAllChooser providesDialogUtilsTest(
             @NonNull MyPreferenceManager preferenceManager,
             @NonNull DbProviderFactory dbProviderFactory,
             @NonNull ApiClient apiClient
     ) {
-        return new DialogUtilsTest(preferenceManager, dbProviderFactory, apiClient, DownloadAllServiceTest.class);
+        return new DownloadAllChooser(preferenceManager, dbProviderFactory, apiClient, DownloadAllServiceImpl.class);
     }
 }

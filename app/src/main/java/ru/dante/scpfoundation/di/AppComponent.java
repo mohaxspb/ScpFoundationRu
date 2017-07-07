@@ -14,8 +14,7 @@ import ru.dante.scpfoundation.monetization.util.MySkippableVideoCallbacks;
 import ru.dante.scpfoundation.receivers.AppInstallReceiver;
 import ru.dante.scpfoundation.receivers.ReceiverBoot;
 import ru.dante.scpfoundation.receivers.ReceiverTimer;
-import ru.dante.scpfoundation.service.DownloadAllService;
-import ru.dante.scpfoundation.service.DownloadAllServiceTest;
+import ru.dante.scpfoundation.service.DownloadAllServiceImpl;
 import ru.dante.scpfoundation.ui.activity.ArticleActivity;
 import ru.dante.scpfoundation.ui.activity.GalleryActivity;
 import ru.dante.scpfoundation.ui.activity.LicenceActivity;
@@ -152,7 +151,7 @@ public interface AppComponent {
 
     void inject(HolderSimple holder);
 
-    void inject(DownloadAllService service);
+    void inject(DownloadAllServiceImpl service);
 
     void inject(ReceiverTimer receiver);
 
@@ -163,6 +162,4 @@ public interface AppComponent {
     void inject(MyAdListener adListener);
 
     void inject(MySkippableVideoCallbacks callbacks);
-
-    void inject(DownloadAllServiceTest service);
 }

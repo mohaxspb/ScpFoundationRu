@@ -14,7 +14,7 @@ import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.db.model.Article;
-import ru.dante.scpfoundation.service.DownloadAllServiceTest;
+import ru.dante.scpfoundation.service.DownloadAllServiceImpl;
 import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
 import ru.kuchanov.scp.downloads.ApiClientModel;
 import ru.kuchanov.scp.downloads.DbProviderFactoryModel;
@@ -28,9 +28,9 @@ import timber.log.Timber;
  * <p>
  * for ScpFoundationRu
  */
-public class DialogUtilsTest extends DialogUtils<Article> {
+public class DownloadAllChooser extends DialogUtils<Article> {
 
-    public DialogUtilsTest(
+    public DownloadAllChooser(
             MyPreferenceManagerModel preferenceManager,
             DbProviderFactoryModel dbProviderFactory,
             ApiClientModel<Article> apiClient,
@@ -62,7 +62,7 @@ public class DialogUtilsTest extends DialogUtils<Article> {
 
     @Override
     protected boolean isServiceRunning() {
-        return DownloadAllServiceTest.isRunning();
+        return DownloadAllServiceImpl.isRunning();
     }
 
     @Override

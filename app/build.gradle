@@ -27,6 +27,8 @@ android {
     defaultConfig {
         applicationId "ru.dante.scpfoundation"
         minSdkVersion 17
+        //TODO check when we can update it
+        //noinspection OldTargetApi
         targetSdkVersion 25
         versionCode buildVersionCode()
         versionName version
@@ -259,8 +261,8 @@ dependencies {
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
     testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
 
-    //test
-    compile 'ru.kuchanov.scp:scp-downloads:1.0.1.1@aar'
+    //sub project modules
+    compile 'ru.kuchanov.scp:scp-downloads:1.0.1@aar'
 }
 
 apply plugin: 'com.google.gms.google-services'

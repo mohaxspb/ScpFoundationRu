@@ -68,8 +68,7 @@
         <activity android:name=".ui.activity.LicenceActivity" />
 
         <!--service-->
-        <service android:name=".service.DownloadAllService"/>
-        <service android:name=".service.DownloadAllServiceTest"/>
+        <service android:name=".service.DownloadAllServiceImpl"/>
 
         <!--receiver-->
         <receiver
