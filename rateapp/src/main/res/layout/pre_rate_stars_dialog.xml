@@ -8,7 +8,8 @@
     android:orientation="vertical"
     android:paddingLeft="@dimen/horizontal_padding"
     android:paddingRight="@dimen/defaultMargin"
-    tools:ignore="RtlHardcoded">
+    tools:ignore="RtlHardcoded"
+    >
 
     <TextView
         android:id="@+id/tvText"
@@ -18,7 +19,8 @@
         android:layout_marginTop="@dimen/defaultMargin"
         android:text="@string/rate_title"
         android:textColor="@color/pre_rate_text_color"
-        android:textSize="@dimen/text_size"/>
+        android:textSize="@dimen/text_size"
+        />
 
     <io.techery.properratingbar.ProperRatingBar
         android:id="@+id/rating_bar_0"

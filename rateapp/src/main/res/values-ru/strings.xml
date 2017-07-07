@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="yes">Да</string>
     <string name="not_now">Не сейчас</string>
@@ -11,11 +10,4 @@
     <string name="thanks_for_rate">Спасибо за Вашу оценку!</string>
     <string name="feedback_hint">Расскажите что бы Вы хотели улучшить</string>
     <string name="choose_email_provider">Выберите приложение для отправки email</string>
-
-    <dimen name="horizontal_padding">22dp</dimen>
-    <dimen name="dialog_padding">16dp</dimen>
-    <dimen name="dialog_double_padding">30dp</dimen>
-    <dimen name="edit_text_padding">7dp</dimen>
-    <dimen name="text_size">17sp</dimen>
-
 </resources>

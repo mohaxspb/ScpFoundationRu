@@ -1,4 +1,4 @@
-package ru.dante.scpfoundation.util.prerate;
+package ru.kuchanov.rateapp;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -18,7 +18,6 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import java.lang.ref.WeakReference;
 
 import io.techery.properratingbar.ProperRatingBar;
-import ru.dante.scpfoundation.R;
 
 public class PreRate {
 
@@ -152,7 +151,7 @@ public class PreRate {
         @SuppressLint("InflateParams")
         View customView = inflater.inflate(R.layout.pre_rate_feedback_dialog, null, false);
 
-        final EditText etEmailText = (EditText) customView.findViewById(R.id.etEmailText);
+        final EditText etEmailText = (EditText) customView.findViewById(R.id.etMessage);
 
         builder.customView(customView, false)
                 .positiveText(R.string.yes)

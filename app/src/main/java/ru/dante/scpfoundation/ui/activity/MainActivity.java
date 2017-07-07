@@ -30,7 +30,7 @@ import ru.dante.scpfoundation.ui.fragment.OfflineArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.RatedArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.RecentArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.SiteSearchArticlesFragment;
-import ru.dante.scpfoundation.util.prerate.PreRate;
+import ru.kuchanov.rateapp.PreRate;
 import timber.log.Timber;
 
 import static ru.dante.scpfoundation.ui.activity.LicenceActivity.EXTRA_SHOW_ABOUT;
@@ -349,7 +349,7 @@ public class MainActivity
     @Override
     public void onResume() {
         super.onResume();
-        PreRate.init(this, "neva.spb.rx@gmail.com", "Отзыв на SCP RU").showIfNeed();
+        PreRate.init(this, getString(R.string.feedback_email), getString(R.string.feedback_title)).showIfNeed();
     }
 
     @Override
