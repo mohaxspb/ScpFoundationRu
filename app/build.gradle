@@ -8,7 +8,7 @@ apply plugin: 'me.tatarka.retrolambda'
 apply from: '../versioning.gradle'
 
 ext.supportLibraryVersion = '25.3.1'
-ext.googleLibraryVersion = '11.0.1'
+ext.googleLibraryVersion = '11.0.2'
 
 android {
     compileSdkVersion 25
