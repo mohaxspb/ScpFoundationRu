@@ -24,7 +24,7 @@ import ru.dante.scpfoundation.db.model.ArticleTag;
 import ru.dante.scpfoundation.db.model.User;
 import ru.dante.scpfoundation.db.model.VkImage;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
-import ru.kuchanov.library.DbProviderModel;
+import ru.kuchanov.scp.downloads.DbProviderModel;
 import rx.Observable;
 import timber.log.Timber;
 

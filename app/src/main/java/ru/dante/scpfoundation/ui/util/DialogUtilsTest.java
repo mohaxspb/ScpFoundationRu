@@ -16,12 +16,11 @@ import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.service.DownloadAllServiceTest;
 import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
-import ru.kuchanov.library.ApiClientModel;
-import ru.kuchanov.library.ArticleModel;
-import ru.kuchanov.library.DbProviderFactoryModel;
-import ru.kuchanov.library.DialogUtils;
-import ru.kuchanov.library.DownloadEntry;
-import ru.kuchanov.library.MyPreferenceManagerModel;
+import ru.kuchanov.scp.downloads.ApiClientModel;
+import ru.kuchanov.scp.downloads.DbProviderFactoryModel;
+import ru.kuchanov.scp.downloads.DialogUtils;
+import ru.kuchanov.scp.downloads.DownloadEntry;
+import ru.kuchanov.scp.downloads.MyPreferenceManagerModel;
 import timber.log.Timber;
 
 /**

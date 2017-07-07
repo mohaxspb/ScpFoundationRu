@@ -13,10 +13,10 @@ import ru.dante.scpfoundation.api.ApiClient;
 import ru.dante.scpfoundation.db.DbProviderFactory;
 import ru.dante.scpfoundation.db.model.Article;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
-import ru.kuchanov.library.ApiClientModel;
-import ru.kuchanov.library.DbProviderModel;
-import ru.kuchanov.library.DownloadAllService;
-import ru.kuchanov.library.DownloadEntry;
+import ru.kuchanov.scp.downloads.ApiClientModel;
+import ru.kuchanov.scp.downloads.DbProviderModel;
+import ru.kuchanov.scp.downloads.DownloadAllService;
+import ru.kuchanov.scp.downloads.DownloadEntry;
 import timber.log.Timber;
 
 /**

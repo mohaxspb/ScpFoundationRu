@@ -260,7 +260,7 @@ dependencies {
     testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
 
     //test
-    compile project(':library')
+    compile 'ru.kuchanov.scp:scp-downloads:1.0.1.1@aar'
 }
 
 apply plugin: 'com.google.gms.google-services'

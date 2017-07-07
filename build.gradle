@@ -1,6 +1,13 @@
 buildscript {
     repositories {
+        jcenter()
         jcenter({url "http://jcenter.bintray.com/"})
+
+        //use jcenter when it will be ready
+        maven {
+            url 'https://dl.bintray.com/mohaxspb/scp-downloads/'
+        }
+
         maven { url "https://jitpack.io" }
         mavenCentral()
 
@@ -19,6 +26,13 @@ buildscript {
 
 allprojects {
     repositories {
+        jcenter()
+
+        //use jcenter when it will be ready
+        maven {
+            url 'https://dl.bintray.com/mohaxspb/scp-downloads'
+        }
+
         jcenter({url "http://jcenter.bintray.com/"})
         maven { url "https://jitpack.io" }
         mavenCentral()

@@ -1,1 +1,1 @@
-include ':app', ':cheetah-mobile-3.4.7', ':library'
+include ':app', ':cheetah-mobile-3.4.7'

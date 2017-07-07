@@ -3,7 +3,7 @@ package ru.dante.scpfoundation.db;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
-import ru.kuchanov.library.DbProviderFactoryModel;
+import ru.kuchanov.scp.downloads.DbProviderFactoryModel;
 
 /**
  * Created by y.kuchanov on 21.12.16.

@@ -301,7 +301,7 @@ public class DownloadAllService extends Service {
                                         mCurProgress, mMaxProgress, mNumOfErrors
                                 );
                             }
-                        } catch (Exception | ru.kuchanov.library.ScpParseException e) {
+                        } catch (Exception | ru.kuchanov.scp.downloads.ScpParseException e) {
                             Timber.e(e);
                             mNumOfErrors++;
                             mCurProgress++;
@@ -413,7 +413,7 @@ public class DownloadAllService extends Service {
                                         mCurProgress, mMaxProgress, mNumOfErrors
                                 );
                             }
-                        } catch (Exception | ru.kuchanov.library.ScpParseException e) {
+                        } catch (Exception | ru.kuchanov.scp.downloads.ScpParseException e) {
                             Timber.e(e);
                             mNumOfErrors++;
                             mCurProgress++;

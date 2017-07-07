@@ -17,7 +17,7 @@ import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import ru.dante.scpfoundation.db.util.RealmArticleTagListParcelConverter;
 import ru.dante.scpfoundation.db.util.RealmStringListParcelConverter;
-import ru.kuchanov.library.ArticleModel;
+import ru.kuchanov.scp.downloads.ArticleModel;
 
 /**
  * Created by mohax on 03.01.2017.

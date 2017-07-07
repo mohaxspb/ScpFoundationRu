@@ -15,7 +15,7 @@ import ru.dante.scpfoundation.monetization.model.PlayMarketApplication;
 import ru.dante.scpfoundation.monetization.model.VkGroupToJoin;
 import ru.dante.scpfoundation.monetization.model.VkGroupsToJoinResponse;
 import ru.dante.scpfoundation.ui.dialog.SetttingsBottomSheetDialogFragment;
-import ru.kuchanov.library.MyPreferenceManagerModel;
+import ru.kuchanov.scp.downloads.MyPreferenceManagerModel;
 import timber.log.Timber;
 
 /**
