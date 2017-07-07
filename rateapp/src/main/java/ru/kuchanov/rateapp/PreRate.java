@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.lang.ref.WeakReference;
@@ -116,21 +117,26 @@ public class PreRate {
         @SuppressLint("InflateParams")
         View customView = inflater.inflate(R.layout.pre_rate_stars_dialog, null, false);
 
-        final ProperRatingBar rating_bar_0 = (ProperRatingBar) customView.findViewById(R.id.rating_bar_0);
+        ProperRatingBar ratingBar = (ProperRatingBar) customView.findViewById(R.id.ratingBar);
 
-        builder.customView(customView, false)
+        ratingBar.setListener(properRatingBar -> {
+            lastDialog.getActionButton(DialogAction.POSITIVE).setEnabled(true);
+        });
+
+        builder
+                .customView(customView, false)
                 .positiveText(R.string.yes)
                 .onPositive((dialog, which) -> {
                     //Отображаем пред диалог
-                    if (rating_bar_0.getRating() == 5) {
+                    if (ratingBar.getRating() == 5) {
                         //Отправляем пользователя на Google Play и помечаем, что больше не надо показывать
                         TimeSettings.setShowMode(cntxRef.get(), TimeSettings.NOT_SHOW);
-                        final String appPackageName = cntxRef.get().getPackageName(); // getPackageName() from Context or Activity object
+                        String appPackageName = cntxRef.get().getPackageName(); // getPackageName() from Context or Activity object
                         try {
-                            cntxRef.get().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+                            cntxRef.get().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(cntxRef.get().getString(R.string.market_os_url, appPackageName))));
                         } catch (android.content.ActivityNotFoundException anfe) {
                             //Для случая запуска на симуляторе без Google Play
-                            cntxRef.get().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=" + appPackageName)));
+                            cntxRef.get().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(cntxRef.get().getString(R.string.market_web_url, appPackageName))));
                         }
                     } else {
                         showFeedbackDialog();
@@ -139,6 +145,9 @@ public class PreRate {
                 .negativeText(android.R.string.cancel)
                 .onNegative((dialog, which) -> lastDialog.dismiss());
         lastDialog = builder.build();
+
+        lastDialog.getActionButton(DialogAction.POSITIVE).setEnabled(false);
+
         lastDialog.show();
     }
 
@@ -151,7 +160,7 @@ public class PreRate {
         @SuppressLint("InflateParams")
         View customView = inflater.inflate(R.layout.pre_rate_feedback_dialog, null, false);
 
-        final EditText etEmailText = (EditText) customView.findViewById(R.id.etMessage);
+        EditText etEmailText = (EditText) customView.findViewById(R.id.etMessage);
 
         builder.customView(customView, false)
                 .positiveText(R.string.yes)

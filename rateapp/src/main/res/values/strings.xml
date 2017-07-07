@@ -1,4 +1,7 @@
 <resources>
+    <string name="market_os_url">market://details?id=%s</string>
+    <string name="market_web_url">http://play.google.com/store/apps/details?id=%s</string>
+
     <string name="yes">Yes</string>
     <string name="not_now">Maybe later</string>
     <string name="not_notify">Never</string>

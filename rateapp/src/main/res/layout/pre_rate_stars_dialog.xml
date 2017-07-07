@@ -23,7 +23,7 @@
         />
 
     <io.techery.properratingbar.ProperRatingBar
-        android:id="@+id/rating_bar_0"
+        android:id="@+id/ratingBar"
         android:layout_width="wrap_content"
         android:layout_height="48dp"
         android:layout_gravity="center_horizontal"
@@ -31,7 +31,7 @@
         android:textSize="36sp"
         android:textStyle="bold"
         app:prb_clickable="true"
-        app:prb_defaultRating="5"
+        app:prb_defaultRating="0"
         app:prb_symbolicTick="★"
         app:prb_symbolicTickNormalColor="@android:color/darker_gray"
         app:prb_symbolicTickSelectedColor="@color/material_amber_500"
