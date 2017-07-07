@@ -1,13 +1,15 @@
 buildscript {
     repositories {
-        jcenter({url "http://jcenter.bintray.com/"})
-        maven { url "https://jitpack.io" }
+        jcenter()
         mavenCentral()
 
+        //use jcenter when it will be ready
+        maven { url 'https://dl.bintray.com/mohaxspb/scp-downloads/' }
+
+        maven { url "https://jitpack.io" }
+
         /** The repository required for AdColony 3.0 and above */
-        maven {
-            url  "https://adcolony.bintray.com/AdColony"
-        }
+        maven { url "https://adcolony.bintray.com/AdColony" }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.3.3'
@@ -19,14 +21,16 @@ buildscript {
 
 allprojects {
     repositories {
-        jcenter({url "http://jcenter.bintray.com/"})
-        maven { url "https://jitpack.io" }
+        jcenter()
         mavenCentral()
 
+        //use jcenter when it will be ready
+        maven { url 'https://dl.bintray.com/mohaxspb/scp-downloads' }
+
+        maven { url "https://jitpack.io" }
+
         /** The repository required for AdColony 3.0 and above */
-        maven {
-            url  "https://adcolony.bintray.com/AdColony"
-        }
+        maven { url "https://adcolony.bintray.com/AdColony" }
     }
 }
 

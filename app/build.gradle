@@ -8,7 +8,7 @@ apply plugin: 'me.tatarka.retrolambda'
 apply from: '../versioning.gradle'
 
 ext.supportLibraryVersion = '25.3.1'
-ext.googleLibraryVersion = '11.0.1'
+ext.googleLibraryVersion = '11.0.2'
 
 android {
     compileSdkVersion 25
@@ -27,6 +27,8 @@ android {
     defaultConfig {
         applicationId "ru.dante.scpfoundation"
         minSdkVersion 17
+        //TODO check when we can update it
+        //noinspection OldTargetApi
         targetSdkVersion 25
         versionCode buildVersionCode()
         versionName version
@@ -224,7 +226,7 @@ dependencies {
     //facebook
     compile 'com.facebook.android:facebook-android-sdk:[4,5)'
     //dialogs
-    compile 'com.afollestad.material-dialogs:core:0.9.4.3'
+    compile 'com.afollestad.material-dialogs:core:0.9.4.5'
     //fonts
     compile 'uk.co.chrisjenx:calligraphy:2.3.0'
     //firebase
@@ -258,6 +260,9 @@ dependencies {
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.1'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
     testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
+
+    //sub project modules
+    compile 'ru.kuchanov.scp:scp-downloads:1.0.1@aar'
 }
 
 apply plugin: 'com.google.gms.google-services'

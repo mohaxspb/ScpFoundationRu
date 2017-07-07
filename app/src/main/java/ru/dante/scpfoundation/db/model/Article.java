@@ -17,6 +17,7 @@ import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import ru.dante.scpfoundation.db.util.RealmArticleTagListParcelConverter;
 import ru.dante.scpfoundation.db.util.RealmStringListParcelConverter;
+import ru.kuchanov.scp.downloads.ArticleModel;
 
 /**
  * Created by mohax on 03.01.2017.
@@ -24,7 +25,7 @@ import ru.dante.scpfoundation.db.util.RealmStringListParcelConverter;
  * for scp_ru
  */
 @Parcel(implementations = {ArticleRealmProxy.class}, value = Parcel.Serialization.BEAN, analyze = {Article.class})
-public class Article extends RealmObject {
+public class Article extends RealmObject implements ArticleModel{
 
     public static final String FIELD_IS_IN_READEN = "isInReaden";
     public static final String FIELD_IS_IN_RECENT = "isInRecent";
@@ -57,6 +58,16 @@ public class Article extends RealmObject {
     public static final int SYNCED_NEED = -1;
 
     public static final int ORDER_NONE = -1;
+
+    @Override
+    public String getUrl() {
+        return url;
+    }
+
+    @Override
+    public String getText() {
+        return text;
+    }
 
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({

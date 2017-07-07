@@ -3,13 +3,14 @@ package ru.dante.scpfoundation.db;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import ru.dante.scpfoundation.manager.MyPreferenceManager;
+import ru.kuchanov.scp.downloads.DbProviderFactoryModel;
 
 /**
  * Created by y.kuchanov on 21.12.16.
  * <p>
  * for scp_ru
  */
-public class DbProviderFactory {
+public class DbProviderFactory implements DbProviderFactoryModel {
 
     private MyPreferenceManager mMyPreferenceManager;
 

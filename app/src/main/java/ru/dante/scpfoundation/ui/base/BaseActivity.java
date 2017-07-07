@@ -85,6 +85,7 @@ import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
 import ru.dante.scpfoundation.ui.dialog.TextSizeDialogFragment;
 import ru.dante.scpfoundation.ui.holder.SocialLoginHolder;
 import ru.dante.scpfoundation.ui.util.DialogUtils;
+import ru.dante.scpfoundation.ui.util.DownloadAllChooser;
 import ru.dante.scpfoundation.util.SecureUtils;
 import ru.dante.scpfoundation.util.SystemUtils;
 import timber.log.Timber;
@@ -125,6 +126,9 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
     protected MyNotificationManager mMyNotificationManager;
     @Inject
     protected DialogUtils mDialogUtils;
+    //FIXME test
+    @Inject
+    protected DownloadAllChooser mDownloadAllChooser;
     //inapps and ads
     private IInAppBillingService mService;
     private List<Item> mOwnedMarketSubscriptions = new ArrayList<>();
@@ -674,7 +678,7 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
                 dialogFragment.show(getFragmentManager(), NewVersionDialogFragment.TAG);
                 return true;
             case R.id.menuItemDownloadAll:
-                mDialogUtils.showDownloadDialog(this);
+                mDownloadAllChooser.showDownloadDialog(this);
                 return true;
             case R.id.faq:
                 mDialogUtils.showFaqDialog(this);

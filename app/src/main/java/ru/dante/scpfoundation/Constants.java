@@ -137,7 +137,7 @@ public interface Constants {
         String MAIN = "http://scpfoundation.ru/";
         String RATE = "http://scpfoundation.ru/top-rated-pages";
         String NEW_ARTICLES = "http://scpfoundation.ru/most-recently-created";
-        String PROTOCOLS = "http://scpfoundation.ru/experiment-logs";
+        String EXPERIMENTS = "http://scpfoundation.ru/experiment-logs";
         String INCEDENTS = "http://scpfoundation.ru/incident-reports";
         String INTERVIEWS = "http://scpfoundation.ru/eye-witness-interviews";
         String OTHERS = "http://scpfoundation.ru/other";
@@ -154,7 +154,7 @@ public interface Constants {
         String ABOUT_SCP = "http://scpfoundation.ru/about-the-scp-foundation";
         String SEARCH = "SEARCH";
         String NEWS = "http://scpfoundation.ru/news";
-        String[] ALL_LINKS_ARRAY = {MAIN, RATE, NEW_ARTICLES, PROTOCOLS, INCEDENTS, INTERVIEWS, OTHERS, STORIES, CANONS, GOI_HAB, ART_HUB, LEAKS, OBJECTS_1, OBJECTS_2, OBJECTS_3, OBJECTS_RU, NEWS, SEARCH};
+        String[] ALL_LINKS_ARRAY = {MAIN, RATE, NEW_ARTICLES, EXPERIMENTS, INCEDENTS, INTERVIEWS, OTHERS, STORIES, CANONS, GOI_HAB, ART_HUB, LEAKS, OBJECTS_1, OBJECTS_2, OBJECTS_3, OBJECTS_RU, NEWS, SEARCH};
         String FAVORITES = "FAVORITES";
         String OFFLINE = "OFFLINE";
         String MATERIALS_ALL = "MATERIALS_ALL";

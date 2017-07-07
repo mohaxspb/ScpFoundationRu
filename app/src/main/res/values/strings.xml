@@ -42,7 +42,6 @@
     <string name="text_size_dialog_title">Настройки размера текста</string>
     <string name="close">Закрыть</string>
     <string name="delete">Удалить</string>
-    <string name="download_all">Скачать всё</string>
     <string name="search">Поиск</string>
 
     <!--drawer items -->
@@ -56,20 +55,6 @@
     <string name="error_no_search_results">По вашему запросу ничего не найдено</string>
     <string name="start_download">Статьи нет в базе данных. Начинаю загрузку</string>
 
-    <!--downloads-->
-    <string name="downlad_art_list">Загрузка списка статей</string>
-    <string name="download_all_title">Что скачать?</string>
-    <string name="download">Скачать</string>
-    <string name="stop_download">Остановить загрузку</string>
-    <string name="download_objects_title">Загрузка объектов</string>
-    <string name="error_notification_title">Ошибка</string>
-    <string name="error_notification_objects_list_download_content">Не удалось скачать список объектов</string>
-    <string name="download_complete_title">Загрузка завершена</string>
-    <string name="download_complete_title_content">Загружено %1$d из %2$d. Ошибок: %3$d</string>
-    <string name="download_progress_content">Загружено %1$d/%2$d. Ошибок: %3$d</string>
-    <string name="error_notification_recent_list_download_content">Не удалось загрузить список статей</string>
-    <string name="notification_recent_list_title">Загрузка списка статей</string>
-    <string name="download_recent_title">Загрузка статей</string>
     <string name="settings_notif_on">Уведомления о новых статьях</string>
     <string name="settings_notif_led_on">LED индикатор</string>
     <string name="settings_notif_vibrate_on">Вибрация</string>
@@ -96,7 +81,6 @@
     <string name="remove_ads_for_free_disabled_free_downloads">Отключить рекламу, увеличить лимит статей и заработать очки бесплатно!</string>
     <string name="ads_reward_gained">Ура! Никакой рекламы на %d часа!</string>
     <string name="wait">Подождите…</string>
-    <string name="dialog_download">Загрузка</string>
     <string name="ads_reward_error_loading">Не удалось загрузить. Пробуйте ещё раз…</string>
     <string name="ads_reward_description_title">Инструкция</string>
     <string name="ads_reward_description_content">Мы покажем вам видео и, после просмотра, временно отключим рекламу. Вы можете отключать её сколько угодно раз!</string>
@@ -116,21 +100,6 @@
     <string name="info">Информация</string>
     <string name="subs_info">В дополнительный функционал входит отключение рекламы, все шрифты без ограничения, умножение всех получаемых вами очков на 3, а также облачная синхронизация избранного и прочитанного. И самое главное - подписавшись, вы сильно промотивируете разработчиков всё быстрее и быстрее добавлять фичи и фиксить баги!</string>
     <string name="subs_info_disabled_free_downloads">В дополнительный функционал входит отключение рекламы, безлимитное скачивание статей в оффлайн, все шрифты без ограничения, умножение всех получаемых вами очков на 3, а также облачная синхронизация избранного и прочитанного. И самое главное - подписавшись, вы сильно промотивируете разработчиков всё быстрее и быстрее добавлять фичи и фиксить баги!</string>
-    <string-array name="download_types">
-        <item>Объекты I</item>
-        <item>Объекты II</item>
-        <item>Объекты III</item>
-        <item>Объекты RU</item>
-
-        <item>Протоколы экспериментов</item>
-        <item>Отчёты об инцидентах</item>
-        <item>Интервью с очевидцами</item>
-        <item>Шуточные SCP</item>
-        <item>Архивные SCP</item>
-        <item>Прочие материалы</item>
-
-        <item>Все</item>
-    </string-array>
 
     <string-array name="fag_items">
         <item>Авторизация</item>
@@ -232,13 +201,6 @@
     <string name="tags_all">Все теги</string>
     <string name="tags_search_results">Результаты</string>
     <string name="tags">Теги:</string>
-    <string name="downlad_art_list_range">Сколько скачать?</string>
-    <string name="increase_limit">Увеличить/убрать лимит</string>
-    <string name="user_limit">Ваш лимит:\n%s</string>
-    <string name="no_limit">Без ограничений!</string>
-    <string name="download_all_with_limit">Будут скачаны последние %d статей из списка последних изменённых статей (список \"Новые статьи\")</string>
-    <string name="limit_description">Лимит ограничивает максимальное количество статей, которые могут быть сохранены на устройстве для чтения в offline режиме. Сейчас для вас никакого ограничения нет! А если у вас приобретена подписка - то и не будет) Если подписки у вас нет, то однажды лимит будет ограничен %1$d статьями для неаторизованных агентов и %2$d + (кол-во очков/%3$d) для авторизованных.</string>
-    <string name="limit_description_disabled_free_downloads">Лимит ограничивает максимальное количество статей, которые могут быть сохранены на устройстве для чтения в offline режиме. Минимальный лимит статей - %1$d. Лимит можно полностью убрать купив подписку или повышать его, авторизовавшись и зарабатывая очки. За каждые %2$d очков вы сможете хранить на одну статью больше!</string>
     <string name="filter_none">Без фильтра</string>
     <string name="filter_not_read">Непрочитанные</string>
     <string name="filter_read">Прочитанные</string>

@@ -64,7 +64,6 @@ import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.api.error.ScpException;
 import ru.dante.scpfoundation.api.error.ScpNoSearchResultsException;
-import ru.dante.scpfoundation.api.error.ScpParseException;
 import ru.dante.scpfoundation.api.model.ArticleFromSearchTagsOnSite;
 import ru.dante.scpfoundation.api.model.firebase.ArticleInFirebase;
 import ru.dante.scpfoundation.api.model.firebase.FirebaseObjectUser;
@@ -83,6 +82,8 @@ import ru.dante.scpfoundation.manager.MyPreferenceManager;
 import ru.dante.scpfoundation.monetization.model.PlayMarketApplication;
 import ru.dante.scpfoundation.monetization.model.VkGroupToJoin;
 import ru.dante.scpfoundation.util.DimensionUtils;
+import ru.kuchanov.scp.downloads.ApiClientModel;
+import ru.kuchanov.scp.downloads.ScpParseException;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -93,7 +94,7 @@ import timber.log.Timber;
  * <p>
  * for scp_ru
  */
-public class ApiClient {
+public class ApiClient implements ApiClientModel<Article> {
 
     @SuppressWarnings("unused")
     private MyPreferenceManager mPreferencesManager;
@@ -159,7 +160,8 @@ public class ApiClient {
         }));
     }
 
-    public Observable<Integer> getRecentArticlesPageCount() {
+    @Override
+    public Observable<Integer> getRecentArticlesPageCountObservable() {
         return bindWithUtils(Observable.<Integer>unsafeCreate(subscriber -> {
             Request request = new Request.Builder()
                     .url(BuildConfig.BASE_API_URL + Constants.Api.MOST_RECENT_URL + 1)

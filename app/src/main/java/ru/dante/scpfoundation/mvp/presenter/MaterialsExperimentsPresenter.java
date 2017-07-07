@@ -30,7 +30,7 @@ public class MaterialsExperimentsPresenter
 
     @Override
     protected String getObjectsLink() {
-        return Constants.Urls.PROTOCOLS;
+        return Constants.Urls.EXPERIMENTS;
     }
 
     @Override
