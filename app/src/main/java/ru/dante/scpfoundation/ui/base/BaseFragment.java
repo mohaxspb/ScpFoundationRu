@@ -27,8 +27,8 @@ import butterknife.Unbinder;
 import ru.dante.scpfoundation.Constants;
 import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
-import ru.dante.scpfoundation.api.error.ScpParseException;
 import ru.dante.scpfoundation.mvp.base.BaseMvp;
+import ru.kuchanov.scp.downloads.ScpParseException;
 import timber.log.Timber;
 
 /**

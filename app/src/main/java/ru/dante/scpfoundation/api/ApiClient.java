@@ -64,7 +64,6 @@ import ru.dante.scpfoundation.MyApplication;
 import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.api.error.ScpException;
 import ru.dante.scpfoundation.api.error.ScpNoSearchResultsException;
-import ru.dante.scpfoundation.api.error.ScpParseException;
 import ru.dante.scpfoundation.api.model.ArticleFromSearchTagsOnSite;
 import ru.dante.scpfoundation.api.model.firebase.ArticleInFirebase;
 import ru.dante.scpfoundation.api.model.firebase.FirebaseObjectUser;
@@ -84,6 +83,7 @@ import ru.dante.scpfoundation.monetization.model.PlayMarketApplication;
 import ru.dante.scpfoundation.monetization.model.VkGroupToJoin;
 import ru.dante.scpfoundation.util.DimensionUtils;
 import ru.kuchanov.scp.downloads.ApiClientModel;
+import ru.kuchanov.scp.downloads.ScpParseException;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -491,7 +491,7 @@ public class ApiClient implements ApiClientModel<Article> {
     }
 
     @Nullable
-    public Article getArticleFromApi(String url) throws Exception, ru.kuchanov.scp.downloads.ScpParseException {
+    public Article getArticleFromApi(String url) throws Exception, ScpParseException {
         Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -513,7 +513,7 @@ public class ApiClient implements ApiClientModel<Article> {
             Document doc = Jsoup.parse(responseBody);
             Element pageContent = doc.getElementById("page-content");
             if (pageContent == null) {
-                throw new ru.kuchanov.scp.downloads.ScpParseException(MyApplication.getAppInstance().getString(R.string.error_parse));
+                throw new ScpParseException(MyApplication.getAppInstance().getString(R.string.error_parse));
             }
             Element p404 = pageContent.getElementById("404-message");
             if (p404 != null) {
@@ -797,7 +797,7 @@ public class ApiClient implements ApiClientModel<Article> {
                 Article article = getArticleFromApi(url);
                 subscriber.onNext(article);
                 subscriber.onCompleted();
-            } catch (Exception | ru.kuchanov.scp.downloads.ScpParseException e) {
+            } catch (Exception | ScpParseException e) {
                 subscriber.onError(e);
             }
         }))
