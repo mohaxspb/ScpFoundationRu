@@ -30,7 +30,7 @@ import ru.dante.scpfoundation.ui.fragment.OfflineArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.RatedArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.RecentArticlesFragment;
 import ru.dante.scpfoundation.ui.fragment.SiteSearchArticlesFragment;
-import ru.kuchanov.rateapp.PreRate;
+import ru.kuchanov.rate.PreRate;
 import timber.log.Timber;
 
 import static ru.dante.scpfoundation.ui.activity.LicenceActivity.EXTRA_SHOW_ABOUT;

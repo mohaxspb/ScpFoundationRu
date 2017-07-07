@@ -4,6 +4,7 @@
     <string name="market_url" translatable="false">market://details?id=%s</string>
     <string name="social_provider_facebook_title" translatable="false">Facebook</string>
     <string name="social_provider_google_title" translatable="false">Google</string>
+    <string name="feedback_email" translatable="false">neva.spb.rx@gmail.com</string>
     <!--drawer items-->
     <string name="drawer_item_1">Об организации</string>
     <string name="drawer_item_2">Новости</string>
@@ -211,7 +212,6 @@
     <string name="filter_euclid">Евклид</string>
     <string name="filter_keter">Кетер</string>
     <string name="filter_thaumiel">Таумиэль</string>
-    <string name="feedback_email">neva.spb.rx@gmail.com</string>
     <string name="feedback_title">Отзыв на SCP RU</string>
 
     <plurals name="plurals_score">
