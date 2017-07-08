@@ -195,9 +195,7 @@ dependencies {
     compile 'io.reactivex:rxandroid:1.2.1'
     compile 'io.reactivex:rxjava:1.3.0'
     // Retrofit
-    compile('com.squareup.retrofit2:retrofit:2.3.0') {
-        exclude module: 'okhttp'
-    }
+    compile('com.squareup.retrofit2:retrofit:2.3.0') { exclude module: 'okhttp' }
     compile 'com.squareup.okhttp3:okhttp:3.8.0'
     compile 'com.squareup.okhttp3:logging-interceptor:3.8.0'
     compile 'com.squareup.retrofit2:converter-gson:2.3.0'
@@ -246,8 +244,6 @@ dependencies {
     compile project(':cheetah-mobile-3.4.7')
     // AppMetrica
     compile 'com.yandex.android:mobmetricalib:2.62'
-    //ratingBar
-    compile 'com.github.techery:properratingbar:0.0.5'
     //recyclerView fast scroller
     compile 'xyz.danoz:recyclerviewfastscroller:0.1.3'
     //circular progress
@@ -262,7 +258,8 @@ dependencies {
     testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
 
     //sub project modules
-    compile 'ru.kuchanov.scp:scp-downloads:1.0.1@aar'
+    compile('ru.kuchanov.scp:scp-downloads:1.0.3@aar') { transitive = true }
+    compile('ru.kuchanov.utils:rate:1.0.1@aar') { transitive = true }
 }
 
 apply plugin: 'com.google.gms.google-services'
