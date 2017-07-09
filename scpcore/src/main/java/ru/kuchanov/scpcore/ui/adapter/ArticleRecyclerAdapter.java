@@ -9,19 +9,19 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import ru.dante.scpfoundation.MyApplication;
-import ru.dante.scpfoundation.R;
-import ru.dante.scpfoundation.api.ParseHtmlUtils;
-import ru.dante.scpfoundation.db.model.Article;
-import ru.dante.scpfoundation.db.model.RealmString;
-import ru.dante.scpfoundation.manager.MyPreferenceManager;
-import ru.dante.scpfoundation.ui.holder.ArticleImageHolder;
-import ru.dante.scpfoundation.ui.holder.ArticleSpoilerHolder;
-import ru.dante.scpfoundation.ui.holder.ArticleTableHolder;
-import ru.dante.scpfoundation.ui.holder.ArticleTagsHolder;
-import ru.dante.scpfoundation.ui.holder.ArticleTextHolder;
-import ru.dante.scpfoundation.ui.holder.ArticleTitleHolder;
-import ru.dante.scpfoundation.ui.util.SetTextViewHTML;
+import ru.kuchanov.scpcore.MyApplication;
+import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.api.ParseHtmlUtils;
+import ru.kuchanov.scpcore.db.model.Article;
+import ru.kuchanov.scpcore.db.model.RealmString;
+import ru.kuchanov.scpcore.manager.MyPreferenceManager;
+import ru.kuchanov.scpcore.ui.holder.ArticleImageHolder;
+import ru.kuchanov.scpcore.ui.holder.ArticleSpoilerHolder;
+import ru.kuchanov.scpcore.ui.holder.ArticleTableHolder;
+import ru.kuchanov.scpcore.ui.holder.ArticleTagsHolder;
+import ru.kuchanov.scpcore.ui.holder.ArticleTextHolder;
+import ru.kuchanov.scpcore.ui.holder.ArticleTitleHolder;
+import ru.kuchanov.scpcore.ui.util.SetTextViewHTML;
 import timber.log.Timber;
 
 /**

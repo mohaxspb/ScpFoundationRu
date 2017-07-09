@@ -27,23 +27,23 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import ru.dante.scpfoundation.Constants;
-import ru.dante.scpfoundation.MyApplication;
-import ru.dante.scpfoundation.R;
-import ru.dante.scpfoundation.api.ApiClient;
-import ru.dante.scpfoundation.manager.MyPreferenceManager;
-import ru.dante.scpfoundation.monetization.model.AppInstallHeader;
-import ru.dante.scpfoundation.monetization.model.AppInviteModel;
-import ru.dante.scpfoundation.monetization.model.ApplicationsResponse;
-import ru.dante.scpfoundation.monetization.model.BaseModel;
-import ru.dante.scpfoundation.monetization.model.PlayMarketApplication;
-import ru.dante.scpfoundation.monetization.model.RewardedVideo;
-import ru.dante.scpfoundation.monetization.model.VkGroupToJoin;
-import ru.dante.scpfoundation.monetization.model.VkGroupsToJoinResponse;
-import ru.dante.scpfoundation.ui.activity.MainActivity;
-import ru.dante.scpfoundation.ui.adapter.FreeAdsDisableRecyclerAdapter;
-import ru.dante.scpfoundation.ui.base.BaseActivity;
-import ru.dante.scpfoundation.util.IntentUtils;
+import ru.kuchanov.scpcore.Constants;
+import ru.kuchanov.scpcore.MyApplication;
+import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.api.ApiClient;
+import ru.kuchanov.scpcore.manager.MyPreferenceManager;
+import ru.kuchanov.scpcore.monetization.model.AppInstallHeader;
+import ru.kuchanov.scpcore.monetization.model.AppInviteModel;
+import ru.kuchanov.scpcore.monetization.model.ApplicationsResponse;
+import ru.kuchanov.scpcore.monetization.model.BaseModel;
+import ru.kuchanov.scpcore.monetization.model.PlayMarketApplication;
+import ru.kuchanov.scpcore.monetization.model.RewardedVideo;
+import ru.kuchanov.scpcore.monetization.model.VkGroupToJoin;
+import ru.kuchanov.scpcore.monetization.model.VkGroupsToJoinResponse;
+import ru.kuchanov.scpcore.ui.activity.MainActivity;
+import ru.kuchanov.scpcore.ui.adapter.FreeAdsDisableRecyclerAdapter;
+import ru.kuchanov.scpcore.ui.base.BaseActivity;
+import ru.kuchanov.scpcore.util.IntentUtils;
 import timber.log.Timber;
 
 public class FreeAdsDisablingDialogFragment extends DialogFragment {

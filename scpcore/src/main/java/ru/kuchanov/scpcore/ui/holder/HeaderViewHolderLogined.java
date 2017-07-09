@@ -7,7 +7,7 @@ import android.widget.TextView;
 import at.grabner.circleprogress.CircleProgressView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import ru.dante.scpfoundation.R;
+import ru.kuchanov.scpcore.R;
 
 /**
  * Created by mohax on 23.03.2017.

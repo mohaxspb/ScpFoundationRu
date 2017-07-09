@@ -15,10 +15,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import ru.dante.scpfoundation.MyApplication;
-import ru.dante.scpfoundation.R;
-import ru.dante.scpfoundation.manager.MyPreferenceManager;
-import ru.dante.scpfoundation.util.DimensionUtils;
+import ru.kuchanov.scpcore.MyApplication;
+import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.manager.MyPreferenceManager;
+import ru.kuchanov.scpcore.util.DimensionUtils;
 import uk.co.chrisjenx.calligraphy.CalligraphyUtils;
 
 /**

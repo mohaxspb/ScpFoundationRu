@@ -1,7 +1,7 @@
 package ru.kuchanov.scpcore.ui.fragment;
 
-import ru.dante.scpfoundation.MyApplication;
-import ru.dante.scpfoundation.mvp.contract.RecentArticlesMvp;
+import ru.kuchanov.scpcore.BaseApplication;
+import ru.kuchanov.scpcore.mvp.contract.RecentArticlesMvp;
 
 /**
  * Created by mohax on 03.01.2017.
@@ -20,7 +20,7 @@ public class RecentArticlesFragment
 
     @Override
     protected void callInjections() {
-        MyApplication.getAppComponent().inject(this);
+        BaseApplication.getAppComponent().inject(this);
     }
 
     @Override

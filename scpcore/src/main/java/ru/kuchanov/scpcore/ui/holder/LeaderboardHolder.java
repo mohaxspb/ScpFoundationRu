@@ -14,10 +14,10 @@ import com.bumptech.glide.request.target.BitmapImageViewTarget;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import ru.dante.scpfoundation.R;
-import ru.dante.scpfoundation.api.model.firebase.FirebaseObjectUser;
-import ru.dante.scpfoundation.api.model.remoteconfig.LevelsJson;
-import ru.dante.scpfoundation.ui.adapter.LeaderboardRecyclerAdapter;
+import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.api.model.firebase.FirebaseObjectUser;
+import ru.kuchanov.scpcore.api.model.remoteconfig.LevelsJson;
+import ru.kuchanov.scpcore.ui.adapter.LeaderboardRecyclerAdapter;
 
 /**
  * Created by mohax on 06.05.2017.

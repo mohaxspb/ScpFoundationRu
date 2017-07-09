@@ -25,25 +25,26 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import ru.dante.scpfoundation.BuildConfig;
-import ru.dante.scpfoundation.Constants;
-import ru.dante.scpfoundation.MyApplication;
-import ru.dante.scpfoundation.R;
-import ru.dante.scpfoundation.db.model.VkImage;
-import ru.dante.scpfoundation.monetization.util.MyAdListener;
-import ru.dante.scpfoundation.mvp.base.MonetizationActions;
-import ru.dante.scpfoundation.mvp.contract.DataSyncActions;
-import ru.dante.scpfoundation.mvp.contract.GalleryScreenMvp;
-import ru.dante.scpfoundation.ui.adapter.ImagesPagerAdapter;
-import ru.dante.scpfoundation.ui.adapter.ImagesRecyclerAdapter;
-import ru.dante.scpfoundation.ui.base.BaseDrawerActivity;
-import ru.dante.scpfoundation.util.IntentUtils;
-import ru.dante.scpfoundation.util.StorageUtils;
-import ru.dante.scpfoundation.util.SystemUtils;
+import ru.kuchanov.scpcore.BaseApplication;
+import ru.kuchanov.scpcore.BuildConfig;
+import ru.kuchanov.scpcore.Constants;
+import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.R2;
+import ru.kuchanov.scpcore.db.model.VkImage;
+import ru.kuchanov.scpcore.monetization.util.MyAdListener;
+import ru.kuchanov.scpcore.mvp.base.MonetizationActions;
+import ru.kuchanov.scpcore.mvp.contract.DataSyncActions;
+import ru.kuchanov.scpcore.mvp.contract.GalleryScreenMvp;
+import ru.kuchanov.scpcore.ui.adapter.ImagesPagerAdapter;
+import ru.kuchanov.scpcore.ui.adapter.ImagesRecyclerAdapter;
+import ru.kuchanov.scpcore.ui.base.BaseDrawerActivity;
+import ru.kuchanov.scpcore.util.IntentUtils;
+import ru.kuchanov.scpcore.util.StorageUtils;
+import ru.kuchanov.scpcore.util.SystemUtils;
 import timber.log.Timber;
 
-import static ru.dante.scpfoundation.Constants.Firebase.RemoteConfigKeys.GALLERY_BANNER_DISABLED;
-import static ru.dante.scpfoundation.ui.activity.MainActivity.EXTRA_SHOW_DISABLE_ADS;
+import static ru.kuchanov.scpcore.Constants.Firebase.RemoteConfigKeys.GALLERY_BANNER_DISABLED;
+import static ru.kuchanov.scpcore.ui.activity.MainActivity.EXTRA_SHOW_DISABLE_ADS;
 
 public class GalleryActivity
         extends BaseDrawerActivity<GalleryScreenMvp.View, GalleryScreenMvp.Presenter>
@@ -51,20 +52,20 @@ public class GalleryActivity
 
     public static final String EXTRA_POSITION = "EXTRA_POSITION";
 
-    @BindView(R.id.viewPager)
+    @BindView(R2.id.viewPager)
     ViewPager mViewPager;
-    @BindView(R.id.recyclerView)
+    @BindView(R2.id.recyclerView)
     RecyclerView mRecyclerView;
-    @BindView(R.id.bottomSheet)
+    @BindView(R2.id.bottomSheet)
     View mBottomSheet;
-    @BindView(R.id.progressCenter)
+    @BindView(R2.id.progressCenter)
     View mProgressContainer;
-    @BindView(R.id.placeHolder)
+    @BindView(R2.id.placeHolder)
     View mPlaceHolder;
-    @BindView(R.id.refresh)
+    @BindView(R2.id.refresh)
     Button mRefresh;
 
-    @BindView(R.id.banner)
+    @BindView(R2.id.banner)
     AdView mAdView;
 
     private ImagesPagerAdapter mAdapter;
@@ -221,7 +222,7 @@ public class GalleryActivity
 
     @Override
     protected void callInjections() {
-        MyApplication.getAppComponent().inject(this);
+        BaseApplication.getAppComponent().inject(this);
     }
 
     @Override
@@ -233,58 +234,56 @@ public class GalleryActivity
     public boolean onNavigationItemClicked(int id) {
         Timber.d("onNavigationItemClicked with id: %s", id);
         String link = null;
-        switch (id) {
-            case R.id.about:
-                link = Constants.Urls.ABOUT_SCP;
-                break;
-            case R.id.news:
-                link = Constants.Urls.NEWS;
-                break;
-            case R.id.mostRatedArticles:
-                link = Constants.Urls.RATE;
-                break;
-            case R.id.mostRecentArticles:
-                link = Constants.Urls.NEW_ARTICLES;
-                break;
-            case R.id.random_page:
-                mPresenter.getRandomArticleUrl();
-                break;
-            case R.id.objects_I:
-                link = Constants.Urls.OBJECTS_1;
-                break;
-            case R.id.objects_II:
-                link = Constants.Urls.OBJECTS_2;
-                break;
-            case R.id.objects_III:
-                link = Constants.Urls.OBJECTS_3;
-                break;
-            case R.id.objects_IV:
-                link = Constants.Urls.OBJECTS_4;
-                break;
-            case R.id.objects_RU:
-                link = Constants.Urls.OBJECTS_RU;
-                break;
-            case R.id.files:
-                MaterialsActivity.startActivity(this);
-                return false;
-            case R.id.stories:
-                link = Constants.Urls.STORIES;
-                break;
-            case R.id.favorite:
-                link = Constants.Urls.FAVORITES;
-                break;
-            case R.id.offline:
-                link = Constants.Urls.OFFLINE;
-                break;
-            case R.id.gallery:
-                //nothing to do
-                break;
-            case R.id.siteSearch:
-                link = Constants.Urls.SEARCH;
-                break;
-            default:
-                Timber.e("unexpected item ID");
-                break;
+        if (id == R.id.about) {
+            link = Constants.Urls.ABOUT_SCP;
+
+        } else if (id == R.id.news) {
+            link = Constants.Urls.NEWS;
+
+        } else if (id == R.id.mostRatedArticles) {
+            link = Constants.Urls.RATE;
+
+        } else if (id == R.id.mostRecentArticles) {
+            link = Constants.Urls.NEW_ARTICLES;
+
+        } else if (id == R.id.random_page) {
+            mPresenter.getRandomArticleUrl();
+
+        } else if (id == R.id.objects_I) {
+            link = Constants.Urls.OBJECTS_1;
+
+        } else if (id == R.id.objects_II) {
+            link = Constants.Urls.OBJECTS_2;
+
+        } else if (id == R.id.objects_III) {
+            link = Constants.Urls.OBJECTS_3;
+
+        } else if (id == R.id.objects_IV) {
+            link = Constants.Urls.OBJECTS_4;
+
+        } else if (id == R.id.objects_RU) {
+            link = Constants.Urls.OBJECTS_RU;
+
+        } else if (id == R.id.files) {
+            MaterialsActivity.startActivity(this);
+            return false;
+        } else if (id == R.id.stories) {
+            link = Constants.Urls.STORIES;
+
+        } else if (id == R.id.favorite) {
+            link = Constants.Urls.FAVORITES;
+
+        } else if (id == R.id.offline) {
+            link = Constants.Urls.OFFLINE;
+
+        } else if (id == R.id.gallery) {//nothing to do
+
+        } else if (id == R.id.siteSearch) {
+            link = Constants.Urls.SEARCH;
+
+        } else {
+            Timber.e("unexpected item ID");
+
         }
         if (link != null) {
             MainActivity.startActivity(this, link);
@@ -295,38 +294,38 @@ public class GalleryActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Timber.d("onOptionsItemSelected with id: %s", item);
-        switch (item.getItemId()) {
-            case R.id.share:
-                if (mAdapter.getData().isEmpty()) {
-                    return true;
-                }
-                mAdapter.downloadImage(GalleryActivity.this, mViewPager.getCurrentItem(),
-                        new SimpleTarget<Bitmap>(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) {
-                            @Override
-                            public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
-                                String desc = mAdapter.getData().get(mViewPager.getCurrentItem()).description;
-                                IntentUtils.shareBitmapWithText(GalleryActivity.this, desc, resource);
-                            }
-                        });
+        int i = item.getItemId();
+        if (i == R.id.share) {
+            if (mAdapter.getData().isEmpty()) {
                 return true;
-            case R.id.save_image:
-                if (mAdapter.getData().isEmpty()) {
-                    return true;
-                }
-                mAdapter.downloadImage(GalleryActivity.this, mViewPager.getCurrentItem(),
-                        new SimpleTarget<Bitmap>(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) {
-                            @Override
-                            public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
-                                if (StorageUtils.saveImageToGallery(GalleryActivity.this, resource) != null) {
-                                    Toast.makeText(GalleryActivity.this, R.string.image_saved, Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Toast.makeText(GalleryActivity.this, R.string.image_saving_error, Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
+            }
+            mAdapter.downloadImage(GalleryActivity.this, mViewPager.getCurrentItem(),
+                    new SimpleTarget<Bitmap>(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) {
+                        @Override
+                        public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
+                            String desc = mAdapter.getData().get(mViewPager.getCurrentItem()).description;
+                            IntentUtils.shareBitmapWithText(GalleryActivity.this, desc, resource);
+                        }
+                    });
+            return true;
+        } else if (i == R.id.save_image) {
+            if (mAdapter.getData().isEmpty()) {
                 return true;
-            default:
-                return super.onOptionsItemSelected(item);
+            }
+            mAdapter.downloadImage(GalleryActivity.this, mViewPager.getCurrentItem(),
+                    new SimpleTarget<Bitmap>(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) {
+                        @Override
+                        public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
+                            if (StorageUtils.saveImageToGallery(GalleryActivity.this, resource) != null) {
+                                Toast.makeText(GalleryActivity.this, R.string.image_saved, Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(GalleryActivity.this, R.string.image_saving_error, Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
         }
     }
 
@@ -351,7 +350,7 @@ public class GalleryActivity
         mPlaceHolder.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
-    @OnClick(R.id.refresh)
+    @OnClick(R2.id.refresh)
     public void onRefreshClicked() {
         Timber.d("onRefreshClicked");
         mPresenter.updateData();

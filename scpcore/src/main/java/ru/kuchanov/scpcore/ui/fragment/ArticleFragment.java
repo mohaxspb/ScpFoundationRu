@@ -27,23 +27,25 @@ import java.util.List;
 import javax.inject.Inject;
 
 import butterknife.BindView;
-import ru.dante.scpfoundation.Constants;
-import ru.dante.scpfoundation.MyApplication;
-import ru.dante.scpfoundation.R;
-import ru.dante.scpfoundation.db.model.Article;
-import ru.dante.scpfoundation.db.model.ArticleTag;
-import ru.dante.scpfoundation.db.model.RealmString;
-import ru.dante.scpfoundation.manager.MyPreferenceManager;
-import ru.dante.scpfoundation.mvp.contract.ArticleMvp;
-import ru.dante.scpfoundation.ui.activity.ArticleActivity;
-import ru.dante.scpfoundation.ui.activity.MainActivity;
-import ru.dante.scpfoundation.ui.activity.TagSearchActivity;
-import ru.dante.scpfoundation.ui.adapter.ArticleRecyclerAdapter;
-import ru.dante.scpfoundation.ui.base.BaseFragment;
-import ru.dante.scpfoundation.ui.util.DialogUtils;
-import ru.dante.scpfoundation.ui.util.ReachBottomRecyclerScrollListener;
-import ru.dante.scpfoundation.ui.util.SetTextViewHTML;
-import ru.dante.scpfoundation.util.IntentUtils;
+import ru.kuchanov.scpcore.BaseApplication;
+import ru.kuchanov.scpcore.Constants;
+import ru.kuchanov.scpcore.BaseApplication;
+import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.R2;
+import ru.kuchanov.scpcore.db.model.Article;
+import ru.kuchanov.scpcore.db.model.ArticleTag;
+import ru.kuchanov.scpcore.db.model.RealmString;
+import ru.kuchanov.scpcore.manager.MyPreferenceManager;
+import ru.kuchanov.scpcore.mvp.contract.ArticleMvp;
+import ru.kuchanov.scpcore.ui.activity.ArticleActivity;
+import ru.kuchanov.scpcore.ui.activity.MainActivity;
+import ru.kuchanov.scpcore.ui.activity.TagSearchActivity;
+import ru.kuchanov.scpcore.ui.adapter.ArticleRecyclerAdapter;
+import ru.kuchanov.scpcore.ui.base.BaseFragment;
+import ru.kuchanov.scpcore.ui.util.DialogUtils;
+import ru.kuchanov.scpcore.ui.util.ReachBottomRecyclerScrollListener;
+import ru.kuchanov.scpcore.ui.util.SetTextViewHTML;
+import ru.kuchanov.scpcore.util.IntentUtils;
 import timber.log.Timber;
 
 /**
@@ -63,14 +65,14 @@ public class ArticleFragment
     //tabs
     private static final String KEY_CURRENT_SELECTED_TAB = "KEY_CURRENT_SELECTED_TAB";
 
-    @BindView(R.id.progressCenter)
+    @BindView(R2.id.progressCenter)
     ProgressBar mProgressBarCenter;
-    @BindView(R.id.swipeRefresh)
+    @BindView(R2.id.swipeRefresh)
     SwipeRefreshLayout mSwipeRefreshLayout;
-    @BindView(R.id.recyclerView)
+    @BindView(R2.id.recyclerView)
     RecyclerView mRecyclerView;
 
-    @BindView(R.id.tabLayout)
+    @BindView(R2.id.tabLayout)
     TabLayout tabLayout;
 
     @Inject
@@ -120,7 +122,7 @@ public class ArticleFragment
 
     @Override
     protected void callInjections() {
-        MyApplication.getAppComponent().inject(this);
+        BaseApplication.getAppComponent().inject(this);
     }
 
     @Override

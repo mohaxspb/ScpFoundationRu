@@ -1,8 +1,8 @@
 package ru.kuchanov.scpcore.ui.fragment;
 
-import ru.dante.scpfoundation.MyApplication;
-import ru.dante.scpfoundation.R;
-import ru.dante.scpfoundation.mvp.contract.MaterialsOtherMvp;
+import ru.kuchanov.scpcore.BaseApplication;
+import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.mvp.contract.MaterialsOtherMvp;
 
 /**
  * Created by mohax on 03.01.2017.
@@ -21,7 +21,7 @@ public class MaterialsOtherFragment
 
     @Override
     protected void callInjections() {
-        MyApplication.getAppComponent().inject(this);
+        BaseApplication.getAppComponent().inject(this);
     }
 
     @Override

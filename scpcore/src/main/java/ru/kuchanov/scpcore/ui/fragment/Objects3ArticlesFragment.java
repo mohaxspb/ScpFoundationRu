@@ -1,7 +1,7 @@
 package ru.kuchanov.scpcore.ui.fragment;
 
-import ru.dante.scpfoundation.MyApplication;
-import ru.dante.scpfoundation.mvp.contract.Objects3Articles;
+import ru.kuchanov.scpcore.BaseApplication;
+import ru.kuchanov.scpcore.mvp.contract.Objects3Articles;
 
 /**
  * Created by mohax on 03.01.2017.
@@ -20,7 +20,7 @@ public class Objects3ArticlesFragment
 
     @Override
     protected void callInjections() {
-        MyApplication.getAppComponent().inject(this);
+        BaseApplication.getAppComponent().inject(this);
     }
 
     @Override

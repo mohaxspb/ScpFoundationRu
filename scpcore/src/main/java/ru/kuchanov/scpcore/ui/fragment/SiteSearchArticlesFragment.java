@@ -10,10 +10,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import ru.dante.scpfoundation.Constants;
-import ru.dante.scpfoundation.MyApplication;
-import ru.dante.scpfoundation.R;
-import ru.dante.scpfoundation.mvp.contract.SiteSearchArticlesMvp;
+import ru.kuchanov.scpcore.Constants;
+import ru.kuchanov.scpcore.BaseApplication;
+import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.mvp.contract.SiteSearchArticlesMvp;
 
 /**
  * Created by mohax on 03.01.2017.
@@ -42,7 +42,7 @@ public class SiteSearchArticlesFragment
 
     @Override
     protected void callInjections() {
-        MyApplication.getAppComponent().inject(this);
+        BaseApplication.getAppComponent().inject(this);
     }
 
     @Override

@@ -10,9 +10,9 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import ru.dante.scpfoundation.MyApplication;
-import ru.dante.scpfoundation.R;
-import ru.dante.scpfoundation.manager.MyPreferenceManager;
+import ru.kuchanov.scpcore.MyApplication;
+import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.manager.MyPreferenceManager;
 
 /**
  * Created by mohax on 11.06.2017.

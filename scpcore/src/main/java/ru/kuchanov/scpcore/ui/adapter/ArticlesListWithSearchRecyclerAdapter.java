@@ -3,8 +3,8 @@ package ru.kuchanov.scpcore.ui.adapter;
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.dante.scpfoundation.db.model.Article;
-import ru.dante.scpfoundation.ui.holder.HolderSimple;
+import ru.kuchanov.scpcore.db.model.Article;
+import ru.kuchanov.scpcore.ui.holder.HolderSimple;
 
 /**
  * Created by Dante on 17.01.2016.

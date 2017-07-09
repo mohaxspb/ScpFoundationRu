@@ -10,12 +10,12 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.dante.scpfoundation.Constants;
-import ru.dante.scpfoundation.MyApplication;
-import ru.dante.scpfoundation.R;
-import ru.dante.scpfoundation.db.model.Article;
-import ru.dante.scpfoundation.service.DownloadAllServiceImpl;
-import ru.dante.scpfoundation.ui.dialog.SubscriptionsFragmentDialog;
+import ru.kuchanov.scpcore.Constants;
+import ru.kuchanov.scpcore.MyApplication;
+import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.db.model.Article;
+import ru.kuchanov.scpcore.service.DownloadAllServiceImpl;
+import ru.kuchanov.scpcore.ui.dialog.SubscriptionsFragmentDialog;
 import ru.kuchanov.scp.downloads.ApiClientModel;
 import ru.kuchanov.scp.downloads.DbProviderFactoryModel;
 import ru.kuchanov.scp.downloads.DialogUtils;

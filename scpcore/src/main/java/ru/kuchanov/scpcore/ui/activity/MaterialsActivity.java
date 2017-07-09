@@ -11,26 +11,26 @@ import android.view.MenuItem;
 import java.util.Arrays;
 import java.util.List;
 
-import ru.dante.scpfoundation.Constants;
-import ru.dante.scpfoundation.MyApplication;
-import ru.dante.scpfoundation.R;
-import ru.dante.scpfoundation.monetization.util.MyAdListener;
-import ru.dante.scpfoundation.mvp.base.MonetizationActions;
-import ru.dante.scpfoundation.mvp.contract.DataSyncActions;
-import ru.dante.scpfoundation.mvp.contract.MaterialsScreenMvp;
-import ru.dante.scpfoundation.ui.base.BaseDrawerActivity;
-import ru.dante.scpfoundation.ui.dialog.TextSizeDialogFragment;
-import ru.dante.scpfoundation.ui.fragment.ArticleFragment;
-import ru.dante.scpfoundation.ui.fragment.MaterialsAllFragment;
-import ru.dante.scpfoundation.ui.fragment.MaterialsArchiveFragment;
-import ru.dante.scpfoundation.ui.fragment.MaterialsExperimentsFragment;
-import ru.dante.scpfoundation.ui.fragment.MaterialsIncidentsFragment;
-import ru.dante.scpfoundation.ui.fragment.MaterialsInterviewsFragment;
-import ru.dante.scpfoundation.ui.fragment.MaterialsJokesFragment;
-import ru.dante.scpfoundation.ui.fragment.MaterialsOtherFragment;
+import ru.kuchanov.scpcore.BaseApplication;
+import ru.kuchanov.scpcore.Constants;
+import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.monetization.util.MyAdListener;
+import ru.kuchanov.scpcore.mvp.base.MonetizationActions;
+import ru.kuchanov.scpcore.mvp.contract.DataSyncActions;
+import ru.kuchanov.scpcore.mvp.contract.MaterialsScreenMvp;
+import ru.kuchanov.scpcore.ui.base.BaseDrawerActivity;
+import ru.kuchanov.scpcore.ui.dialog.TextSizeDialogFragment;
+import ru.kuchanov.scpcore.ui.fragment.ArticleFragment;
+import ru.kuchanov.scpcore.ui.fragment.MaterialsAllFragment;
+import ru.kuchanov.scpcore.ui.fragment.MaterialsArchiveFragment;
+import ru.kuchanov.scpcore.ui.fragment.MaterialsExperimentsFragment;
+import ru.kuchanov.scpcore.ui.fragment.MaterialsIncidentsFragment;
+import ru.kuchanov.scpcore.ui.fragment.MaterialsInterviewsFragment;
+import ru.kuchanov.scpcore.ui.fragment.MaterialsJokesFragment;
+import ru.kuchanov.scpcore.ui.fragment.MaterialsOtherFragment;
 import timber.log.Timber;
 
-import static ru.dante.scpfoundation.ui.activity.MainActivity.EXTRA_SHOW_DISABLE_ADS;
+import static ru.kuchanov.scpcore.ui.activity.MainActivity.EXTRA_SHOW_DISABLE_ADS;
 
 public class MaterialsActivity
         extends BaseDrawerActivity<MaterialsScreenMvp.View, MaterialsScreenMvp.Presenter>
@@ -103,7 +103,7 @@ public class MaterialsActivity
 
     @Override
     protected void callInjections() {
-        MyApplication.getAppComponent().inject(this);
+        BaseApplication.getAppComponent().inject(this);
     }
 
     @Override
@@ -115,61 +115,60 @@ public class MaterialsActivity
     public boolean onNavigationItemClicked(int id) {
         Timber.d("onNavigationItemClicked with id: %s", id);
         String link = null;
-        switch (id) {
-            case R.id.about:
-                link = Constants.Urls.ABOUT_SCP;
-                break;
-            case R.id.news:
-                link = Constants.Urls.NEWS;
-                break;
-            case R.id.mostRatedArticles:
-                link = Constants.Urls.RATE;
-                break;
-            case R.id.mostRecentArticles:
-                link = Constants.Urls.NEW_ARTICLES;
-                break;
-            case R.id.random_page:
-                mPresenter.getRandomArticleUrl();
-                break;
-            case R.id.objects_I:
-                link = Constants.Urls.OBJECTS_1;
-                break;
-            case R.id.objects_II:
-                link = Constants.Urls.OBJECTS_2;
-                break;
-            case R.id.objects_III:
-                link = Constants.Urls.OBJECTS_3;
-                break;
-            case R.id.objects_IV:
-                link = Constants.Urls.OBJECTS_4;
-                break;
-            case R.id.objects_RU:
-                link = Constants.Urls.OBJECTS_RU;
-                break;
-            case R.id.files:
-                getSupportFragmentManager().popBackStackImmediate(MaterialsAllFragment.TAG, 0);
-                return false;
-            case R.id.stories:
-                link = Constants.Urls.STORIES;
-                break;
-            case R.id.favorite:
-                link = Constants.Urls.FAVORITES;
-                break;
-            case R.id.offline:
-                link = Constants.Urls.OFFLINE;
-                break;
-            case R.id.gallery:
-                GalleryActivity.startActivity(this);
-                break;
-            case R.id.siteSearch:
-                link = Constants.Urls.SEARCH;
-                break;
-            case R.id.tagsSearch:
-                TagSearchActivity.startActivity(this);
-                return true;
-            default:
-                Timber.e("unexpected item ID");
-                break;
+        if (id == R.id.about) {
+            link = Constants.Urls.ABOUT_SCP;
+
+        } else if (id == R.id.news) {
+            link = Constants.Urls.NEWS;
+
+        } else if (id == R.id.mostRatedArticles) {
+            link = Constants.Urls.RATE;
+
+        } else if (id == R.id.mostRecentArticles) {
+            link = Constants.Urls.NEW_ARTICLES;
+
+        } else if (id == R.id.random_page) {
+            mPresenter.getRandomArticleUrl();
+
+        } else if (id == R.id.objects_I) {
+            link = Constants.Urls.OBJECTS_1;
+
+        } else if (id == R.id.objects_II) {
+            link = Constants.Urls.OBJECTS_2;
+
+        } else if (id == R.id.objects_III) {
+            link = Constants.Urls.OBJECTS_3;
+
+        } else if (id == R.id.objects_IV) {
+            link = Constants.Urls.OBJECTS_4;
+
+        } else if (id == R.id.objects_RU) {
+            link = Constants.Urls.OBJECTS_RU;
+
+        } else if (id == R.id.files) {
+            getSupportFragmentManager().popBackStackImmediate(MaterialsAllFragment.TAG, 0);
+            return false;
+        } else if (id == R.id.stories) {
+            link = Constants.Urls.STORIES;
+
+        } else if (id == R.id.favorite) {
+            link = Constants.Urls.FAVORITES;
+
+        } else if (id == R.id.offline) {
+            link = Constants.Urls.OFFLINE;
+
+        } else if (id == R.id.gallery) {
+            GalleryActivity.startActivity(this);
+
+        } else if (id == R.id.siteSearch) {
+            link = Constants.Urls.SEARCH;
+
+        } else if (id == R.id.tagsSearch) {
+            TagSearchActivity.startActivity(this);
+            return true;
+        } else {
+            Timber.e("unexpected item ID");
+
         }
         if (link != null) {
             MainActivity.startActivity(this, link);
@@ -180,14 +179,14 @@ public class MaterialsActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Timber.d("onOptionsItemSelected with id: %s", item);
-        switch (item.getItemId()) {
-            case R.id.text_size:
-                BottomSheetDialogFragment fragmentDialogTextAppearance =
-                        TextSizeDialogFragment.newInstance(TextSizeDialogFragment.TextSizeType.ALL);
-                fragmentDialogTextAppearance.show(getSupportFragmentManager(), TextSizeDialogFragment.TAG);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        int i = item.getItemId();
+        if (i == R.id.text_size) {
+            BottomSheetDialogFragment fragmentDialogTextAppearance =
+                    TextSizeDialogFragment.newInstance(TextSizeDialogFragment.TextSizeType.ALL);
+            fragmentDialogTextAppearance.show(getSupportFragmentManager(), TextSizeDialogFragment.TAG);
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
         }
     }
 

@@ -4,7 +4,7 @@ import android.view.View;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import ru.dante.scpfoundation.R;
+import ru.kuchanov.scpcore.R;
 
 /**
  * Created by mohax on 23.03.2017.

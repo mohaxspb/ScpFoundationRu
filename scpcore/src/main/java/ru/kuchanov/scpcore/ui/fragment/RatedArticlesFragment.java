@@ -1,7 +1,7 @@
 package ru.kuchanov.scpcore.ui.fragment;
 
-import ru.dante.scpfoundation.MyApplication;
-import ru.dante.scpfoundation.mvp.contract.RatedArticlesMvp;
+import ru.kuchanov.scpcore.BaseApplication;
+import ru.kuchanov.scpcore.mvp.contract.RatedArticlesMvp;
 
 /**
  * Created by mohax on 03.01.2017.
@@ -20,7 +20,7 @@ public class RatedArticlesFragment
 
     @Override
     protected void callInjections() {
-        MyApplication.getAppComponent().inject(this);
+        BaseApplication.getAppComponent().inject(this);
     }
 
     @Override

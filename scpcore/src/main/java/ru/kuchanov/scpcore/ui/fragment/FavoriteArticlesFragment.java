@@ -1,7 +1,8 @@
 package ru.kuchanov.scpcore.ui.fragment;
 
-import ru.dante.scpfoundation.MyApplication;
-import ru.dante.scpfoundation.mvp.contract.FavoriteArticlesMvp;
+import ru.kuchanov.scpcore.BaseApplication;
+import ru.kuchanov.scpcore.BaseApplication;
+import ru.kuchanov.scpcore.mvp.contract.FavoriteArticlesMvp;
 
 /**
  * Created by mohax on 03.01.2017.
@@ -20,7 +21,7 @@ public class FavoriteArticlesFragment
 
     @Override
     protected void callInjections() {
-        MyApplication.getAppComponent().inject(this);
+        BaseApplication.getAppComponent().inject(this);
     }
 
     @Override

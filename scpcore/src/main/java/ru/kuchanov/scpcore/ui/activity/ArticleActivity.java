@@ -18,24 +18,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
-import ru.dante.scpfoundation.BuildConfig;
-import ru.dante.scpfoundation.Constants;
-import ru.dante.scpfoundation.MyApplication;
-import ru.dante.scpfoundation.R;
-import ru.dante.scpfoundation.monetization.util.MyAdListener;
-import ru.dante.scpfoundation.mvp.base.MonetizationActions;
-import ru.dante.scpfoundation.mvp.contract.ArticleScreenMvp;
-import ru.dante.scpfoundation.mvp.contract.DataSyncActions;
-import ru.dante.scpfoundation.ui.adapter.ArticlesPagerAdapter;
-import ru.dante.scpfoundation.ui.base.BaseDrawerActivity;
-import ru.dante.scpfoundation.ui.dialog.TextSizeDialogFragment;
-import ru.dante.scpfoundation.ui.fragment.ArticleFragment;
-import ru.dante.scpfoundation.util.IntentUtils;
-import ru.dante.scpfoundation.util.SystemUtils;
+import ru.kuchanov.scpcore.BaseApplication;
+import ru.kuchanov.scpcore.BuildConfig;
+import ru.kuchanov.scpcore.Constants;
+import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.R2;
+import ru.kuchanov.scpcore.monetization.util.MyAdListener;
+import ru.kuchanov.scpcore.mvp.base.MonetizationActions;
+import ru.kuchanov.scpcore.mvp.contract.ArticleScreenMvp;
+import ru.kuchanov.scpcore.mvp.contract.DataSyncActions;
+import ru.kuchanov.scpcore.ui.adapter.ArticlesPagerAdapter;
+import ru.kuchanov.scpcore.ui.base.BaseDrawerActivity;
+import ru.kuchanov.scpcore.ui.dialog.TextSizeDialogFragment;
+import ru.kuchanov.scpcore.ui.fragment.ArticleFragment;
+import ru.kuchanov.scpcore.util.IntentUtils;
+import ru.kuchanov.scpcore.util.SystemUtils;
 import timber.log.Timber;
 
-import static ru.dante.scpfoundation.Constants.Firebase.RemoteConfigKeys.ARTICLE_BANNER_DISABLED;
-import static ru.dante.scpfoundation.ui.activity.MainActivity.EXTRA_SHOW_DISABLE_ADS;
+import static ru.kuchanov.scpcore.Constants.Firebase.RemoteConfigKeys.ARTICLE_BANNER_DISABLED;
+import static ru.kuchanov.scpcore.ui.activity.MainActivity.EXTRA_SHOW_DISABLE_ADS;
 
 public class ArticleActivity
         extends BaseDrawerActivity<ArticleScreenMvp.View, ArticleScreenMvp.Presenter>
@@ -44,10 +45,10 @@ public class ArticleActivity
     public static final String EXTRA_ARTICLES_URLS_LIST = "EXTRA_ARTICLES_URLS_LIST";
     public static final String EXTRA_POSITION = "EXTRA_POSITION";
 
-    @BindView(R.id.content)
+    @BindView(R2.id.content)
     ViewPager mViewPager;
 
-    @BindView(R.id.banner)
+    @BindView(R2.id.banner)
     AdView mAdView;
 
     private int mCurPosition;
@@ -181,7 +182,7 @@ public class ArticleActivity
 
     @Override
     protected void callInjections() {
-        MyApplication.getAppComponent().inject(this);
+        BaseApplication.getAppComponent().inject(this);
     }
 
     @Override
@@ -193,61 +194,60 @@ public class ArticleActivity
     public boolean onNavigationItemClicked(int id) {
         Timber.d("onNavigationItemClicked with id: %s", id);
         String link = null;
-        switch (id) {
-            case R.id.about:
-                link = Constants.Urls.ABOUT_SCP;
-                break;
-            case R.id.news:
-                link = Constants.Urls.NEWS;
-                break;
-            case R.id.mostRatedArticles:
-                link = Constants.Urls.RATE;
-                break;
-            case R.id.mostRecentArticles:
-                link = Constants.Urls.NEW_ARTICLES;
-                break;
-            case R.id.random_page:
-                mPresenter.getRandomArticleUrl();
-                break;
-            case R.id.objects_I:
-                link = Constants.Urls.OBJECTS_1;
-                break;
-            case R.id.objects_II:
-                link = Constants.Urls.OBJECTS_2;
-                break;
-            case R.id.objects_III:
-                link = Constants.Urls.OBJECTS_3;
-                break;
-            case R.id.objects_IV:
-                link = Constants.Urls.OBJECTS_4;
-                break;
-            case R.id.objects_RU:
-                link = Constants.Urls.OBJECTS_RU;
-                break;
-            case R.id.files:
-                MaterialsActivity.startActivity(this);
-                break;
-            case R.id.stories:
-                link = Constants.Urls.STORIES;
-                break;
-            case R.id.favorite:
-                link = Constants.Urls.FAVORITES;
-                break;
-            case R.id.offline:
-                link = Constants.Urls.OFFLINE;
-                break;
-            case R.id.gallery:
-                GalleryActivity.startActivity(this);
-                break;
-            case R.id.siteSearch:
-                link = Constants.Urls.SEARCH;
-                break;
-            case R.id.tagsSearch:
-                TagSearchActivity.startActivity(this);
-                return true;
-            default:
-                Timber.e("unexpected item ID");
-                break;
+        if (id == R.id.about) {
+            link = Constants.Urls.ABOUT_SCP;
+
+        } else if (id == R.id.news) {
+            link = Constants.Urls.NEWS;
+
+        } else if (id == R.id.mostRatedArticles) {
+            link = Constants.Urls.RATE;
+
+        } else if (id == R.id.mostRecentArticles) {
+            link = Constants.Urls.NEW_ARTICLES;
+
+        } else if (id == R.id.random_page) {
+            mPresenter.getRandomArticleUrl();
+
+        } else if (id == R.id.objects_I) {
+            link = Constants.Urls.OBJECTS_1;
+
+        } else if (id == R.id.objects_II) {
+            link = Constants.Urls.OBJECTS_2;
+
+        } else if (id == R.id.objects_III) {
+            link = Constants.Urls.OBJECTS_3;
+
+        } else if (id == R.id.objects_IV) {
+            link = Constants.Urls.OBJECTS_4;
+
+        } else if (id == R.id.objects_RU) {
+            link = Constants.Urls.OBJECTS_RU;
+
+        } else if (id == R.id.files) {
+            MaterialsActivity.startActivity(this);
+
+        } else if (id == R.id.stories) {
+            link = Constants.Urls.STORIES;
+
+        } else if (id == R.id.favorite) {
+            link = Constants.Urls.FAVORITES;
+
+        } else if (id == R.id.offline) {
+            link = Constants.Urls.OFFLINE;
+
+        } else if (id == R.id.gallery) {
+            GalleryActivity.startActivity(this);
+
+        } else if (id == R.id.siteSearch) {
+            link = Constants.Urls.SEARCH;
+
+        } else if (id == R.id.tagsSearch) {
+            TagSearchActivity.startActivity(this);
+            return true;
+        } else {
+            Timber.e("unexpected item ID");
+
         }
         if (link != null) {
             MainActivity.startActivity(this, link);
@@ -258,22 +258,22 @@ public class ArticleActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Timber.d("onOptionsItemSelected with id: %s", item);
-        switch (item.getItemId()) {
-            case R.id.menuItemShare:
-                IntentUtils.shareUrl(mUrls.get(mCurPosition));
-                return true;
-            case R.id.menuItemBrowser:
-                IntentUtils.openUrl(mUrls.get(mCurPosition));
-                return true;
-            case R.id.menuItemFavorite:
-                mPresenter.toggleFavorite(mUrls.get(mCurPosition));
-                return true;
-            case R.id.text_size:
-                BottomSheetDialogFragment fragmentDialogTextAppearance = TextSizeDialogFragment.newInstance(TextSizeDialogFragment.TextSizeType.ARTICLE);
-                fragmentDialogTextAppearance.show(getSupportFragmentManager(), TextSizeDialogFragment.TAG);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        int i = item.getItemId();
+        if (i == R.id.menuItemShare) {
+            IntentUtils.shareUrl(mUrls.get(mCurPosition));
+            return true;
+        } else if (i == R.id.menuItemBrowser) {
+            IntentUtils.openUrl(mUrls.get(mCurPosition));
+            return true;
+        } else if (i == R.id.menuItemFavorite) {
+            mPresenter.toggleFavorite(mUrls.get(mCurPosition));
+            return true;
+        } else if (i == R.id.text_size) {
+            BottomSheetDialogFragment fragmentDialogTextAppearance = TextSizeDialogFragment.newInstance(TextSizeDialogFragment.TextSizeType.ARTICLE);
+            fragmentDialogTextAppearance.show(getSupportFragmentManager(), TextSizeDialogFragment.TAG);
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
         }
     }
 

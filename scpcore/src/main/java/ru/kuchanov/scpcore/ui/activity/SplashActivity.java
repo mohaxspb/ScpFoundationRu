@@ -7,8 +7,9 @@ import android.support.v7.app.AppCompatActivity;
 
 /**
  * Created by Ivan Semkin on 4/23/2017.
+ *
+ * for ScpFoundationRu
  */
-
 public class SplashActivity extends AppCompatActivity {
 
     @Override
@@ -17,5 +18,4 @@ public class SplashActivity extends AppCompatActivity {
         startActivity(new Intent(this, LicenceActivity.class));
         finishAffinity();
     }
-
 }

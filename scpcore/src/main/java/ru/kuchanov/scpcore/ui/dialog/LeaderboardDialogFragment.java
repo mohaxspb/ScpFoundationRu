@@ -18,9 +18,9 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import butterknife.ButterKnife;
-import ru.dante.scpfoundation.R;
-import ru.dante.scpfoundation.api.model.response.LeaderBoardResponse;
-import ru.dante.scpfoundation.ui.adapter.LeaderboardRecyclerAdapter;
+import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.api.model.response.LeaderBoardResponse;
+import ru.kuchanov.scpcore.ui.adapter.LeaderboardRecyclerAdapter;
 import timber.log.Timber;
 import xyz.danoz.recyclerviewfastscroller.vertical.VerticalRecyclerViewFastScroller;
 

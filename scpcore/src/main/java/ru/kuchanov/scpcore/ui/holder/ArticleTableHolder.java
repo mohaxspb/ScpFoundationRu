@@ -12,9 +12,9 @@ import android.webkit.WebViewClient;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import ru.dante.scpfoundation.BuildConfig;
-import ru.dante.scpfoundation.R;
-import ru.dante.scpfoundation.ui.util.SetTextViewHTML;
+import ru.kuchanov.scpcore.BuildConfig;
+import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.ui.util.SetTextViewHTML;
 import timber.log.Timber;
 
 /**

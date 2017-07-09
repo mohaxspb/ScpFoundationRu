@@ -16,10 +16,10 @@ import java.lang.annotation.RetentionPolicy;
 import javax.inject.Inject;
 
 import butterknife.BindView;
-import ru.dante.scpfoundation.MyApplication;
-import ru.dante.scpfoundation.R;
-import ru.dante.scpfoundation.manager.MyPreferenceManager;
-import ru.dante.scpfoundation.ui.base.BaseBottomSheetDialogFragment;
+import ru.kuchanov.scpcore.MyApplication;
+import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.manager.MyPreferenceManager;
+import ru.kuchanov.scpcore.ui.base.BaseBottomSheetDialogFragment;
 import timber.log.Timber;
 
 

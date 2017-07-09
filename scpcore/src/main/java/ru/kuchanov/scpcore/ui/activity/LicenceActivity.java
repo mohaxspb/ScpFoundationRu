@@ -19,9 +19,11 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import ru.dante.scpfoundation.MyApplication;
-import ru.dante.scpfoundation.R;
-import ru.dante.scpfoundation.manager.MyPreferenceManager;
+import ru.kuchanov.scpcore.BaseApplication;
+import ru.kuchanov.scpcore.MyApplication;
+import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.R2;
+import ru.kuchanov.scpcore.manager.MyPreferenceManager;
 import timber.log.Timber;
 
 /**
@@ -33,15 +35,15 @@ public class LicenceActivity extends AppCompatActivity {
 
     public static final String EXTRA_SHOW_ABOUT = "EXTRA_SHOW_ABOUT";
 
-    @BindView(R.id.text)
+    @BindView(R2.id.text)
     TextView text;
-    @BindView(R.id.root)
+    @BindView(R2.id.root)
     View mRoot;
 
     @Inject
     MyPreferenceManager mMyPreferenceManager;
 
-    @OnClick(R.id.accept)
+    @OnClick(R2.id.accept)
     public void onAcceptClick() {
         mMyPreferenceManager.setLicenceAccepted(true);
         startActivity(new Intent(this, MainActivity.class).putExtra(EXTRA_SHOW_ABOUT, true));
@@ -51,7 +53,7 @@ public class LicenceActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        MyApplication.getAppComponent().inject(this);
+        BaseApplication.getAppComponent().inject(this);
         if (mMyPreferenceManager.isLicenceAccepted()) {
             startActivity(new Intent(this, MainActivity.class));
             finish();

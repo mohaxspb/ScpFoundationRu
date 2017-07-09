@@ -3,9 +3,9 @@ package ru.kuchanov.scpcore.ui.fragment;
 import android.view.Menu;
 import android.view.MenuInflater;
 
-import ru.dante.scpfoundation.MyApplication;
-import ru.dante.scpfoundation.R;
-import ru.dante.scpfoundation.mvp.contract.OfflineArticles;
+import ru.kuchanov.scpcore.BaseApplication;
+import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.mvp.contract.OfflineArticles;
 
 /**
  * Created by mohax on 03.01.2017.
@@ -24,7 +24,7 @@ public class OfflineArticlesFragment
 
     @Override
     protected void callInjections() {
-        MyApplication.getAppComponent().inject(this);
+        BaseApplication.getAppComponent().inject(this);
     }
 
     @Override

@@ -14,12 +14,12 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import ru.dante.scpfoundation.MyApplication;
-import ru.dante.scpfoundation.R;
-import ru.dante.scpfoundation.db.model.ArticleTag;
-import ru.dante.scpfoundation.manager.MyPreferenceManager;
-import ru.dante.scpfoundation.ui.util.SetTextViewHTML;
-import ru.dante.scpfoundation.ui.view.TagView;
+import ru.kuchanov.scpcore.MyApplication;
+import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.db.model.ArticleTag;
+import ru.kuchanov.scpcore.manager.MyPreferenceManager;
+import ru.kuchanov.scpcore.ui.util.SetTextViewHTML;
+import ru.kuchanov.scpcore.ui.view.TagView;
 import uk.co.chrisjenx.calligraphy.CalligraphyUtils;
 
 /**

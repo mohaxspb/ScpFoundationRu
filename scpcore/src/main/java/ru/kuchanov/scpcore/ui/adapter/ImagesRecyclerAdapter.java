@@ -16,9 +16,9 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import ru.dante.scpfoundation.R;
-import ru.dante.scpfoundation.db.model.VkImage;
-import ru.dante.scpfoundation.util.AttributeGetter;
+import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.db.model.VkImage;
+import ru.kuchanov.scpcore.util.AttributeGetter;
 
 /**
  * Created by Ivan Semkin on 4/27/2017.

@@ -11,29 +11,29 @@ import android.view.MenuItem;
 
 import java.util.List;
 
-import ru.dante.scpfoundation.BuildConfig;
-import ru.dante.scpfoundation.Constants;
-import ru.dante.scpfoundation.MyApplication;
-import ru.dante.scpfoundation.R;
-import ru.dante.scpfoundation.mvp.contract.MainMvp;
-import ru.dante.scpfoundation.ui.base.BaseDrawerActivity;
-import ru.dante.scpfoundation.ui.dialog.NewVersionDialogFragment;
-import ru.dante.scpfoundation.ui.dialog.TextSizeDialogFragment;
-import ru.dante.scpfoundation.ui.fragment.ArticleFragment;
-import ru.dante.scpfoundation.ui.fragment.FavoriteArticlesFragment;
-import ru.dante.scpfoundation.ui.fragment.Objects1ArticlesFragment;
-import ru.dante.scpfoundation.ui.fragment.Objects2ArticlesFragment;
-import ru.dante.scpfoundation.ui.fragment.Objects3ArticlesFragment;
-import ru.dante.scpfoundation.ui.fragment.Objects4ArticlesFragment;
-import ru.dante.scpfoundation.ui.fragment.ObjectsRuArticlesFragment;
-import ru.dante.scpfoundation.ui.fragment.OfflineArticlesFragment;
-import ru.dante.scpfoundation.ui.fragment.RatedArticlesFragment;
-import ru.dante.scpfoundation.ui.fragment.RecentArticlesFragment;
-import ru.dante.scpfoundation.ui.fragment.SiteSearchArticlesFragment;
+import ru.kuchanov.scpcore.BaseApplication;
+import ru.kuchanov.scpcore.BuildConfig;
+import ru.kuchanov.scpcore.Constants;
+import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.mvp.contract.MainMvp;
+import ru.kuchanov.scpcore.ui.base.BaseDrawerActivity;
+import ru.kuchanov.scpcore.ui.dialog.NewVersionDialogFragment;
+import ru.kuchanov.scpcore.ui.dialog.TextSizeDialogFragment;
+import ru.kuchanov.scpcore.ui.fragment.ArticleFragment;
+import ru.kuchanov.scpcore.ui.fragment.FavoriteArticlesFragment;
+import ru.kuchanov.scpcore.ui.fragment.Objects1ArticlesFragment;
+import ru.kuchanov.scpcore.ui.fragment.Objects2ArticlesFragment;
+import ru.kuchanov.scpcore.ui.fragment.Objects3ArticlesFragment;
+import ru.kuchanov.scpcore.ui.fragment.Objects4ArticlesFragment;
+import ru.kuchanov.scpcore.ui.fragment.ObjectsRuArticlesFragment;
+import ru.kuchanov.scpcore.ui.fragment.OfflineArticlesFragment;
+import ru.kuchanov.scpcore.ui.fragment.RatedArticlesFragment;
+import ru.kuchanov.scpcore.ui.fragment.RecentArticlesFragment;
+import ru.kuchanov.scpcore.ui.fragment.SiteSearchArticlesFragment;
 import ru.kuchanov.rate.PreRate;
 import timber.log.Timber;
 
-import static ru.dante.scpfoundation.ui.activity.LicenceActivity.EXTRA_SHOW_ABOUT;
+import static ru.kuchanov.scpcore.ui.activity.LicenceActivity.EXTRA_SHOW_ABOUT;
 
 public class MainActivity
         extends BaseDrawerActivity<MainMvp.View, MainMvp.Presenter>
@@ -134,11 +134,11 @@ public class MainActivity
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
         
-        if ("ru.dante.scpfoundation.open.NEW".equals(intent.getAction())) {
+        if ("ru.kuchanov.scpcore.open.NEW".equals(intent.getAction())) {
             mCurrentSelectedDrawerItemId = (R.id.mostRecentArticles);
-        } else if ("ru.dante.scpfoundation.open.FAVORITES".equals(intent.getAction())) {
+        } else if ("ru.kuchanov.scpcore.open.FAVORITES".equals(intent.getAction())) {
             mCurrentSelectedDrawerItemId = (R.id.favorite);
-        } else if ("ru.dante.scpfoundation.open.RANDOM".equals(intent.getAction())) {
+        } else if ("ru.kuchanov.scpcore.open.RANDOM".equals(intent.getAction())) {
             mCurrentSelectedDrawerItemId = (R.id.random_page);
         }
 
@@ -173,7 +173,7 @@ public class MainActivity
 
     @Override
     protected void callInjections() {
-        MyApplication.getAppComponent().inject(this);
+        BaseApplication.getAppComponent().inject(this);
     }
 
     @Override
@@ -185,76 +185,75 @@ public class MainActivity
     public boolean onNavigationItemClicked(int id) {
         Timber.d("onNavigationItemClicked with id: %s", id);
         setToolbarTitleByDrawerItemId(id);
-        switch (id) {
-            case R.id.about:
-                mCurrentSelectedDrawerItemId = id;
-                showFragment(ArticleFragment.newInstance(Constants.Urls.ABOUT_SCP),
-                        ArticleFragment.TAG + "#" + Constants.Urls.ABOUT_SCP);
-                return true;
-            case R.id.news:
-                mCurrentSelectedDrawerItemId = id;
-                showFragment(ArticleFragment.newInstance(Constants.Urls.NEWS), ArticleFragment.TAG + "#" + Constants.Urls.NEWS);
-                return true;
-            case R.id.mostRatedArticles:
-                mCurrentSelectedDrawerItemId = id;
-                showFragment(RatedArticlesFragment.newInstance(), RatedArticlesFragment.TAG);
-                return true;
-            case R.id.mostRecentArticles:
-                mCurrentSelectedDrawerItemId = id;
-                showFragment(RecentArticlesFragment.newInstance(), RecentArticlesFragment.TAG);
-                return true;
-            case R.id.random_page:
-                mPresenter.getRandomArticleUrl();
-                return false;
-            case R.id.objects_I:
-                mCurrentSelectedDrawerItemId = id;
-                showFragment(Objects1ArticlesFragment.newInstance(), Objects1ArticlesFragment.TAG);
-                return true;
-            case R.id.objects_II:
-                mCurrentSelectedDrawerItemId = id;
-                showFragment(Objects2ArticlesFragment.newInstance(), Objects2ArticlesFragment.TAG);
-                return true;
-            case R.id.objects_III:
-                mCurrentSelectedDrawerItemId = id;
-                showFragment(Objects3ArticlesFragment.newInstance(), Objects3ArticlesFragment.TAG);
-                return true;
-            case R.id.objects_IV:
-                mCurrentSelectedDrawerItemId = id;
-                showFragment(Objects4ArticlesFragment.newInstance(), Objects4ArticlesFragment.TAG);
-                return true;
-            case R.id.objects_RU:
-                mCurrentSelectedDrawerItemId = id;
-                showFragment(ObjectsRuArticlesFragment.newInstance(), ObjectsRuArticlesFragment.TAG);
-                return true;
-            case R.id.files:
-                MaterialsActivity.startActivity(this);
-                return false;
-            case R.id.stories:
-                mCurrentSelectedDrawerItemId = id;
-                showFragment(ArticleFragment.newInstance(Constants.Urls.STORIES),
-                        ArticleFragment.TAG + "#" + Constants.Urls.STORIES);
-                return true;
-            case R.id.favorite:
-                mCurrentSelectedDrawerItemId = id;
-                showFragment(FavoriteArticlesFragment.newInstance(), FavoriteArticlesFragment.TAG);
-                return true;
-            case R.id.offline:
-                mCurrentSelectedDrawerItemId = id;
-                showFragment(OfflineArticlesFragment.newInstance(), OfflineArticlesFragment.TAG);
-                return true;
-            case R.id.gallery:
-                GalleryActivity.startActivity(this);
-                return false;
-            case R.id.siteSearch:
-                mCurrentSelectedDrawerItemId = id;
-                showFragment(SiteSearchArticlesFragment.newInstance(), SiteSearchArticlesFragment.TAG);
-                return true;
-            case R.id.tagsSearch:
-                TagSearchActivity.startActivity(this);
-                return true;
-            default:
-                Timber.e("unexpected item ID");
-                return true;
+        if (id == R.id.about) {
+            mCurrentSelectedDrawerItemId = id;
+            showFragment(ArticleFragment.newInstance(Constants.Urls.ABOUT_SCP),
+                    ArticleFragment.TAG + "#" + Constants.Urls.ABOUT_SCP);
+            return true;
+        } else if (id == R.id.news) {
+            mCurrentSelectedDrawerItemId = id;
+            showFragment(ArticleFragment.newInstance(Constants.Urls.NEWS), ArticleFragment.TAG + "#" + Constants.Urls.NEWS);
+            return true;
+        } else if (id == R.id.mostRatedArticles) {
+            mCurrentSelectedDrawerItemId = id;
+            showFragment(RatedArticlesFragment.newInstance(), RatedArticlesFragment.TAG);
+            return true;
+        } else if (id == R.id.mostRecentArticles) {
+            mCurrentSelectedDrawerItemId = id;
+            showFragment(RecentArticlesFragment.newInstance(), RecentArticlesFragment.TAG);
+            return true;
+        } else if (id == R.id.random_page) {
+            mPresenter.getRandomArticleUrl();
+            return false;
+        } else if (id == R.id.objects_I) {
+            mCurrentSelectedDrawerItemId = id;
+            showFragment(Objects1ArticlesFragment.newInstance(), Objects1ArticlesFragment.TAG);
+            return true;
+        } else if (id == R.id.objects_II) {
+            mCurrentSelectedDrawerItemId = id;
+            showFragment(Objects2ArticlesFragment.newInstance(), Objects2ArticlesFragment.TAG);
+            return true;
+        } else if (id == R.id.objects_III) {
+            mCurrentSelectedDrawerItemId = id;
+            showFragment(Objects3ArticlesFragment.newInstance(), Objects3ArticlesFragment.TAG);
+            return true;
+        } else if (id == R.id.objects_IV) {
+            mCurrentSelectedDrawerItemId = id;
+            showFragment(Objects4ArticlesFragment.newInstance(), Objects4ArticlesFragment.TAG);
+            return true;
+        } else if (id == R.id.objects_RU) {
+            mCurrentSelectedDrawerItemId = id;
+            showFragment(ObjectsRuArticlesFragment.newInstance(), ObjectsRuArticlesFragment.TAG);
+            return true;
+        } else if (id == R.id.files) {
+            MaterialsActivity.startActivity(this);
+            return false;
+        } else if (id == R.id.stories) {
+            mCurrentSelectedDrawerItemId = id;
+            showFragment(ArticleFragment.newInstance(Constants.Urls.STORIES),
+                    ArticleFragment.TAG + "#" + Constants.Urls.STORIES);
+            return true;
+        } else if (id == R.id.favorite) {
+            mCurrentSelectedDrawerItemId = id;
+            showFragment(FavoriteArticlesFragment.newInstance(), FavoriteArticlesFragment.TAG);
+            return true;
+        } else if (id == R.id.offline) {
+            mCurrentSelectedDrawerItemId = id;
+            showFragment(OfflineArticlesFragment.newInstance(), OfflineArticlesFragment.TAG);
+            return true;
+        } else if (id == R.id.gallery) {
+            GalleryActivity.startActivity(this);
+            return false;
+        } else if (id == R.id.siteSearch) {
+            mCurrentSelectedDrawerItemId = id;
+            showFragment(SiteSearchArticlesFragment.newInstance(), SiteSearchArticlesFragment.TAG);
+            return true;
+        } else if (id == R.id.tagsSearch) {
+            TagSearchActivity.startActivity(this);
+            return true;
+        } else {
+            Timber.e("unexpected item ID");
+            return true;
         }
     }
 
@@ -295,50 +294,49 @@ public class MainActivity
     public void setToolbarTitleByDrawerItemId(int id) {
         Timber.d("setToolbarTitleByDrawerItemId with id: %s", id);
         String title;
-        switch (id) {
-            case R.id.about:
-                title = getString(R.string.drawer_item_1);
-                break;
-            case R.id.news:
-                title = getString(R.string.drawer_item_2);
-                break;
-            case R.id.mostRatedArticles:
-                title = getString(R.string.drawer_item_3);
-                break;
-            case R.id.mostRecentArticles:
-                title = getString(R.string.drawer_item_4);
-                break;
-            case R.id.objects_I:
-                title = getString(R.string.drawer_item_6);
-                break;
-            case R.id.objects_II:
-                title = getString(R.string.drawer_item_7);
-                break;
-            case R.id.objects_III:
-                title = getString(R.string.drawer_item_8);
-                break;
-            case R.id.objects_IV:
-                title = getString(R.string.drawer_item_objects4);
-                break;
-            case R.id.objects_RU:
-                title = getString(R.string.drawer_item_9);
-                break;
-            case R.id.stories:
-                title = getString(R.string.drawer_item_11);
-                break;
-            case R.id.favorite:
-                title = getString(R.string.drawer_item_12);
-                break;
-            case R.id.offline:
-                title = getString(R.string.drawer_item_13);
-                break;
-            case R.id.siteSearch:
-                title = getString(R.string.drawer_item_15);
-                break;
-            default:
-                Timber.e("unexpected item ID");
-                title = null;
-                break;
+        if (id == R.id.about) {
+            title = getString(R.string.drawer_item_1);
+
+        } else if (id == R.id.news) {
+            title = getString(R.string.drawer_item_2);
+
+        } else if (id == R.id.mostRatedArticles) {
+            title = getString(R.string.drawer_item_3);
+
+        } else if (id == R.id.mostRecentArticles) {
+            title = getString(R.string.drawer_item_4);
+
+        } else if (id == R.id.objects_I) {
+            title = getString(R.string.drawer_item_6);
+
+        } else if (id == R.id.objects_II) {
+            title = getString(R.string.drawer_item_7);
+
+        } else if (id == R.id.objects_III) {
+            title = getString(R.string.drawer_item_8);
+
+        } else if (id == R.id.objects_IV) {
+            title = getString(R.string.drawer_item_objects4);
+
+        } else if (id == R.id.objects_RU) {
+            title = getString(R.string.drawer_item_9);
+
+        } else if (id == R.id.stories) {
+            title = getString(R.string.drawer_item_11);
+
+        } else if (id == R.id.favorite) {
+            title = getString(R.string.drawer_item_12);
+
+        } else if (id == R.id.offline) {
+            title = getString(R.string.drawer_item_13);
+
+        } else if (id == R.id.siteSearch) {
+            title = getString(R.string.drawer_item_15);
+
+        } else {
+            Timber.e("unexpected item ID");
+            title = null;
+
         }
         assert mToolbar != null;
         if (title != null) {
@@ -360,14 +358,14 @@ public class MainActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.text_size:
-                BottomSheetDialogFragment fragmentDialogTextAppearance =
-                        TextSizeDialogFragment.newInstance(TextSizeDialogFragment.TextSizeType.UI);
-                fragmentDialogTextAppearance.show(getSupportFragmentManager(), TextSizeDialogFragment.TAG);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        int i = item.getItemId();
+        if (i == R.id.text_size) {
+            BottomSheetDialogFragment fragmentDialogTextAppearance =
+                    TextSizeDialogFragment.newInstance(TextSizeDialogFragment.TextSizeType.UI);
+            fragmentDialogTextAppearance.show(getSupportFragmentManager(), TextSizeDialogFragment.TAG);
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
         }
     }
 }

@@ -16,9 +16,9 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.target.ViewTarget;
 
-import ru.dante.scpfoundation.R;
-import ru.dante.scpfoundation.util.AttributeGetter;
-import ru.dante.scpfoundation.util.DimensionUtils;
+import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.util.AttributeGetter;
+import ru.kuchanov.scpcore.util.DimensionUtils;
 
 /**
  * Created by mohax on 05.01.2017.

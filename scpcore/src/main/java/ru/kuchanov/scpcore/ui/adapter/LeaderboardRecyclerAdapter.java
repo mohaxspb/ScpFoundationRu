@@ -7,9 +7,9 @@ import android.view.ViewGroup;
 
 import java.util.List;
 
-import ru.dante.scpfoundation.R;
-import ru.dante.scpfoundation.api.model.firebase.FirebaseObjectUser;
-import ru.dante.scpfoundation.ui.holder.LeaderboardHolder;
+import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.api.model.firebase.FirebaseObjectUser;
+import ru.kuchanov.scpcore.ui.holder.LeaderboardHolder;
 import timber.log.Timber;
 
 /**

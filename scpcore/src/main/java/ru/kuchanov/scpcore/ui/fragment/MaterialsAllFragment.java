@@ -17,7 +17,7 @@ import ru.kuchanov.scpcore.mvp.contract.MaterialsScreenMvp;
 import timber.log.Timber;
 
 /**
- * Created for MyApplication by Dante on 16.01.2016  22:45.
+ * Created for BaseApplication by Dante on 16.01.2016  22:45.
  */
 //TODO extend from baseListFragment to set all its advantages
 public class MaterialsAllFragment extends Fragment {

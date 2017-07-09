@@ -13,10 +13,10 @@ import android.text.style.URLSpan;
 import android.view.View;
 import android.widget.TextView;
 
-import ru.dante.scpfoundation.BuildConfig;
-import ru.dante.scpfoundation.R;
-import ru.dante.scpfoundation.db.model.ArticleTag;
-import ru.dante.scpfoundation.util.AttributeGetter;
+import ru.kuchanov.scpcore.BuildConfig;
+import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.db.model.ArticleTag;
+import ru.kuchanov.scpcore.util.AttributeGetter;
 import timber.log.Timber;
 
 public class SetTextViewHTML {

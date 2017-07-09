@@ -25,8 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
-import ru.dante.scpfoundation.R;
-import ru.dante.scpfoundation.db.model.VkImage;
+import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.db.model.VkImage;
 import timber.log.Timber;
 
 /**

@@ -16,11 +16,11 @@ import java.io.InputStreamReader;
 
 import javax.inject.Inject;
 
-import ru.dante.scpfoundation.BuildConfig;
-import ru.dante.scpfoundation.MyApplication;
-import ru.dante.scpfoundation.R;
-import ru.dante.scpfoundation.manager.MyPreferenceManager;
-import ru.dante.scpfoundation.ui.util.MyHtmlTagHandler;
+import ru.kuchanov.scpcore.BuildConfig;
+import ru.kuchanov.scpcore.MyApplication;
+import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.manager.MyPreferenceManager;
+import ru.kuchanov.scpcore.ui.util.MyHtmlTagHandler;
 import timber.log.Timber;
 
 public class NewVersionDialogFragment extends DialogFragment {
