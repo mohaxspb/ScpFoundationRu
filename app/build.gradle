@@ -260,6 +260,8 @@ dependencies {
     //sub project modules
     compile('ru.kuchanov.scp:scp-downloads:1.0.5@aar') { transitive = true }
     compile('ru.kuchanov.utils:rate:1.0.1@aar') { transitive = true }
+    //test
+    compile project(':scpcore')
 }
 
 apply plugin: 'com.google.gms.google-services'
