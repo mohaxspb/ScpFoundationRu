@@ -17,6 +17,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.R2;
 import ru.kuchanov.scpcore.db.model.VkImage;
 import ru.kuchanov.scpcore.util.AttributeGetter;
 
@@ -67,7 +68,7 @@ public class ImagesRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     }
 
     class ViewHolderImage extends RecyclerView.ViewHolder {
-        @BindView(R.id.image)
+        @BindView(R2.id.image)
         ImageView imageView;
 
         ViewHolderImage(View itemView) {

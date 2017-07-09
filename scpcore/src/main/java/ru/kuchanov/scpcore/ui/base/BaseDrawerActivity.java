@@ -38,6 +38,7 @@ import butterknife.BindView;
 import ru.kuchanov.scpcore.BuildConfig;
 import ru.kuchanov.scpcore.Constants;
 import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.R2;
 import ru.kuchanov.scpcore.api.model.remoteconfig.LevelsJson;
 import ru.kuchanov.scpcore.api.model.response.LeaderBoardResponse;
 import ru.kuchanov.scpcore.db.model.User;
@@ -71,9 +72,9 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
     @Inject
     Gson mGson;
 
-    @BindView(R.id.root)
+    @BindView(R2.id.root)
     protected DrawerLayout mDrawerLayout;
-    @BindView(R.id.navigationView)
+    @BindView(R2.id.navigationView)
     protected NavigationView mNavigationView;
 
     protected MaterialDialog dialog;

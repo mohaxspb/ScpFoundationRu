@@ -14,6 +14,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.kuchanov.scpcore.BuildConfig;
 import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.R2;
 import ru.kuchanov.scpcore.ui.util.SetTextViewHTML;
 import timber.log.Timber;
 
@@ -26,7 +27,7 @@ public class ArticleTableHolder extends RecyclerView.ViewHolder {
 
     private SetTextViewHTML.TextItemsClickListener mTextItemsClickListener;
 
-    @BindView(R.id.webView)
+    @BindView(R2.id.webView)
     WebView webView;
 
     public ArticleTableHolder(View itemView, SetTextViewHTML.TextItemsClickListener clickListener) {

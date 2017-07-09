@@ -1,12 +1,9 @@
 package ru.kuchanov.scpcore.db.model;
 
-import org.parceler.Parcel;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.RealmObject;
-import io.realm.RealmStringRealmProxy;
 
 /**
  * Created by y.kuchanov on 28.12.16.
@@ -14,7 +11,6 @@ import io.realm.RealmStringRealmProxy;
  * for TappAwards
  * We need this wrapper, because Realm unable to store Strings in arrays/lists
  */
-@Parcel(implementations = { RealmStringRealmProxy.class }, value = Parcel.Serialization.BEAN, analyze = { RealmString.class })
 public class RealmString extends RealmObject{
 
     public String val;

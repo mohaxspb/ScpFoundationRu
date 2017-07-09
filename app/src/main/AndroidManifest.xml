@@ -21,7 +21,7 @@
         android:required="false"/>
 
     <application
-        android:name="ru.dante.scpfoundation.MyApplication"
+        android:name=".MyApplicationTest"
         android:allowBackup="false"
         android:debuggable="${myDebuggable}"
         android:icon="@drawable/ic_launcher"

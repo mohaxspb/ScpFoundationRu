@@ -35,7 +35,6 @@ import ru.dante.scpfoundation.util.SystemUtils;
 import timber.log.Timber;
 
 import static ru.dante.scpfoundation.Constants.Firebase.RemoteConfigKeys.ARTICLE_BANNER_DISABLED;
-import static ru.dante.scpfoundation.Constants.Firebase.RemoteConfigKeys.GALLERY_BANNER_DISABLED;
 import static ru.dante.scpfoundation.ui.activity.MainActivity.EXTRA_SHOW_DISABLE_ADS;
 
 public class ArticleActivity

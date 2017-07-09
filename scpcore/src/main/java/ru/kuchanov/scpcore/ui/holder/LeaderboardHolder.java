@@ -15,6 +15,7 @@ import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.R2;
 import ru.kuchanov.scpcore.api.model.firebase.FirebaseObjectUser;
 import ru.kuchanov.scpcore.api.model.remoteconfig.LevelsJson;
 import ru.kuchanov.scpcore.ui.adapter.LeaderboardRecyclerAdapter;
@@ -26,15 +27,15 @@ import ru.kuchanov.scpcore.ui.adapter.LeaderboardRecyclerAdapter;
  */
 public class LeaderboardHolder extends RecyclerView.ViewHolder {
 
-    @BindView(R.id.name)
+    @BindView(R2.id.name)
     TextView name;
-    @BindView(R.id.level)
+    @BindView(R2.id.level)
     TextView level;
-    @BindView(R.id.avatar)
+    @BindView(R2.id.avatar)
     ImageView image;
-    @BindView(R.id.place)
+    @BindView(R2.id.place)
     TextView place;
-    @BindView(R.id.score)
+    @BindView(R2.id.score)
     TextView score;
 
     private LeaderboardRecyclerAdapter.LeaderboardClickListener mClickListener;

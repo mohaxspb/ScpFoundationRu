@@ -126,9 +126,9 @@ public class TagView extends FrameLayout {
     })
     public @interface Action {
         @DrawableRes
-        int ADD = R.drawable.ic_add;
+        int ADD = R2.drawable.ic_add;
         @DrawableRes
-        int REMOVE = R.drawable.ic_clear;
+        int REMOVE = R2.drawable.ic_clear;
         @DrawableRes
         int NONE = 0;
     }

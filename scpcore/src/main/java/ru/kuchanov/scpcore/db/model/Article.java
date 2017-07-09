@@ -2,9 +2,6 @@ package ru.kuchanov.scpcore.db.model;
 
 import android.support.annotation.StringDef;
 
-import org.parceler.Parcel;
-import org.parceler.ParcelPropertyConverter;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
@@ -15,15 +12,12 @@ import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import ru.kuchanov.scp.downloads.ArticleModel;
-import ru.kuchanov.scpcore.db.util.RealmArticleTagListParcelConverter;
-import ru.kuchanov.scpcore.db.util.RealmStringListParcelConverter;
 
 /**
  * Created by mohax on 03.01.2017.
  * <p>
  * for scp_ru
  */
-@Parcel(implementations = {ArticleRealmProxy.class}, value = Parcel.Serialization.BEAN, analyze = {Article.class})
 public class Article extends RealmObject implements ArticleModel{
 
     public static final String FIELD_IS_IN_READEN = "isInReaden";
@@ -120,18 +114,13 @@ public class Article extends RealmObject implements ArticleModel{
     public int synced = Integer.MAX_VALUE;
 
     public boolean hasTabs;
-    @ParcelPropertyConverter(RealmStringListParcelConverter.class)
     public RealmList<RealmString> tabsTexts;
-    @ParcelPropertyConverter(RealmStringListParcelConverter.class)
     public RealmList<RealmString> tabsTitles;
 
-    @ParcelPropertyConverter(RealmStringListParcelConverter.class)
     public RealmList<RealmString> textParts;
-    @ParcelPropertyConverter(RealmStringListParcelConverter.class)
     public RealmList<RealmString> textPartsTypes;
 
     //images
-    @ParcelPropertyConverter(RealmStringListParcelConverter.class)
     public RealmList<RealmString> imagesUrls;
 
     //site info
@@ -146,7 +135,6 @@ public class Article extends RealmObject implements ArticleModel{
     @ObjectType
     public String type = ObjectType.NONE;
 
-    @ParcelPropertyConverter(RealmArticleTagListParcelConverter.class)
     public RealmList<ArticleTag> tags;
 
     public int rating;

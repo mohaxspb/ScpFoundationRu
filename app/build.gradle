@@ -261,7 +261,9 @@ dependencies {
     compile('ru.kuchanov.scp:scp-downloads:1.0.5@aar') { transitive = true }
     compile('ru.kuchanov.utils:rate:1.0.1@aar') { transitive = true }
     //test
-    compile project(':scpcore')
+//    compile project(':scpcore')
+//    devReleaseCompile project(path: ':scpcore')
+    compile project(path: ':scpcore', configuration: 'devRelease')
 }
 
 apply plugin: 'com.google.gms.google-services'

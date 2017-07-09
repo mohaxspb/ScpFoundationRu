@@ -14,6 +14,10 @@ import com.vk.sdk.VKSdk;
 import com.yandex.metrica.YandexMetrica;
 
 import io.realm.Realm;
+import ru.kuchanov.scpcore.di.AppComponent;
+import ru.kuchanov.scpcore.di.module.AppModule;
+import ru.kuchanov.scpcore.di.module.PresentersModule;
+import ru.kuchanov.scpcore.di.module.StorageModule;
 import ru.kuchanov.scpcore.util.SystemUtils;
 import timber.log.Timber;
 
