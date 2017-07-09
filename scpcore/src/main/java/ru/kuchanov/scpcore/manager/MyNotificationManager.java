@@ -6,10 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 
-import ru.dante.scpfoundation.R;
-import ru.dante.scpfoundation.receivers.ReceiverTimer;
+import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.receivers.ReceiverTimer;
 import timber.log.Timber;
-
 
 public class MyNotificationManager {
 

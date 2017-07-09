@@ -1,7 +1,8 @@
 package ru.kuchanov.scpcore.mvp.contract;
 
-import ru.dante.scpfoundation.Constants;
-import ru.dante.scpfoundation.db.model.User;
+
+import ru.kuchanov.scpcore.Constants;
+import ru.kuchanov.scpcore.db.model.User;
 
 /**
  * Created by mohax on 24.03.2017.

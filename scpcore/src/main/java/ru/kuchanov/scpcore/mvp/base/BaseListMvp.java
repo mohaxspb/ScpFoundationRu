@@ -2,7 +2,7 @@ package ru.kuchanov.scpcore.mvp.base;
 
 import java.util.List;
 
-import ru.dante.scpfoundation.db.model.Article;
+import ru.kuchanov.scpcore.db.model.Article;
 
 /**
  * Created by mohax on 25.12.2016.

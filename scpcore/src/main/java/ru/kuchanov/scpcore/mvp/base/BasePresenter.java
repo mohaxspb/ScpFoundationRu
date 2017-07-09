@@ -7,19 +7,19 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.hannesdorfmann.mosby.mvp.MvpNullObjectBasePresenter;
 import com.vk.sdk.VKSdk;
 
-import ru.dante.scpfoundation.BuildConfig;
-import ru.dante.scpfoundation.Constants;
-import ru.dante.scpfoundation.MyApplication;
-import ru.dante.scpfoundation.R;
-import ru.dante.scpfoundation.api.ApiClient;
-import ru.dante.scpfoundation.db.DbProvider;
-import ru.dante.scpfoundation.db.DbProviderFactory;
-import ru.dante.scpfoundation.db.model.Article;
-import ru.dante.scpfoundation.db.model.User;
-import ru.dante.scpfoundation.manager.MyPreferenceManager;
-import ru.dante.scpfoundation.monetization.model.ApplicationsResponse;
-import ru.dante.scpfoundation.monetization.model.VkGroupsToJoinResponse;
-import ru.dante.scpfoundation.mvp.contract.LoginActions;
+import ru.kuchanov.scpcore.BaseApplication;
+import ru.kuchanov.scpcore.BuildConfig;
+import ru.kuchanov.scpcore.Constants;
+import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.api.ApiClient;
+import ru.kuchanov.scpcore.db.DbProvider;
+import ru.kuchanov.scpcore.db.DbProviderFactory;
+import ru.kuchanov.scpcore.db.model.Article;
+import ru.kuchanov.scpcore.db.model.User;
+import ru.kuchanov.scpcore.manager.MyPreferenceManager;
+import ru.kuchanov.scpcore.monetization.model.ApplicationsResponse;
+import ru.kuchanov.scpcore.monetization.model.VkGroupsToJoinResponse;
+import ru.kuchanov.scpcore.mvp.contract.LoginActions;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import timber.log.Timber;
@@ -133,7 +133,7 @@ public abstract class BasePresenter<V extends BaseMvp.View>
                         e -> {
                             Timber.e(e);
                             if (showResultMessage) {
-                                getView().showError(new Throwable(MyApplication.getAppInstance().getString(R.string.error_while_sync)));
+                                getView().showError(new Throwable(BaseApplication.getAppInstance().getString(R.string.error_while_sync)));
                             }
                         }
                 );
@@ -278,7 +278,7 @@ public abstract class BasePresenter<V extends BaseMvp.View>
                                     //TODO add plurals support
                                     getView().showMessageLong(R.string.all_data_already_synced);
                                 } else {
-                                    getView().showMessageLong(MyApplication.getAppInstance()
+                                    getView().showMessageLong(BaseApplication.getAppInstance()
                                             .getString(R.string.all_data_sync_success, data.first, data.second));
                                 }
                             }
@@ -292,7 +292,7 @@ public abstract class BasePresenter<V extends BaseMvp.View>
                             Timber.e(e);
                             if (showResultMessage) {
                                 String errorMessage = e.getMessage() != null ? e.getMessage() : e.toString();
-                                getView().showMessage(MyApplication.getAppInstance().getString(R.string.error_while_all_data_sync, errorMessage));
+                                getView().showMessage(BaseApplication.getAppInstance().getString(R.string.error_while_all_data_sync, errorMessage));
                             }
                             dbProvider.close();
                         }

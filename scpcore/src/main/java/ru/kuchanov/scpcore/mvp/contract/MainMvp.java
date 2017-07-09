@@ -6,6 +6,7 @@ package ru.kuchanov.scpcore.mvp.contract;
  * for scp_ru
  */
 public interface MainMvp extends DrawerMvp {
+
     interface View extends DrawerMvp.View {
         void setToolbarTitleByDrawerItemId(int id);
     }

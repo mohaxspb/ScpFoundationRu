@@ -7,8 +7,8 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import ru.dante.scpfoundation.manager.MyNotificationManager;
-import ru.dante.scpfoundation.manager.MyPreferenceManager;
+import ru.kuchanov.scpcore.manager.MyNotificationManager;
+import ru.kuchanov.scpcore.manager.MyPreferenceManager;
 
 /**
  * Created by y.kuchanov on 22.12.16.

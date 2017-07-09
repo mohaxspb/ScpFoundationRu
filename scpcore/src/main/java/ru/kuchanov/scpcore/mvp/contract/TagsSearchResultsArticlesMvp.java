@@ -2,9 +2,9 @@ package ru.kuchanov.scpcore.mvp.contract;
 
 import java.util.List;
 
-import ru.dante.scpfoundation.db.model.Article;
-import ru.dante.scpfoundation.db.model.ArticleTag;
-import ru.dante.scpfoundation.mvp.base.BaseArticlesListMvp;
+import ru.kuchanov.scpcore.db.model.Article;
+import ru.kuchanov.scpcore.db.model.ArticleTag;
+import ru.kuchanov.scpcore.mvp.base.BaseArticlesListMvp;
 
 /**
  * Created by y.kuchanov on 21.12.16.

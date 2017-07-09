@@ -1,6 +1,6 @@
 package ru.kuchanov.scpcore.mvp.base;
 
-import ru.dante.scpfoundation.db.model.Article;
+import ru.kuchanov.scpcore.db.model.Article;
 import rx.Subscriber;
 
 /**

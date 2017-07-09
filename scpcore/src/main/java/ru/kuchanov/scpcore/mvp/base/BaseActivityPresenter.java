@@ -16,16 +16,16 @@ import com.vk.sdk.VKSdk;
 import java.util.ArrayList;
 import java.util.Map;
 
-import ru.dante.scpfoundation.Constants;
-import ru.dante.scpfoundation.MyApplication;
-import ru.dante.scpfoundation.R;
-import ru.dante.scpfoundation.api.ApiClient;
-import ru.dante.scpfoundation.api.error.ScpLoginException;
-import ru.dante.scpfoundation.api.model.firebase.ArticleInFirebase;
-import ru.dante.scpfoundation.api.model.firebase.FirebaseObjectUser;
-import ru.dante.scpfoundation.db.DbProviderFactory;
-import ru.dante.scpfoundation.db.model.SocialProviderModel;
-import ru.dante.scpfoundation.manager.MyPreferenceManager;
+import ru.kuchanov.scpcore.BaseApplication;
+import ru.kuchanov.scpcore.Constants;
+import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.api.ApiClient;
+import ru.kuchanov.scpcore.api.error.ScpLoginException;
+import ru.kuchanov.scpcore.api.model.firebase.ArticleInFirebase;
+import ru.kuchanov.scpcore.api.model.firebase.FirebaseObjectUser;
+import ru.kuchanov.scpcore.db.DbProviderFactory;
+import ru.kuchanov.scpcore.db.model.SocialProviderModel;
+import ru.kuchanov.scpcore.manager.MyPreferenceManager;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import timber.log.Timber;
@@ -151,7 +151,7 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
                         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
                         if (firebaseUser == null) {
                             return Observable.error(new ScpLoginException(
-                                    MyApplication.getAppInstance()
+                                    BaseApplication.getAppInstance()
                                             .getString(R.string.error_login_firebase_connection,
                                                     "firebase user is null")));
                         }
@@ -193,7 +193,7 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
                         userInRealm -> {
                             Timber.d("user saved");
                             getView().dismissProgressDialog();
-                            getView().showMessage(MyApplication.getAppInstance()
+                            getView().showMessage(BaseApplication.getAppInstance()
                                     .getString(R.string.on_user_logined, userInRealm.fullName));
                         },
                         e -> {
@@ -202,11 +202,11 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
                             getView().dismissProgressDialog();
                             if (e instanceof FirebaseAuthUserCollisionException) {
                                 getView().showError(new ScpLoginException(
-                                        MyApplication.getAppInstance()
+                                        BaseApplication.getAppInstance()
                                                 .getString(R.string.error_login_firebase_user_collision)));
                             } else {
                                 getView().showError(new ScpLoginException(
-                                        MyApplication.getAppInstance()
+                                        BaseApplication.getAppInstance()
                                                 .getString(R.string.error_login_firebase_connection,
                                                         e.getMessage())));
                             }

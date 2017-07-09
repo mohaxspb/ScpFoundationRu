@@ -5,7 +5,7 @@ import android.support.annotation.StringDef;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import ru.dante.scpfoundation.db.model.Article;
+import ru.kuchanov.scpcore.db.model.Article;
 
 /**
  * Created by mohax on 24.03.2017.

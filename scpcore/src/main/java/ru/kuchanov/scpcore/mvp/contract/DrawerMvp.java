@@ -1,7 +1,7 @@
 package ru.kuchanov.scpcore.mvp.contract;
 
-import ru.dante.scpfoundation.api.model.response.LeaderBoardResponse;
-import ru.dante.scpfoundation.mvp.base.BaseActivityMvp;
+import ru.kuchanov.scpcore.api.model.response.LeaderBoardResponse;
+import ru.kuchanov.scpcore.mvp.base.BaseActivityMvp;
 
 /**
  * Created by y.kuchanov on 21.12.16.

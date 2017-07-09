@@ -1,6 +1,6 @@
 package ru.kuchanov.scpcore.mvp.base;
 
-import ru.dante.scpfoundation.mvp.contract.LoginActions;
+import ru.kuchanov.scpcore.mvp.contract.LoginActions;
 
 /**
  * Created by mohax on 23.03.2017.

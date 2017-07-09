@@ -2,7 +2,7 @@ package ru.kuchanov.scpcore.mvp.contract;
 
 import java.util.List;
 
-import ru.dante.scpfoundation.db.model.VkImage;
+import ru.kuchanov.scpcore.db.model.VkImage;
 
 /**
  * Created by y.kuchanov on 21.12.16.

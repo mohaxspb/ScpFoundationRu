@@ -4,12 +4,12 @@ import android.text.TextUtils;
 
 import com.google.firebase.auth.FirebaseAuth;
 
-import ru.dante.scpfoundation.api.ApiClient;
-import ru.dante.scpfoundation.db.DbProviderFactory;
-import ru.dante.scpfoundation.db.model.Article;
-import ru.dante.scpfoundation.manager.MyPreferenceManager;
-import ru.dante.scpfoundation.mvp.base.BasePresenter;
-import ru.dante.scpfoundation.mvp.contract.ArticleMvp;
+import ru.kuchanov.scpcore.api.ApiClient;
+import ru.kuchanov.scpcore.db.DbProviderFactory;
+import ru.kuchanov.scpcore.db.model.Article;
+import ru.kuchanov.scpcore.manager.MyPreferenceManager;
+import ru.kuchanov.scpcore.mvp.base.BasePresenter;
+import ru.kuchanov.scpcore.mvp.contract.ArticleMvp;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;

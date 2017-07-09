@@ -21,20 +21,18 @@ import javax.inject.Inject;
 
 import ru.kuchanov.scpcore.BaseApplication;
 import ru.kuchanov.scpcore.BuildConfig;
+import ru.kuchanov.scpcore.Constants;
 import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.api.ApiClient;
 import ru.kuchanov.scpcore.manager.MyPreferenceManager;
 import ru.kuchanov.scpcore.monetization.model.ApplicationsResponse;
 import ru.kuchanov.scpcore.monetization.model.PlayMarketApplication;
 import ru.kuchanov.scpcore.mvp.base.BasePresenter;
 import ru.kuchanov.scpcore.mvp.contract.DataSyncActions;
+import ru.kuchanov.scpcore.ui.activity.MainActivity;
 import rx.Observable;
 import timber.log.Timber;
 
-/**
- * Created by mohax on 05.03.2017.
- * <p>
- * for Vjux
- */
 public class AppInstallReceiver extends BroadcastReceiver {
 
     private static final int NOTIFICATION_ID = 100;

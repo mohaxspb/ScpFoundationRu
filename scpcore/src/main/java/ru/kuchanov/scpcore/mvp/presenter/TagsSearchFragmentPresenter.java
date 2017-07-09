@@ -2,13 +2,13 @@ package ru.kuchanov.scpcore.mvp.presenter;
 
 import java.util.List;
 
-import ru.dante.scpfoundation.R;
-import ru.dante.scpfoundation.api.ApiClient;
-import ru.dante.scpfoundation.db.DbProviderFactory;
-import ru.dante.scpfoundation.db.model.ArticleTag;
-import ru.dante.scpfoundation.manager.MyPreferenceManager;
-import ru.dante.scpfoundation.mvp.base.BasePresenter;
-import ru.dante.scpfoundation.mvp.contract.TagsSearchMvp;
+import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.api.ApiClient;
+import ru.kuchanov.scpcore.db.DbProviderFactory;
+import ru.kuchanov.scpcore.db.model.ArticleTag;
+import ru.kuchanov.scpcore.manager.MyPreferenceManager;
+import ru.kuchanov.scpcore.mvp.base.BasePresenter;
+import ru.kuchanov.scpcore.mvp.contract.TagsSearchMvp;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;

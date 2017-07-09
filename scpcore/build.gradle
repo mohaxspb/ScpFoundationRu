@@ -1,6 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'realm-android'
 apply plugin: 'me.tatarka.retrolambda'
+apply plugin: 'com.jakewharton.butterknife'
 
 android {
     compileSdkVersion 25
@@ -228,6 +229,7 @@ dependencies {
     //sub project modules
     compile('ru.kuchanov.scp:scp-downloads:1.0.5@aar') { transitive = true }
     compile('ru.kuchanov.utils:rate:1.0.1@aar') { transitive = true }
+    compile project(path: ':app')
 }
 
 //apply plugin: 'com.google.gms.google-services'

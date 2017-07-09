@@ -18,13 +18,13 @@ import io.realm.RealmConfiguration;
 import io.realm.RealmMigration;
 import io.realm.RealmObjectSchema;
 import io.realm.RealmSchema;
-import ru.dante.scpfoundation.BuildConfig;
-import ru.dante.scpfoundation.db.DbProviderFactory;
-import ru.dante.scpfoundation.db.model.Article;
-import ru.dante.scpfoundation.db.model.ArticleTag;
-import ru.dante.scpfoundation.db.model.SocialProviderModel;
-import ru.dante.scpfoundation.db.model.User;
-import ru.dante.scpfoundation.manager.MyPreferenceManager;
+import ru.kuchanov.scpcore.BuildConfig;
+import ru.kuchanov.scpcore.db.DbProviderFactory;
+import ru.kuchanov.scpcore.db.model.Article;
+import ru.kuchanov.scpcore.db.model.ArticleTag;
+import ru.kuchanov.scpcore.db.model.SocialProviderModel;
+import ru.kuchanov.scpcore.db.model.User;
+import ru.kuchanov.scpcore.manager.MyPreferenceManager;
 import timber.log.Timber;
 
 /**

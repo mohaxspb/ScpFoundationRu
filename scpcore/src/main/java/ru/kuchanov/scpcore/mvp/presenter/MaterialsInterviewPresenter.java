@@ -2,12 +2,12 @@ package ru.kuchanov.scpcore.mvp.presenter;
 
 import java.util.List;
 
-import ru.dante.scpfoundation.Constants;
-import ru.dante.scpfoundation.api.ApiClient;
-import ru.dante.scpfoundation.db.DbProviderFactory;
-import ru.dante.scpfoundation.db.model.Article;
-import ru.dante.scpfoundation.manager.MyPreferenceManager;
-import ru.dante.scpfoundation.mvp.contract.MaterialsInterviewsMvp;
+import ru.kuchanov.scpcore.Constants;
+import ru.kuchanov.scpcore.api.ApiClient;
+import ru.kuchanov.scpcore.db.DbProviderFactory;
+import ru.kuchanov.scpcore.db.model.Article;
+import ru.kuchanov.scpcore.manager.MyPreferenceManager;
+import ru.kuchanov.scpcore.mvp.contract.MaterialsInterviewsMvp;
 import rx.Observable;
 
 /**

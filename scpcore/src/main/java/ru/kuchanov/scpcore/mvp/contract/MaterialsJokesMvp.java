@@ -1,6 +1,6 @@
 package ru.kuchanov.scpcore.mvp.contract;
 
-import ru.dante.scpfoundation.mvp.base.BaseArticlesListMvp;
+import ru.kuchanov.scpcore.mvp.base.BaseArticlesListMvp;
 
 /**
  * Created by y.kuchanov on 21.12.16.

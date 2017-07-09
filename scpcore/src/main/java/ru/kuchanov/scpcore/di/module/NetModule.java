@@ -34,10 +34,10 @@ import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
-import ru.dante.scpfoundation.BuildConfig;
-import ru.dante.scpfoundation.api.ApiClient;
-import ru.dante.scpfoundation.db.model.RealmString;
-import ru.dante.scpfoundation.manager.MyPreferenceManager;
+import ru.kuchanov.scpcore.BuildConfig;
+import ru.kuchanov.scpcore.api.ApiClient;
+import ru.kuchanov.scpcore.db.model.RealmString;
+import ru.kuchanov.scpcore.manager.MyPreferenceManager;
 import timber.log.Timber;
 
 /**

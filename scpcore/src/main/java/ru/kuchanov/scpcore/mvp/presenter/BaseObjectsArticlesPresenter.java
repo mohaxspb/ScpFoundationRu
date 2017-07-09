@@ -6,12 +6,12 @@ import java.util.List;
 
 import io.realm.RealmResults;
 import io.realm.Sort;
-import ru.dante.scpfoundation.Constants;
-import ru.dante.scpfoundation.api.ApiClient;
-import ru.dante.scpfoundation.db.DbProviderFactory;
-import ru.dante.scpfoundation.db.model.Article;
-import ru.dante.scpfoundation.manager.MyPreferenceManager;
-import ru.dante.scpfoundation.mvp.base.BaseArticlesListMvp;
+import ru.kuchanov.scpcore.Constants;
+import ru.kuchanov.scpcore.api.ApiClient;
+import ru.kuchanov.scpcore.db.DbProviderFactory;
+import ru.kuchanov.scpcore.db.model.Article;
+import ru.kuchanov.scpcore.manager.MyPreferenceManager;
+import ru.kuchanov.scpcore.mvp.base.BaseArticlesListMvp;
 import rx.Observable;
 import timber.log.Timber;
 

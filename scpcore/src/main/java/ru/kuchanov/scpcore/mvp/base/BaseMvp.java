@@ -5,9 +5,9 @@ import android.support.annotation.StringRes;
 import com.hannesdorfmann.mosby.mvp.MvpPresenter;
 import com.hannesdorfmann.mosby.mvp.MvpView;
 
-import ru.dante.scpfoundation.Constants;
-import ru.dante.scpfoundation.db.model.User;
-import ru.dante.scpfoundation.mvp.contract.DataSyncActions;
+import ru.kuchanov.scpcore.Constants;
+import ru.kuchanov.scpcore.db.model.User;
+import ru.kuchanov.scpcore.mvp.contract.DataSyncActions;
 
 /**
  * Created by mohax on 14.01.2017.

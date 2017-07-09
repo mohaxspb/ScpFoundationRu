@@ -6,12 +6,11 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import ru.dante.scpfoundation.api.ApiClient;
-import ru.dante.scpfoundation.db.DbProviderFactory;
-import ru.dante.scpfoundation.manager.MyPreferenceManager;
-import ru.dante.scpfoundation.service.DownloadAllServiceImpl;
-import ru.dante.scpfoundation.ui.util.DialogUtils;
-import ru.dante.scpfoundation.ui.util.DownloadAllChooser;
+import ru.kuchanov.scpcore.api.ApiClient;
+import ru.kuchanov.scpcore.db.DbProviderFactory;
+import ru.kuchanov.scpcore.manager.MyPreferenceManager;
+import ru.kuchanov.scpcore.ui.util.DialogUtils;
+import ru.kuchanov.scpcore.ui.util.DownloadAllChooser;
 
 /**
  * Created by y.kuchanov on 22.12.16.

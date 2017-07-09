@@ -9,12 +9,13 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
-import ru.dante.scpfoundation.Constants;
 import ru.kuchanov.scp.downloads.MyPreferenceManagerModel;
+import ru.kuchanov.scpcore.Constants;
 import ru.kuchanov.scpcore.monetization.model.ApplicationsResponse;
 import ru.kuchanov.scpcore.monetization.model.PlayMarketApplication;
 import ru.kuchanov.scpcore.monetization.model.VkGroupToJoin;
 import ru.kuchanov.scpcore.monetization.model.VkGroupsToJoinResponse;
+import ru.kuchanov.scpcore.ui.dialog.SetttingsBottomSheetDialogFragment;
 import timber.log.Timber;
 
 /**
