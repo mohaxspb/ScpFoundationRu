@@ -17,6 +17,7 @@ import com.google.android.gms.appinvite.AppInviteInvitation;
 import java.util.List;
 
 import ru.kuchanov.scpcore.BaseApplication;
+import ru.kuchanov.scpcore.Constants;
 import ru.kuchanov.scpcore.R;
 
 /**

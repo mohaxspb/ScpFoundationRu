@@ -16,8 +16,8 @@ import java.io.InputStreamReader;
 
 import javax.inject.Inject;
 
+import ru.kuchanov.scpcore.BaseApplication;
 import ru.kuchanov.scpcore.BuildConfig;
-import ru.kuchanov.scpcore.MyApplication;
 import ru.kuchanov.scpcore.R;
 import ru.kuchanov.scpcore.manager.MyPreferenceManager;
 import ru.kuchanov.scpcore.ui.util.MyHtmlTagHandler;
@@ -43,7 +43,7 @@ public class NewVersionDialogFragment extends DialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        MyApplication.getAppComponent().inject(this);
+        BaseApplication.getAppComponent().inject(this);
     }
 
     @NonNull

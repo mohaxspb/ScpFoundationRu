@@ -28,7 +28,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import ru.kuchanov.scpcore.Constants;
-import ru.kuchanov.scpcore.MyApplication;
+import ru.kuchanov.scpcore.BaseApplication;
 import ru.kuchanov.scpcore.R;
 import ru.kuchanov.scpcore.api.ApiClient;
 import ru.kuchanov.scpcore.manager.MyPreferenceManager;
@@ -66,7 +66,7 @@ public class FreeAdsDisablingDialogFragment extends DialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        MyApplication.getAppComponent().inject(this);
+        BaseApplication.getAppComponent().inject(this);
     }
 
     @NonNull

@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ru.kuchanov.scpcore.Constants;
-import ru.kuchanov.scpcore.MyApplication;
+import ru.kuchanov.scpcore.BaseApplication;
 import ru.kuchanov.scpcore.R;
 import ru.kuchanov.scpcore.db.model.Article;
 import ru.kuchanov.scpcore.service.DownloadAllServiceImpl;
@@ -82,6 +82,6 @@ public class DownloadAllChooser extends DialogUtils<Article> {
 
         Bundle bundle = new Bundle();
         bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Constants.Firebase.Analitics.StartScreen.DOWNLOAD_DIALOG);
-        FirebaseAnalytics.getInstance(MyApplication.getAppInstance()).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+        FirebaseAnalytics.getInstance(BaseApplication.getAppInstance()).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
     }
 }

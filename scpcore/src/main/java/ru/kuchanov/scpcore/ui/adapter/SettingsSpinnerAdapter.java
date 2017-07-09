@@ -15,7 +15,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import ru.kuchanov.scpcore.MyApplication;
+import ru.kuchanov.scpcore.BaseApplication;
 import ru.kuchanov.scpcore.R;
 import ru.kuchanov.scpcore.manager.MyPreferenceManager;
 import ru.kuchanov.scpcore.util.DimensionUtils;
@@ -43,7 +43,7 @@ public class SettingsSpinnerAdapter extends ArrayAdapter<String> {
         this.data = objects;
         this.fontsPathsList = fontsPathsList;
 
-        MyApplication.getAppComponent().inject(this);
+        BaseApplication.getAppComponent().inject(this);
     }
 
     @Override

@@ -6,7 +6,7 @@ import java.util.List;
 
 import io.realm.RealmResults;
 import ru.kuchanov.scpcore.Constants;
-import ru.kuchanov.scpcore.MyApplication;
+import ru.kuchanov.scpcore.BaseApplication;
 import ru.kuchanov.scpcore.R;
 import ru.kuchanov.scpcore.api.ApiClient;
 import ru.kuchanov.scpcore.db.DbProviderFactory;
@@ -97,7 +97,7 @@ public class SiteSearchArticlesPresenter
                 if (e instanceof ScpNoArticleForIdError) {
                     //we o not have this article in DB, so download it
                     toggleOfflineState(e.getMessage());
-                    getView().showError(new Throwable(MyApplication.getAppInstance().getString(R.string.start_download)));
+                    getView().showError(new Throwable(BaseApplication.getAppInstance().getString(R.string.start_download)));
                 }
             }
 
@@ -127,7 +127,7 @@ public class SiteSearchArticlesPresenter
                 if (e instanceof ScpNoArticleForIdError) {
                     //we do not have this article in DB, so download it
                     toggleOfflineState(e.getMessage());
-                    getView().showError(new Throwable(MyApplication.getAppInstance().getString(R.string.start_download)));
+                    getView().showError(new Throwable(BaseApplication.getAppInstance().getString(R.string.start_download)));
                 }
             }
 
@@ -157,7 +157,7 @@ public class SiteSearchArticlesPresenter
                 if (e instanceof ScpNoArticleForIdError) {
                     //we o not have this article in DB, so download it
                     toggleOfflineState(e.getMessage());
-                    getView().showError(new Throwable(MyApplication.getAppInstance().getString(R.string.start_download)));
+                    getView().showError(new Throwable(BaseApplication.getAppInstance().getString(R.string.start_download)));
                 }
             }
 
@@ -187,7 +187,7 @@ public class SiteSearchArticlesPresenter
                 if (e instanceof ScpNoArticleForIdError) {
                     //we o not have this article in DB, so download it
                     toggleOfflineState(e.getMessage());
-                    getView().showError(new Throwable(MyApplication.getAppInstance().getString(R.string.start_download)));
+                    getView().showError(new Throwable(BaseApplication.getAppInstance().getString(R.string.start_download)));
                 }
             }
 

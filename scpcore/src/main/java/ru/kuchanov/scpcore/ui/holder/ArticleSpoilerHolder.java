@@ -13,8 +13,9 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import ru.kuchanov.scpcore.MyApplication;
+import ru.kuchanov.scpcore.BaseApplication;
 import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.R2;
 import ru.kuchanov.scpcore.api.ParseHtmlUtils;
 import ru.kuchanov.scpcore.manager.MyPreferenceManager;
 import ru.kuchanov.scpcore.ui.util.SetTextViewHTML;
@@ -33,15 +34,15 @@ public class ArticleSpoilerHolder extends RecyclerView.ViewHolder {
 
     private SetTextViewHTML.TextItemsClickListener mTextItemsClickListener;
 
-    @BindView(R.id.title)
+    @BindView(R2.id.title)
     TextView title;
-    @BindView(R.id.content)
+    @BindView(R2.id.content)
     TextView content;
 
     public ArticleSpoilerHolder(View itemView, SetTextViewHTML.TextItemsClickListener clickListener) {
         super(itemView);
         ButterKnife.bind(this, itemView);
-        MyApplication.getAppComponent().inject(this);
+        BaseApplication.getAppComponent().inject(this);
 
         mTextItemsClickListener = clickListener;
     }

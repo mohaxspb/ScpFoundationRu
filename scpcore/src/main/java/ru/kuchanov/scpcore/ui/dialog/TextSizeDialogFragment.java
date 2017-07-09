@@ -16,8 +16,9 @@ import java.lang.annotation.RetentionPolicy;
 import javax.inject.Inject;
 
 import butterknife.BindView;
-import ru.kuchanov.scpcore.MyApplication;
+import ru.kuchanov.scpcore.BaseApplication;
 import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.R2;
 import ru.kuchanov.scpcore.manager.MyPreferenceManager;
 import ru.kuchanov.scpcore.ui.base.BaseBottomSheetDialogFragment;
 import timber.log.Timber;
@@ -32,15 +33,15 @@ public class TextSizeDialogFragment
     @Inject
     MyPreferenceManager mMyPreferenceManager;
 
-    @BindView(R.id.title)
+    @BindView(R2.id.title)
     TextView title;
-    @BindView(R.id.seekbarUi)
+    @BindView(R2.id.seekbarUi)
     SeekBar seekbarUI;
-    @BindView(R.id.seekbarArticle)
+    @BindView(R2.id.seekbarArticle)
     SeekBar seekbarArticle;
-    @BindView(R.id.textSizeUi)
+    @BindView(R2.id.textSizeUi)
     TextView tvUi;
-    @BindView(R.id.textSizeArticle)
+    @BindView(R2.id.textSizeArticle)
     TextView tvArticle;
 
     @TextSizeType
@@ -65,7 +66,7 @@ public class TextSizeDialogFragment
 
     @Override
     protected void callInjection() {
-        MyApplication.getAppComponent().inject(this);
+        BaseApplication.getAppComponent().inject(this);
     }
 
     @Override

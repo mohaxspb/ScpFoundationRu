@@ -15,6 +15,7 @@ import com.yandex.metrica.YandexMetrica;
 
 import io.realm.Realm;
 import ru.kuchanov.scpcore.di.AppComponent;
+import ru.kuchanov.scpcore.di.DaggerAppComponent;
 import ru.kuchanov.scpcore.di.module.AppModule;
 import ru.kuchanov.scpcore.di.module.PresentersModule;
 import ru.kuchanov.scpcore.di.module.StorageModule;

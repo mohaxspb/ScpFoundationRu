@@ -4,8 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
 
-import org.parceler.Parcels;
-
+import java.util.ArrayList;
 import java.util.List;
 
 import ru.kuchanov.scpcore.BaseApplication;
@@ -32,8 +31,10 @@ public class TagsSearchResultsArticlesFragment
     public static TagsSearchResultsArticlesFragment newInstance(List<Article> articles, List<ArticleTag> tags) {
         TagsSearchResultsArticlesFragment fragment = new TagsSearchResultsArticlesFragment();
         Bundle args = new Bundle();
-        args.putParcelable(EXTRA_TAGS, Parcels.wrap(tags));
-        args.putParcelable(EXTRA_ARTICLES, Parcels.wrap(articles));
+//        args.putParcelable(EXTRA_TAGS, Parcels.wrap(tags));
+//        args.putParcelable(EXTRA_ARTICLES, Parcels.wrap(articles));
+        args.putSerializable(EXTRA_TAGS, new ArrayList<>(tags));
+        args.putSerializable(EXTRA_ARTICLES, new ArrayList<>(articles));
         fragment.setArguments(args);
         return fragment;
     }
@@ -41,8 +42,9 @@ public class TagsSearchResultsArticlesFragment
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         Timber.d("onViewCreated");
-        List<Article> articles = Parcels.unwrap(getArguments().getParcelable(EXTRA_ARTICLES));
-        List<ArticleTag> tags = Parcels.unwrap(getArguments().getParcelable(EXTRA_TAGS));
+//        List<Article> articles = Parcels.unwrap(getArguments().getParcelable(EXTRA_ARTICLES));
+        List<Article> articles = (List<Article>) getArguments().getSerializable(EXTRA_ARTICLES);
+        List<ArticleTag> tags = (List<ArticleTag>) getArguments().getSerializable(EXTRA_TAGS);
         Timber.d("articles: %s", articles);
         Timber.d("tags: %s", tags);
         mPresenter.setQueryTags(tags);

@@ -10,8 +10,9 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import ru.kuchanov.scpcore.MyApplication;
+import ru.kuchanov.scpcore.BaseApplication;
 import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.R2;
 import ru.kuchanov.scpcore.manager.MyPreferenceManager;
 
 /**
@@ -24,13 +25,13 @@ public class ArticleTitleHolder extends RecyclerView.ViewHolder {
     @Inject
     MyPreferenceManager mMyPreferenceManager;
 
-    @BindView(R.id.text)
+    @BindView(R2.id.text)
     TextView textView;
 
     public ArticleTitleHolder(View itemView) {
         super(itemView);
         ButterKnife.bind(this, itemView);
-        MyApplication.getAppComponent().inject(this);
+        BaseApplication.getAppComponent().inject(this);
     }
 
     public void bind(String title) {

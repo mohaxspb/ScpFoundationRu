@@ -31,14 +31,12 @@ public class ArticlePresenter
 
     private boolean alreadyRefreshedFromApi;
 
-    public ArticlePresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
+    public ArticlePresenter(
+            MyPreferenceManager myPreferencesManager,
+            DbProviderFactory dbProviderFactory,
+            ApiClient apiClient
+    ) {
         super(myPreferencesManager, dbProviderFactory, apiClient);
-    }
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        Timber.d("onCreate: %s", mArticleUrl);
     }
 
     @Override

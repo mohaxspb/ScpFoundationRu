@@ -14,8 +14,9 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import ru.kuchanov.scpcore.MyApplication;
+import ru.kuchanov.scpcore.BaseApplication;
 import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.R2;
 import ru.kuchanov.scpcore.db.model.ArticleTag;
 import ru.kuchanov.scpcore.manager.MyPreferenceManager;
 import ru.kuchanov.scpcore.ui.util.SetTextViewHTML;
@@ -34,15 +35,15 @@ public class ArticleTagsHolder extends RecyclerView.ViewHolder {
 
     private SetTextViewHTML.TextItemsClickListener mTextItemsClickListener;
 
-    @BindView(R.id.tags)
+    @BindView(R2.id.tags)
     TextView title;
-    @BindView(R.id.tagsContainer)
+    @BindView(R2.id.tagsContainer)
     FlexboxLayout mTagsContainer;
 
     public ArticleTagsHolder(View itemView, SetTextViewHTML.TextItemsClickListener clickListener) {
         super(itemView);
         ButterKnife.bind(this, itemView);
-        MyApplication.getAppComponent().inject(this);
+        BaseApplication.getAppComponent().inject(this);
 
         mTextItemsClickListener = clickListener;
     }

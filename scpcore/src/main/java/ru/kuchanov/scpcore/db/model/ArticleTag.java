@@ -1,5 +1,6 @@
 package ru.kuchanov.scpcore.db.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +12,7 @@ import io.realm.annotations.PrimaryKey;
  * <p>
  * for ScpFoundationRu
  */
-public class ArticleTag extends RealmObject {
+public class ArticleTag extends RealmObject implements Serializable{
 
     public static final String FIELD_TITLE = "title";
 

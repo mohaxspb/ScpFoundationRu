@@ -9,6 +9,7 @@ import dagger.Provides;
 import ru.kuchanov.scpcore.api.ApiClient;
 import ru.kuchanov.scpcore.db.DbProviderFactory;
 import ru.kuchanov.scpcore.manager.MyPreferenceManager;
+import ru.kuchanov.scpcore.service.DownloadAllServiceImpl;
 import ru.kuchanov.scpcore.ui.util.DialogUtils;
 import ru.kuchanov.scpcore.ui.util.DownloadAllChooser;
 
@@ -31,14 +32,14 @@ public class HelpersModule {
         return new DialogUtils(preferenceManager, dbProviderFactory, apiClient);
     }
 
-//    @Provides
-//    @NonNull
-//    @Singleton
-//    DownloadAllChooser providesDialogUtilsTest(
-//            @NonNull MyPreferenceManager preferenceManager,
-//            @NonNull DbProviderFactory dbProviderFactory,
-//            @NonNull ApiClient apiClient
-//    ) {
-//        return new DownloadAllChooser(preferenceManager, dbProviderFactory, apiClient, DownloadAllServiceImpl.class);
-//    }
+    @Provides
+    @NonNull
+    @Singleton
+    DownloadAllChooser providesDialogUtilsTest(
+            @NonNull MyPreferenceManager preferenceManager,
+            @NonNull DbProviderFactory dbProviderFactory,
+            @NonNull ApiClient apiClient
+    ) {
+        return new DownloadAllChooser(preferenceManager, dbProviderFactory, apiClient, DownloadAllServiceImpl.class);
+    }
 }

@@ -14,6 +14,7 @@ import ru.kuchanov.scpcore.monetization.util.MySkippableVideoCallbacks;
 import ru.kuchanov.scpcore.receivers.AppInstallReceiver;
 import ru.kuchanov.scpcore.receivers.ReceiverBoot;
 import ru.kuchanov.scpcore.receivers.ReceiverTimer;
+import ru.kuchanov.scpcore.service.DownloadAllServiceImpl;
 import ru.kuchanov.scpcore.ui.activity.ArticleActivity;
 import ru.kuchanov.scpcore.ui.activity.GalleryActivity;
 import ru.kuchanov.scpcore.ui.activity.LicenceActivity;
@@ -161,4 +162,6 @@ public interface AppComponent {
     void inject(MyAdListener adListener);
 
     void inject(MySkippableVideoCallbacks callbacks);
+
+    void inject(DownloadAllServiceImpl service);
 }

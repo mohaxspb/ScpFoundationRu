@@ -22,8 +22,9 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import ru.kuchanov.scpcore.MyApplication;
+import ru.kuchanov.scpcore.BaseApplication;
 import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.R2;
 import ru.kuchanov.scpcore.manager.MyPreferenceManager;
 import ru.kuchanov.scpcore.ui.util.SetTextViewHTML;
 import ru.kuchanov.scpcore.util.AttributeGetter;
@@ -43,14 +44,14 @@ public class ArticleImageHolder extends RecyclerView.ViewHolder {
 
     private SetTextViewHTML.TextItemsClickListener mTextItemsClickListener;
 
-    @BindView(R.id.image)
+    @BindView(R2.id.image)
     ImageView imageView;
-    @BindView(R.id.title)
+    @BindView(R2.id.title)
     TextView titleTextView;
 
     public ArticleImageHolder(View itemView, SetTextViewHTML.TextItemsClickListener clickListener) {
         super(itemView);
-        MyApplication.getAppComponent().inject(this);
+        BaseApplication.getAppComponent().inject(this);
         ButterKnife.bind(this, itemView);
 
         mTextItemsClickListener = clickListener;

@@ -9,7 +9,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import ru.kuchanov.scpcore.MyApplication;
+import ru.kuchanov.scpcore.BaseApplication;
 import ru.kuchanov.scpcore.R;
 import ru.kuchanov.scpcore.api.ParseHtmlUtils;
 import ru.kuchanov.scpcore.db.model.Article;
@@ -57,7 +57,7 @@ public class ArticleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     }
 
     public ArticleRecyclerAdapter() {
-        MyApplication.getAppComponent().inject(this);
+        BaseApplication.getAppComponent().inject(this);
     }
 
     public void setData(Article article) {

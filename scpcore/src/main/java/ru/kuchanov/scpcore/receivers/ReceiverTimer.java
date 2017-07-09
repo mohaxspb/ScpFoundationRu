@@ -18,12 +18,20 @@ import java.util.List;
 import javax.inject.Inject;
 
 import ru.kuchanov.scpcore.BaseApplication;
+import ru.kuchanov.scpcore.Constants;
 import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.api.ApiClient;
+import ru.kuchanov.scpcore.db.DbProvider;
+import ru.kuchanov.scpcore.db.DbProviderFactory;
+import ru.kuchanov.scpcore.db.model.Article;
 import ru.kuchanov.scpcore.manager.MyPreferenceManager;
+import ru.kuchanov.scpcore.ui.activity.MainActivity;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
+
+import static ru.kuchanov.scpcore.Constants.Api.NUM_OF_ARTICLES_ON_RECENT_PAGE;
 
 public class ReceiverTimer extends BroadcastReceiver {
 

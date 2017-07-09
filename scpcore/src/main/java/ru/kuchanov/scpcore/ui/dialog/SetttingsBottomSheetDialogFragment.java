@@ -32,8 +32,9 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.OnClick;
 import ru.kuchanov.scpcore.Constants;
-import ru.kuchanov.scpcore.MyApplication;
+import ru.kuchanov.scpcore.BaseApplication;
 import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.R2;
 import ru.kuchanov.scpcore.manager.MyNotificationManager;
 import ru.kuchanov.scpcore.manager.MyPreferenceManager;
 import ru.kuchanov.scpcore.ui.adapter.SettingsSpinnerAdapter;
@@ -64,27 +65,27 @@ public class SetttingsBottomSheetDialogFragment
     }
 
     //design
-    @BindView(R.id.listItemStyle)
+    @BindView(R2.id.listItemStyle)
     View listItemStyle;
-    @BindView(R.id.listItemSpinner)
+    @BindView(R2.id.listItemSpinner)
     Spinner listItemSpinner;
-    @BindView(R.id.fontPreferedTitle)
+    @BindView(R2.id.fontPreferedTitle)
     TextView fontPreferedTitle;
-    @BindView(R.id.fontPrefered)
+    @BindView(R2.id.fontPrefered)
     View fontPrefered;
-    @BindView(R.id.fontPreferedSpinner)
+    @BindView(R2.id.fontPreferedSpinner)
     Spinner fontPreferedSpinner;
     //notif
-    @BindView(R.id.notifIsOnSwitch)
+    @BindView(R2.id.notifIsOnSwitch)
     SwitchCompat notifIsOnSwitch;
-    @BindView(R.id.notifLedisOnSwitch)
+    @BindView(R2.id.notifLedisOnSwitch)
     SwitchCompat notifLedIsOnSwitch;
-    @BindView(R.id.notifSoundIsOnSwitch)
+    @BindView(R2.id.notifSoundIsOnSwitch)
     SwitchCompat notifSoundIsOnSwitch;
-    @BindView(R.id.notifVibrateIsOnSwitch)
+    @BindView(R2.id.notifVibrateIsOnSwitch)
     SwitchCompat notifVibrateIsOnSwitch;
 
-    @BindView(R.id.buy)
+    @BindView(R2.id.buy)
     TextView mActivateAutoSync;
 
     @Inject
@@ -103,7 +104,7 @@ public class SetttingsBottomSheetDialogFragment
 
     @Override
     protected void callInjection() {
-        MyApplication.getAppComponent().inject(this);
+        BaseApplication.getAppComponent().inject(this);
     }
 
     @Override
@@ -226,7 +227,7 @@ public class SetttingsBottomSheetDialogFragment
         mActivateAutoSync.setVisibility(getBaseActivity().getOwnedItems().isEmpty() ? View.VISIBLE : View.GONE);
     }
 
-    @OnClick(R.id.buy)
+    @OnClick(R2.id.buy)
     void onActivateAutoSyncClicked() {
         Timber.d("onActivateAutoSyncClicked");
         dismiss();
@@ -238,7 +239,7 @@ public class SetttingsBottomSheetDialogFragment
         FirebaseAnalytics.getInstance(getActivity()).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
     }
 
-    @OnClick(R.id.sync)
+    @OnClick(R2.id.sync)
     void onSyncClicked() {
         Timber.d("onSyncClicked");
         if (FirebaseAuth.getInstance().getCurrentUser() == null) {
