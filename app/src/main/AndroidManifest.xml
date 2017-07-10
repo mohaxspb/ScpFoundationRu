@@ -35,7 +35,25 @@
         <!--android:name="com.google.android.gms.version"-->
         <!--android:value="@integer/google_play_services_version"/>-->
 
-        <activity android:name="ru.kuchanov.scpcore.ui.activity.MainActivity">
+        <!--<activity android:name="ru.kuchanov.scpcore.ui.activity.MainActivity">-->
+            <!--<intent-filter android:autoVerify="true">-->
+                <!--<action android:name="android.intent.action.VIEW" />-->
+                <!--<category android:name="android.intent.category.DEFAULT" />-->
+                <!--<category android:name="android.intent.category.BROWSABLE" />-->
+                <!--<data android:scheme="http" android:host="scpfoundation.ru" />-->
+            <!--</intent-filter>-->
+        <!--</activity>-->
+
+        <!--<activity android:name="ru.kuchanov.scpcore.ui.activity.ArticleActivity"/>-->
+
+        <!--<activity android:name="ru.kuchanov.scpcore.ui.activity.MaterialsActivity"/>-->
+
+        <!--<activity android:name="ru.kuchanov.scpcore.ui.activity.GalleryActivity"/>-->
+
+        <!--<activity android:name="ru.kuchanov.scpcore.ui.activity.TagSearchActivity"/>-->
+
+
+        <activity android:name="ru.dante.scpfoundation.ui.activity.MainActivityImpl">
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -44,16 +62,30 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="ru.kuchanov.scpcore.ui.activity.ArticleActivity"/>
+        <activity android:name="ru.dante.scpfoundation.ui.activity.ArticleActivityImpl"/>
 
-        <activity android:name="ru.kuchanov.scpcore.ui.activity.MaterialsActivity"/>
+        <activity android:name="ru.dante.scpfoundation.ui.activity.MaterialsActivityImpl"/>
 
-        <activity android:name="ru.kuchanov.scpcore.ui.activity.GalleryActivity"/>
+        <activity android:name="ru.dante.scpfoundation.ui.activity.GalleryActivityImpl"/>
 
-        <activity android:name="ru.kuchanov.scpcore.ui.activity.TagSearchActivity"/>
+        <activity android:name="ru.dante.scpfoundation.ui.activity.TagSearchActivityImpl"/>
+
+        <!--<activity-->
+            <!--android:name="ru.kuchanov.scpcore.ui.activity.SplashActivity"-->
+            <!--android:theme="@style/SplashTheme">-->
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN"/>-->
+                <!--<category android:name="android.intent.category.LAUNCHER"/>-->
+            <!--</intent-filter>-->
+
+            <!--<meta-data-->
+                <!--android:name="android.app.shortcuts"-->
+                <!--android:resource="@xml/shortcuts" />-->
+        <!--</activity>-->
+
 
         <activity
-            android:name="ru.kuchanov.scpcore.ui.activity.SplashActivity"
+            android:name="ru.dante.scpfoundation.ui.activity.SplashActivityImpl"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -65,7 +97,9 @@
                 android:resource="@xml/shortcuts" />
         </activity>
 
-        <activity android:name="ru.kuchanov.scpcore.ui.activity.LicenceActivity" />
+        <!--<activity android:name="ru.kuchanov.scpcore.ui.activity.LicenceActivity" />-->
+
+        <activity android:name="ru.dante.scpfoundation.ui.activity.LicenceActivityImpl" />
 
         <!--service-->
         <service android:name="ru.kuchanov.scpcore.service.DownloadAllServiceImpl"/>

@@ -46,7 +46,7 @@ import timber.log.Timber;
 import static ru.kuchanov.scpcore.Constants.Firebase.RemoteConfigKeys.GALLERY_BANNER_DISABLED;
 import static ru.kuchanov.scpcore.ui.activity.MainActivity.EXTRA_SHOW_DISABLE_ADS;
 
-public class GalleryActivity
+public abstract class GalleryActivity
         extends BaseDrawerActivity<GalleryScreenMvp.View, GalleryScreenMvp.Presenter>
         implements GalleryScreenMvp.View {
 
@@ -220,10 +220,10 @@ public class GalleryActivity
         return R.layout.activity_gallery;
     }
 
-    @Override
-    protected void callInjections() {
-        BaseApplication.getAppComponent().inject(this);
-    }
+//    @Override
+//    protected void callInjections() {
+//        BaseApplication.getAppComponent().inject(this);
+//    }
 
     @Override
     protected int getMenuResId() {

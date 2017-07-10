@@ -32,7 +32,7 @@ import timber.log.Timber;
 
 import static ru.kuchanov.scpcore.ui.activity.MainActivity.EXTRA_SHOW_DISABLE_ADS;
 
-public class MaterialsActivity
+public abstract class MaterialsActivity
         extends BaseDrawerActivity<MaterialsScreenMvp.View, MaterialsScreenMvp.Presenter>
         implements MaterialsScreenMvp.View, ArticleFragment.ToolbarStateSetter {
 
@@ -101,10 +101,10 @@ public class MaterialsActivity
         return R.layout.activity_materials;
     }
 
-    @Override
-    protected void callInjections() {
-        BaseApplication.getAppComponent().inject(this);
-    }
+//    @Override
+//    protected void callInjections() {
+//        BaseApplication.getAppComponent().inject(this);
+//    }
 
     @Override
     protected int getMenuResId() {

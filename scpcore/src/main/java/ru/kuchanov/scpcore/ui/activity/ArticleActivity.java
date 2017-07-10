@@ -38,7 +38,7 @@ import timber.log.Timber;
 import static ru.kuchanov.scpcore.Constants.Firebase.RemoteConfigKeys.ARTICLE_BANNER_DISABLED;
 import static ru.kuchanov.scpcore.ui.activity.MainActivity.EXTRA_SHOW_DISABLE_ADS;
 
-public class ArticleActivity
+public abstract class ArticleActivity
         extends BaseDrawerActivity<ArticleScreenMvp.View, ArticleScreenMvp.Presenter>
         implements ArticleScreenMvp.View, ArticleFragment.ToolbarStateSetter {
 
@@ -180,10 +180,10 @@ public class ArticleActivity
         return R.layout.activity_article;
     }
 
-    @Override
-    protected void callInjections() {
-        BaseApplication.getAppComponent().inject(this);
-    }
+//    @Override
+//    protected void callInjections() {
+//        BaseApplication.getAppComponent().inject(this);
+//    }
 
     @Override
     protected int getMenuResId() {

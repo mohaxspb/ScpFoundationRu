@@ -35,7 +35,7 @@ import timber.log.Timber;
 
 import static ru.kuchanov.scpcore.ui.activity.LicenceActivity.EXTRA_SHOW_ABOUT;
 
-public class MainActivity
+public abstract class MainActivity
         extends BaseDrawerActivity<MainMvp.View, MainMvp.Presenter>
         implements MainMvp.View {
 
@@ -171,10 +171,10 @@ public class MainActivity
         return R.layout.activity_main;
     }
 
-    @Override
-    protected void callInjections() {
-        BaseApplication.getAppComponent().inject(this);
-    }
+//    @Override
+//    protected void callInjections() {
+//        BaseApplication.getAppComponent().inject(this);
+//    }
 
     @Override
     protected int getMenuResId() {

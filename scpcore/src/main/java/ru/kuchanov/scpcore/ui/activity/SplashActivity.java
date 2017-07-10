@@ -10,12 +10,14 @@ import android.support.v7.app.AppCompatActivity;
  *
  * for ScpFoundationRu
  */
-public class SplashActivity extends AppCompatActivity {
+public abstract class SplashActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        startActivity(new Intent(this, LicenceActivity.class));
+        startActivity(new Intent(this, getLaunchActivityClass()));
         finishAffinity();
     }
+
+    protected abstract Class getLaunchActivityClass();
 }

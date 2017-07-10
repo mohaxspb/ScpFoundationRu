@@ -30,7 +30,7 @@ import timber.log.Timber;
  * <p>
  * for scp_ru
  */
-public class LicenceActivity extends AppCompatActivity {
+public abstract class LicenceActivity extends AppCompatActivity {
 
     public static final String EXTRA_SHOW_ABOUT = "EXTRA_SHOW_ABOUT";
 
@@ -40,12 +40,12 @@ public class LicenceActivity extends AppCompatActivity {
     View mRoot;
 
     @Inject
-    MyPreferenceManager mMyPreferenceManager;
+    protected MyPreferenceManager mMyPreferenceManager;
 
     @OnClick(R2.id.accept)
     public void onAcceptClick() {
         mMyPreferenceManager.setLicenceAccepted(true);
-        startActivity(new Intent(this, MainActivity.class).putExtra(EXTRA_SHOW_ABOUT, true));
+        startActivity(new Intent(this, getLaunchActivityClass()).putExtra(EXTRA_SHOW_ABOUT, true));
         finish();
     }
 
@@ -54,7 +54,7 @@ public class LicenceActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         BaseApplication.getAppComponent().inject(this);
         if (mMyPreferenceManager.isLicenceAccepted()) {
-            startActivity(new Intent(this, MainActivity.class));
+            startActivity(new Intent(this, getLaunchActivityClass()));
             finish();
         }
         setContentView(R.layout.activity_license);
@@ -68,6 +68,8 @@ public class LicenceActivity extends AppCompatActivity {
             Snackbar.make(mRoot, R.string.error_read_licence, Snackbar.LENGTH_SHORT).show();
         }
     }
+
+    protected abstract Class getLaunchActivityClass();
 
     //TODO move to utils
     public static String readFromAssets(Context context, String filename) throws IOException {

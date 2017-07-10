@@ -71,17 +71,17 @@ import ru.kuchanov.scpcore.ui.holder.HolderSimple;
         HelpersModule.class
 })
 public interface AppComponent {
-    void inject(MainActivity activity);
-
-    void inject(ArticleActivity activity);
+//    void inject(MainActivity activity);
+//
+//    void inject(ArticleActivity activity);
 
     void inject(LicenceActivity activity);
 
-    void inject(MaterialsActivity activity);
-
-    void inject(GalleryActivity activity);
-
-    void inject(TagSearchActivity activity);
+//    void inject(MaterialsActivity activity);
+//
+//    void inject(GalleryActivity activity);
+//
+//    void inject(TagSearchActivity activity);
 
     void inject(ArticleFragment fragment);
 

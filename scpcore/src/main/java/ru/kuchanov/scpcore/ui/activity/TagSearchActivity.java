@@ -29,7 +29,7 @@ import timber.log.Timber;
 
 import static ru.kuchanov.scpcore.ui.activity.MainActivity.EXTRA_SHOW_DISABLE_ADS;
 
-public class TagSearchActivity
+public abstract class TagSearchActivity
         extends BaseDrawerActivity<TagsScreenMvp.View, TagsScreenMvp.Presenter>
         implements TagsScreenMvp.View, ArticleFragment.ToolbarStateSetter, TagsSearchFragment.ShowTagsSearchResults {
 
@@ -141,10 +141,10 @@ public class TagSearchActivity
         return R.layout.activity_materials;
     }
 
-    @Override
-    protected void callInjections() {
-        BaseApplication.getAppComponent().inject(this);
-    }
+//    @Override
+//    protected void callInjections() {
+//        BaseApplication.getAppComponent().inject(this);
+//    }
 
     @Override
     protected int getMenuResId() {

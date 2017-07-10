@@ -2,12 +2,14 @@ package ru.kuchanov.scpcore.di.module;
 
 import android.support.annotation.NonNull;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
 import ru.kuchanov.scpcore.api.ApiClient;
 import ru.kuchanov.scpcore.db.DbProviderFactory;
+import ru.kuchanov.scpcore.db.model.Article;
 import ru.kuchanov.scpcore.manager.MyPreferenceManager;
 import ru.kuchanov.scpcore.service.DownloadAllServiceImpl;
 import ru.kuchanov.scpcore.ui.util.DialogUtils;
@@ -32,14 +34,26 @@ public class HelpersModule {
         return new DialogUtils(preferenceManager, dbProviderFactory, apiClient);
     }
 
-    @Provides
-    @NonNull
-    @Singleton
-    DownloadAllChooser providesDialogUtilsTest(
-            @NonNull MyPreferenceManager preferenceManager,
-            @NonNull DbProviderFactory dbProviderFactory,
-            @NonNull ApiClient apiClient
-    ) {
-        return new DownloadAllChooser(preferenceManager, dbProviderFactory, apiClient, DownloadAllServiceImpl.class);
-    }
+//    @Provides
+//    @NonNull
+//    @Singleton
+//    DownloadAllChooser providesDialogUtilsTest(
+//            @NonNull MyPreferenceManager preferenceManager,
+//            @NonNull DbProviderFactory dbProviderFactory,
+//            @NonNull ApiClient apiClient
+//    ) {
+//        return new DownloadAllChooser(preferenceManager, dbProviderFactory, apiClient, DownloadAllServiceImpl.class);
+//    }
+
+//    @Provides
+//    @Named("default")
+//    @NonNull
+//    @Singleton
+//    ru.kuchanov.scp.downloads.DialogUtils<Article> providesDialogUtilsTest(
+//            @NonNull MyPreferenceManager preferenceManager,
+//            @NonNull DbProviderFactory dbProviderFactory,
+//            @NonNull ApiClient apiClient
+//    ) {
+//        return new DownloadAllChooser(preferenceManager, dbProviderFactory, apiClient, DownloadAllServiceImpl.class);
+//    }
 }
