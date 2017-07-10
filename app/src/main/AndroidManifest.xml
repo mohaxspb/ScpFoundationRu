@@ -35,7 +35,7 @@
         <!--android:name="com.google.android.gms.version"-->
         <!--android:value="@integer/google_play_services_version"/>-->
 
-        <activity android:name=".ui.activity.MainActivity">
+        <activity android:name="ru.kuchanov.scpcore.ui.activity.MainActivity">
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -44,16 +44,16 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.activity.ArticleActivity"/>
+        <activity android:name="ru.kuchanov.scpcore.ui.activity.ArticleActivity"/>
 
-        <activity android:name=".ui.activity.MaterialsActivity"/>
+        <activity android:name="ru.kuchanov.scpcore.ui.activity.MaterialsActivity"/>
 
-        <activity android:name=".ui.activity.GalleryActivity"/>
+        <activity android:name="ru.kuchanov.scpcore.ui.activity.GalleryActivity"/>
 
-        <activity android:name=".ui.activity.TagSearchActivity"/>
+        <activity android:name="ru.kuchanov.scpcore.ui.activity.TagSearchActivity"/>
 
         <activity
-            android:name=".ui.activity.SplashActivity"
+            android:name="ru.kuchanov.scpcore.ui.activity.SplashActivity"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -65,14 +65,14 @@
                 android:resource="@xml/shortcuts" />
         </activity>
 
-        <activity android:name=".ui.activity.LicenceActivity" />
+        <activity android:name="ru.kuchanov.scpcore.ui.activity.LicenceActivity" />
 
         <!--service-->
-        <service android:name=".service.DownloadAllServiceImpl"/>
+        <service android:name="ru.kuchanov.scpcore.service.DownloadAllServiceImpl"/>
 
         <!--receiver-->
         <receiver
-            android:name=".receivers.ReceiverTimer"
+            android:name="ru.kuchanov.scpcore.receivers.ReceiverTimer"
             android:exported="false">
             <intent-filter>
                 <action android:name="ru.dante.scpfoundation.receivers.ReceiverTimer"/>
@@ -80,14 +80,14 @@
         </receiver>
 
         <receiver
-            android:name=".receivers.ReceiverBoot"
+            android:name="ru.kuchanov.scpcore.receivers.ReceiverBoot"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".receivers.AppInstallReceiver">
+        <receiver android:name="ru.kuchanov.scpcore.receivers.AppInstallReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_INSTALL" />
                 <action android:name="android.intent.action.PACKAGE_ADDED" />
