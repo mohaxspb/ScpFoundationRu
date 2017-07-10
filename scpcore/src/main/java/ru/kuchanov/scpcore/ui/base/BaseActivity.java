@@ -67,6 +67,7 @@ import ru.kuchanov.scpcore.BuildConfig;
 import ru.kuchanov.scpcore.Constants;
 import ru.kuchanov.scpcore.R;
 import ru.kuchanov.scpcore.R2;
+import ru.kuchanov.scpcore.db.model.Article;
 import ru.kuchanov.scpcore.db.model.User;
 import ru.kuchanov.scpcore.manager.InAppBillingServiceConnectionObservable;
 import ru.kuchanov.scpcore.manager.MyNotificationManager;
@@ -128,7 +129,7 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
     @Inject
     protected DialogUtils mDialogUtils;
     @Inject
-    protected DownloadAllChooser mDownloadAllChooser;
+    protected ru.kuchanov.scp.downloads.DialogUtils<Article> mDownloadAllChooser;
     //inapps and ads
     private IInAppBillingService mService;
     private List<Item> mOwnedMarketSubscriptions = new ArrayList<>();

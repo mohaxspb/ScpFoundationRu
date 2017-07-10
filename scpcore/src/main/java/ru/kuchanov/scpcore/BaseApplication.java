@@ -17,6 +17,7 @@ import io.realm.Realm;
 import ru.kuchanov.scpcore.di.AppComponent;
 import ru.kuchanov.scpcore.di.DaggerAppComponent;
 import ru.kuchanov.scpcore.di.module.AppModule;
+import ru.kuchanov.scpcore.di.module.HelpersModule;
 import ru.kuchanov.scpcore.di.module.PresentersModule;
 import ru.kuchanov.scpcore.di.module.StorageModule;
 import ru.kuchanov.scpcore.util.SystemUtils;
@@ -71,11 +72,14 @@ public abstract class BaseApplication extends MultiDexApplication {
         YandexMetrica.enableActivityAutoTracking(this);
 
         sAppInstance = this;
-        sAppComponent = DaggerAppComponent.builder()
-                .storageModule(new StorageModule())
-                .appModule(new AppModule(this))
-                .presentersModule(new PresentersModule())
-                .build();
+//        sAppComponent = DaggerAppComponent.builder()
+//                .storageModule(new StorageModule())
+//                .appModule(new AppModule(this))
+//                .presentersModule(new PresentersModule())
+//                .helpersModule(getHelpersModule())
+//                .build();
+
+        sAppComponent = buildAppComponentImpl();
 
         if (BuildConfig.TIMBER_ENABLE) {
             Timber.plant(new Timber.DebugTree() {
@@ -124,4 +128,8 @@ public abstract class BaseApplication extends MultiDexApplication {
 //            myPreferenceManager.setAppCracked(true);
 //        }
     }
+
+    protected abstract AppComponent buildAppComponentImpl();
+
+    protected abstract HelpersModule getHelpersModule();
 }
