@@ -33,7 +33,7 @@
             android:fitsSystemWindows="true"
             >
 
-            <ru.dante.scpfoundation.ui.view.ViewPagerFixed
+            <ru.kuchanov.scpcore.ui.view.ViewPagerFixed
                 android:id="@+id/viewPager"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

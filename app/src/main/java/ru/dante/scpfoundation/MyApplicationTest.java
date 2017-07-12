@@ -2,7 +2,6 @@ package ru.dante.scpfoundation;
 
 import ru.kuchanov.scpcore.BaseApplication;
 import ru.kuchanov.scpcore.di.AppComponent;
-import ru.kuchanov.scpcore.di.DaggerAppComponent;
 import ru.kuchanov.scpcore.di.module.AppModule;
 import ru.kuchanov.scpcore.di.module.HelpersModule;
 import ru.kuchanov.scpcore.di.module.PresentersModule;

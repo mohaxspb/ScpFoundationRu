@@ -62,13 +62,13 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="ru.dante.scpfoundation.ui.activity.ArticleActivityImpl"/>
+        <activity android:name=".ui.activity.ArticleActivityImpl"/>
 
-        <activity android:name="ru.dante.scpfoundation.ui.activity.MaterialsActivityImpl"/>
+        <activity android:name=".ui.activity.MaterialsActivityImpl"/>
 
-        <activity android:name="ru.dante.scpfoundation.ui.activity.GalleryActivityImpl"/>
+        <activity android:name=".ui.activity.GalleryActivityImpl"/>
 
-        <activity android:name="ru.dante.scpfoundation.ui.activity.TagSearchActivityImpl"/>
+        <activity android:name=".ui.activity.TagSearchActivityImpl"/>
 
         <!--<activity-->
             <!--android:name="ru.kuchanov.scpcore.ui.activity.SplashActivity"-->

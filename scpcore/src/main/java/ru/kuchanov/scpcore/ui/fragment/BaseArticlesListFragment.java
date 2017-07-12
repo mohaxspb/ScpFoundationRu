@@ -21,8 +21,6 @@ import ru.kuchanov.scpcore.db.model.Article;
 import ru.kuchanov.scpcore.db.model.ArticleTag;
 import ru.kuchanov.scpcore.mvp.base.BaseArticlesListMvp;
 import ru.kuchanov.scpcore.mvp.base.BaseListMvp;
-import ru.kuchanov.scpcore.ui.activity.ArticleActivity;
-import ru.kuchanov.scpcore.ui.activity.TagSearchActivity;
 import ru.kuchanov.scpcore.ui.adapter.ArticlesListRecyclerAdapter;
 import ru.kuchanov.scpcore.ui.base.BaseListFragment;
 import ru.kuchanov.scpcore.ui.util.EndlessRecyclerViewScrollListener;
@@ -177,7 +175,10 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
             @Override
             public void onArticleClicked(Article article, int position) {
                 Timber.d("onArticleClicked: %s/%s", article.title, position);
-                ArticleActivity.startActivity(getActivity(), (ArrayList<String>) Article.getListOfUrls(getAdapter().getDisplayedData()), position);
+                if (!isAdded()) {
+                    return;
+                }
+                getBaseActivity().startArticleActivity(Article.getListOfUrls(getAdapter().getDisplayedData()), position);
             }
 
             @Override
@@ -201,7 +202,7 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
             @Override
             public void onTagClicked(ArticleTag tag) {
                 Timber.d("onTagClicked: %s", tag);
-                TagSearchActivity.startActivity(getActivity(), new ArrayList<>(Collections.singletonList(tag)));
+               getBaseActivity().startTagsSearchActivity(new ArrayList<>(Collections.singletonList(tag)));
             }
         });
         getAdapter().setHasStableIds(true);

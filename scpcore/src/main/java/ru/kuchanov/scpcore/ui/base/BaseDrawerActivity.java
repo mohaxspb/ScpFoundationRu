@@ -45,7 +45,6 @@ import ru.kuchanov.scpcore.db.model.User;
 import ru.kuchanov.scpcore.monetization.model.PurchaseData;
 import ru.kuchanov.scpcore.monetization.util.InappHelper;
 import ru.kuchanov.scpcore.mvp.contract.DrawerMvp;
-import ru.kuchanov.scpcore.ui.activity.ArticleActivity;
 import ru.kuchanov.scpcore.ui.dialog.LeaderboardDialogFragment;
 import ru.kuchanov.scpcore.ui.dialog.SubscriptionsFragmentDialog;
 import ru.kuchanov.scpcore.ui.holder.HeaderViewHolderLogined;
@@ -179,7 +178,7 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
 
     @Override
     public void onReceiveRandomUrl(String url) {
-        ArticleActivity.startActivity(this, url);
+        startArticleActivity(url);
     }
 
     @Override

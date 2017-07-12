@@ -1,8 +1,6 @@
 package ru.kuchanov.scpcore.ui.activity;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.design.widget.BottomSheetDialogFragment;
@@ -14,17 +12,13 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
-import ru.kuchanov.scpcore.BaseApplication;
 import ru.kuchanov.scpcore.BuildConfig;
 import ru.kuchanov.scpcore.Constants;
 import ru.kuchanov.scpcore.R;
 import ru.kuchanov.scpcore.R2;
-import ru.kuchanov.scpcore.monetization.util.MyAdListener;
-import ru.kuchanov.scpcore.mvp.base.MonetizationActions;
 import ru.kuchanov.scpcore.mvp.contract.ArticleScreenMvp;
 import ru.kuchanov.scpcore.mvp.contract.DataSyncActions;
 import ru.kuchanov.scpcore.ui.adapter.ArticlesPagerAdapter;
@@ -42,9 +36,6 @@ public abstract class ArticleActivity
         extends BaseDrawerActivity<ArticleScreenMvp.View, ArticleScreenMvp.Presenter>
         implements ArticleScreenMvp.View, ArticleFragment.ToolbarStateSetter {
 
-    public static final String EXTRA_ARTICLES_URLS_LIST = "EXTRA_ARTICLES_URLS_LIST";
-    public static final String EXTRA_POSITION = "EXTRA_POSITION";
-
     @BindView(R2.id.content)
     ViewPager mViewPager;
 
@@ -53,46 +44,6 @@ public abstract class ArticleActivity
 
     private int mCurPosition;
     private List<String> mUrls;
-
-    public static void startActivity(Context context, ArrayList<String> urls, int position) {
-        Timber.d("startActivity: urls.size() %s, position: %s", urls.size(), position);
-        if (context instanceof MonetizationActions) {
-            MonetizationActions monetizationActions = (MonetizationActions) context;
-            if (monetizationActions.isTimeToShowAds()) {
-                if (monetizationActions.isAdsLoaded()) {
-                    monetizationActions.showInterstitial(new MyAdListener() {
-                        @Override
-                        public void onAdClosed() {
-                            super.onAdClosed();
-                            Intent intent = new Intent(context, ArticleActivity.class);
-                            intent.putExtra(EXTRA_ARTICLES_URLS_LIST, urls);
-                            intent.putExtra(EXTRA_POSITION, position);
-                            intent.putExtra(EXTRA_SHOW_DISABLE_ADS, true);
-                            context.startActivity(intent);
-                        }
-                    }, true);
-                    return;
-                } else {
-                    Timber.d("Ads not loaded yet");
-                }
-            } else {
-                Timber.d("it's not time to showInterstitial ads");
-            }
-        } else {
-            Timber.wtf("context IS NOT instanceof MonetizationActions");
-        }
-        Intent intent = new Intent(context, ArticleActivity.class);
-        intent.putExtra(EXTRA_ARTICLES_URLS_LIST, urls);
-        intent.putExtra(EXTRA_POSITION, position);
-        context.startActivity(intent);
-    }
-
-    public static void startActivity(Context context, String url) {
-        Timber.d("startActivity: %s", url);
-        startActivity(context, new ArrayList<String>() {{
-            add(url);
-        }}, 0);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -180,11 +131,6 @@ public abstract class ArticleActivity
         return R.layout.activity_article;
     }
 
-//    @Override
-//    protected void callInjections() {
-//        BaseApplication.getAppComponent().inject(this);
-//    }
-
     @Override
     protected int getMenuResId() {
         return R.menu.menu_article;
@@ -196,58 +142,41 @@ public abstract class ArticleActivity
         String link = null;
         if (id == R.id.about) {
             link = Constants.Urls.ABOUT_SCP;
-
         } else if (id == R.id.news) {
             link = Constants.Urls.NEWS;
-
         } else if (id == R.id.mostRatedArticles) {
             link = Constants.Urls.RATE;
-
         } else if (id == R.id.mostRecentArticles) {
             link = Constants.Urls.NEW_ARTICLES;
-
         } else if (id == R.id.random_page) {
             mPresenter.getRandomArticleUrl();
-
         } else if (id == R.id.objects_I) {
             link = Constants.Urls.OBJECTS_1;
-
         } else if (id == R.id.objects_II) {
             link = Constants.Urls.OBJECTS_2;
-
         } else if (id == R.id.objects_III) {
             link = Constants.Urls.OBJECTS_3;
-
         } else if (id == R.id.objects_IV) {
             link = Constants.Urls.OBJECTS_4;
-
         } else if (id == R.id.objects_RU) {
             link = Constants.Urls.OBJECTS_RU;
-
         } else if (id == R.id.files) {
-            MaterialsActivity.startActivity(this);
-
+           startMaterialsActivity();
         } else if (id == R.id.stories) {
             link = Constants.Urls.STORIES;
-
         } else if (id == R.id.favorite) {
             link = Constants.Urls.FAVORITES;
-
         } else if (id == R.id.offline) {
             link = Constants.Urls.OFFLINE;
-
         } else if (id == R.id.gallery) {
-            GalleryActivity.startActivity(this);
-
+          startGalleryActivity();
         } else if (id == R.id.siteSearch) {
             link = Constants.Urls.SEARCH;
-
         } else if (id == R.id.tagsSearch) {
-            TagSearchActivity.startActivity(this);
+           startTagsSearchActivity();
             return true;
         } else {
             Timber.e("unexpected item ID");
-
         }
         if (link != null) {
             MainActivity.startActivity(this, link);

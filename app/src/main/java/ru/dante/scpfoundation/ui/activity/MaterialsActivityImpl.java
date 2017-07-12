@@ -2,7 +2,6 @@ package ru.dante.scpfoundation.ui.activity;
 
 import ru.dante.scpfoundation.AppComponentImpl;
 import ru.dante.scpfoundation.MyApplicationTest;
-import ru.kuchanov.scpcore.ui.activity.ArticleActivity;
 import ru.kuchanov.scpcore.ui.activity.MaterialsActivity;
 
 /**
@@ -11,8 +10,29 @@ import ru.kuchanov.scpcore.ui.activity.MaterialsActivity;
  * for ScpFoundationRu
  */
 public class MaterialsActivityImpl extends MaterialsActivity {
+
     @Override
     protected void callInjections() {
         ((AppComponentImpl) MyApplicationTest.getAppComponent()).inject(this);
+    }
+
+    @Override
+    protected Class getTagsSearchActivityClass() {
+        return TagSearchActivityImpl.class;
+    }
+
+    @Override
+    protected Class getGalleryActivityClass() {
+        return GalleryActivityImpl.class;
+    }
+
+    @Override
+    protected Class getMaterialsActivityClass() {
+        return MaterialsActivityImpl.class;
+    }
+
+    @Override
+    protected Class getArticleActivityClass() {
+        return ArticleActivityImpl.class;
     }
 }

@@ -11,7 +11,7 @@ import android.view.MenuItem;
 
 import java.util.List;
 
-import ru.kuchanov.scpcore.BaseApplication;
+import ru.kuchanov.rate.PreRate;
 import ru.kuchanov.scpcore.BuildConfig;
 import ru.kuchanov.scpcore.Constants;
 import ru.kuchanov.scpcore.R;
@@ -30,7 +30,6 @@ import ru.kuchanov.scpcore.ui.fragment.OfflineArticlesFragment;
 import ru.kuchanov.scpcore.ui.fragment.RatedArticlesFragment;
 import ru.kuchanov.scpcore.ui.fragment.RecentArticlesFragment;
 import ru.kuchanov.scpcore.ui.fragment.SiteSearchArticlesFragment;
-import ru.kuchanov.rate.PreRate;
 import timber.log.Timber;
 
 import static ru.kuchanov.scpcore.ui.activity.LicenceActivity.EXTRA_SHOW_ABOUT;
@@ -75,7 +74,7 @@ public abstract class MainActivity
                     return;
                 }
             }
-            ArticleActivity.startActivity(this, link);
+            startArticleActivity(link);
         }
     }
 
@@ -226,7 +225,7 @@ public abstract class MainActivity
             showFragment(ObjectsRuArticlesFragment.newInstance(), ObjectsRuArticlesFragment.TAG);
             return true;
         } else if (id == R.id.files) {
-            MaterialsActivity.startActivity(this);
+            startMaterialsActivity();
             return false;
         } else if (id == R.id.stories) {
             mCurrentSelectedDrawerItemId = id;
@@ -242,14 +241,14 @@ public abstract class MainActivity
             showFragment(OfflineArticlesFragment.newInstance(), OfflineArticlesFragment.TAG);
             return true;
         } else if (id == R.id.gallery) {
-            GalleryActivity.startActivity(this);
+            startGalleryActivity();
             return false;
         } else if (id == R.id.siteSearch) {
             mCurrentSelectedDrawerItemId = id;
             showFragment(SiteSearchArticlesFragment.newInstance(), SiteSearchArticlesFragment.TAG);
             return true;
         } else if (id == R.id.tagsSearch) {
-            TagSearchActivity.startActivity(this);
+           startTagsSearchActivity();
             return true;
         } else {
             Timber.e("unexpected item ID");

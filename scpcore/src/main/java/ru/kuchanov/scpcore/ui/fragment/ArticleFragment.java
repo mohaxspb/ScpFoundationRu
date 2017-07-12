@@ -19,7 +19,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -35,9 +34,7 @@ import ru.kuchanov.scpcore.db.model.ArticleTag;
 import ru.kuchanov.scpcore.db.model.RealmString;
 import ru.kuchanov.scpcore.manager.MyPreferenceManager;
 import ru.kuchanov.scpcore.mvp.contract.ArticleMvp;
-import ru.kuchanov.scpcore.ui.activity.ArticleActivity;
 import ru.kuchanov.scpcore.ui.activity.MainActivity;
-import ru.kuchanov.scpcore.ui.activity.TagSearchActivity;
 import ru.kuchanov.scpcore.ui.adapter.ArticleRecyclerAdapter;
 import ru.kuchanov.scpcore.ui.base.BaseFragment;
 import ru.kuchanov.scpcore.ui.util.DialogUtils;
@@ -285,7 +282,7 @@ public class ArticleFragment
             }
         }
 
-        ArticleActivity.startActivity(getActivity(), link);
+        getBaseActivity().startArticleActivity(link);
     }
 
     @Override
@@ -396,7 +393,7 @@ public class ArticleFragment
 
     @Override
     public void onTagClicked(ArticleTag tag) {
-        TagSearchActivity.startActivity(getActivity(), new ArrayList<>(Collections.singletonList(tag)));
+        getBaseActivity().startTagsSearchActivity(Collections.singletonList(tag));
     }
 
     @Override

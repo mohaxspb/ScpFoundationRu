@@ -1,8 +1,6 @@
 package ru.kuchanov.scpcore.ui.activity;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -25,14 +23,12 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import ru.kuchanov.scpcore.BaseApplication;
 import ru.kuchanov.scpcore.BuildConfig;
 import ru.kuchanov.scpcore.Constants;
 import ru.kuchanov.scpcore.R;
 import ru.kuchanov.scpcore.R2;
 import ru.kuchanov.scpcore.db.model.VkImage;
 import ru.kuchanov.scpcore.monetization.util.MyAdListener;
-import ru.kuchanov.scpcore.mvp.base.MonetizationActions;
 import ru.kuchanov.scpcore.mvp.contract.DataSyncActions;
 import ru.kuchanov.scpcore.mvp.contract.GalleryScreenMvp;
 import ru.kuchanov.scpcore.ui.adapter.ImagesPagerAdapter;
@@ -49,8 +45,6 @@ import static ru.kuchanov.scpcore.ui.activity.MainActivity.EXTRA_SHOW_DISABLE_AD
 public abstract class GalleryActivity
         extends BaseDrawerActivity<GalleryScreenMvp.View, GalleryScreenMvp.Presenter>
         implements GalleryScreenMvp.View {
-
-    public static final String EXTRA_POSITION = "EXTRA_POSITION";
 
     @BindView(R2.id.viewPager)
     ViewPager mViewPager;
@@ -71,35 +65,6 @@ public abstract class GalleryActivity
     private ImagesPagerAdapter mAdapter;
     private ImagesRecyclerAdapter mRecyclerAdapter;
     private int mCurPosition;
-
-    public static void startActivity(Context context) {
-        Timber.d("startActivity");
-        if (context instanceof MonetizationActions) {
-            MonetizationActions monetizationActions = (MonetizationActions) context;
-            if (monetizationActions.isTimeToShowAds()) {
-                if (monetizationActions.isAdsLoaded()) {
-                    monetizationActions.showInterstitial(new MyAdListener() {
-                        @Override
-                        public void onAdClosed() {
-                            super.onAdClosed();
-                            Intent intent = new Intent(context, GalleryActivity.class);
-                            intent.putExtra(EXTRA_SHOW_DISABLE_ADS, true);
-                            context.startActivity(intent);
-                        }
-                    }, true);
-                    return;
-                } else {
-                    Timber.d("Ads not loaded yet");
-                }
-            } else {
-                Timber.d("it's not time to showInterstitial ads");
-            }
-        } else {
-            Timber.wtf("context IS NOT instanceof MonetizationActions");
-        }
-        Intent intent = new Intent(context, GalleryActivity.class);
-        context.startActivity(intent);
-    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -134,7 +99,6 @@ public abstract class GalleryActivity
             public void onPageSelected(int position) {
                 mCurPosition = position;
                 if (position % FirebaseRemoteConfig.getInstance().getLong(Constants.Firebase.RemoteConfigKeys.NUM_OF_GALLERY_PHOTOS_BETWEEN_INTERSITIAL) == 0) {
-//                    if (isTimeToShowAds()) {
                     if (getOwnedItems().isEmpty()) {
                         if (isAdsLoaded()) {
                             showInterstitial(new MyAdListener() {
@@ -236,54 +200,39 @@ public abstract class GalleryActivity
         String link = null;
         if (id == R.id.about) {
             link = Constants.Urls.ABOUT_SCP;
-
         } else if (id == R.id.news) {
             link = Constants.Urls.NEWS;
-
         } else if (id == R.id.mostRatedArticles) {
             link = Constants.Urls.RATE;
-
         } else if (id == R.id.mostRecentArticles) {
             link = Constants.Urls.NEW_ARTICLES;
-
         } else if (id == R.id.random_page) {
             mPresenter.getRandomArticleUrl();
-
         } else if (id == R.id.objects_I) {
             link = Constants.Urls.OBJECTS_1;
-
         } else if (id == R.id.objects_II) {
             link = Constants.Urls.OBJECTS_2;
-
         } else if (id == R.id.objects_III) {
             link = Constants.Urls.OBJECTS_3;
-
         } else if (id == R.id.objects_IV) {
             link = Constants.Urls.OBJECTS_4;
-
         } else if (id == R.id.objects_RU) {
             link = Constants.Urls.OBJECTS_RU;
-
         } else if (id == R.id.files) {
-            MaterialsActivity.startActivity(this);
+            startMaterialsActivity();
             return false;
         } else if (id == R.id.stories) {
             link = Constants.Urls.STORIES;
-
         } else if (id == R.id.favorite) {
             link = Constants.Urls.FAVORITES;
-
         } else if (id == R.id.offline) {
             link = Constants.Urls.OFFLINE;
-
-        } else if (id == R.id.gallery) {//nothing to do
-
+        } else if (id == R.id.gallery) {
+            //nothing to do
         } else if (id == R.id.siteSearch) {
             link = Constants.Urls.SEARCH;
-
         } else {
             Timber.e("unexpected item ID");
-
         }
         if (link != null) {
             MainActivity.startActivity(this, link);

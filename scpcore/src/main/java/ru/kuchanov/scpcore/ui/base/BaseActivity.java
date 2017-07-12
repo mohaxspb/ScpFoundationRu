@@ -57,6 +57,7 @@ import com.yandex.metrica.YandexMetrica;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -68,6 +69,7 @@ import ru.kuchanov.scpcore.Constants;
 import ru.kuchanov.scpcore.R;
 import ru.kuchanov.scpcore.R2;
 import ru.kuchanov.scpcore.db.model.Article;
+import ru.kuchanov.scpcore.db.model.ArticleTag;
 import ru.kuchanov.scpcore.db.model.User;
 import ru.kuchanov.scpcore.manager.InAppBillingServiceConnectionObservable;
 import ru.kuchanov.scpcore.manager.MyNotificationManager;
@@ -87,11 +89,12 @@ import ru.kuchanov.scpcore.ui.dialog.SubscriptionsFragmentDialog;
 import ru.kuchanov.scpcore.ui.dialog.TextSizeDialogFragment;
 import ru.kuchanov.scpcore.ui.holder.SocialLoginHolder;
 import ru.kuchanov.scpcore.ui.util.DialogUtils;
-import ru.kuchanov.scpcore.ui.util.DownloadAllChooser;
 import ru.kuchanov.scpcore.util.SecureUtils;
 import ru.kuchanov.scpcore.util.SystemUtils;
 import timber.log.Timber;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
+import static ru.kuchanov.scpcore.ui.activity.MainActivity.EXTRA_SHOW_DISABLE_ADS;
 
 /**
  * Created by mohax on 31.12.2016.
@@ -102,6 +105,10 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
         extends MvpActivity<V, P>
         implements BaseActivityMvp.View, MonetizationActions,
         SharedPreferences.OnSharedPreferenceChangeListener, GoogleApiClient.OnConnectionFailedListener {
+
+    public static final String EXTRA_ARTICLES_URLS_LIST = "EXTRA_ARTICLES_URLS_LIST";
+    public static final String EXTRA_POSITION = "EXTRA_POSITION";
+    public static final String EXTRA_TAGS = "EXTRA_TAGS";
 
     //google login
     private static final int RC_SIGN_IN = 5555;
@@ -882,4 +889,143 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Timber.e("onConnectionFailed: %s", connectionResult);
     }
+
+    public void startArticleActivity(List<String> urls, int position) {
+        Timber.d("startActivity: urls.size() %s, position: %s", urls.size(), position);
+        if (isTimeToShowAds()) {
+            if (isAdsLoaded()) {
+                showInterstitial(new MyAdListener() {
+                    @Override
+                    public void onAdClosed() {
+                        super.onAdClosed();
+                        Intent intent = new Intent(BaseActivity.this, getArticleActivityClass());
+                        intent.putExtra(EXTRA_ARTICLES_URLS_LIST, new ArrayList<>(urls));
+                        intent.putExtra(EXTRA_POSITION, position);
+                        intent.putExtra(EXTRA_SHOW_DISABLE_ADS, true);
+                        startActivity(intent);
+                    }
+                }, true);
+                return;
+            } else {
+                Timber.d("Ads not loaded yet");
+            }
+        } else {
+            Timber.d("it's not time to showInterstitial ads");
+        }
+        Intent intent = new Intent(this, getArticleActivityClass());
+        intent.putExtra(EXTRA_ARTICLES_URLS_LIST, new ArrayList<>(urls));
+        intent.putExtra(EXTRA_POSITION, position);
+        startActivity(intent);
+    }
+
+    public void startArticleActivity(String url) {
+        Timber.d("startActivity: %s", url);
+        startArticleActivity(Collections.singletonList(url), 0);
+    }
+
+    public void startMaterialsActivity() {
+        Timber.d("startActivity");
+        if (isTimeToShowAds()) {
+            if (isAdsLoaded()) {
+                showInterstitial(new MyAdListener() {
+                    @Override
+                    public void onAdClosed() {
+                        super.onAdClosed();
+                        Intent intent = new Intent(BaseActivity.this, getMaterialsActivityClass());
+                        intent.putExtra(EXTRA_SHOW_DISABLE_ADS, true);
+                        startActivity(intent);
+                    }
+                }, true);
+                return;
+            } else {
+                Timber.d("Ads not loaded yet");
+            }
+        } else {
+            Timber.d("it's not time to showInterstitial ads");
+        }
+        Intent intent = new Intent(this, getMaterialsActivityClass());
+        startActivity(intent);
+    }
+
+    public void startGalleryActivity() {
+        Timber.d("startActivity");
+        if (isTimeToShowAds()) {
+            if (isAdsLoaded()) {
+                showInterstitial(new MyAdListener() {
+                    @Override
+                    public void onAdClosed() {
+                        super.onAdClosed();
+                        Intent intent = new Intent(BaseActivity.this, getGalleryActivityClass());
+                        intent.putExtra(EXTRA_SHOW_DISABLE_ADS, true);
+                        startActivity(intent);
+                    }
+                }, true);
+                return;
+            } else {
+                Timber.d("Ads not loaded yet");
+            }
+        } else {
+            Timber.d("it's not time to showInterstitial ads");
+        }
+        Intent intent = new Intent(this, getGalleryActivityClass());
+        startActivity(intent);
+    }
+
+    public void startTagsSearchActivity(List<ArticleTag> tagList) {
+        Timber.d("startActivity");
+        if (isTimeToShowAds()) {
+            if (isAdsLoaded()) {
+                showInterstitial(new MyAdListener() {
+                    @Override
+                    public void onAdClosed() {
+                        super.onAdClosed();
+                        Intent intent = new Intent(BaseActivity.this, getTagsSearchActivityClass());
+                        intent.putExtra(EXTRA_TAGS, new ArrayList<>(ArticleTag.getStringsFromTags(tagList)));
+                        intent.putExtra(EXTRA_SHOW_DISABLE_ADS, true);
+                        startActivity(intent);
+                    }
+                }, true);
+                return;
+            } else {
+                Timber.d("Ads not loaded yet");
+            }
+        } else {
+            Timber.d("it's not time to showInterstitial ads");
+        }
+        Intent intent = new Intent(BaseActivity.this, getTagsSearchActivityClass());
+        intent.putExtra(EXTRA_TAGS, new ArrayList<>(ArticleTag.getStringsFromTags(tagList)));
+        startActivity(intent);
+    }
+
+    public void startTagsSearchActivity() {
+        Timber.d("startActivity");
+        if (isTimeToShowAds()) {
+            if (isAdsLoaded()) {
+                showInterstitial(new MyAdListener() {
+                    @Override
+                    public void onAdClosed() {
+                        super.onAdClosed();
+                        Intent intent = new Intent(BaseActivity.this, getTagsSearchActivityClass());
+                        intent.putExtra(EXTRA_SHOW_DISABLE_ADS, true);
+                        startActivity(intent);
+                    }
+                }, true);
+                return;
+            } else {
+                Timber.d("Ads not loaded yet");
+            }
+        } else {
+            Timber.d("it's not time to showInterstitial ads");
+        }
+        Intent intent = new Intent(this, getTagsSearchActivityClass());
+        startActivity(intent);
+    }
+
+    protected abstract Class getTagsSearchActivityClass();
+
+    protected abstract Class getGalleryActivityClass();
+
+    protected abstract Class getMaterialsActivityClass();
+
+    protected abstract Class getArticleActivityClass();
 }

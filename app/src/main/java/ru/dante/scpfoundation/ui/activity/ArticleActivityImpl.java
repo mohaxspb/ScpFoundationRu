@@ -14,4 +14,24 @@ public class ArticleActivityImpl extends ArticleActivity {
     protected void callInjections() {
         ((AppComponentImpl) MyApplicationTest.getAppComponent()).inject(this);
     }
+
+    @Override
+    protected Class getTagsSearchActivityClass() {
+        return TagSearchActivityImpl.class;
+    }
+
+    @Override
+    protected Class getGalleryActivityClass() {
+        return GalleryActivityImpl.class;
+    }
+
+    @Override
+    protected Class getMaterialsActivityClass() {
+        return MaterialsActivityImpl.class;
+    }
+
+    @Override
+    protected Class getArticleActivityClass() {
+        return ArticleActivityImpl.class;
+    }
 }
