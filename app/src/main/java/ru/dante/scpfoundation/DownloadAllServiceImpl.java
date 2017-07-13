@@ -49,7 +49,7 @@ public class DownloadAllServiceImpl extends DownloadAllService<Article> {
         Timber.d("onCreate");
         super.onCreate();
         instance = this;
-        ((AppComponentImpl)MyApplicationTest.getAppComponent()).inject(this);
+        ((AppComponentImpl) MyApplicationImpl.getAppComponent()).inject(this);
     }
 
     @Override

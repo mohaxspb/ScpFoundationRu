@@ -12,7 +12,7 @@ import ru.kuchanov.scpcore.di.module.StorageModule;
  * <p>
  * for scp_ru
  */
-public class MyApplicationTest extends BaseApplication {
+public class MyApplicationImpl extends BaseApplication {
 
     @Override
     protected AppComponent buildAppComponentImpl() {

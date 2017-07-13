@@ -1,7 +1,7 @@
 package ru.dante.scpfoundation.ui.activity;
 
 import ru.dante.scpfoundation.AppComponentImpl;
-import ru.dante.scpfoundation.MyApplicationTest;
+import ru.dante.scpfoundation.MyApplicationImpl;
 import ru.kuchanov.scpcore.ui.activity.MaterialsActivity;
 
 /**
@@ -13,7 +13,7 @@ public class MaterialsActivityImpl extends MaterialsActivity {
 
     @Override
     protected void callInjections() {
-        ((AppComponentImpl) MyApplicationTest.getAppComponent()).inject(this);
+        ((AppComponentImpl) MyApplicationImpl.getAppComponent()).inject(this);
     }
 
     @Override
