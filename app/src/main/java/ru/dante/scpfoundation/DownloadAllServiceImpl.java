@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 
 import javax.inject.Inject;
 
+import ru.dante.scpfoundation.di.AppComponentImpl;
 import ru.kuchanov.scp.downloads.ApiClientModel;
 import ru.kuchanov.scp.downloads.DbProviderModel;
 import ru.kuchanov.scp.downloads.DownloadAllService;

@@ -48,9 +48,15 @@ public class ReceiverTimer extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         Timber.d("onReceive with action: %s", intent.getAction());
         if (context.getString(R.string.receiver_action_timer).equals(intent.getAction())) {
-            BaseApplication.getAppComponent().inject(this);
+//            BaseApplication.getAppComponent().inject(this);
+            callInjection();
             download(context);
         }
+    }
+
+    //    protected abstract void callInjection();
+    protected void callInjection() {
+        BaseApplication.getAppComponent().inject(this);
     }
 
     protected void download(Context context) {

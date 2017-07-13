@@ -2,7 +2,6 @@ package ru.kuchanov.scpcore.di.module;
 
 import android.support.annotation.NonNull;
 
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -11,9 +10,9 @@ import ru.kuchanov.scpcore.api.ApiClient;
 import ru.kuchanov.scpcore.db.DbProviderFactory;
 import ru.kuchanov.scpcore.db.model.Article;
 import ru.kuchanov.scpcore.manager.MyPreferenceManager;
-import ru.kuchanov.scpcore.service.DownloadAllServiceImpl;
+import ru.kuchanov.scpcore.service.DownloadAllServiceDefault;
 import ru.kuchanov.scpcore.ui.util.DialogUtils;
-import ru.kuchanov.scpcore.ui.util.DownloadAllChooser;
+import ru.kuchanov.scpcore.ui.util.DownloadAllChooserDefault;
 
 /**
  * Created by y.kuchanov on 22.12.16.
@@ -34,16 +33,25 @@ public class HelpersModule {
         return new DialogUtils(preferenceManager, dbProviderFactory, apiClient);
     }
 
-//    @Provides
-//    @NonNull
-//    @Singleton
-//    DownloadAllChooser providesDialogUtilsTest(
-//            @NonNull MyPreferenceManager preferenceManager,
-//            @NonNull DbProviderFactory dbProviderFactory,
-//            @NonNull ApiClient apiClient
-//    ) {
-//        return new DownloadAllChooser(preferenceManager, dbProviderFactory, apiClient, DownloadAllServiceImpl.class);
-//    }
+    @Provides
+    @NonNull
+    @Singleton
+    ru.kuchanov.scp.downloads.DialogUtils<Article> providesDialogUtilsTest(
+            @NonNull MyPreferenceManager preferenceManager,
+            @NonNull DbProviderFactory dbProviderFactory,
+            @NonNull ApiClient apiClient
+    ) {
+//        return new DownloadAllChooserDefault(preferenceManager, dbProviderFactory, apiClient, DownloadAllServiceDefault.class);
+        return getDialogUtilsTest(preferenceManager, dbProviderFactory, apiClient);
+    }
+
+    protected ru.kuchanov.scp.downloads.DialogUtils<Article> getDialogUtilsTest(
+            @NonNull MyPreferenceManager preferenceManager,
+            @NonNull DbProviderFactory dbProviderFactory,
+            @NonNull ApiClient apiClient
+    ) {
+        return new DownloadAllChooserDefault(preferenceManager, dbProviderFactory, apiClient, DownloadAllServiceDefault.class);
+    }
 
 //    @Provides
 //    @Named("default")
@@ -54,6 +62,6 @@ public class HelpersModule {
 //            @NonNull DbProviderFactory dbProviderFactory,
 //            @NonNull ApiClient apiClient
 //    ) {
-//        return new DownloadAllChooser(preferenceManager, dbProviderFactory, apiClient, DownloadAllServiceImpl.class);
+//        return new DownloadAllChooserDefault(preferenceManager, dbProviderFactory, apiClient, DownloadAllServiceDefault.class);
 //    }
 }

@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import java.util.List;
 
 import ru.kuchanov.rate.PreRate;
+import ru.kuchanov.scpcore.BaseApplication;
 import ru.kuchanov.scpcore.BuildConfig;
 import ru.kuchanov.scpcore.Constants;
 import ru.kuchanov.scpcore.R;
@@ -34,7 +35,7 @@ import timber.log.Timber;
 
 import static ru.kuchanov.scpcore.ui.activity.LicenceActivity.EXTRA_SHOW_ABOUT;
 
-public abstract class MainActivity
+public class MainActivity
         extends BaseDrawerActivity<MainMvp.View, MainMvp.Presenter>
         implements MainMvp.View {
 
@@ -47,6 +48,31 @@ public abstract class MainActivity
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(EXTRA_LINK, link);
         context.startActivity(intent);
+    }
+
+    @Override
+    protected void callInjections() {
+        BaseApplication.getAppComponent().inject(this);
+    }
+
+    @Override
+    protected Class getTagsSearchActivityClass() {
+        return TagSearchActivity.class;
+    }
+
+    @Override
+    protected Class getGalleryActivityClass() {
+        return GalleryActivity.class;
+    }
+
+    @Override
+    protected Class getMaterialsActivityClass() {
+        return MaterialsActivity.class;
+    }
+
+    @Override
+    protected Class getArticleActivityClass() {
+        return ArticleActivity.class;
     }
 
     @Override

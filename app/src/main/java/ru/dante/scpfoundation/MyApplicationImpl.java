@@ -1,10 +1,11 @@
 package ru.dante.scpfoundation;
 
+import ru.dante.scpfoundation.di.DaggerAppComponentImpl;
+import ru.dante.scpfoundation.di.module.HelpersModuleImpl;
+import ru.dante.scpfoundation.di.module.NetModuleImpl;
 import ru.kuchanov.scpcore.BaseApplication;
 import ru.kuchanov.scpcore.di.AppComponent;
 import ru.kuchanov.scpcore.di.module.AppModule;
-import ru.kuchanov.scpcore.di.module.HelpersModule;
-import ru.kuchanov.scpcore.di.module.PresentersModule;
 import ru.kuchanov.scpcore.di.module.StorageModule;
 
 /**
@@ -19,13 +20,8 @@ public class MyApplicationImpl extends BaseApplication {
         return DaggerAppComponentImpl.builder()
                 .storageModule(new StorageModule())
                 .appModule(new AppModule(this))
-                .presentersModule(new PresentersModule())
-                .helpersModule(getHelpersModule())
+                .netModule(new NetModuleImpl())
+                .helpersModule(new HelpersModuleImpl())
                 .build();
-    }
-
-    @Override
-    protected HelpersModule getHelpersModule() {
-        return new HelpersModuleImpl();
     }
 }

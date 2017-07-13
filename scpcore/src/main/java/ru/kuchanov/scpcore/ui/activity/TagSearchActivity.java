@@ -7,6 +7,7 @@ import android.view.MenuItem;
 
 import java.util.List;
 
+import ru.kuchanov.scpcore.BaseApplication;
 import ru.kuchanov.scpcore.Constants;
 import ru.kuchanov.scpcore.R;
 import ru.kuchanov.scpcore.db.model.Article;
@@ -23,7 +24,7 @@ import timber.log.Timber;
 
 import static ru.kuchanov.scpcore.ui.activity.MainActivity.EXTRA_SHOW_DISABLE_ADS;
 
-public abstract class TagSearchActivity
+public class TagSearchActivity
         extends BaseDrawerActivity<TagsScreenMvp.View, TagsScreenMvp.Presenter>
         implements TagsScreenMvp.View, ArticleFragment.ToolbarStateSetter, TagsSearchFragment.ShowTagsSearchResults {
 
@@ -73,10 +74,10 @@ public abstract class TagSearchActivity
         return R.layout.activity_materials;
     }
 
-//    @Override
-//    protected void callInjections() {
-//        BaseApplication.getAppComponent().inject(this);
-//    }
+    @Override
+    protected void callInjections() {
+        BaseApplication.getAppComponent().inject(this);
+    }
 
     @Override
     protected int getMenuResId() {

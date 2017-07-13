@@ -82,6 +82,10 @@ import ru.kuchanov.scpcore.monetization.util.MySkippableVideoCallbacks;
 import ru.kuchanov.scpcore.mvp.base.BaseActivityMvp;
 import ru.kuchanov.scpcore.mvp.base.MonetizationActions;
 import ru.kuchanov.scpcore.mvp.contract.DataSyncActions;
+import ru.kuchanov.scpcore.ui.activity.ArticleActivity;
+import ru.kuchanov.scpcore.ui.activity.GalleryActivity;
+import ru.kuchanov.scpcore.ui.activity.MaterialsActivity;
+import ru.kuchanov.scpcore.ui.activity.TagSearchActivity;
 import ru.kuchanov.scpcore.ui.adapter.SocialLoginAdapter;
 import ru.kuchanov.scpcore.ui.dialog.NewVersionDialogFragment;
 import ru.kuchanov.scpcore.ui.dialog.SetttingsBottomSheetDialogFragment;
@@ -1021,11 +1025,32 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
         startActivity(intent);
     }
 
-    protected abstract Class getTagsSearchActivityClass();
+//    protected abstract Class getTagsSearchActivityClass();
+//
+//    protected abstract Class getGalleryActivityClass();
+//
+//    protected abstract Class getMaterialsActivityClass();
+//
+//    protected abstract Class getArticleActivityClass();
+//
 
-    protected abstract Class getGalleryActivityClass();
+//    @Override
+    protected Class getTagsSearchActivityClass() {
+        return TagSearchActivity.class;
+    }
 
-    protected abstract Class getMaterialsActivityClass();
+//    @Override
+    protected Class getGalleryActivityClass() {
+        return GalleryActivity.class;
+    }
 
-    protected abstract Class getArticleActivityClass();
+//    @Override
+    protected Class getMaterialsActivityClass() {
+        return MaterialsActivity.class;
+    }
+
+//    @Override
+    protected Class getArticleActivityClass() {
+        return ArticleActivity.class;
+    }
 }

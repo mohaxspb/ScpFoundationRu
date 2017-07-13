@@ -20,7 +20,13 @@ public class ReceiverBoot extends BroadcastReceiver {
     public void onReceive(Context ctx, Intent intent) {
         Timber.d("onReceive with action: %s", intent.getAction());
 
-        BaseApplication.getAppComponent().inject(this);
+//        BaseApplication.getAppComponent().inject(this);
+        callInjection();
         mMyNotificationManager.checkAlarm();
+    }
+
+    //    protected abstract void callInjection();
+    protected void callInjection() {
+        BaseApplication.getAppComponent().inject(this);
     }
 }

@@ -14,7 +14,7 @@ import ru.kuchanov.scpcore.Constants;
 import ru.kuchanov.scpcore.BaseApplication;
 import ru.kuchanov.scpcore.R;
 import ru.kuchanov.scpcore.db.model.Article;
-import ru.kuchanov.scpcore.service.DownloadAllServiceImpl;
+import ru.kuchanov.scpcore.service.DownloadAllServiceDefault;
 import ru.kuchanov.scpcore.ui.dialog.SubscriptionsFragmentDialog;
 import ru.kuchanov.scp.downloads.ApiClientModel;
 import ru.kuchanov.scp.downloads.DbProviderFactoryModel;
@@ -28,9 +28,9 @@ import timber.log.Timber;
  * <p>
  * for ScpFoundationRu
  */
-public class DownloadAllChooser extends DialogUtils<Article> {
+public class DownloadAllChooserDefault extends DialogUtils<Article> {
 
-    public DownloadAllChooser(
+    public DownloadAllChooserDefault(
             MyPreferenceManagerModel preferenceManager,
             DbProviderFactoryModel dbProviderFactory,
             ApiClientModel<Article> apiClient,
@@ -62,7 +62,7 @@ public class DownloadAllChooser extends DialogUtils<Article> {
 
     @Override
     protected boolean isServiceRunning() {
-        return DownloadAllServiceImpl.isRunning();
+        return DownloadAllServiceDefault.isRunning();
     }
 
     @Override

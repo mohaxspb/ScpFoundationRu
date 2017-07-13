@@ -30,7 +30,7 @@ import timber.log.Timber;
  * <p>
  * for scp_ru
  */
-public abstract class LicenceActivity extends AppCompatActivity {
+public class LicenceActivity extends AppCompatActivity {
 
     public static final String EXTRA_SHOW_ABOUT = "EXTRA_SHOW_ABOUT";
 
@@ -69,7 +69,7 @@ public abstract class LicenceActivity extends AppCompatActivity {
         }
     }
 
-    protected abstract Class getLaunchActivityClass();
+//    protected abstract Class getLaunchActivityClass();
 
     //TODO move to utils
     public static String readFromAssets(Context context, String filename) throws IOException {
@@ -84,5 +84,9 @@ public abstract class LicenceActivity extends AppCompatActivity {
         }
         reader.close();
         return sb.toString();
+    }
+
+    protected Class getLaunchActivityClass() {
+        return MainActivity.class;
     }
 }

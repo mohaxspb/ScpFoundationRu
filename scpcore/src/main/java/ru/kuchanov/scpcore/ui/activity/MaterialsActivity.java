@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import java.util.Arrays;
 import java.util.List;
 
+import ru.kuchanov.scpcore.BaseApplication;
 import ru.kuchanov.scpcore.Constants;
 import ru.kuchanov.scpcore.R;
 import ru.kuchanov.scpcore.mvp.contract.DataSyncActions;
@@ -27,7 +28,7 @@ import timber.log.Timber;
 
 import static ru.kuchanov.scpcore.ui.activity.MainActivity.EXTRA_SHOW_DISABLE_ADS;
 
-public abstract class MaterialsActivity
+public class MaterialsActivity
         extends BaseDrawerActivity<MaterialsScreenMvp.View, MaterialsScreenMvp.Presenter>
         implements MaterialsScreenMvp.View, ArticleFragment.ToolbarStateSetter {
 
@@ -67,10 +68,10 @@ public abstract class MaterialsActivity
         return R.layout.activity_materials;
     }
 
-//    @Override
-//    protected void callInjections() {
-//        BaseApplication.getAppComponent().inject(this);
-//    }
+    @Override
+    protected void callInjections() {
+        BaseApplication.getAppComponent().inject(this);
+    }
 
     @Override
     protected int getMenuResId() {

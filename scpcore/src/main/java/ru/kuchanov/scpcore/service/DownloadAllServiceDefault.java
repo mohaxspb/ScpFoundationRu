@@ -25,7 +25,7 @@ import timber.log.Timber;
  * <p>
  * for ScpFoundationRu
  */
-public class DownloadAllServiceImpl extends DownloadAllService<Article> {
+public class DownloadAllServiceDefault extends DownloadAllService<Article> {
 
     @Inject
     MyPreferenceManager mMyPreferenceManager;

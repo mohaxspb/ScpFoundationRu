@@ -97,12 +97,12 @@ import timber.log.Timber;
 public class ApiClient implements ApiClientModel<Article> {
 
     @SuppressWarnings("unused")
-    private MyPreferenceManager mPreferencesManager;
-    private OkHttpClient mOkHttpClient;
-    private Gson mGson;
+    protected MyPreferenceManager mPreferencesManager;
+    protected OkHttpClient mOkHttpClient;
+    protected Gson mGson;
 
-    private VpsServer mVpsServer;
-    private ScpServer mScpServer;
+    protected VpsServer mVpsServer;
+    protected ScpServer mScpServer;
 
     public ApiClient(
             OkHttpClient okHttpClient,
@@ -118,7 +118,7 @@ public class ApiClient implements ApiClientModel<Article> {
         mScpServer = scpRetrofit.create(ScpServer.class);
     }
 
-    private <T> Observable<T> bindWithUtils(Observable<T> observable) {
+    protected  <T> Observable<T> bindWithUtils(Observable<T> observable) {
         return observable
 //                .doOnError(throwable -> {
 //                    try {

@@ -87,7 +87,7 @@ public class SubscriptionsFragmentDialog
 
     @Override
     protected void callInjection() {
-        BaseApplication.getAppComponent().inject(this);
+        BaseApplication.getAppInstance().getAppComponentImpl().inject(this);
     }
 
     @Override

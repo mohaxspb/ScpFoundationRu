@@ -46,7 +46,8 @@ public class AppInstallReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        BaseApplication.getAppComponent().inject(this);
+//        BaseApplication.getAppComponent().inject(this);
+        callInjection();
         String packageName = intent.getData().getEncodedSchemeSpecificPart();
         Timber.d("intent data: %s", packageName);
 
@@ -78,6 +79,11 @@ public class AppInstallReceiver extends BroadcastReceiver {
             bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, packageName);
             FirebaseAnalytics.getInstance(context).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
         }
+    }
+
+//    protected abstract void callInjection();
+    protected void callInjection() {
+        BaseApplication.getAppComponent().inject(this);
     }
 
     private void updateScoreFromAppInstall(String packageName) {

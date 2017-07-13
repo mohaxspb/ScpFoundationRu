@@ -15,6 +15,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import java.util.List;
 
 import butterknife.BindView;
+import ru.kuchanov.scpcore.BaseApplication;
 import ru.kuchanov.scpcore.BuildConfig;
 import ru.kuchanov.scpcore.Constants;
 import ru.kuchanov.scpcore.R;
@@ -32,7 +33,7 @@ import timber.log.Timber;
 import static ru.kuchanov.scpcore.Constants.Firebase.RemoteConfigKeys.ARTICLE_BANNER_DISABLED;
 import static ru.kuchanov.scpcore.ui.activity.MainActivity.EXTRA_SHOW_DISABLE_ADS;
 
-public abstract class ArticleActivity
+public class ArticleActivity
         extends BaseDrawerActivity<ArticleScreenMvp.View, ArticleScreenMvp.Presenter>
         implements ArticleScreenMvp.View, ArticleFragment.ToolbarStateSetter {
 
@@ -223,5 +224,10 @@ public abstract class ArticleActivity
                 item.setTitle(isInFavorite ? R.string.favorites_remove : R.string.favorites_add);
             }
         }
+    }
+
+    @Override
+    protected void callInjections() {
+        BaseApplication.getAppComponent().inject(this);
     }
 }

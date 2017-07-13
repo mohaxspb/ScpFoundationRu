@@ -180,6 +180,16 @@ public class NetModule {
             @NonNull MyPreferenceManager preferencesManager,
             @NonNull Gson gson
     ) {
+        return getApiClient(okHttpClient, vpsRetrofit, scpRetrofit, preferencesManager, gson);
+    }
+
+   protected ApiClient getApiClient(
+            @NonNull OkHttpClient okHttpClient,
+            @Named("vps") @NonNull Retrofit vpsRetrofit,
+            @Named("scp") @NonNull Retrofit scpRetrofit,
+            @NonNull MyPreferenceManager preferencesManager,
+            @NonNull Gson gson
+    ) {
         return new ApiClient(okHttpClient, vpsRetrofit, scpRetrofit, preferencesManager, gson);
     }
 

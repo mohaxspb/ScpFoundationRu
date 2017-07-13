@@ -15,11 +15,6 @@ import com.yandex.metrica.YandexMetrica;
 
 import io.realm.Realm;
 import ru.kuchanov.scpcore.di.AppComponent;
-import ru.kuchanov.scpcore.di.DaggerAppComponent;
-import ru.kuchanov.scpcore.di.module.AppModule;
-import ru.kuchanov.scpcore.di.module.HelpersModule;
-import ru.kuchanov.scpcore.di.module.PresentersModule;
-import ru.kuchanov.scpcore.di.module.StorageModule;
 import ru.kuchanov.scpcore.util.SystemUtils;
 import timber.log.Timber;
 
@@ -36,6 +31,10 @@ public abstract class BaseApplication extends MultiDexApplication {
     public static AppComponent getAppComponent() {
         return sAppComponent;
     }
+
+//    public AppComponent getAppComponent() {
+//        return sAppComponent;
+//    }
 
     public static BaseApplication getAppInstance() {
         return sAppInstance;
@@ -131,5 +130,7 @@ public abstract class BaseApplication extends MultiDexApplication {
 
     protected abstract AppComponent buildAppComponentImpl();
 
-    protected abstract HelpersModule getHelpersModule();
+    public AppComponent getAppComponentImpl() {
+        return sAppComponent;
+    }
 }

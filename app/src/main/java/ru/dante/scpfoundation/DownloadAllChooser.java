@@ -19,7 +19,7 @@ import ru.kuchanov.scpcore.BaseApplication;
 import ru.kuchanov.scpcore.Constants;
 import ru.kuchanov.scpcore.R;
 import ru.kuchanov.scpcore.db.model.Article;
-import ru.kuchanov.scpcore.service.DownloadAllServiceImpl;
+import ru.kuchanov.scpcore.service.DownloadAllServiceDefault;
 import ru.kuchanov.scpcore.ui.dialog.SubscriptionsFragmentDialog;
 import timber.log.Timber;
 
@@ -62,7 +62,7 @@ public class DownloadAllChooser extends DialogUtils<Article> {
 
     @Override
     protected boolean isServiceRunning() {
-        return DownloadAllServiceImpl.isRunning();
+        return DownloadAllServiceDefault.isRunning();
     }
 
     @Override

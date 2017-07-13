@@ -23,6 +23,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import ru.kuchanov.scpcore.BaseApplication;
 import ru.kuchanov.scpcore.BuildConfig;
 import ru.kuchanov.scpcore.Constants;
 import ru.kuchanov.scpcore.R;
@@ -42,7 +43,7 @@ import timber.log.Timber;
 import static ru.kuchanov.scpcore.Constants.Firebase.RemoteConfigKeys.GALLERY_BANNER_DISABLED;
 import static ru.kuchanov.scpcore.ui.activity.MainActivity.EXTRA_SHOW_DISABLE_ADS;
 
-public abstract class GalleryActivity
+public class GalleryActivity
         extends BaseDrawerActivity<GalleryScreenMvp.View, GalleryScreenMvp.Presenter>
         implements GalleryScreenMvp.View {
 
@@ -65,6 +66,11 @@ public abstract class GalleryActivity
     private ImagesPagerAdapter mAdapter;
     private ImagesRecyclerAdapter mRecyclerAdapter;
     private int mCurPosition;
+
+    @Override
+    protected void callInjections() {
+        BaseApplication.getAppComponent().inject(this);
+    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
