@@ -1,4 +1,4 @@
-package ru.dante.scpfoundation;
+package ru.dante.scpfoundation.api;
 
 import com.google.gson.Gson;
 

@@ -3,8 +3,8 @@ package ru.dante.scpfoundation.di.module;
 import android.support.annotation.NonNull;
 
 import dagger.Module;
-import ru.dante.scpfoundation.DialogUtilsImpl;
-import ru.dante.scpfoundation.DownloadAllServiceImpl;
+import ru.dante.scpfoundation.util.DialogUtilsImpl;
+import ru.dante.scpfoundation.service.DownloadAllServiceImpl;
 import ru.kuchanov.scp.downloads.DialogUtils;
 import ru.kuchanov.scpcore.api.ApiClient;
 import ru.kuchanov.scpcore.db.DbProviderFactory;

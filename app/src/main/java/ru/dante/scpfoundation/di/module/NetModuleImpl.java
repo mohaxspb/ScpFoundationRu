@@ -5,13 +5,11 @@ import android.support.annotation.NonNull;
 import com.google.gson.Gson;
 
 import javax.inject.Named;
-import javax.inject.Singleton;
 
 import dagger.Module;
-import dagger.Provides;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
-import ru.dante.scpfoundation.ApiClientImpl;
+import ru.dante.scpfoundation.api.ApiClientImpl;
 import ru.kuchanov.scpcore.api.ApiClient;
 import ru.kuchanov.scpcore.di.module.NetModule;
 import ru.kuchanov.scpcore.manager.MyPreferenceManager;

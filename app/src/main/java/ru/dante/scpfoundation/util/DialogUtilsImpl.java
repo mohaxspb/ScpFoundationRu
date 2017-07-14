@@ -1,4 +1,4 @@
-package ru.dante.scpfoundation;
+package ru.dante.scpfoundation.util;
 
 import android.content.Context;
 import android.os.Bundle;

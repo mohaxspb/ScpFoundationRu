@@ -5,6 +5,7 @@ import javax.inject.Singleton;
 import dagger.Component;
 import ru.dante.scpfoundation.di.module.HelpersModuleImpl;
 import ru.dante.scpfoundation.di.module.NetModuleImpl;
+import ru.dante.scpfoundation.service.DownloadAllServiceImpl;
 import ru.kuchanov.scpcore.di.AppComponent;
 import ru.kuchanov.scpcore.di.module.AppModule;
 import ru.kuchanov.scpcore.di.module.HelpersModule;
@@ -31,5 +32,5 @@ import ru.kuchanov.scpcore.di.module.StorageModule;
 })
 public interface AppComponentImpl extends AppComponent {
 
-    void inject(ru.dante.scpfoundation.DownloadAllServiceImpl service);
+    void inject(DownloadAllServiceImpl service);
 }

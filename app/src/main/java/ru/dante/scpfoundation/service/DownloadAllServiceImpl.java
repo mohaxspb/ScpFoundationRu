@@ -1,11 +1,9 @@
-package ru.dante.scpfoundation;
-
-import android.content.Intent;
-import android.os.IBinder;
-import android.support.annotation.Nullable;
+package ru.dante.scpfoundation.service;
 
 import javax.inject.Inject;
 
+import ru.dante.scpfoundation.MyApplicationImpl;
+import ru.dante.scpfoundation.R;
 import ru.dante.scpfoundation.di.AppComponentImpl;
 import ru.kuchanov.scp.downloads.ApiClientModel;
 import ru.kuchanov.scp.downloads.DbProviderModel;
@@ -15,7 +13,6 @@ import ru.kuchanov.scpcore.Constants;
 import ru.kuchanov.scpcore.api.ApiClient;
 import ru.kuchanov.scpcore.db.DbProviderFactory;
 import ru.kuchanov.scpcore.db.model.Article;
-import ru.kuchanov.scpcore.manager.MyPreferenceManager;
 import timber.log.Timber;
 
 /**
@@ -26,8 +23,6 @@ import timber.log.Timber;
 public class DownloadAllServiceImpl extends DownloadAllService<Article> {
 
     @Inject
-    MyPreferenceManager mMyPreferenceManager;
-    @Inject
     ApiClient mApiClient;
     @Inject
     DbProviderFactory mDbProviderFactory;
@@ -37,12 +32,6 @@ public class DownloadAllServiceImpl extends DownloadAllService<Article> {
         Timber.d("onDestroy");
         instance = null;
         super.onDestroy();
-    }
-
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
     }
 
     @Override

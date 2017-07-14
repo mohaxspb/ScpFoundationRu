@@ -64,7 +64,7 @@
         <activity android:name="ru.kuchanov.scpcore.ui.activity.LicenceActivity" />
 
         <!--service-->
-        <service android:name="ru.dante.scpfoundation.DownloadAllServiceImpl"/>
+        <service android:name="ru.dante.scpfoundation.service.DownloadAllServiceImpl"/>
 
         <!--receiver-->
         <receiver
