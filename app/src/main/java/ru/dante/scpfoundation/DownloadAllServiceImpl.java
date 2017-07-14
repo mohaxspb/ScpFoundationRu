@@ -60,6 +60,7 @@ public class DownloadAllServiceImpl extends DownloadAllService<Article> {
 
     @Override
     protected void download(DownloadEntry type) {
+        Timber.d("download: %s", type);
         switch (type.resId) {
             case R.string.type_all:
                 downloadAll();

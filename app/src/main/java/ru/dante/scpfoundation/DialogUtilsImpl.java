@@ -28,9 +28,9 @@ import timber.log.Timber;
  * <p>
  * for ScpFoundationRu
  */
-public class DownloadAllChooser extends DialogUtils<Article> {
+public class DialogUtilsImpl extends DialogUtils<Article> {
 
-    public DownloadAllChooser(
+    public DialogUtilsImpl(
             MyPreferenceManagerModel preferenceManager,
             DbProviderFactoryModel dbProviderFactory,
             ApiClientModel<Article> apiClient,

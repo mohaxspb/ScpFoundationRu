@@ -40,31 +40,9 @@
             </intent-filter>
         </activity>
 
-        <!--<activity android:name="ru.kuchanov.scpcore.ui.activity.ArticleActivity"/>-->
-
-        <!--<activity android:name="ru.kuchanov.scpcore.ui.activity.MaterialsActivity"/>-->
-
         <activity android:name="ru.kuchanov.scpcore.ui.activity.GalleryActivity"/>
 
         <activity android:name="ru.kuchanov.scpcore.ui.activity.TagSearchActivity"/>
-
-
-        <!--<activity android:name="ru.dante.scpfoundation.ui.activity.MainActivityImpl">-->
-            <!--<intent-filter android:autoVerify="true">-->
-                <!--<action android:name="android.intent.action.VIEW" />-->
-                <!--<category android:name="android.intent.category.DEFAULT" />-->
-                <!--<category android:name="android.intent.category.BROWSABLE" />-->
-                <!--<data android:scheme="http" android:host="scpfoundation.ru" />-->
-            <!--</intent-filter>-->
-        <!--</activity>-->
-
-        <!--<activity android:name=".ui.activity.ArticleActivityImpl"/>-->
-
-        <!--<activity android:name=".ui.activity.MaterialsActivityImpl"/>-->
-
-        <!--<activity android:name=".ui.activity.GalleryActivityImpl"/>-->
-
-        <!--<activity android:name=".ui.activity.TagSearchActivityImpl"/>-->
 
         <activity android:name="ru.kuchanov.scpcore.ui.activity.ArticleActivity"/>
 
@@ -83,11 +61,10 @@
                 android:resource="@xml/shortcuts" />
         </activity>
 
-
         <activity android:name="ru.kuchanov.scpcore.ui.activity.LicenceActivity" />
 
         <!--service-->
-        <service android:name="ru.kuchanov.scpcore.service.DownloadAllServiceDefault"/>
+        <service android:name="ru.dante.scpfoundation.DownloadAllServiceImpl"/>
 
         <!--receiver-->
         <receiver
