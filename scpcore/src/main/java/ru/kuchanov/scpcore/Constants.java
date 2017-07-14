@@ -69,9 +69,8 @@ public interface Constants {
             String SOCIAL_PROVIDER = "socialProviders";
         }
 
-        int REQUEST_INVITE = 1024;
-
         interface RemoteConfigKeys {
+
             //ads
             String NUM_OF_GALLERY_PHOTOS_BETWEEN_INTERSITIAL = "num_of_gallery_photos_between_intersitial";
             String PERIOD_BETWEEN_INTERSTITIAL_IN_MILLIS = "period_between_interstitial_in_millis";
@@ -106,10 +105,12 @@ public interface Constants {
             String DOWNLOAD_ALL_ENABLED_FOR_FREE = "download_all_enabled_for_free";
             String DOWNLOAD_FREE_ARTICLES_LIMIT = "download_free_articles_limit";
             String DOWNLOAD_SCORE_PER_ARTICLE = "download_score_per_article";
-
             String GALLERY_BANNER_DISABLED = "gallery_banner_disabled";
+
             String ARTICLE_BANNER_DISABLED = "article_banner_disabled";
         }
+
+        int REQUEST_INVITE = 1024;
 
         interface Analitics {
 

@@ -56,26 +56,6 @@ public class MainActivity
     }
 
     @Override
-    protected Class getTagsSearchActivityClass() {
-        return TagSearchActivity.class;
-    }
-
-    @Override
-    protected Class getGalleryActivityClass() {
-        return GalleryActivity.class;
-    }
-
-    @Override
-    protected Class getMaterialsActivityClass() {
-        return MaterialsActivity.class;
-    }
-
-    @Override
-    protected Class getArticleActivityClass() {
-        return ArticleActivity.class;
-    }
-
-    @Override
     protected void onNewIntent(Intent intent) {
         Timber.d("onNewIntent");
         super.onNewIntent(intent);

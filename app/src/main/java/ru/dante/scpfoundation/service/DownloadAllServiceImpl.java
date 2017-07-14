@@ -43,11 +43,6 @@ public class DownloadAllServiceImpl extends DownloadAllService<Article> {
     }
 
     @Override
-    public ApiClientModel<Article> getApiClient() {
-        return mApiClient;
-    }
-
-    @Override
     protected void download(DownloadEntry type) {
         Timber.d("download: %s", type);
         switch (type.resId) {
@@ -63,6 +58,11 @@ public class DownloadAllServiceImpl extends DownloadAllService<Article> {
     @Override
     protected int getNumOfArticlesOnRecentPage() {
         return Constants.Api.NUM_OF_ARTICLES_ON_RECENT_PAGE;
+    }
+
+    @Override
+    public ApiClientModel<Article> getApiClient() {
+        return mApiClient;
     }
 
     @Override

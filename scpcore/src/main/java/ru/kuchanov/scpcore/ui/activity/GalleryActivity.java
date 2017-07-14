@@ -190,11 +190,6 @@ public class GalleryActivity
         return R.layout.activity_gallery;
     }
 
-//    @Override
-//    protected void callInjections() {
-//        BaseApplication.getAppComponent().inject(this);
-//    }
-
     @Override
     protected int getMenuResId() {
         return R.menu.menu_gallery;

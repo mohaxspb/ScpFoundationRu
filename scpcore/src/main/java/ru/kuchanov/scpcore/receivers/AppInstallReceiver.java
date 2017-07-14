@@ -81,7 +81,6 @@ public class AppInstallReceiver extends BroadcastReceiver {
         }
     }
 
-//    protected abstract void callInjection();
     protected void callInjection() {
         BaseApplication.getAppComponent().inject(this);
     }

@@ -19,8 +19,6 @@ public class SplashActivity extends AppCompatActivity {
         finishAffinity();
     }
 
-//    protected abstract Class getLaunchActivityClass();
-
     protected Class getLaunchActivityClass() {
         return LicenceActivity.class;
     }
