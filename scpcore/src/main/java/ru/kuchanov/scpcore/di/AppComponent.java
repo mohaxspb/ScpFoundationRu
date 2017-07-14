@@ -56,11 +56,6 @@ import ru.kuchanov.scpcore.ui.holder.ArticleTextHolder;
 import ru.kuchanov.scpcore.ui.holder.ArticleTitleHolder;
 import ru.kuchanov.scpcore.ui.holder.HolderSimple;
 
-/**
- * Created by y.kuchanov on 21.12.16.
- * <p>
- * for TappAwards
- */
 @Singleton
 @Component(modules = {
         AppModule.class,

@@ -19,24 +19,11 @@ import ru.kuchanov.scpcore.manager.MyPreferenceManager;
  * <p>
  * for ScpFoundationRu
  */
-@Module
+@Module(includes = NetModule.class)
 public class NetModuleImpl extends NetModule {
 
     @Override
     protected ApiClient getApiClient(@NonNull OkHttpClient okHttpClient, @Named("vps") @NonNull Retrofit vpsRetrofit, @Named("scp") @NonNull Retrofit scpRetrofit, @NonNull MyPreferenceManager preferencesManager, @NonNull Gson gson) {
         return new ApiClientImpl(okHttpClient, vpsRetrofit, scpRetrofit, preferencesManager, gson);
     }
-
-    //    @Provides
-//    @NonNull
-//    @Singleton
-//    ApiClient providesApiClient(
-//            @NonNull OkHttpClient okHttpClient,
-//            @Named("vps") @NonNull Retrofit vpsRetrofit,
-//            @Named("scp") @NonNull Retrofit scpRetrofit,
-//            @NonNull MyPreferenceManager preferencesManager,
-//            @NonNull Gson gson
-//    ) {
-//        return new ApiClientImpl(okHttpClient, vpsRetrofit, scpRetrofit, preferencesManager, gson);
-//    }
 }

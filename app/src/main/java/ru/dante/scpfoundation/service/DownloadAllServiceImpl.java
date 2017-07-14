@@ -28,17 +28,8 @@ public class DownloadAllServiceImpl extends DownloadAllService<Article> {
     DbProviderFactory mDbProviderFactory;
 
     @Override
-    public void onDestroy() {
-        Timber.d("onDestroy");
-        instance = null;
-        super.onDestroy();
-    }
-
-    @Override
     public void onCreate() {
-        Timber.d("onCreate");
         super.onCreate();
-        instance = this;
         ((AppComponentImpl) MyApplicationImpl.getAppComponent()).inject(this);
     }
 

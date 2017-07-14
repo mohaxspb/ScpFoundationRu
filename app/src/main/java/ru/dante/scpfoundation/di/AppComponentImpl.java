@@ -14,21 +14,14 @@ import ru.kuchanov.scpcore.di.module.NotificationModule;
 import ru.kuchanov.scpcore.di.module.PresentersModule;
 import ru.kuchanov.scpcore.di.module.StorageModule;
 
-/**
- * Created by y.kuchanov on 21.12.16.
- * <p>
- * for TappAwards
- */
 @Singleton
 @Component(modules = {
         AppModule.class,
         StorageModule.class,
         PresentersModule.class,
         NetModuleImpl.class,
-        NetModule.class,
         NotificationModule.class,
         HelpersModuleImpl.class,
-        HelpersModule.class
 })
 public interface AppComponentImpl extends AppComponent {
 

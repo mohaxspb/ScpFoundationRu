@@ -17,7 +17,7 @@ import ru.kuchanov.scpcore.manager.MyPreferenceManager;
  * <p>
  * for ScpFoundationRu
  */
-@Module
+@Module(includes = HelpersModule.class)
 public class HelpersModuleImpl extends HelpersModule {
 
     @Override
