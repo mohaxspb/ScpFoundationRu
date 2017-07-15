@@ -124,8 +124,7 @@ public class ReceiverTimer extends BroadcastReceiver {
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
         if (dataFromWeb.size() == mConstantValues.getApiValues().getNumOfArticlesOnRecentPage()) {
             String[] events = new String[dataFromWeb.size()];
-            //TODO save to res
-            inboxStyle.setBigContentTitle("Новые статьи: " + dataFromWeb.size() + "+");
+            inboxStyle.setBigContentTitle(ctx.getString(R.string.notif_new_arts_title, dataFromWeb.size(), "+"));
             // Moves events into the expanded layout
             for (int i = 0; i < events.length; i++) {
                 events[i] = dataFromWeb.get(i).title;
@@ -137,8 +136,7 @@ public class ReceiverTimer extends BroadcastReceiver {
             //newQuont = "10";
             String[] events = new String[dataFromWeb.size()];
             // Sets a title for the Inbox in expanded layout
-            //TODO move to res as in ENG
-            inboxStyle.setBigContentTitle("Новые статьи: " + dataFromWeb.size());
+            inboxStyle.setBigContentTitle(ctx.getString(R.string.notif_new_arts_title, dataFromWeb.size(), ""));
             // Moves events into the expanded layout
             for (int i = 0; i < events.length; i++) {
                 events[i] = dataFromWeb.get(i).title;
@@ -151,7 +149,7 @@ public class ReceiverTimer extends BroadcastReceiver {
         builder.setStyle(inboxStyle);
 
         // Content title, which appears in large type at the top of the notification
-        builder.setContentTitle("Новые статьи: " + dataFromWeb.size());
+        builder.setContentTitle(ctx.getString(R.string.notif_new_arts_title, dataFromWeb.size(), ""));
         if (mMyPreferencesManager.isNotificationVibrationEnabled()) {
             //TODO move to const
             builder.setVibrate(new long[]{500, 500, 500, 500, 500});
@@ -170,7 +168,6 @@ public class ReceiverTimer extends BroadcastReceiver {
         NotificationManager notificationManager = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
 
         // Will display the notification in the notification bar
-        //TODO move to const
         notificationManager.notify(NOTIF_ID, builder.build());
     }
 }
