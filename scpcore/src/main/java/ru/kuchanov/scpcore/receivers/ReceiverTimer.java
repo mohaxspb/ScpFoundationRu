@@ -18,6 +18,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import ru.kuchanov.scpcore.BaseApplication;
+import ru.kuchanov.scpcore.ConstantValues;
 import ru.kuchanov.scpcore.Constants;
 import ru.kuchanov.scpcore.R;
 import ru.kuchanov.scpcore.api.ApiClient;
@@ -31,8 +32,6 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-import static ru.kuchanov.scpcore.Constants.Api.NUM_OF_ARTICLES_ON_RECENT_PAGE;
-
 public class ReceiverTimer extends BroadcastReceiver {
 
     public static final int NOTIF_ID = 963;
@@ -43,18 +42,18 @@ public class ReceiverTimer extends BroadcastReceiver {
     DbProviderFactory mDbProviderFactory;
     @Inject
     ApiClient mApiClient;
+    @Inject
+    ConstantValues mConstantValues;
 
     @Override
     public void onReceive(Context context, Intent intent) {
         Timber.d("onReceive with action: %s", intent.getAction());
         if (context.getString(R.string.receiver_action_timer).equals(intent.getAction())) {
-//            BaseApplication.getAppComponent().inject(this);
             callInjection();
             download(context);
         }
     }
 
-    //    protected abstract void callInjection();
     protected void callInjection() {
         BaseApplication.getAppComponent().inject(this);
     }
@@ -100,7 +99,7 @@ public class ReceiverTimer extends BroadcastReceiver {
 
         // This intent is fired when notification is clicked
         Intent intent = new Intent(ctx, MainActivity.class);
-        intent.putExtra(MainActivity.EXTRA_LINK, Constants.Urls.NEW_ARTICLES);
+        intent.putExtra(MainActivity.EXTRA_LINK, mConstantValues.getUrlsValues().getNewArticles());
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(ctx, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
@@ -123,7 +122,7 @@ public class ReceiverTimer extends BroadcastReceiver {
         builder.setAutoCancel(true);
 
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
-        if (dataFromWeb.size() == NUM_OF_ARTICLES_ON_RECENT_PAGE) {
+        if (dataFromWeb.size() == mConstantValues.getApiValues().getNumOfArticlesOnRecentPage()) {
             String[] events = new String[dataFromWeb.size()];
             //TODO save to res
             inboxStyle.setBigContentTitle("Новые статьи: " + dataFromWeb.size() + "+");
