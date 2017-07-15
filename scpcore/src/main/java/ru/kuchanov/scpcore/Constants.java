@@ -11,6 +11,8 @@ import android.support.annotation.StringRes;
 public interface Constants {
 
     interface Api {
+        int ZERO_OFFSET = 0;
+
         String MOST_RECENT_URL = "/most-recently-created/p/";
         String MOST_RATED_URL = "/top-rated-pages/p/";
         /**
@@ -19,12 +21,29 @@ public interface Constants {
          */
         String SEARCH_URL = "/search:site/a/p/q/%1$s/p/%2$s";
         String RANDOM_PAGE_SCRIPT_URL = "https://node.scpfoundation.net/wikidot_random_page";
+
         int NUM_OF_ARTICLES_ON_RECENT_PAGE = 30;
         int NUM_OF_ARTICLES_ON_RATED_PAGE = 20;
-        int ZERO_OFFSET = 0;
         int NUM_OF_ARTICLES_ON_SEARCH_PAGE = 10;
+        //gallery
         int GALLERY_VK_GROUP_ID = -98801766;
         int GALLERY_VK_ALBUM_ID = 219430203;
+    }
+
+    interface ApiValues {
+        String getMostRecentUrl();
+
+        String getMostRatedUrl();
+
+        String getSearchSiteUrl();
+
+        String getRandomPageUrl();
+
+        int getNumOfArticlesOnRecentPage();
+
+        int getNumOfArticlesOnRatedPage();
+
+        int getNumOfArticlesOnSearchPage();
     }
 
     interface Firebase {
@@ -70,7 +89,6 @@ public interface Constants {
         }
 
         interface RemoteConfigKeys {
-
             //ads
             String NUM_OF_GALLERY_PHOTOS_BETWEEN_INTERSITIAL = "num_of_gallery_photos_between_intersitial";
             String PERIOD_BETWEEN_INTERSTITIAL_IN_MILLIS = "period_between_interstitial_in_millis";
@@ -134,35 +152,74 @@ public interface Constants {
         }
     }
 
+    interface UrlsValues {
+        String getMain();
+
+        String getMostRated();
+
+        String getNewArticles();
+
+        String getObjects1();
+
+        String getObjects2();
+
+        String getObjects3();
+
+        String getObjects4();
+
+        String getObjectsRu();
+
+        String getExperiments();
+
+        String getIncidents();
+
+        String getInterviews();
+
+        String getJokes();
+
+        String getArchive();
+
+        String getOthers();
+
+        String getLeaks();
+
+        String getAbout();
+
+        String getNews();
+
+        String getStories();
+
+        String getAllLinksArray();
+    }
+
     interface Urls {
         String MAIN = "http://scpfoundation.ru/";
+
         String RATE = "http://scpfoundation.ru/top-rated-pages";
         String NEW_ARTICLES = "http://scpfoundation.ru/most-recently-created";
-        String EXPERIMENTS = "http://scpfoundation.ru/experiment-logs";
-        String INCEDENTS = "http://scpfoundation.ru/incident-reports";
-        String INTERVIEWS = "http://scpfoundation.ru/eye-witness-interviews";
-        String OTHERS = "http://scpfoundation.ru/other";
-        String STORIES = "http://scpfoundation.ru/stories";
-        String CANONS = "http://scpfoundation.ru/canon-hub";
-        String GOI_HAB = "http://scpfoundation.ru/goi-hub";
-        String ART_HUB = "http://scpfoundation.ru/sunnyparallax-artwork-hub";
-        String LEAKS = "http://scpfoundation.ru/the-leak";
         String OBJECTS_1 = "http://scpfoundation.ru/scp-list";
         String OBJECTS_2 = "http://scpfoundation.ru/scp-list-2";
         String OBJECTS_3 = "http://scpfoundation.ru/scp-list-3";
         String OBJECTS_4 = "http://scpfoundation.ru/scp-list-4";
         String OBJECTS_RU = "http://scpfoundation.ru/scp-list-ru";
+
+        //materials
+        String EXPERIMENTS = "http://scpfoundation.ru/experiment-logs";
+        String INCEDENTS = "http://scpfoundation.ru/incident-reports";
+        String INTERVIEWS = "http://scpfoundation.ru/eye-witness-interviews";
+        String JOKES = "http://scpfoundation.ru/scp-list-j";
+        String ARCHIVE = "http://scpfoundation.ru/archive";
+        String OTHERS = "http://scpfoundation.ru/other";
+        String LEAKS = "http://scpfoundation.ru/the-leak";
+
         String ABOUT_SCP = "http://scpfoundation.ru/about-the-scp-foundation";
-        String SEARCH = "SEARCH";
         String NEWS = "http://scpfoundation.ru/news";
-        String[] ALL_LINKS_ARRAY = {MAIN, RATE, NEW_ARTICLES, EXPERIMENTS, INCEDENTS, INTERVIEWS, OTHERS, STORIES, CANONS, GOI_HAB, ART_HUB, LEAKS, OBJECTS_1, OBJECTS_2, OBJECTS_3, OBJECTS_RU, NEWS, SEARCH};
+        String STORIES = "http://scpfoundation.ru/stories";
+
+        String SEARCH = "SEARCH";
         String FAVORITES = "FAVORITES";
         String OFFLINE = "OFFLINE";
-        String MATERIALS_ALL = "MATERIALS_ALL";
-        String ARCHIVE = "http://scpfoundation.ru/archive";
-        String JOKES = "http://scpfoundation.ru/scp-list-j";
-        //TODO catch this link from system
-        String TAGS_SEARCH_ON_SITE = "http://scpfoundation.ru/tags";
-        String TAGS_SEARCH = "TAGS_SEARCH";
+
+        String[] ALL_LINKS_ARRAY = {MAIN, RATE, NEW_ARTICLES, EXPERIMENTS, INCEDENTS, INTERVIEWS, OTHERS, STORIES, LEAKS, OBJECTS_1, OBJECTS_2, OBJECTS_3, OBJECTS_RU, NEWS};
     }
 }
