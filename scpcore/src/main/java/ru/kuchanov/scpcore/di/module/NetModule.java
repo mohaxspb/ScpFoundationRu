@@ -35,6 +35,9 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import ru.kuchanov.scpcore.BuildConfig;
+import ru.kuchanov.scpcore.ConstantValues;
+import ru.kuchanov.scpcore.ConstantValuesImpl;
+import ru.kuchanov.scpcore.Constants;
 import ru.kuchanov.scpcore.api.ApiClient;
 import ru.kuchanov.scpcore.db.model.RealmString;
 import ru.kuchanov.scpcore.manager.MyPreferenceManager;
@@ -183,7 +186,7 @@ public class NetModule {
         return getApiClient(okHttpClient, vpsRetrofit, scpRetrofit, preferencesManager, gson);
     }
 
-   protected ApiClient getApiClient(
+    protected ApiClient getApiClient(
             @NonNull OkHttpClient okHttpClient,
             @Named("vps") @NonNull Retrofit vpsRetrofit,
             @Named("scp") @NonNull Retrofit scpRetrofit,
@@ -230,5 +233,16 @@ public class NetModule {
     @Singleton
     Gson providesGson() {
         return new GsonBuilder().create();
+    }
+
+    @Provides
+    @NonNull
+    @Singleton
+    ConstantValues providesConstants() {
+        return getConstants();
+    }
+
+    protected ConstantValues getConstants() {
+        return new ConstantValuesImpl();
     }
 }
