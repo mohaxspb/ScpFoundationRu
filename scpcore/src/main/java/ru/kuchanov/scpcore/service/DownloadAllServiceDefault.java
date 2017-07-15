@@ -6,19 +6,17 @@ import android.support.annotation.Nullable;
 
 import javax.inject.Inject;
 
-import ru.kuchanov.scpcore.Constants;
+import ru.kuchanov.scp.downloads.ApiClientModel;
+import ru.kuchanov.scp.downloads.DbProviderModel;
+import ru.kuchanov.scp.downloads.DownloadAllService;
+import ru.kuchanov.scp.downloads.DownloadEntry;
 import ru.kuchanov.scpcore.BaseApplication;
-import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.ConstantValues;
 import ru.kuchanov.scpcore.R2;
 import ru.kuchanov.scpcore.api.ApiClient;
 import ru.kuchanov.scpcore.db.DbProviderFactory;
 import ru.kuchanov.scpcore.db.model.Article;
 import ru.kuchanov.scpcore.manager.MyPreferenceManager;
-import ru.kuchanov.scp.downloads.ApiClientModel;
-import ru.kuchanov.scp.downloads.DbProviderModel;
-import ru.kuchanov.scp.downloads.DownloadAllService;
-import ru.kuchanov.scp.downloads.DownloadEntry;
-import timber.log.Timber;
 
 /**
  * Created by mohax on 01.07.2017.
@@ -33,13 +31,8 @@ public class DownloadAllServiceDefault extends DownloadAllService<Article> {
     ApiClient mApiClient;
     @Inject
     DbProviderFactory mDbProviderFactory;
-
-    @Override
-    public void onDestroy() {
-        Timber.d("onDestroy");
-        instance = null;
-        super.onDestroy();
-    }
+    @Inject
+    ConstantValues mConstantValues;
 
     @Nullable
     @Override
@@ -49,9 +42,7 @@ public class DownloadAllServiceDefault extends DownloadAllService<Article> {
 
     @Override
     public void onCreate() {
-        Timber.d("onCreate");
         super.onCreate();
-        instance = this;
         BaseApplication.getAppComponent().inject(this);
     }
 
@@ -74,7 +65,7 @@ public class DownloadAllServiceDefault extends DownloadAllService<Article> {
 
     @Override
     protected int getNumOfArticlesOnRecentPage() {
-        return Constants.Api.NUM_OF_ARTICLES_ON_RECENT_PAGE;
+        return mConstantValues.getApiValues().getNumOfArticlesOnRecentPage();
     }
 
     @Override

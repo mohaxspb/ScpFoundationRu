@@ -65,6 +65,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.kuchanov.scpcore.BuildConfig;
+import ru.kuchanov.scpcore.ConstantValues;
 import ru.kuchanov.scpcore.Constants;
 import ru.kuchanov.scpcore.R;
 import ru.kuchanov.scpcore.R2;
@@ -137,6 +138,8 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
     protected MyPreferenceManager mMyPreferenceManager;
     @Inject
     protected MyNotificationManager mMyNotificationManager;
+    @Inject
+    protected ConstantValues mConstantValues;
     @Inject
     protected DialogUtils mDialogUtils;
     @Inject
@@ -1025,31 +1028,18 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
         startActivity(intent);
     }
 
-//    protected abstract Class getTagsSearchActivityClass();
-//
-//    protected abstract Class getGalleryActivityClass();
-//
-//    protected abstract Class getMaterialsActivityClass();
-//
-//    protected abstract Class getArticleActivityClass();
-//
-
-//    @Override
     protected Class getTagsSearchActivityClass() {
         return TagSearchActivity.class;
     }
 
-//    @Override
     protected Class getGalleryActivityClass() {
         return GalleryActivity.class;
     }
 
-//    @Override
     protected Class getMaterialsActivityClass() {
         return MaterialsActivity.class;
     }
 
-//    @Override
     protected Class getArticleActivityClass() {
         return ArticleActivity.class;
     }

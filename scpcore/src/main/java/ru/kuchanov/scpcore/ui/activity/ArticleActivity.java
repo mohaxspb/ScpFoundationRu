@@ -142,39 +142,39 @@ public class ArticleActivity
         Timber.d("onNavigationItemClicked with id: %s", id);
         String link = null;
         if (id == R.id.about) {
-            link = Constants.Urls.ABOUT_SCP;
+            link = mConstantValues.getUrlsValues().getAbout();
         } else if (id == R.id.news) {
-            link = Constants.Urls.NEWS;
+            link = mConstantValues.getUrlsValues().getNews();
         } else if (id == R.id.mostRatedArticles) {
-            link = Constants.Urls.RATE;
+            link = mConstantValues.getUrlsValues().getMostRated();
         } else if (id == R.id.mostRecentArticles) {
-            link = Constants.Urls.NEW_ARTICLES;
+            link = mConstantValues.getUrlsValues().getNewArticles();
         } else if (id == R.id.random_page) {
             mPresenter.getRandomArticleUrl();
         } else if (id == R.id.objects_I) {
-            link = Constants.Urls.OBJECTS_1;
+            link = mConstantValues.getUrlsValues().getObjects1();
         } else if (id == R.id.objects_II) {
-            link = Constants.Urls.OBJECTS_2;
+            link = mConstantValues.getUrlsValues().getObjects2();
         } else if (id == R.id.objects_III) {
-            link = Constants.Urls.OBJECTS_3;
+            link = mConstantValues.getUrlsValues().getObjects3();
         } else if (id == R.id.objects_IV) {
-            link = Constants.Urls.OBJECTS_4;
+            link = mConstantValues.getUrlsValues().getObjects4();
         } else if (id == R.id.objects_RU) {
-            link = Constants.Urls.OBJECTS_RU;
+            link = mConstantValues.getUrlsValues().getObjectsRu();
         } else if (id == R.id.files) {
-           startMaterialsActivity();
+            startMaterialsActivity();
         } else if (id == R.id.stories) {
-            link = Constants.Urls.STORIES;
+            link = mConstantValues.getUrlsValues().getStories();
         } else if (id == R.id.favorite) {
             link = Constants.Urls.FAVORITES;
         } else if (id == R.id.offline) {
             link = Constants.Urls.OFFLINE;
         } else if (id == R.id.gallery) {
-          startGalleryActivity();
+            startGalleryActivity();
         } else if (id == R.id.siteSearch) {
             link = Constants.Urls.SEARCH;
         } else if (id == R.id.tagsSearch) {
-           startTagsSearchActivity();
+            startTagsSearchActivity();
             return true;
         } else {
             Timber.e("unexpected item ID");
