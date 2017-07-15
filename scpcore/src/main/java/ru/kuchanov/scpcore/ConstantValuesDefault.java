@@ -5,7 +5,7 @@ package ru.kuchanov.scpcore;
  * <p>
  * for ScpFoundationRu
  */
-public class ConstantValuesImpl implements ConstantValues {
+public class ConstantValuesDefault implements ConstantValues {
     @Override
     public ApiValues getApiValues() {
         return new ApiValuesImpl();

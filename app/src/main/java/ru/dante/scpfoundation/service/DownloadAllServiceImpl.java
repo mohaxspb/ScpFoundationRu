@@ -9,7 +9,7 @@ import ru.kuchanov.scp.downloads.ApiClientModel;
 import ru.kuchanov.scp.downloads.DbProviderModel;
 import ru.kuchanov.scp.downloads.DownloadAllService;
 import ru.kuchanov.scp.downloads.DownloadEntry;
-import ru.kuchanov.scpcore.Constants;
+import ru.kuchanov.scpcore.ConstantValues;
 import ru.kuchanov.scpcore.api.ApiClient;
 import ru.kuchanov.scpcore.db.DbProviderFactory;
 import ru.kuchanov.scpcore.db.model.Article;
@@ -26,6 +26,8 @@ public class DownloadAllServiceImpl extends DownloadAllService<Article> {
     ApiClient mApiClient;
     @Inject
     DbProviderFactory mDbProviderFactory;
+    @Inject
+    ConstantValues mConstantValues;
 
     @Override
     public void onCreate() {
@@ -48,7 +50,7 @@ public class DownloadAllServiceImpl extends DownloadAllService<Article> {
 
     @Override
     protected int getNumOfArticlesOnRecentPage() {
-        return Constants.Api.NUM_OF_ARTICLES_ON_RECENT_PAGE;
+        return mConstantValues.getApiValues().getNumOfArticlesOnRecentPage();
     }
 
     @Override
