@@ -6,6 +6,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import ru.kuchanov.scpcore.ConstantValues;
 import ru.kuchanov.scpcore.api.ApiClient;
 import ru.kuchanov.scpcore.db.DbProviderFactory;
 import ru.kuchanov.scpcore.manager.MyPreferenceManager;
@@ -192,9 +193,10 @@ public class PresentersModule {
     Objects1Articles.Presenter providesObjects1ArticlesPresenter(
             @NonNull MyPreferenceManager myPreferencesManager,
             @NonNull DbProviderFactory dbProviderFactory,
-            @NonNull ApiClient apiClient
+            @NonNull ApiClient apiClient,
+            @NonNull ConstantValues constantValues
     ) {
-        return new Objects1ArticlesPresenter(myPreferencesManager, dbProviderFactory, apiClient);
+        return new Objects1ArticlesPresenter(myPreferencesManager, dbProviderFactory, apiClient, constantValues);
     }
 
     @Provides
@@ -203,9 +205,10 @@ public class PresentersModule {
     Objects2Articles.Presenter providesObjects2ArticlesPresenter(
             @NonNull MyPreferenceManager myPreferencesManager,
             @NonNull DbProviderFactory dbProviderFactory,
-            @NonNull ApiClient apiClient
+            @NonNull ApiClient apiClient,
+            @NonNull ConstantValues constantValues
     ) {
-        return new Objects2ArticlesPresenter(myPreferencesManager, dbProviderFactory, apiClient);
+        return new Objects2ArticlesPresenter(myPreferencesManager, dbProviderFactory, apiClient, constantValues);
     }
 
     @Provides
@@ -214,9 +217,10 @@ public class PresentersModule {
     Objects3Articles.Presenter providesObjects3ArticlesPresenter(
             @NonNull MyPreferenceManager myPreferencesManager,
             @NonNull DbProviderFactory dbProviderFactory,
-            @NonNull ApiClient apiClient
+            @NonNull ApiClient apiClient,
+            @NonNull ConstantValues constantValues
     ) {
-        return new Objects3ArticlesPresenter(myPreferencesManager, dbProviderFactory, apiClient);
+        return new Objects3ArticlesPresenter(myPreferencesManager, dbProviderFactory, apiClient, constantValues);
     }
 
     @Provides
@@ -225,9 +229,10 @@ public class PresentersModule {
     Objects4Articles.Presenter providesObjects4ArticlesPresenter(
             @NonNull MyPreferenceManager myPreferencesManager,
             @NonNull DbProviderFactory dbProviderFactory,
-            @NonNull ApiClient apiClient
+            @NonNull ApiClient apiClient,
+            @NonNull ConstantValues constantValues
     ) {
-        return new Objects4ArticlesPresenter(myPreferencesManager, dbProviderFactory, apiClient);
+        return new Objects4ArticlesPresenter(myPreferencesManager, dbProviderFactory, apiClient, constantValues);
     }
 
     @Provides
@@ -236,9 +241,10 @@ public class PresentersModule {
     ObjectsRuArticles.Presenter providesObjectsRuArticlesPresenter(
             @NonNull MyPreferenceManager myPreferencesManager,
             @NonNull DbProviderFactory dbProviderFactory,
-            @NonNull ApiClient apiClient
+            @NonNull ApiClient apiClient,
+            @NonNull ConstantValues constantValues
     ) {
-        return new ObjectsRuArticlesPresenter(myPreferencesManager, dbProviderFactory, apiClient);
+        return new ObjectsRuArticlesPresenter(myPreferencesManager, dbProviderFactory, apiClient, constantValues);
     }
 
     @Provides
@@ -247,9 +253,10 @@ public class PresentersModule {
     MaterialsExperimentsMvp.Presenter providesMaterialsExperimentsPresenter(
             @NonNull MyPreferenceManager myPreferencesManager,
             @NonNull DbProviderFactory dbProviderFactory,
-            @NonNull ApiClient apiClient
+            @NonNull ApiClient apiClient,
+            @NonNull ConstantValues constantValues
     ) {
-        return new MaterialsExperimentsPresenter(myPreferencesManager, dbProviderFactory, apiClient);
+        return new MaterialsExperimentsPresenter(myPreferencesManager, dbProviderFactory, apiClient, constantValues);
     }
 
     @Provides
@@ -258,9 +265,10 @@ public class PresentersModule {
     MaterialsInterviewsMvp.Presenter providesMaterialsInterviewsPresenter(
             @NonNull MyPreferenceManager myPreferencesManager,
             @NonNull DbProviderFactory dbProviderFactory,
-            @NonNull ApiClient apiClient
+            @NonNull ApiClient apiClient,
+            @NonNull ConstantValues constantValues
     ) {
-        return new MaterialsInterviewPresenter(myPreferencesManager, dbProviderFactory, apiClient);
+        return new MaterialsInterviewPresenter(myPreferencesManager, dbProviderFactory, apiClient, constantValues);
     }
 
     @Provides
@@ -269,9 +277,10 @@ public class PresentersModule {
     MaterialsIncidentsMvp.Presenter providesMaterialsIncidentsPresenter(
             @NonNull MyPreferenceManager myPreferencesManager,
             @NonNull DbProviderFactory dbProviderFactory,
-            @NonNull ApiClient apiClient
+            @NonNull ApiClient apiClient,
+            @NonNull ConstantValues constantValues
     ) {
-        return new MaterialsIncidentsPresenter(myPreferencesManager, dbProviderFactory, apiClient);
+        return new MaterialsIncidentsPresenter(myPreferencesManager, dbProviderFactory, apiClient, constantValues);
     }
 
     @Provides
@@ -280,9 +289,10 @@ public class PresentersModule {
     MaterialsOtherMvp.Presenter providesMaterialsOtherPresenter(
             @NonNull MyPreferenceManager myPreferencesManager,
             @NonNull DbProviderFactory dbProviderFactory,
-            @NonNull ApiClient apiClient
+            @NonNull ApiClient apiClient,
+            @NonNull ConstantValues constantValues
     ) {
-        return new MaterialsOtherPresenter(myPreferencesManager, dbProviderFactory, apiClient);
+        return new MaterialsOtherPresenter(myPreferencesManager, dbProviderFactory, apiClient, constantValues);
     }
 
     @Provides
@@ -291,9 +301,10 @@ public class PresentersModule {
     MaterialsArchiveMvp.Presenter providesMaterialsArchivePresenter(
             @NonNull MyPreferenceManager myPreferencesManager,
             @NonNull DbProviderFactory dbProviderFactory,
-            @NonNull ApiClient apiClient
-    ) {
-        return new MaterialsArchivePresenter(myPreferencesManager, dbProviderFactory, apiClient);
+            @NonNull ApiClient apiClient,
+            @NonNull ConstantValues constantValues
+            ) {
+        return new MaterialsArchivePresenter(myPreferencesManager, dbProviderFactory, apiClient, constantValues);
     }
 
     @Provides
@@ -302,9 +313,10 @@ public class PresentersModule {
     MaterialsJokesMvp.Presenter providesMaterialsJokesPresenter(
             @NonNull MyPreferenceManager myPreferencesManager,
             @NonNull DbProviderFactory dbProviderFactory,
-            @NonNull ApiClient apiClient
+            @NonNull ApiClient apiClient,
+            @NonNull ConstantValues constantValues
     ) {
-        return new MaterialsJokesPresenter(myPreferencesManager, dbProviderFactory, apiClient);
+        return new MaterialsJokesPresenter(myPreferencesManager, dbProviderFactory, apiClient, constantValues);
     }
 
     @Provides

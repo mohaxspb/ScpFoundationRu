@@ -46,7 +46,6 @@ public class AppInstallReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-//        BaseApplication.getAppComponent().inject(this);
         callInjection();
         String packageName = intent.getData().getEncodedSchemeSpecificPart();
         Timber.d("intent data: %s", packageName);

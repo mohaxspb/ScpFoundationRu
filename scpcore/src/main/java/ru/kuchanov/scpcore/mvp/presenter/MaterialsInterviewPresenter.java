@@ -1,8 +1,10 @@
 package ru.kuchanov.scpcore.mvp.presenter;
 
+import android.support.annotation.NonNull;
+
 import java.util.List;
 
-import ru.kuchanov.scpcore.Constants;
+import ru.kuchanov.scpcore.ConstantValues;
 import ru.kuchanov.scpcore.api.ApiClient;
 import ru.kuchanov.scpcore.db.DbProviderFactory;
 import ru.kuchanov.scpcore.db.model.Article;
@@ -19,8 +21,13 @@ public class MaterialsInterviewPresenter
         extends BaseObjectsArticlesPresenter<MaterialsInterviewsMvp.View>
         implements MaterialsInterviewsMvp.Presenter {
 
-    public MaterialsInterviewPresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
-        super(myPreferencesManager, dbProviderFactory, apiClient);
+    public MaterialsInterviewPresenter(
+            MyPreferenceManager myPreferencesManager,
+            DbProviderFactory dbProviderFactory,
+            ApiClient apiClient,
+            @NonNull ConstantValues constantValues
+    ) {
+        super(myPreferencesManager, dbProviderFactory, apiClient, constantValues);
     }
 
     @Override
@@ -30,7 +37,7 @@ public class MaterialsInterviewPresenter
 
     @Override
     protected String getObjectsLink() {
-        return Constants.Urls.INTERVIEWS;
+        return mConstantValues.getUrlsValues().getInterviews();
     }
 
     @Override

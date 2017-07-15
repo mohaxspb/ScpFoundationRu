@@ -1,6 +1,8 @@
 package ru.kuchanov.scpcore.mvp.presenter;
 
-import ru.kuchanov.scpcore.Constants;
+import android.support.annotation.NonNull;
+
+import ru.kuchanov.scpcore.ConstantValues;
 import ru.kuchanov.scpcore.api.ApiClient;
 import ru.kuchanov.scpcore.db.DbProviderFactory;
 import ru.kuchanov.scpcore.db.model.Article;
@@ -16,8 +18,13 @@ public class Objects4ArticlesPresenter
         extends BaseObjectsArticlesPresenter<Objects4Articles.View>
         implements Objects4Articles.Presenter {
 
-    public Objects4ArticlesPresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
-        super(myPreferencesManager, dbProviderFactory, apiClient);
+    public Objects4ArticlesPresenter(
+            MyPreferenceManager myPreferencesManager,
+            DbProviderFactory dbProviderFactory,
+            ApiClient apiClient,
+            @NonNull ConstantValues constantValues
+    ) {
+        super(myPreferencesManager, dbProviderFactory, apiClient, constantValues);
     }
 
     @Override
@@ -27,6 +34,6 @@ public class Objects4ArticlesPresenter
 
     @Override
     protected String getObjectsLink() {
-        return Constants.Urls.OBJECTS_4;
+        return mConstantValues.getUrlsValues().getObjects4();
     }
 }

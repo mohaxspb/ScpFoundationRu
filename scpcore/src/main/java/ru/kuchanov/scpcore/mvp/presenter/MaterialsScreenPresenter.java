@@ -6,11 +6,6 @@ import ru.kuchanov.scpcore.manager.MyPreferenceManager;
 import ru.kuchanov.scpcore.mvp.base.BaseDrawerPresenter;
 import ru.kuchanov.scpcore.mvp.contract.MaterialsScreenMvp;
 
-/**
- * Created by y.kuchanov on 21.12.16.
- * <p>
- * for TappAwards
- */
 public class MaterialsScreenPresenter
         extends BaseDrawerPresenter<MaterialsScreenMvp.View>
         implements MaterialsScreenMvp.Presenter {

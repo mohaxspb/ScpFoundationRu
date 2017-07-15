@@ -1,8 +1,10 @@
 package ru.kuchanov.scpcore.mvp.presenter;
 
+import android.support.annotation.NonNull;
+
 import java.util.List;
 
-import ru.kuchanov.scpcore.Constants;
+import ru.kuchanov.scpcore.ConstantValues;
 import ru.kuchanov.scpcore.api.ApiClient;
 import ru.kuchanov.scpcore.db.DbProviderFactory;
 import ru.kuchanov.scpcore.db.model.Article;
@@ -19,8 +21,13 @@ public class MaterialsJokesPresenter
         extends BaseObjectsArticlesPresenter<MaterialsJokesMvp.View>
         implements MaterialsJokesMvp.Presenter {
 
-    public MaterialsJokesPresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
-        super(myPreferencesManager, dbProviderFactory, apiClient);
+    public MaterialsJokesPresenter(
+            MyPreferenceManager myPreferencesManager,
+            DbProviderFactory dbProviderFactory,
+            ApiClient apiClient,
+            @NonNull ConstantValues constantValues
+    ) {
+        super(myPreferencesManager, dbProviderFactory, apiClient, constantValues);
     }
 
     @Override
@@ -30,7 +37,7 @@ public class MaterialsJokesPresenter
 
     @Override
     protected String getObjectsLink() {
-        return Constants.Urls.JOKES;
+        return mConstantValues.getUrlsValues().getJokes();
     }
 
     @Override

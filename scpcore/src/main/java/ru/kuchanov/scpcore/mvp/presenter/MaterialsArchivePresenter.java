@@ -2,7 +2,7 @@ package ru.kuchanov.scpcore.mvp.presenter;
 
 import java.util.List;
 
-import ru.kuchanov.scpcore.Constants;
+import ru.kuchanov.scpcore.ConstantValues;
 import ru.kuchanov.scpcore.api.ApiClient;
 import ru.kuchanov.scpcore.db.DbProviderFactory;
 import ru.kuchanov.scpcore.db.model.Article;
@@ -19,8 +19,13 @@ public class MaterialsArchivePresenter
         extends BaseObjectsArticlesPresenter<MaterialsArchiveMvp.View>
         implements MaterialsArchiveMvp.Presenter {
 
-    public MaterialsArchivePresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
-        super(myPreferencesManager, dbProviderFactory, apiClient);
+    public MaterialsArchivePresenter(
+            MyPreferenceManager myPreferencesManager,
+            DbProviderFactory dbProviderFactory,
+            ApiClient apiClient,
+            ConstantValues constantValues
+    ) {
+        super(myPreferencesManager, dbProviderFactory, apiClient, constantValues);
     }
 
     @Override
@@ -30,7 +35,7 @@ public class MaterialsArchivePresenter
 
     @Override
     protected String getObjectsLink() {
-        return Constants.Urls.ARCHIVE;
+        return mConstantValues.getUrlsValues().getArchive();
     }
 
     @Override

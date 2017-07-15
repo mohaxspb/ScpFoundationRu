@@ -6,6 +6,7 @@ import java.util.List;
 
 import io.realm.RealmResults;
 import io.realm.Sort;
+import ru.kuchanov.scpcore.ConstantValues;
 import ru.kuchanov.scpcore.Constants;
 import ru.kuchanov.scpcore.api.ApiClient;
 import ru.kuchanov.scpcore.db.DbProviderFactory;
@@ -26,8 +27,16 @@ public abstract class BaseObjectsArticlesPresenter<V extends BaseArticlesListMvp
 
     private boolean isAlreadyTriedToLoadInitialData;
 
-    public BaseObjectsArticlesPresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
+    protected ConstantValues mConstantValues;
+
+    public BaseObjectsArticlesPresenter(
+            MyPreferenceManager myPreferencesManager,
+            DbProviderFactory dbProviderFactory,
+            ApiClient apiClient,
+            ConstantValues constantValues
+    ) {
         super(myPreferencesManager, dbProviderFactory, apiClient);
+        mConstantValues = constantValues;
     }
 
     protected abstract String getObjectsInDbFieldName();
