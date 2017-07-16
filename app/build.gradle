@@ -149,14 +149,28 @@ android {
         }
     }
 
+    flavorDimensions "lang", "mode"
+
     productFlavors {
         prod {
+            dimension "mode"
+
             manifestPlaceholders = [myDebuggable: false]
             buildConfigField "boolean", "TIMBER_ENABLE", "false"
         }
 
         dev {
+            dimension "mode"
+
             manifestPlaceholders = [myDebuggable: true]
+        }
+
+        ru {
+            dimension "lang"
+        }
+
+        en {
+            dimension "lang"
         }
     }
 
