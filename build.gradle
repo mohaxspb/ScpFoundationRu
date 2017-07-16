@@ -20,7 +20,6 @@ allprojects {
 
         //use jcenter when it will be ready
         maven { url 'https://dl.bintray.com/mohaxspb/scp-downloads' }
-        maven { url 'https://dl.bintray.com/mohaxspb/rate-app/' }
 
         maven { url "https://jitpack.io" }
 
