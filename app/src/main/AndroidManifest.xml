@@ -24,7 +24,7 @@
         android:name=".MyApplicationImpl"
         android:allowBackup="false"
         android:debuggable="${myDebuggable}"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="false"
         android:theme="@style/SCP.Theme.Light"
@@ -90,30 +90,6 @@
                 <data android:scheme="package"/>
             </intent-filter>
         </receiver>
-
-        <!--<receiver-->
-            <!--android:name=".receiver.ReceiverTimerImpl"-->
-            <!--android:exported="false">-->
-            <!--<intent-filter>-->
-                <!--<action android:name="ru.dante.scpfoundation.receivers.ReceiverTimer"/>-->
-            <!--</intent-filter>-->
-        <!--</receiver>-->
-
-        <!--<receiver-->
-            <!--android:name=".receiver.ReceiverBootImpl"-->
-            <!--android:exported="false">-->
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.BOOT_COMPLETED"/>-->
-            <!--</intent-filter>-->
-        <!--</receiver>-->
-
-        <!--<receiver android:name="receiver.AppInstallReceiverImpl">-->
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.PACKAGE_INSTALL" />-->
-                <!--<action android:name="android.intent.action.PACKAGE_ADDED" />-->
-                <!--<data android:scheme="package"/>-->
-            <!--</intent-filter>-->
-        <!--</receiver>-->
 
         <!--vk-->
         <activity

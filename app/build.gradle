@@ -171,6 +171,8 @@ android {
 
         en {
             dimension "lang"
+
+            applicationIdSuffix ".eng"
         }
     }
 

@@ -8,8 +8,6 @@ import ru.dante.scpfoundation.di.module.NetModuleImpl;
 import ru.dante.scpfoundation.service.DownloadAllServiceImpl;
 import ru.kuchanov.scpcore.di.AppComponent;
 import ru.kuchanov.scpcore.di.module.AppModule;
-import ru.kuchanov.scpcore.di.module.HelpersModule;
-import ru.kuchanov.scpcore.di.module.NetModule;
 import ru.kuchanov.scpcore.di.module.NotificationModule;
 import ru.kuchanov.scpcore.di.module.PresentersModule;
 import ru.kuchanov.scpcore.di.module.StorageModule;
