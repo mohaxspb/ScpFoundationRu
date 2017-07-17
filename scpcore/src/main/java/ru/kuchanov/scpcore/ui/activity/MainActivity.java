@@ -16,6 +16,7 @@ import ru.kuchanov.scpcore.BaseApplication;
 import ru.kuchanov.scpcore.BuildConfig;
 import ru.kuchanov.scpcore.Constants;
 import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.R2;
 import ru.kuchanov.scpcore.mvp.contract.MainMvp;
 import ru.kuchanov.scpcore.ui.base.BaseDrawerActivity;
 import ru.kuchanov.scpcore.ui.dialog.NewVersionDialogFragment;
@@ -138,7 +139,7 @@ public class MainActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
-        
+
         if ("ru.kuchanov.scpcore.open.NEW".equals(intent.getAction())) {
             mCurrentSelectedDrawerItemId = (R.id.mostRecentArticles);
         } else if ("ru.kuchanov.scpcore.open.FAVORITES".equals(intent.getAction())) {
@@ -147,7 +148,7 @@ public class MainActivity
             mCurrentSelectedDrawerItemId = (R.id.random_page);
         }
 
-       setDrawerFromIntent(intent);
+        setDrawerFromIntent(intent);
 
         if (getSupportFragmentManager().findFragmentById(mContent.getId()) == null) {
             onNavigationItemClicked(mCurrentSelectedDrawerItemId);
@@ -175,11 +176,6 @@ public class MainActivity
     protected int getLayoutResId() {
         return R.layout.activity_main;
     }
-
-//    @Override
-//    protected void callInjections() {
-//        BaseApplication.getAppComponent().inject(this);
-//    }
 
     @Override
     protected int getMenuResId() {
@@ -226,18 +222,9 @@ public class MainActivity
             mCurrentSelectedDrawerItemId = id;
             showFragment(Objects4ArticlesFragment.newInstance(), Objects4ArticlesFragment.TAG);
             return true;
-        } else if (id == R.id.objects_RU) {
-            mCurrentSelectedDrawerItemId = id;
-            showFragment(ObjectsRuArticlesFragment.newInstance(), ObjectsRuArticlesFragment.TAG);
-            return true;
         } else if (id == R.id.files) {
             startMaterialsActivity();
             return false;
-        } else if (id == R.id.stories) {
-            mCurrentSelectedDrawerItemId = id;
-            showFragment(ArticleFragment.newInstance(Constants.Urls.STORIES),
-                    ArticleFragment.TAG + "#" + Constants.Urls.STORIES);
-            return true;
         } else if (id == R.id.favorite) {
             mCurrentSelectedDrawerItemId = id;
             showFragment(FavoriteArticlesFragment.newInstance(), FavoriteArticlesFragment.TAG);
@@ -254,7 +241,16 @@ public class MainActivity
             showFragment(SiteSearchArticlesFragment.newInstance(), SiteSearchArticlesFragment.TAG);
             return true;
         } else if (id == R.id.tagsSearch) {
-           startTagsSearchActivity();
+            startTagsSearchActivity();
+            return true;
+        } else if (id == R2.id.objects_RU) {
+            mCurrentSelectedDrawerItemId = id;
+            showFragment(ObjectsRuArticlesFragment.newInstance(), ObjectsRuArticlesFragment.TAG);
+            return true;
+        } else if (id == R2.id.stories) {
+            mCurrentSelectedDrawerItemId = id;
+            showFragment(ArticleFragment.newInstance(Constants.Urls.STORIES),
+                    ArticleFragment.TAG + "#" + Constants.Urls.STORIES);
             return true;
         } else {
             Timber.e("unexpected item ID");
@@ -298,50 +294,37 @@ public class MainActivity
     @Override
     public void setToolbarTitleByDrawerItemId(int id) {
         Timber.d("setToolbarTitleByDrawerItemId with id: %s", id);
+        //TODO move to separate interface and inject correct impl for lang each flavor
         String title;
         if (id == R.id.about) {
             title = getString(R.string.drawer_item_1);
-
         } else if (id == R.id.news) {
             title = getString(R.string.drawer_item_2);
-
         } else if (id == R.id.mostRatedArticles) {
             title = getString(R.string.drawer_item_3);
-
         } else if (id == R.id.mostRecentArticles) {
             title = getString(R.string.drawer_item_4);
-
         } else if (id == R.id.objects_I) {
             title = getString(R.string.drawer_item_6);
-
         } else if (id == R.id.objects_II) {
             title = getString(R.string.drawer_item_7);
-
         } else if (id == R.id.objects_III) {
             title = getString(R.string.drawer_item_8);
-
         } else if (id == R.id.objects_IV) {
             title = getString(R.string.drawer_item_objects4);
-
-        } else if (id == R.id.objects_RU) {
-            title = getString(R.string.drawer_item_9);
-
-        } else if (id == R.id.stories) {
-            title = getString(R.string.drawer_item_11);
-
         } else if (id == R.id.favorite) {
             title = getString(R.string.drawer_item_12);
-
         } else if (id == R.id.offline) {
             title = getString(R.string.drawer_item_13);
-
         } else if (id == R.id.siteSearch) {
             title = getString(R.string.drawer_item_15);
-
+        } else if (BuildConfig.FLAVOR.contains("ru") && id == R2.id.objects_RU) {
+            title = getString(R.string.drawer_item_9);
+        } else if (BuildConfig.FLAVOR.contains("ru") && id == R2.id.stories) {
+            title = getString(R.string.drawer_item_11);
         } else {
             Timber.e("unexpected item ID");
             title = null;
-
         }
         assert mToolbar != null;
         if (title != null) {
