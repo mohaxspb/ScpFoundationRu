@@ -1,0 +1,56 @@
+ext {
+//    fillArrays = { pathToFileWithData ->
+////        project.logger.lifecycle('pathToFileWithData: ${pathToFileWithData}')
+////        println 'pathToFileWithData: ${pathToFileWithData}'
+//        logger.lifecycle('test: {}', pathToFileWithData)
+//
+//        //add market skus to buildConfig
+//        //there is a way to store it in res... but it's awful
+//        //http://stackoverflow.com/a/41655569/3212712
+//        //Load market SKUs
+//        if (rootProject.file(pathToFileWithData).exists()) {
+//            def marketSkusPropertiesFile = rootProject.file(pathToFileWithData);
+//            def properties = new Properties()
+//            properties.load(new FileInputStream(marketSkusPropertiesFile))
+//
+////            buildConfigField('String[]', 'OLD_SKUS', properties.get("marketSkusOld"))
+//            buildConfigField 'String[]', 'OLD_SKUS', properties.get("marketSkusOld")
+//            buildConfigField('String[]', 'VER_2_SKUS', properties.get("marketSkusVer2"))
+//            buildConfigField('String[]', 'INAPP_SKUS', properties.get("marketSkusInapp"))
+//        } else {
+//            logger.lifecycle('test: {}', pathToFileWithData)
+////            throw new GradleException("You need to have marketSkus.properties file in root of project with " +
+////                    "marketSkusOld," +
+////                    "marketSkusVer2," +
+////                    " variables to build project")
+//        }
+//    }
+
+    fillArrays = { variant ->
+//        project.logger.lifecycle('pathToFileWithData: ${pathToFileWithData}')
+//        println 'pathToFileWithData: ${pathToFileWithData}'
+        logger.lifecycle('variant.productFlavors[0].name: {}', variant.productFlavors[0].name)
+
+        def pathToFileWithData = "config/" + variant.productFlavors[0].name + "/marketSkus.properties"
+
+        //add market skus to buildConfig
+        //there is a way to store it in res... but it's awful
+        //http://stackoverflow.com/a/41655569/3212712
+        //Load market SKUs
+        if (rootProject.file(pathToFileWithData).exists()) {
+            def marketSkusPropertiesFile = rootProject.file(pathToFileWithData);
+            def properties = new Properties()
+            properties.load(new FileInputStream(marketSkusPropertiesFile))
+
+            buildConfigField('String[]', 'OLD_SKUS', properties.get("marketSkusOld"))
+            variant.buildConfigField('String[]', 'VER_2_SKUS', properties.get("marketSkusVer2"))
+            variant.buildConfigField('String[]', 'INAPP_SKUS', properties.get("marketSkusInapp"))
+        } else {
+            logger.lifecycle('pathToFileWithData: {}', pathToFileWithData)
+//            throw new GradleException("You need to have marketSkus.properties file in root of project with " +
+//                    "marketSkusOld," +
+//                    "marketSkusVer2," +
+//                    " variables to build project")
+        }
+    }
+}

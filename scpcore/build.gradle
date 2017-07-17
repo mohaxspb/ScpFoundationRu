@@ -51,7 +51,7 @@ android {
             buildConfigField('String[]', 'VER_2_SKUS', marketSkusProperties.get("marketSkusVer2"))
             buildConfigField('String[]', 'INAPP_SKUS', marketSkusProperties.get("marketSkusInapp"))
         } else {
-            throw new GradleException("You need to have marketSkus.properties file in root of project with " +
+            throw new GradleException("CORE You need to have marketSkus.properties file in root of project with " +
                     "marketSkusOld," +
                     "marketSkusVer2," +
                     " variables to build project")

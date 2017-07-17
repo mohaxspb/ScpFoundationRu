@@ -295,6 +295,7 @@ public class MainActivity
     public void setToolbarTitleByDrawerItemId(int id) {
         Timber.d("setToolbarTitleByDrawerItemId with id: %s", id);
         //TODO move to separate interface and inject correct impl for lang each flavor
+        //or check so https://stackoverflow.com/a/40085939/3212712
         String title;
         if (id == R.id.about) {
             title = getString(R.string.drawer_item_1);

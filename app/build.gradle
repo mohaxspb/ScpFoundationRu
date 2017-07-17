@@ -6,6 +6,8 @@ apply plugin: 'me.tatarka.retrolambda'
 //which must be in format major, minor, patch, where patch goes from 0 to 99
 apply from: '../versioning.gradle'
 
+apply from: '../marketSkusCreator.gradle'
+
 android {
     compileSdkVersion 25
     buildToolsVersion '25.0.3'
@@ -48,24 +50,24 @@ android {
         resValue('string', 'receiver_action_boot', '"android.intent.action.BOOT_COMPLETED"')
 //        manifestPlaceholders = [receiver_action_boot: "android.intent.action.BOOT_COMPLETED"]
 
-        //add market skus to buildConfig
-        //there is a way to store it in res... but it's awful
-        //http://stackoverflow.com/a/41655569/3212712
-        //Load market SKUs
-        if (rootProject.file('marketSkus.properties').exists()) {
-            def marketSkusPropertiesFile = rootProject.file("marketSkus.properties");
-            def marketSkusProperties = new Properties()
-            marketSkusProperties.load(new FileInputStream(marketSkusPropertiesFile))
-
-            buildConfigField('String[]', 'OLD_SKUS', marketSkusProperties.get("marketSkusOld"))
-            buildConfigField('String[]', 'VER_2_SKUS', marketSkusProperties.get("marketSkusVer2"))
-            buildConfigField('String[]', 'INAPP_SKUS', marketSkusProperties.get("marketSkusInapp"))
-        } else {
-            throw new GradleException("You need to have marketSkus.properties file in root of project with " +
-                    "marketSkusOld," +
-                    "marketSkusVer2," +
-                    " variables to build project")
-        }
+//        //add market skus to buildConfig
+//        //there is a way to store it in res... but it's awful
+//        //http://stackoverflow.com/a/41655569/3212712
+//        //Load market SKUs
+//        if (rootProject.file('marketSkus.properties').exists()) {
+//            def marketSkusPropertiesFile = rootProject.file("marketSkus.properties");
+//            def marketSkusProperties = new Properties()
+//            marketSkusProperties.load(new FileInputStream(marketSkusPropertiesFile))
+//
+//            buildConfigField('String[]', 'OLD_SKUS', marketSkusProperties.get("marketSkusOld"))
+//            buildConfigField('String[]', 'VER_2_SKUS', marketSkusProperties.get("marketSkusVer2"))
+//            buildConfigField('String[]', 'INAPP_SKUS', marketSkusProperties.get("marketSkusInapp"))
+//        } else {
+//            throw new GradleException("You need to have marketSkus.properties file in root of project with " +
+//                    "marketSkusOld," +
+//                    "marketSkusVer2," +
+//                    " variables to build project")
+//        }
         //set API keys from secret file or with default values
         if (rootProject.file('apiKeys.properties').exists()) {
             def apiKeysPropertiesFile = rootProject.file("apiKeys.properties");
@@ -173,6 +175,49 @@ android {
             dimension "lang"
 
             applicationIdSuffix ".eng"
+
+//            println "config/${variant.productFlavors[0].name}/marketSkus.properties"
+//            println "config/" + $variant.productFlavors[0].name + "/marketSkus.properties"
+//
+//            fillArrays("config/" + $variant.productFlavors[0].name + "/marketSkus.properties")
+
+//            //add market skus to buildConfig
+//            //there is a way to store it in res... but it's awful
+//            //http://stackoverflow.com/a/41655569/3212712
+//            //Load market SKUs
+//            def pathToFileWithData = "config/" + "en" + "/marketSkus.properties"
+//            if (rootProject.file(pathToFileWithData).exists()) {
+//                def marketSkusPropertiesFile = rootProject.file(pathToFileWithData);
+//                def properties = new Properties()
+//                properties.load(new FileInputStream(marketSkusPropertiesFile))
+//
+//            buildConfigField('String[]', 'OLD_SKUS', properties.get("marketSkusOld"))
+////                buildConfigField 'String[]', 'OLD_SKUS', properties.get("marketSkusOld")
+//                buildConfigField('String[]', 'VER_2_SKUS', properties.get("marketSkusVer2"))
+//                buildConfigField('String[]', 'INAPP_SKUS', properties.get("marketSkusInapp"))
+//            } else {
+//                logger.lifecycle('test: {}', pathToFileWithData)
+////            throw new GradleException("You need to have marketSkus.properties file in root of project with " +
+////                    "marketSkusOld," +
+////                    "marketSkusVer2," +
+////                    " variables to build project")
+//            }
+        }
+
+//        applicationVariants.all { variant ->
+//            def flavors = variant.productFlavors
+//            // flavorDimensions "app" -> 0, "environment" -> 1
+//            def app = flavors[0]
+//            def environment = flavors[1]
+//
+////            variant.buildConfigField "String", "URL", "\"${app[environment.name]}\""
+//            def pathToFile = "config/" + variant.productFlavors[0].name + "/marketSkus.properties"
+//
+//            fillArrays(pathToFile)
+//        }
+
+        applicationVariants.all { variant ->
+            fillArrays(variant)
         }
     }
 
