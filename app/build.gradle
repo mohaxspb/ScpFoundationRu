@@ -33,6 +33,7 @@ android {
 
         manifestPlaceholders = [debuggable: true]
         buildConfigField "boolean", "TIMBER_ENABLE", "true"
+        //TODO move to config
         buildConfigField('String', 'BASE_API_URL', '"http://scpfoundation.ru"')
         buildConfigField('String', 'SCP_API_URL', '"https://scpfoundation.net/_api/wikidot_tags_search/"')
 
@@ -42,6 +43,7 @@ android {
         buildConfigField('int', 'TIMEOUT_SECONDS_READ', '60')
         buildConfigField('int', 'TIMEOUT_SECONDS_WRITE', '60')
 
+        //TODO move to config
         buildConfigField('int', 'REALM_VERSION', '3')
 
         //play market refuses not hardcoded strings as intent filter
@@ -50,24 +52,7 @@ android {
         resValue('string', 'receiver_action_boot', '"android.intent.action.BOOT_COMPLETED"')
 //        manifestPlaceholders = [receiver_action_boot: "android.intent.action.BOOT_COMPLETED"]
 
-//        //add market skus to buildConfig
-//        //there is a way to store it in res... but it's awful
-//        //http://stackoverflow.com/a/41655569/3212712
-//        //Load market SKUs
-//        if (rootProject.file('marketSkus.properties').exists()) {
-//            def marketSkusPropertiesFile = rootProject.file("marketSkus.properties");
-//            def marketSkusProperties = new Properties()
-//            marketSkusProperties.load(new FileInputStream(marketSkusPropertiesFile))
-//
-//            buildConfigField('String[]', 'OLD_SKUS', marketSkusProperties.get("marketSkusOld"))
-//            buildConfigField('String[]', 'VER_2_SKUS', marketSkusProperties.get("marketSkusVer2"))
-//            buildConfigField('String[]', 'INAPP_SKUS', marketSkusProperties.get("marketSkusInapp"))
-//        } else {
-//            throw new GradleException("You need to have marketSkus.properties file in root of project with " +
-//                    "marketSkusOld," +
-//                    "marketSkusVer2," +
-//                    " variables to build project")
-//        }
+        //TODO move to config
         //set API keys from secret file or with default values
         if (rootProject.file('apiKeys.properties').exists()) {
             def apiKeysPropertiesFile = rootProject.file("apiKeys.properties");
@@ -175,33 +160,6 @@ android {
             dimension "lang"
 
             applicationIdSuffix ".eng"
-
-//            println "config/${variant.productFlavors[0].name}/marketSkus.properties"
-//            println "config/" + $variant.productFlavors[0].name + "/marketSkus.properties"
-//
-//            fillArrays("config/" + $variant.productFlavors[0].name + "/marketSkus.properties")
-
-//            //add market skus to buildConfig
-//            //there is a way to store it in res... but it's awful
-//            //http://stackoverflow.com/a/41655569/3212712
-//            //Load market SKUs
-//            def pathToFileWithData = "config/" + "en" + "/marketSkus.properties"
-//            if (rootProject.file(pathToFileWithData).exists()) {
-//                def marketSkusPropertiesFile = rootProject.file(pathToFileWithData);
-//                def properties = new Properties()
-//                properties.load(new FileInputStream(marketSkusPropertiesFile))
-//
-//            buildConfigField('String[]', 'OLD_SKUS', properties.get("marketSkusOld"))
-////                buildConfigField 'String[]', 'OLD_SKUS', properties.get("marketSkusOld")
-//                buildConfigField('String[]', 'VER_2_SKUS', properties.get("marketSkusVer2"))
-//                buildConfigField('String[]', 'INAPP_SKUS', properties.get("marketSkusInapp"))
-//            } else {
-//                logger.lifecycle('test: {}', pathToFileWithData)
-////            throw new GradleException("You need to have marketSkus.properties file in root of project with " +
-////                    "marketSkusOld," +
-////                    "marketSkusVer2," +
-////                    " variables to build project")
-//            }
         }
 
 //        applicationVariants.all { variant ->
