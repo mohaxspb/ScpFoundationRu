@@ -281,14 +281,13 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
         mInterstitialAd.setAdListener(new MyAdListener());
 
         //appodeal
-        String appKey = "96b84a34ca52ac1c82b8f3c61bfd0ade7abf5c2be24f2862";
         Appodeal.disableLocationPermissionCheck();
         Appodeal.confirm(Appodeal.SKIPPABLE_VIDEO);
         if (BuildConfig.DEBUG) {
             Appodeal.setTesting(true);
 //            Appodeal.setLogLevel(Log.LogLevel.debug);
         }
-        Appodeal.initialize(this, appKey, Appodeal.NON_SKIPPABLE_VIDEO | Appodeal.SKIPPABLE_VIDEO);
+        Appodeal.initialize(this, BuildConfig.APPODEAL_APP_KEY, Appodeal.NON_SKIPPABLE_VIDEO | Appodeal.SKIPPABLE_VIDEO);
         Appodeal.setNonSkippableVideoCallbacks(new MyNonSkippableVideoCallbacks() {
             @Override
             public void onNonSkippableVideoFinished() {

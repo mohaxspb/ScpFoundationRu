@@ -44,12 +44,19 @@ android {
         //Load market SKUs
         if (rootProject.file('marketSkus.properties').exists()) {
             def marketSkusPropertiesFile = rootProject.file("marketSkus.properties");
-            def marketSkusProperties = new Properties()
-            marketSkusProperties.load(new FileInputStream(marketSkusPropertiesFile))
+            def properties = new Properties()
+            properties.load(new FileInputStream(marketSkusPropertiesFile))
 
-            buildConfigField('String[]', 'OLD_SKUS', marketSkusProperties.get("marketSkusOld"))
-            buildConfigField('String[]', 'VER_2_SKUS', marketSkusProperties.get("marketSkusVer2"))
-            buildConfigField('String[]', 'INAPP_SKUS', marketSkusProperties.get("marketSkusInapp"))
+            buildConfigField('String[]', 'OLD_SKUS', properties.get("marketSkusOld"))
+            buildConfigField('String[]', 'VER_2_SKUS', properties.get("marketSkusVer2"))
+            buildConfigField('String[]', 'INAPP_SKUS', properties.get("marketSkusInapp"))
+
+            //no ads subs
+            resValue('string', 'subs_no_ads_old', properties.get("noAdsSkuOld"))
+            buildConfigField('String', 'SUBS_NO_ADS_OLD', '"' + properties.get("noAdsSkuOld") + '"')
+
+            resValue('string', 'subs_no_ads_ver_2', properties.get("noAdsSkuVer2"))
+            buildConfigField('String', 'SUBS_NO_ADS_VER_2', '"' + properties.get("noAdsSkuVer2") + '"')
         } else {
             throw new GradleException("CORE You need to have marketSkus.properties file in root of project with " +
                     "marketSkusOld," +
@@ -59,43 +66,51 @@ android {
         //set API keys from secret file or with default values
         if (rootProject.file('apiKeys.properties').exists()) {
             def apiKeysPropertiesFile = rootProject.file("apiKeys.properties");
-            def apiKeysProperties = new Properties()
-            apiKeysProperties.load(new FileInputStream(apiKeysPropertiesFile))
+            def properties = new Properties()
+            properties.load(new FileInputStream(apiKeysPropertiesFile))
 
-            resValue('string', 'yandex_metrica_api_key', apiKeysProperties.get("yandexMetricaApiKey"))
-            buildConfigField('String', 'YANDEX_METRICA_API_KEY', '"' + apiKeysProperties.get("yandexMetricaApiKey") + '"')
+            resValue('string', 'yandex_metrica_api_key', properties.get("yandexMetricaApiKey"))
+            buildConfigField('String', 'YANDEX_METRICA_API_KEY', '"' + properties.get("yandexMetricaApiKey") + '"')
 
-            resValue('string', 'ads_app_id', apiKeysProperties.get("adMobAppId"))
-            buildConfigField('String', 'ADS_APP_ID', '"' + apiKeysProperties.get("adMobAppId") + '"')
+            //ads
+            resValue('string', 'ads_app_id', properties.get("adMobAppId"))
+            buildConfigField('String', 'ADS_APP_ID', '"' + properties.get("adMobAppId") + '"')
 
-            resValue('string', 'ad_unit_id_interstitial', apiKeysProperties.get("adsBannerIdInterstitial"))
-            buildConfigField('String', 'AD_UNIT_ID_INTERSTITIAL', '"' + apiKeysProperties.get("adsBannerIdInterstitial") + '"')
+            resValue('string', 'ad_unit_id_interstitial', properties.get("adsBannerIdInterstitial"))
+            buildConfigField('String', 'AD_UNIT_ID_INTERSTITIAL', '"' + properties.get("adsBannerIdInterstitial") + '"')
 
-            resValue('string', 'ad_unit_id_gallery_banner', apiKeysProperties.get("adsBannerIdGallery"))
-            buildConfigField('String', 'AD_UNIT_ID_GALLERY_BANNER', '"' + apiKeysProperties.get("adsBannerIdGallery") + '"')
+            resValue('string', 'ad_unit_id_gallery_banner', properties.get("adsBannerIdGallery"))
+            buildConfigField('String', 'AD_UNIT_ID_GALLERY_BANNER', '"' + properties.get("adsBannerIdGallery") + '"')
 
-            resValue('string', 'ad_unit_id_article_screen_banner', apiKeysProperties.get("adsBannerIdArticleScreen"))
-            buildConfigField('String', 'AD_UNIT_ID_ARTICLE_SCREEN_BANNER', '"' + apiKeysProperties.get("adsBannerIdArticleScreen") + '"')
+            resValue('string', 'ad_unit_id_article_screen_banner', properties.get("adsBannerIdArticleScreen"))
+            buildConfigField('String', 'AD_UNIT_ID_ARTICLE_SCREEN_BANNER', '"' + properties.get("adsBannerIdArticleScreen") + '"')
 
-            resValue('integer', 'com_vk_sdk_AppId', apiKeysProperties.get("vkSdkAppId"))
-            buildConfigField('int', 'VK_SDK_APP_ID', apiKeysProperties.get("vkSdkAppId"))
+            resValue('string', 'ad_unit_id_main_screen_banner', properties.get("adsBannerIdMainScreen"))
+            buildConfigField('String', 'AD_UNIT_ID_MAIN_SCREEN_BANNER', '"' + properties.get("adsBannerIdMainScreen") + '"')
+
+            resValue('string', 'appodeal_app_key', properties.get("appodealAppKey"))
+            buildConfigField('String', 'APPODEAL_APP_KEY', '"' + properties.get("appodealAppKey") + '"')
+            //ads end
+
+            resValue('integer', 'com_vk_sdk_AppId', properties.get("vkSdkAppId"))
+            buildConfigField('int', 'VK_SDK_APP_ID', properties.get("vkSdkAppId"))
 
             //use string, as so in facebook docs...
-            resValue('string', 'facebook_app_id', apiKeysProperties.get("facebookAppId"))
-            buildConfigField('String', 'FACEBOOK_APP_ID', '"' + apiKeysProperties.get("facebookAppId") + '"')
+            resValue('string', 'facebook_app_id', properties.get("facebookAppId"))
+            buildConfigField('String', 'FACEBOOK_APP_ID', '"' + properties.get("facebookAppId") + '"')
 
-            resValue('string', 'firebase_db_url', apiKeysProperties.get("firebaseUri"))
-            buildConfigField('String', 'FIREBASE_DB_URL', '"' + apiKeysProperties.get("firebaseUri") + '"')
+            resValue('string', 'firebase_db_url', properties.get("firebaseUri"))
+            buildConfigField('String', 'FIREBASE_DB_URL', '"' + properties.get("firebaseUri") + '"')
 
-            resValue('string', 'tools_api_url', apiKeysProperties.get("vpsApiAddress"))
-            buildConfigField('String', 'TOOLS_API_URL', '"' + apiKeysProperties.get("vpsApiAddress") + '"')
+            resValue('string', 'tools_api_url', properties.get("vpsApiAddress"))
+            buildConfigField('String', 'TOOLS_API_URL', '"' + properties.get("vpsApiAddress") + '"')
 
-            resValue('string', 'web_application_id', apiKeysProperties.get("webApplicationId"))
-            buildConfigField('String', 'WEB_APPLICATION_ID', '"' + apiKeysProperties.get("webApplicationId") + '"')
+            resValue('string', 'web_application_id', properties.get("webApplicationId"))
+            buildConfigField('String', 'WEB_APPLICATION_ID', '"' + properties.get("webApplicationId") + '"')
 
             //TODO use firebase remote config for it
-            resValue('string', 'non_cracked_user_uid', apiKeysProperties.get("nonCrackedUserUid"))
-            buildConfigField('String', 'NON_CRACKED_USER_UID', '"' + apiKeysProperties.get("nonCrackedUserUid") + '"')
+            resValue('string', 'non_cracked_user_uid', properties.get("nonCrackedUserUid"))
+            buildConfigField('String', 'NON_CRACKED_USER_UID', '"' + properties.get("nonCrackedUserUid") + '"')
         } else {
             throw new GradleException("You need to have apiKeys.properties file in root of project with " +
                     "yandexMetricaApiKey," +
@@ -125,6 +140,7 @@ android {
     }
 
     publishNonDefault true
+
     productFlavors{
         prod {
             manifestPlaceholders = [myDebuggable: false]

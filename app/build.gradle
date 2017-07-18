@@ -7,6 +7,7 @@ apply plugin: 'me.tatarka.retrolambda'
 apply from: '../versioning.gradle'
 
 apply from: '../marketSkusCreator.gradle'
+apply from: '../apiKeysCreator.gradle'
 
 android {
     compileSdkVersion 25
@@ -51,60 +52,6 @@ android {
 //        manifestPlaceholders = [receiver_action_timer: "ru.dante.scpfoundation.receivers.ReceiverTimer"]
         resValue('string', 'receiver_action_boot', '"android.intent.action.BOOT_COMPLETED"')
 //        manifestPlaceholders = [receiver_action_boot: "android.intent.action.BOOT_COMPLETED"]
-
-        //TODO move to config
-        //set API keys from secret file or with default values
-        if (rootProject.file('apiKeys.properties').exists()) {
-            def apiKeysPropertiesFile = rootProject.file("apiKeys.properties");
-            def apiKeysProperties = new Properties()
-            apiKeysProperties.load(new FileInputStream(apiKeysPropertiesFile))
-
-            resValue('string', 'yandex_metrica_api_key', apiKeysProperties.get("yandexMetricaApiKey"))
-            buildConfigField('String', 'YANDEX_METRICA_API_KEY', '"' + apiKeysProperties.get("yandexMetricaApiKey") + '"')
-
-            resValue('string', 'ads_app_id', apiKeysProperties.get("adMobAppId"))
-            buildConfigField('String', 'ADS_APP_ID', '"' + apiKeysProperties.get("adMobAppId") + '"')
-
-            resValue('string', 'ad_unit_id_interstitial', apiKeysProperties.get("adsBannerIdInterstitial"))
-            buildConfigField('String', 'AD_UNIT_ID_INTERSTITIAL', '"' + apiKeysProperties.get("adsBannerIdInterstitial") + '"')
-
-            resValue('string', 'ad_unit_id_gallery_banner', apiKeysProperties.get("adsBannerIdGallery"))
-            buildConfigField('String', 'AD_UNIT_ID_GALLERY_BANNER', '"' + apiKeysProperties.get("adsBannerIdGallery") + '"')
-
-            resValue('string', 'ad_unit_id_article_screen_banner', apiKeysProperties.get("adsBannerIdArticleScreen"))
-            buildConfigField('String', 'AD_UNIT_ID_ARTICLE_SCREEN_BANNER', '"' + apiKeysProperties.get("adsBannerIdArticleScreen") + '"')
-
-            resValue('integer', 'com_vk_sdk_AppId', apiKeysProperties.get("vkSdkAppId"))
-            buildConfigField('int', 'VK_SDK_APP_ID', apiKeysProperties.get("vkSdkAppId"))
-
-            //use string, as so in facebook docs...
-            resValue('string', 'facebook_app_id', apiKeysProperties.get("facebookAppId"))
-            buildConfigField('String', 'FACEBOOK_APP_ID', '"' + apiKeysProperties.get("facebookAppId") + '"')
-
-            resValue('string', 'firebase_db_url', apiKeysProperties.get("firebaseUri"))
-            buildConfigField('String', 'FIREBASE_DB_URL', '"' + apiKeysProperties.get("firebaseUri") + '"')
-
-            resValue('string', 'tools_api_url', apiKeysProperties.get("vpsApiAddress"))
-            buildConfigField('String', 'TOOLS_API_URL', '"' + apiKeysProperties.get("vpsApiAddress") + '"')
-
-            resValue('string', 'web_application_id', apiKeysProperties.get("webApplicationId"))
-            buildConfigField('String', 'WEB_APPLICATION_ID', '"' + apiKeysProperties.get("webApplicationId") + '"')
-
-            //TODO use firebase remote config for it
-            resValue('string', 'non_cracked_user_uid', apiKeysProperties.get("nonCrackedUserUid"))
-            buildConfigField('String', 'NON_CRACKED_USER_UID', '"' + apiKeysProperties.get("nonCrackedUserUid") + '"')
-        } else {
-            throw new GradleException("You need to have apiKeys.properties file in root of project with " +
-                    "yandexMetricaApiKey," +
-                    "adMobAppId," +
-                    "adsBannerIdInterstitial," +
-                    "vkSdkAppId," +
-                    "firebaseUri," +
-                    "vpsApiAddress" +
-                    "webApplicationId" +
-                    "vpsApiAddress" +
-                    " variables to build project")
-        }
 
         // Enabling multidex support.
         multiDexEnabled true
@@ -162,20 +109,9 @@ android {
             applicationIdSuffix ".eng"
         }
 
-//        applicationVariants.all { variant ->
-//            def flavors = variant.productFlavors
-//            // flavorDimensions "app" -> 0, "environment" -> 1
-//            def app = flavors[0]
-//            def environment = flavors[1]
-//
-////            variant.buildConfigField "String", "URL", "\"${app[environment.name]}\""
-//            def pathToFile = "config/" + variant.productFlavors[0].name + "/marketSkus.properties"
-//
-//            fillArrays(pathToFile)
-//        }
-
         applicationVariants.all { variant ->
             fillArrays(variant)
+            fillApiArrays(variant)
         }
     }
 
