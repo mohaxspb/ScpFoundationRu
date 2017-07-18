@@ -29,8 +29,8 @@ android {
         //TODO check when we can update it
         //noinspection OldTargetApi
         targetSdkVersion 25
-        versionCode buildVersionCode()
-        versionName version
+//        versionCode buildVersionCode()
+//        versionName version
 
         manifestPlaceholders = [debuggable: true]
         buildConfigField "boolean", "TIMBER_ENABLE", "true"
@@ -112,6 +112,9 @@ android {
         applicationVariants.all { variant ->
             fillArrays(variant)
             fillApiArrays(variant)
+
+            variant.mergedFlavor.versionCode = buildVersionCodeFromVariant(variant)
+            variant.mergedFlavor.versionName = getVersionValueAsString(variant)
         }
     }
 

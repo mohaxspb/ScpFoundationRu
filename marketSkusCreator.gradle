@@ -26,7 +26,7 @@ ext {
 //        }
 //    }
 
-   fillArrays = { variant ->
+    fillArrays = { variant ->
         logger.lifecycle('variant.productFlavors[0].name: {}', variant.productFlavors[0].name)
 
         def pathToFileWithData = "config/" + variant.productFlavors[0].name + "/marketSkus.properties"
