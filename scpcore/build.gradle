@@ -47,6 +47,7 @@ android {
             def properties = new Properties()
             properties.load(new FileInputStream(marketSkusPropertiesFile))
 
+            //move all to res, as we can't override BuildConfig fields
             buildConfigField('String[]', 'OLD_SKUS', properties.get("marketSkusOld"))
             buildConfigField('String[]', 'VER_2_SKUS', properties.get("marketSkusVer2"))
             buildConfigField('String[]', 'INAPP_SKUS', properties.get("marketSkusInapp"))
