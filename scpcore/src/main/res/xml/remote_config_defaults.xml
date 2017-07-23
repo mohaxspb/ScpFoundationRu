@@ -209,4 +209,8 @@
         <key>article_banner_disabled</key>
         <value>true</value>
     </entry>
+    <entry>
+        <key>no_ads_subs_enabled</key>
+        <value>false</value>
+    </entry>
 </defaultsMap>

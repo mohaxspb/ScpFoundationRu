@@ -34,6 +34,7 @@ import com.facebook.FacebookException;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.auth.api.Auth;
@@ -507,25 +508,63 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
                 items -> {
                     Timber.d("market items: %s", items);
                     mOwnedMarketSubscriptions = items;
-                    supportInvalidateOptionsMenu();
-                    if (!mOwnedMarketSubscriptions.isEmpty()) {
-                        if (!SecureUtils.checkCrack(this)) {
-                            mMyPreferenceManager.setHasSubscription(true);
-                        } else {
-                            mMyPreferenceManager.setHasSubscription(false);
-                            mMyPreferenceManager.setAppCracked(true);
-                            mMyPreferenceManager.setLastTimeAdsShows(0);
+//                    supportInvalidateOptionsMenu();
+//                    if (!mOwnedMarketSubscriptions.isEmpty()) {
+//                        if (!SecureUtils.checkCrack(this)) {
+//                            mMyPreferenceManager.setHasSubscription(true);
+//                        } else {
+//                            mMyPreferenceManager.setHasSubscription(false);
+//                            mMyPreferenceManager.setAppCracked(true);
+//                            mMyPreferenceManager.setLastTimeAdsShows(0);
+//
+//                            showMessage(R.string.app_cracked);
+//                            mPresenter.reactOnCrackEvent();
+//                        }
+//                    } else {
+//                        mMyPreferenceManager.setHasSubscription(false);
+//                    }
 
-                            showMessage(R.string.app_cracked);
-                            mPresenter.reactOnCrackEvent();
+                    @InappHelper.SubscriptionType
+                    int type = InappHelper.getSubscriptionTypeFromItemsList(mOwnedMarketSubscriptions);
+                    Timber.d("subscription type: %s", type);
+                    switch (type) {
+                        case InappHelper.SubscriptionType.NONE:
+                            mMyPreferenceManager.setHasNoAdsSubscription(false);
+                            mMyPreferenceManager.setHasSubscription(false);
+                            break;
+                        case InappHelper.SubscriptionType.NO_ADS: {
+                            mMyPreferenceManager.setHasNoAdsSubscription(true);
+                            mMyPreferenceManager.setHasSubscription(false);
+                            //remove banner
+                            AdView banner = ButterKnife.findById(this, R.id.banner);
+                            if (banner != null) {
+                                banner.setEnabled(false);
+                                banner.setVisibility(View.GONE);
+                            }
+                            break;
                         }
-                    } else {
-                        mMyPreferenceManager.setHasSubscription(false);
+                        case InappHelper.SubscriptionType.FULL_VERSION: {
+                            mMyPreferenceManager.setHasSubscription(true);
+                            mMyPreferenceManager.setHasNoAdsSubscription(true);
+                            //remove banner
+                            AdView banner = ButterKnife.findById(this, R.id.banner);
+                            if (banner != null) {
+                                banner.setEnabled(false);
+                                banner.setVisibility(View.GONE);
+                            }
+                            break;
+                        }
+                        default:
+                            throw new IllegalArgumentException("unexpected type: " + type);
+                    }
+                    if (SecureUtils.checkCrack(this)) {
+                        mPresenter.reactOnCrackEvent();
                     }
                 },
                 e -> Timber.e(e, "error while getting owned items")
         );
         //also check if user joined app vk group
+        //TODO do not check for non RU version
         mPresenter.checkIfUserJoinedAppVkGroup();
     }
 

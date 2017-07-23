@@ -387,7 +387,7 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
 
                 Bundle bundle = new Bundle();
                 bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, item.productId);
-                bundle.putFloat(FirebaseAnalytics.Param.PRICE, .5f);
+                bundle.putFloat(FirebaseAnalytics.Param.VALUE, .5f);
                 FirebaseAnalytics.getInstance(this).logEvent(FirebaseAnalytics.Event.ECOMMERCE_PURCHASE, bundle);
 
                 if (SecureUtils.checkCrack(this)) {
@@ -395,24 +395,23 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
                     FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
                     args.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "CRACK_" + item.productId + ((firebaseUser != null) ? firebaseUser.getUid() : ""));
                     FirebaseAnalytics.getInstance(this).logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, args);
-                } else {
-                    if (item.productId.equals(BuildConfig.INAPP_SKUS[0])) {
-                        //levelUp 5
-                        //add 10 000 score
-                        InappHelper.consumeInapp(item.purchaseToken, getIInAppBillingService())
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(
-                                        result -> {
-                                            Timber.d("consume inapp successful, so update user score");
-                                            mPresenter.updateUserScoreForInapp(item.productId);
-                                        },
-                                        e -> {
-                                            Timber.e(e, "error while consume inapp... X3 what to do)))");
-                                            showError(e);
-                                        }
-                                );
-                    }
+                }
+                if (item.productId.equals(getString(R.string.inapp_skus).split(",")[0])) {
+                    //levelUp 5
+                    //add 10 000 score
+                    InappHelper.consumeInapp(item.purchaseToken, getIInAppBillingService())
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    result -> {
+                                        Timber.d("consume inapp successful, so update user score");
+                                        mPresenter.updateUserScoreForInapp(item.productId);
+                                    },
+                                    e -> {
+                                        Timber.e(e, "error while consume inapp... X3 what to do)))");
+                                        showError(e);
+                                    }
+                            );
                 }
             }
         } else {

@@ -37,6 +37,7 @@ import ru.kuchanov.scpcore.R;
 import ru.kuchanov.scpcore.R2;
 import ru.kuchanov.scpcore.manager.MyNotificationManager;
 import ru.kuchanov.scpcore.manager.MyPreferenceManager;
+import ru.kuchanov.scpcore.monetization.util.InappHelper;
 import ru.kuchanov.scpcore.ui.adapter.SettingsSpinnerAdapter;
 import ru.kuchanov.scpcore.ui.base.BaseBottomSheetDialogFragment;
 import ru.kuchanov.scpcore.util.AttributeGetter;
@@ -224,7 +225,9 @@ public class SetttingsBottomSheetDialogFragment
         });
 
         //hide activate subs for good users
-        mActivateAutoSync.setVisibility(getBaseActivity().getOwnedItems().isEmpty() ? View.VISIBLE : View.GONE);
+        boolean showActivateFullVersion = InappHelper.getSubscriptionTypeFromItemsList(getBaseActivity().getOwnedItems())
+                != InappHelper.SubscriptionType.FULL_VERSION;
+        mActivateAutoSync.setVisibility(showActivateFullVersion ? View.VISIBLE : View.GONE);
     }
 
     @OnClick(R2.id.buy)

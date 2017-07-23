@@ -161,9 +161,9 @@ public class SubscriptionsFragmentDialog
                             Timber.d("items: %s", ownedItemsAndSubscriptions.first);
                             Timber.d("subs: %s", ownedItemsAndSubscriptions.second);
 
-                            if (ownedItemsAndSubscriptions.first.contains(new Item(null, null, BuildConfig.INAPP_SKUS[0], null))) {
+                            if (ownedItemsAndSubscriptions.first.contains(new Item(null, null, getString(R.string.inapp_skus).split(",")[0], null))) {
                                 Timber.d("has level inapp, so consume it");
-                                InappHelper.consumeInapp(BuildConfig.INAPP_SKUS[0], mInAppBillingService)
+                                InappHelper.consumeInapp(getString(R.string.inapp_skus).split(",")[0], mInAppBillingService)
                                         .subscribeOn(Schedulers.io())
                                         .observeOn(AndroidSchedulers.mainThread())
                                         .subscribe(
@@ -207,18 +207,9 @@ public class SubscriptionsFragmentDialog
     @Override
     public void onSubscriptionClicked(Subscription article) {
         try {
-            Bundle buyIntentBundle = mInAppBillingService.getBuyIntent(
-                    3,
-                    getActivity().getPackageName(),
-                    article.productId,
-                    "subs",
-                    String.valueOf(System.currentTimeMillis()));
-            PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
-            if (pendingIntent != null) {
-                startIntentSenderForResult(pendingIntent.getIntentSender(), REQUEST_CODE_SUBSCRIPTION, new Intent(), 0, 0, 0, null);
-            }
+            InappHelper.startSubsBuy(this, mInAppBillingService, InappHelper.InappType.SUBS, article.productId);
         } catch (Exception e) {
-            Timber.e(e, "error ");
+            Timber.e(e);
             Snackbar.make(mRoot, e.getMessage(), Snackbar.LENGTH_SHORT).show();
         }
     }

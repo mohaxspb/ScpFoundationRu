@@ -54,6 +54,7 @@ public class MyPreferenceManager implements MyPreferenceManagerModel {
         String VK_GROUP_JOINED = "VK_GROUP_JOINED";
         //        String USER_UID = "USER_UID";
         String HAS_SUBSCRIPTION = "HAS_SUBSCRIPTION";
+        String HAS_NO_ADS_SUBSCRIPTION = "HAS_NO_ADS_SUBSCRIPTION";
         String APP_IS_CRACKED = "APP_IS_CRACKED";
         String AUTO_SYNC_ATTEMPTS = "AUTO_SYNC_ATTEMPTS";
         //        String VK_GROUP_APP_JOINED = "VK_GROUP_APP_JOINED";
@@ -257,6 +258,21 @@ public class MyPreferenceManager implements MyPreferenceManagerModel {
 ////       FIX ME test
 //        return true;
     }
+
+    /**
+     * its a subscription that only removes ads
+     */
+    public void setHasNoAdsSubscription(boolean hasSubscription) {
+        mPreferences.edit().putBoolean(Keys.HAS_NO_ADS_SUBSCRIPTION, hasSubscription).apply();
+    }
+
+    /**
+     * its a subscription that only removes ads
+     */
+    public boolean isHasNoAdsSubscription() {
+        return mPreferences.getBoolean(Keys.HAS_NO_ADS_SUBSCRIPTION, false);
+    }
+    //subscriptions end
 
     @Override
     public boolean isDownloadAllEnabledForFree() {

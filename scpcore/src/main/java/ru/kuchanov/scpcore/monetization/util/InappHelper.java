@@ -12,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 
 import com.android.vending.billing.IInAppBillingService;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,11 +20,13 @@ import org.json.JSONObject;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import ru.kuchanov.scpcore.BaseApplication;
-import ru.kuchanov.scpcore.BuildConfig;
+import ru.kuchanov.scpcore.Constants;
+import ru.kuchanov.scpcore.R;
 import ru.kuchanov.scpcore.monetization.model.Item;
 import ru.kuchanov.scpcore.monetization.model.Subscription;
 import rx.Observable;
@@ -62,27 +65,27 @@ public class InappHelper {
         int FULL_VERSION = 1;
     }
 
-//    @SubscriptionType
-//    public static int getSubscriptionTypeFromItemsList(@NonNull List<Item> ownedItems) {
-//        @SubscriptionType
-//        int type;
-//
-//        List<String> fullVersionSkus = new ArrayList<>(Arrays.asList(BuildConfig.OLD_SKUS));
-//        fullVersionSkus.addAll(Arrays.asList(BuildConfig.VER_2_SKUS));
-//
-//        List<String> noAdsSkus = new ArrayList<>();
-//        noAdsSkus.add(BuildConfig.SUBS_NO_ADS_OLD);
-//        noAdsSkus.add(BuildConfig.SUBS_NO_ADS_VER_2);
-//
-//        List<String> ownedSkus = getSkuListFromItemsList(ownedItems);
-//        noAdsSkus.retainAll(ownedSkus);
-//        fullVersionSkus.retainAll(ownedSkus);
-//
-//        type = !fullVersionSkus.isEmpty()
-//                ? SubscriptionType.FULL_VERSION : !noAdsSkus.isEmpty() ? SubscriptionType.NO_ADS : SubscriptionType.NONE;
-//
-//        return type;
-//    }
+    @SubscriptionType
+    public static int getSubscriptionTypeFromItemsList(@NonNull List<Item> ownedItems) {
+        @SubscriptionType
+        int type;
+
+        List<String> fullVersionSkus = new ArrayList<>(Arrays.asList(BaseApplication.getAppInstance().getString(R.string.old_skus).split(",")));
+        Collections.addAll(fullVersionSkus, BaseApplication.getAppInstance().getString(R.string.ver_2_skus).split(","));
+
+        List<String> noAdsSkus = new ArrayList<>();
+        noAdsSkus.add(BaseApplication.getAppInstance().getString(R.string.subs_no_ads_old));
+        noAdsSkus.add(BaseApplication.getAppInstance().getString(R.string.subs_no_ads_ver_2));
+
+        List<String> ownedSkus = getSkuListFromItemsList(ownedItems);
+        noAdsSkus.retainAll(ownedSkus);
+        fullVersionSkus.retainAll(ownedSkus);
+
+        type = !fullVersionSkus.isEmpty()
+                ? SubscriptionType.FULL_VERSION : !noAdsSkus.isEmpty() ? SubscriptionType.NO_ADS : SubscriptionType.NONE;
+
+        return type;
+    }
 
     private static List<String> getSkuListFromItemsList(@NonNull List<Item> ownedItems) {
         List<String> skus = new ArrayList<>();
@@ -170,7 +173,10 @@ public class InappHelper {
                 List<Subscription> allSubscriptions = new ArrayList<>();
                 List<String> skuList = new ArrayList<>();
                 //get it from build config
-                Collections.addAll(skuList, BuildConfig.VER_2_SKUS);
+                Collections.addAll(skuList, BaseApplication.getAppInstance().getString(R.string.ver_2_skus).split(","));
+                if(FirebaseRemoteConfig.getInstance().getBoolean(Constants.Firebase.RemoteConfigKeys.NO_ADS_SUBS_ENABLED)) {
+                    skuList.add(BaseApplication.getAppInstance().getString(R.string.subs_no_ads_ver_2));
+                }
                 Timber.d("skuList: %s", skuList);
 
                 Bundle querySkus = new Bundle();
@@ -213,7 +219,8 @@ public class InappHelper {
                 List<Subscription> allSubscriptions = new ArrayList<>();
                 List<String> skuList = new ArrayList<>();
                 //get it from build config
-                Collections.addAll(skuList, BuildConfig.INAPP_SKUS);
+//                Collections.addAll(skuList, BuildConfig.INAPP_SKUS);
+                Collections.addAll(skuList, BaseApplication.getAppInstance().getString(R.string.inapp_skus).split(","));
                 Timber.d("skuList: %s", skuList);
 
                 Bundle querySkus = new Bundle();

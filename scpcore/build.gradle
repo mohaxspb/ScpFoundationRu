@@ -47,21 +47,26 @@ android {
             def properties = new Properties()
             properties.load(new FileInputStream(marketSkusPropertiesFile))
 
-            //move all to res, as we can't override BuildConfig fields
-            buildConfigField('String[]', 'OLD_SKUS', properties.get("marketSkusOld"))
-            buildConfigField('String[]', 'VER_2_SKUS', properties.get("marketSkusVer2"))
-            buildConfigField('String[]', 'INAPP_SKUS', properties.get("marketSkusInapp"))
+            //todo move all to res, as we can't override BuildConfig fields
+//            buildConfigField('String[]', 'OLD_SKUS', properties.get("marketSkusOld"))
+//            buildConfigField('String[]', 'VER_2_SKUS', properties.get("marketSkusVer2"))
+//            buildConfigField('String[]', 'INAPP_SKUS', properties.get("marketSkusInapp"))
+            resValue('string', 'old_skus', properties.get("marketSkusOld"))
+            resValue('string', 'ver_2_skus', properties.get("marketSkusVer2"))
+            resValue('string', 'inapp_skus', properties.get("marketSkusInapp"))
 
             //no ads subs
             resValue('string', 'subs_no_ads_old', properties.get("noAdsSkuOld"))
-            buildConfigField('String', 'SUBS_NO_ADS_OLD', '"' + properties.get("noAdsSkuOld") + '"')
+//            buildConfigField('String', 'SUBS_NO_ADS_OLD', '"' + properties.get("noAdsSkuOld") + '"')
 
             resValue('string', 'subs_no_ads_ver_2', properties.get("noAdsSkuVer2"))
-            buildConfigField('String', 'SUBS_NO_ADS_VER_2', '"' + properties.get("noAdsSkuVer2") + '"')
+//            buildConfigField('String', 'SUBS_NO_ADS_VER_2', '"' + properties.get("noAdsSkuVer2") + '"')
         } else {
             throw new GradleException("CORE You need to have marketSkus.properties file in root of project with " +
                     "marketSkusOld," +
                     "marketSkusVer2," +
+                    "noAdsSkuOld," +
+                    "noAdsSkuVer2," +
                     " variables to build project")
         }
         //set API keys from secret file or with default values
