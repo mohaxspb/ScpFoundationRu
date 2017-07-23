@@ -33,16 +33,10 @@ android {
 //        versionName version
 
         manifestPlaceholders = [debuggable: true]
-        buildConfigField "boolean", "TIMBER_ENABLE", "true"
         //TODO move to config
-        buildConfigField('String', 'BASE_API_URL', '"http://scpfoundation.ru"')
-        buildConfigField('String', 'SCP_API_URL', '"https://scpfoundation.net/_api/wikidot_tags_search/"')
+//        buildConfigField('String', 'BASE_API_URL', '"http://scpfoundation.ru"')
 
         buildConfigField "String", "VK_API_VERSION", '"5.62"'
-
-        buildConfigField('int', 'TIMEOUT_SECONDS_CONNECT', '60')
-        buildConfigField('int', 'TIMEOUT_SECONDS_READ', '60')
-        buildConfigField('int', 'TIMEOUT_SECONDS_WRITE', '60')
 
         //TODO move to config
         buildConfigField('int', 'REALM_VERSION', '3')

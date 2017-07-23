@@ -6,6 +6,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import ru.kuchanov.scpcore.ConstantValues;
 import ru.kuchanov.scpcore.api.ApiClient;
 import ru.kuchanov.scpcore.db.DbProviderFactory;
 import ru.kuchanov.scpcore.db.model.Article;
@@ -13,10 +14,11 @@ import ru.kuchanov.scpcore.manager.MyPreferenceManager;
 import ru.kuchanov.scpcore.service.DownloadAllServiceDefault;
 import ru.kuchanov.scpcore.ui.util.DialogUtils;
 import ru.kuchanov.scpcore.ui.util.DownloadAllChooserDefault;
+import ru.kuchanov.scpcore.ui.util.SetTextViewHTML;
 
 /**
  * Created by y.kuchanov on 22.12.16.
- *
+ * <p>
  * for scp_ru
  */
 @Module
@@ -41,7 +43,6 @@ public class HelpersModule {
             @NonNull DbProviderFactory dbProviderFactory,
             @NonNull ApiClient apiClient
     ) {
-//        return new DownloadAllChooserDefault(preferenceManager, dbProviderFactory, apiClient, DownloadAllServiceDefault.class);
         return getDialogUtilsTest(preferenceManager, dbProviderFactory, apiClient);
     }
 
@@ -53,15 +54,10 @@ public class HelpersModule {
         return new DownloadAllChooserDefault(preferenceManager, dbProviderFactory, apiClient, DownloadAllServiceDefault.class);
     }
 
-//    @Provides
-//    @Named("default")
-//    @NonNull
-//    @Singleton
-//    ru.kuchanov.scp.downloads.DialogUtils<Article> providesDialogUtilsTest(
-//            @NonNull MyPreferenceManager preferenceManager,
-//            @NonNull DbProviderFactory dbProviderFactory,
-//            @NonNull ApiClient apiClient
-//    ) {
-//        return new DownloadAllChooserDefault(preferenceManager, dbProviderFactory, apiClient, DownloadAllServiceDefault.class);
-//    }
+    @Provides
+    @NonNull
+    @Singleton
+    SetTextViewHTML providesSetTextViewHTML(@NonNull ConstantValues constantValues) {
+        return new SetTextViewHTML(constantValues);
+    }
 }

@@ -27,6 +27,8 @@ public class ArticleTextHolder extends RecyclerView.ViewHolder {
 
     @Inject
     MyPreferenceManager mMyPreferenceManager;
+    @Inject
+    SetTextViewHTML mSetTextViewHTML;
 
     private SetTextViewHTML.TextItemsClickListener mTextItemsClickListener;
 
@@ -53,6 +55,6 @@ public class ArticleTextHolder extends RecyclerView.ViewHolder {
         textView.setMovementMethod(LinkMovementMethod.getInstance());
         //TODO add settings for it
 //            textView.setTextIsSelectable(true);
-        SetTextViewHTML.setText(textView, text, mTextItemsClickListener);
+        mSetTextViewHTML.setText(textView, text, mTextItemsClickListener);
     }
 }

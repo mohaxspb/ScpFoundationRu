@@ -41,6 +41,8 @@ public class ArticleImageHolder extends RecyclerView.ViewHolder {
 
     @Inject
     MyPreferenceManager mMyPreferenceManager;
+    @Inject
+    SetTextViewHTML mSetTextViewHTML;
 
     private SetTextViewHTML.TextItemsClickListener mTextItemsClickListener;
 
@@ -115,7 +117,7 @@ public class ArticleImageHolder extends RecyclerView.ViewHolder {
             titleTextView.setMovementMethod(LinkMovementMethod.getInstance());
             //TODO add settings for it
 //            textView.setTextIsSelectable(true);
-            SetTextViewHTML.setText(titleTextView, title, mTextItemsClickListener);
+            mSetTextViewHTML.setText(titleTextView, title, mTextItemsClickListener);
         }
     }
 }

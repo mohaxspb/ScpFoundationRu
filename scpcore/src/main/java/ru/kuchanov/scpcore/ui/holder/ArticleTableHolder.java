@@ -10,10 +10,12 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import ru.kuchanov.scpcore.BuildConfig;
-import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.BaseApplication;
+import ru.kuchanov.scpcore.ConstantValues;
 import ru.kuchanov.scpcore.R2;
 import ru.kuchanov.scpcore.ui.util.SetTextViewHTML;
 import timber.log.Timber;
@@ -30,8 +32,14 @@ public class ArticleTableHolder extends RecyclerView.ViewHolder {
     @BindView(R2.id.webView)
     WebView webView;
 
+    @Inject
+    ConstantValues mConstantValues;
+
     public ArticleTableHolder(View itemView, SetTextViewHTML.TextItemsClickListener clickListener) {
         super(itemView);
+
+        BaseApplication.getAppComponent().inject(this);
+
         ButterKnife.bind(this, itemView);
 
         mTextItemsClickListener = clickListener;
@@ -118,7 +126,7 @@ public class ArticleTableHolder extends RecyclerView.ViewHolder {
                     return true;
                 }
                 if (!link.startsWith("http")) {
-                    link = BuildConfig.BASE_API_URL + link;
+                    link = mConstantValues.getUrlsValues().getBaseApiUrl() + link;
                 }
 
                 if (link.endsWith(".mp3")) {
@@ -128,7 +136,7 @@ public class ArticleTableHolder extends RecyclerView.ViewHolder {
                     return true;
                 }
 
-                if (!link.startsWith(BuildConfig.BASE_API_URL)) {
+                if (!link.startsWith(mConstantValues.getUrlsValues().getBaseApiUrl())) {
                     if (mTextItemsClickListener != null) {
                         mTextItemsClickListener.onExternalDomenUrlClicked(link);
                     }

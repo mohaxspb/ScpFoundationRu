@@ -88,6 +88,7 @@ public class MainActivity
     private void setDrawerItemFromLink(String link) {
         Timber.d("setDrawerItemFromLink: %s", link);
         switch (link) {
+            //TODO get url from ConstantValues
             case Constants.Urls.ABOUT_SCP:
                 mCurrentSelectedDrawerItemId = (R.id.about);
                 break;
@@ -188,11 +189,13 @@ public class MainActivity
         setToolbarTitleByDrawerItemId(id);
         if (id == R.id.about) {
             mCurrentSelectedDrawerItemId = id;
+            //TODO get url from ConstantValues
             showFragment(ArticleFragment.newInstance(Constants.Urls.ABOUT_SCP),
                     ArticleFragment.TAG + "#" + Constants.Urls.ABOUT_SCP);
             return true;
         } else if (id == R.id.news) {
             mCurrentSelectedDrawerItemId = id;
+            //TODO get url from ConstantValues
             showFragment(ArticleFragment.newInstance(Constants.Urls.NEWS), ArticleFragment.TAG + "#" + Constants.Urls.NEWS);
             return true;
         } else if (id == R.id.mostRatedArticles) {
@@ -249,6 +252,7 @@ public class MainActivity
             return true;
         } else if (id == R2.id.stories) {
             mCurrentSelectedDrawerItemId = id;
+            //TODO get url from ConstantValues
             showFragment(ArticleFragment.newInstance(Constants.Urls.STORIES),
                     ArticleFragment.TAG + "#" + Constants.Urls.STORIES);
             return true;

@@ -51,6 +51,7 @@ import ru.kuchanov.scpcore.ui.fragment.TagsSearchFragment;
 import ru.kuchanov.scpcore.ui.fragment.TagsSearchResultsArticlesFragment;
 import ru.kuchanov.scpcore.ui.holder.ArticleImageHolder;
 import ru.kuchanov.scpcore.ui.holder.ArticleSpoilerHolder;
+import ru.kuchanov.scpcore.ui.holder.ArticleTableHolder;
 import ru.kuchanov.scpcore.ui.holder.ArticleTagsHolder;
 import ru.kuchanov.scpcore.ui.holder.ArticleTextHolder;
 import ru.kuchanov.scpcore.ui.holder.ArticleTitleHolder;
@@ -146,6 +147,8 @@ public interface AppComponent {
     void inject(ArticleSpoilerHolder holder);
 
     void inject(HolderSimple holder);
+
+ void inject(ArticleTableHolder holder);
 
     void inject(ReceiverTimer receiver);
 

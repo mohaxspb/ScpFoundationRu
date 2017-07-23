@@ -19,6 +19,11 @@ public class ConstantValuesDefault implements ConstantValues {
     public class UrlsValuesImpl implements UrlsValues {
 
         @Override
+        public String getBaseApiUrl() {
+            return Constants.Urls.BASE_API_URL;
+        }
+
+        @Override
         public String getMain() {
             return Constants.Urls.MAIN;
         }

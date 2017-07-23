@@ -12,6 +12,8 @@ public interface ConstantValues {
     UrlsValues getUrlsValues();
 
     interface UrlsValues {
+        String getBaseApiUrl();
+
         String getMain();
 
         String getMostRated();

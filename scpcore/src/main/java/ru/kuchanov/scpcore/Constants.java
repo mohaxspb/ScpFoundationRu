@@ -30,6 +30,38 @@ public interface Constants {
         int GALLERY_VK_ALBUM_ID = 219430203;
     }
 
+    interface Urls {
+        String MAIN = "http://scpfoundation.ru/";
+
+        String RATE = "http://scpfoundation.ru/top-rated-pages";
+        String NEW_ARTICLES = "http://scpfoundation.ru/most-recently-created";
+        String OBJECTS_1 = "http://scpfoundation.ru/scp-list";
+        String OBJECTS_2 = "http://scpfoundation.ru/scp-list-2";
+        String OBJECTS_3 = "http://scpfoundation.ru/scp-list-3";
+        String OBJECTS_4 = "http://scpfoundation.ru/scp-list-4";
+        String OBJECTS_RU = "http://scpfoundation.ru/scp-list-ru";
+
+        //materials
+        String EXPERIMENTS = "http://scpfoundation.ru/experiment-logs";
+        String INCEDENTS = "http://scpfoundation.ru/incident-reports";
+        String INTERVIEWS = "http://scpfoundation.ru/eye-witness-interviews";
+        String JOKES = "http://scpfoundation.ru/scp-list-j";
+        String ARCHIVE = "http://scpfoundation.ru/archive";
+        String OTHERS = "http://scpfoundation.ru/other";
+        String LEAKS = "http://scpfoundation.ru/the-leak";
+
+        String ABOUT_SCP = "http://scpfoundation.ru/about-the-scp-foundation";
+        String NEWS = "http://scpfoundation.ru/news";
+        String STORIES = "http://scpfoundation.ru/stories";
+
+        String SEARCH = "SEARCH";
+        String FAVORITES = "FAVORITES";
+        String OFFLINE = "OFFLINE";
+
+        String[] ALL_LINKS_ARRAY = {MAIN, RATE, NEW_ARTICLES, EXPERIMENTS, INCEDENTS, INTERVIEWS, OTHERS, STORIES, LEAKS, OBJECTS_1, OBJECTS_2, OBJECTS_3, OBJECTS_RU, NEWS};
+        String BASE_API_URL = "http://scpfoundation.ru";
+    }
+
     interface Firebase {
 
         enum CallToActionReason {
@@ -136,36 +168,5 @@ public interface Constants {
             String INVITED_FIVE_FRIENDS = "INVITED_FIVE_FRIENDS";
             String APP_CRACKED = "APP_CRACKED";
         }
-    }
-
-    interface Urls {
-        String MAIN = "http://scpfoundation.ru/";
-
-        String RATE = "http://scpfoundation.ru/top-rated-pages";
-        String NEW_ARTICLES = "http://scpfoundation.ru/most-recently-created";
-        String OBJECTS_1 = "http://scpfoundation.ru/scp-list";
-        String OBJECTS_2 = "http://scpfoundation.ru/scp-list-2";
-        String OBJECTS_3 = "http://scpfoundation.ru/scp-list-3";
-        String OBJECTS_4 = "http://scpfoundation.ru/scp-list-4";
-        String OBJECTS_RU = "http://scpfoundation.ru/scp-list-ru";
-
-        //materials
-        String EXPERIMENTS = "http://scpfoundation.ru/experiment-logs";
-        String INCEDENTS = "http://scpfoundation.ru/incident-reports";
-        String INTERVIEWS = "http://scpfoundation.ru/eye-witness-interviews";
-        String JOKES = "http://scpfoundation.ru/scp-list-j";
-        String ARCHIVE = "http://scpfoundation.ru/archive";
-        String OTHERS = "http://scpfoundation.ru/other";
-        String LEAKS = "http://scpfoundation.ru/the-leak";
-
-        String ABOUT_SCP = "http://scpfoundation.ru/about-the-scp-foundation";
-        String NEWS = "http://scpfoundation.ru/news";
-        String STORIES = "http://scpfoundation.ru/stories";
-
-        String SEARCH = "SEARCH";
-        String FAVORITES = "FAVORITES";
-        String OFFLINE = "OFFLINE";
-
-        String[] ALL_LINKS_ARRAY = {MAIN, RATE, NEW_ARTICLES, EXPERIMENTS, INCEDENTS, INTERVIEWS, OTHERS, STORIES, LEAKS, OBJECTS_1, OBJECTS_2, OBJECTS_3, OBJECTS_RU, NEWS};
     }
 }

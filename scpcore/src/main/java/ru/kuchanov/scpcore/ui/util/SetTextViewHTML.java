@@ -13,7 +13,7 @@ import android.text.style.URLSpan;
 import android.view.View;
 import android.widget.TextView;
 
-import ru.kuchanov.scpcore.BuildConfig;
+import ru.kuchanov.scpcore.ConstantValues;
 import ru.kuchanov.scpcore.R;
 import ru.kuchanov.scpcore.db.model.ArticleTag;
 import ru.kuchanov.scpcore.util.AttributeGetter;
@@ -21,7 +21,13 @@ import timber.log.Timber;
 
 public class SetTextViewHTML {
 
-    public static void setText(TextView textView, String html, TextItemsClickListener textItemsClickListener) {
+    private ConstantValues mConstantValues;
+
+    public SetTextViewHTML(ConstantValues constantValues) {
+        mConstantValues = constantValues;
+    }
+
+    public void setText(TextView textView, String html, TextItemsClickListener textItemsClickListener) {
         URLImageParser imgGetter = new URLImageParser(textView);
         MyHtmlTagHandler myHtmlTagHandler = new MyHtmlTagHandler();
         CharSequence sequence = Html.fromHtml(html, imgGetter, myHtmlTagHandler);
@@ -38,9 +44,9 @@ public class SetTextViewHTML {
         textView.setText(strBuilder);
     }
 
-    private static void makeLinkClickable(
+    private void makeLinkClickable(
             SpannableStringBuilder strBuilder,
-            final URLSpan span,
+            URLSpan span,
             TextItemsClickListener textItemsClickListener
     ) {
         int start = strBuilder.getSpanStart(span);
@@ -83,7 +89,7 @@ public class SetTextViewHTML {
                     return;
                 }
                 if (!link.startsWith("http")) {
-                    link = BuildConfig.BASE_API_URL + link;
+                    link = mConstantValues.getUrlsValues().getBaseApiUrl() + link;
                 }
 
                 if (link.endsWith(".mp3")) {
@@ -93,7 +99,7 @@ public class SetTextViewHTML {
                     return;
                 }
 
-                if (!link.startsWith(BuildConfig.BASE_API_URL)) {
+                if (!link.startsWith(mConstantValues.getUrlsValues().getBaseApiUrl())) {
                     if (textItemsClickListener != null) {
                         textItemsClickListener.onExternalDomenUrlClicked(link);
                     }

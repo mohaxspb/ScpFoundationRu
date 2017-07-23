@@ -98,7 +98,7 @@ public abstract class BasePresenter<V extends BaseMvp.View>
             return;
         }
         //ignore articles which not starts with base domain
-        if (!article.url.startsWith(BuildConfig.BASE_API_URL)) {
+        if (!article.url.startsWith(mApiClient.getConstantValues().getUrlsValues().getBaseApiUrl())) {
             mDbProviderFactory.getDbProvider().setArticleSynced(article, true).subscribe(
                     article1 -> Timber.d("article1 synced"),
                     Timber::e
@@ -155,7 +155,7 @@ public abstract class BasePresenter<V extends BaseMvp.View>
                         Observable.from(articles)
                                 .flatMap(article -> {
                                     //ignore articles which not starts with base domain
-                                    if (!article.url.startsWith(BuildConfig.BASE_API_URL)) {
+                                    if (!article.url.startsWith(mApiClient.getConstantValues().getUrlsValues().getBaseApiUrl())) {
                                         Timber.e("Article from no main domain MUST IGNORE");
                                         return mDbProviderFactory.getDbProvider().setArticleSynced(article, true)
                                                 .flatMap(art -> Observable.just(new Pair<>(article, 0)));

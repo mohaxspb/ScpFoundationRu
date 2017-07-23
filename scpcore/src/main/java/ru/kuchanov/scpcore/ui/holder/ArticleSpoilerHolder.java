@@ -31,6 +31,8 @@ public class ArticleSpoilerHolder extends RecyclerView.ViewHolder {
 
     @Inject
     MyPreferenceManager mMyPreferenceManager;
+    @Inject
+    SetTextViewHTML mSetTextViewHTML;
 
     private SetTextViewHTML.TextItemsClickListener mTextItemsClickListener;
 
@@ -63,7 +65,7 @@ public class ArticleSpoilerHolder extends RecyclerView.ViewHolder {
 //            mContent.setTextIsSelectable(true);
         content.setLinksClickable(true);
         content.setMovementMethod(LinkMovementMethod.getInstance());
-        SetTextViewHTML.setText(content, spoilerParts.get(1), mTextItemsClickListener);
+        mSetTextViewHTML.setText(content, spoilerParts.get(1), mTextItemsClickListener);
 
         title.setOnClickListener(v -> {
             if (content.getVisibility() == View.GONE) {

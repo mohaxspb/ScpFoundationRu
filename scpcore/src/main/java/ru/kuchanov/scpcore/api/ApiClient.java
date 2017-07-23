@@ -169,7 +169,7 @@ public class ApiClient implements ApiClientModel<Article> {
     public Observable<Integer> getRecentArticlesPageCountObservable() {
         return bindWithUtils(Observable.<Integer>unsafeCreate(subscriber -> {
             Request request = new Request.Builder()
-                    .url(BuildConfig.BASE_API_URL + mConstantValues.getApiValues().getMostRecentUrl() + 1)
+                    .url(mConstantValues.getUrlsValues().getBaseApiUrl() + mConstantValues.getApiValues().getMostRecentUrl() + 1)
                     .build();
 
             String responseBody = null;
@@ -211,7 +211,7 @@ public class ApiClient implements ApiClientModel<Article> {
     public Observable<List<Article>> getRecentArticlesForPage(int page) {
         return bindWithUtils(Observable.<List<Article>>unsafeCreate(subscriber -> {
             Request request = new Request.Builder()
-                    .url(BuildConfig.BASE_API_URL +mConstantValues.getApiValues().getMostRecentUrl() + page)
+                    .url(mConstantValues.getUrlsValues().getBaseApiUrl() +mConstantValues.getApiValues().getMostRecentUrl() + page)
                     .build();
 
             String responseBody = null;
@@ -246,7 +246,7 @@ public class ApiClient implements ApiClientModel<Article> {
                     Element firstTd = listOfTd.first();
                     Element tagA = firstTd.getElementsByTag("a").first();
                     String title = tagA.text();
-                    String url = BuildConfig.BASE_API_URL + tagA.attr("href");
+                    String url = mConstantValues.getUrlsValues().getBaseApiUrl() + tagA.attr("href");
                     //rating
                     Element ratingNode = listOfTd.get(1);
                     int rating = Integer.parseInt(ratingNode.text());
@@ -288,7 +288,7 @@ public class ApiClient implements ApiClientModel<Article> {
             int page = offset /mConstantValues.getApiValues().getNumOfArticlesOnRatedPage() + 1/*as pages are not zero based*/;
 
             Request request = new Request.Builder()
-                    .url(BuildConfig.BASE_API_URL +mConstantValues.getApiValues().getMostRatedUrl() + page)
+                    .url(mConstantValues.getUrlsValues().getBaseApiUrl() +mConstantValues.getApiValues().getMostRatedUrl() + page)
                     .build();
 
             String responseBody = null;
@@ -325,7 +325,7 @@ public class ApiClient implements ApiClientModel<Article> {
                     Element tagP = element.getElementsByTag("p").first();
                     Element tagA = tagP.getElementsByTag("a").first();
                     String title = tagP.text().substring(0, tagP.text().indexOf(", рейтинг"));
-                    String url = BuildConfig.BASE_API_URL + tagA.attr("href");
+                    String url = mConstantValues.getUrlsValues().getBaseApiUrl() + tagA.attr("href");
                     //remove a tag to leave only text with rating
                     tagA.remove();
                     tagP.text(tagP.text().replace(", рейтинг ", ""));
@@ -352,7 +352,7 @@ public class ApiClient implements ApiClientModel<Article> {
             int page = offset / mConstantValues.getApiValues().getNumOfArticlesOnSearchPage() + 1/*as pages are not zero based*/;
 
             Request request = new Request.Builder()
-                    .url(BuildConfig.BASE_API_URL + String.format(Locale.ENGLISH,mConstantValues.getApiValues().getSearchSiteUrl(), searchQuery, page))
+                    .url(mConstantValues.getUrlsValues().getBaseApiUrl() + String.format(Locale.ENGLISH,mConstantValues.getApiValues().getSearchSiteUrl(), searchQuery, page))
                     .build();
 
             String responseBody = null;
@@ -475,7 +475,7 @@ public class ApiClient implements ApiClientModel<Article> {
                     @Article.ObjectType
                     String type = getObjectTypeByImageUrl(imageURL);
 
-                    String url = BuildConfig.BASE_API_URL + doc.getElementsByTag("a").first().attr("href");
+                    String url = mConstantValues.getUrlsValues().getBaseApiUrl() + doc.getElementsByTag("a").first().attr("href");
                     String title = doc.text();
 
                     Article article = new Article();
@@ -693,7 +693,7 @@ public class ApiClient implements ApiClientModel<Article> {
             //search for relative urls to add domain
             for (Element a : pageContent.getElementsByTag("a")) {
                 if (a.attr("href").startsWith("/")) {
-                    a.attr("href", BuildConfig.BASE_API_URL + a.attr("href"));
+                    a.attr("href", mConstantValues.getUrlsValues().getBaseApiUrl() + a.attr("href"));
                 }
             }
 
@@ -874,7 +874,7 @@ public class ApiClient implements ApiClientModel<Article> {
                     for (int u = 0; u < listOfLi.size(); u++) {
                         String url = listOfLi.get(u).getElementsByTag("a").first().attr("href");
                         if (!url.startsWith("http")) {
-                            url = BuildConfig.BASE_API_URL + url;
+                            url = mConstantValues.getUrlsValues().getBaseApiUrl() + url;
                         }
                         String text = listOfLi.get(u).text();
                         Article article = new Article();
@@ -949,7 +949,7 @@ public class ApiClient implements ApiClientModel<Article> {
                 for (String arrayItem : arrayOfArticles) {
                     doc = Jsoup.parse(arrayItem);
                     String imageURL = doc.getElementsByTag("img").first().attr("src");
-                    String url = BuildConfig.BASE_API_URL + doc.getElementsByTag("a").first().attr("href");
+                    String url = mConstantValues.getUrlsValues().getBaseApiUrl() + doc.getElementsByTag("a").first().attr("href");
                     String title = doc.text();
 
                     @Article.ObjectType
@@ -1027,7 +1027,7 @@ public class ApiClient implements ApiClientModel<Article> {
                     if (img != null && !img.isEmpty()) {
                         imageURL = img.first().attr("src");
                     }
-                    String url = BuildConfig.BASE_API_URL + doc.getElementsByTag("a").first().attr("href");
+                    String url = mConstantValues.getUrlsValues().getBaseApiUrl() + doc.getElementsByTag("a").first().attr("href");
                     String title = doc.text();
 
                     @Article.ObjectType
@@ -1562,7 +1562,7 @@ public class ApiClient implements ApiClientModel<Article> {
                 subscriber.onError(new IllegalArgumentException("firebase user is null"));
                 return;
             }
-            String url = article.url.replace(BuildConfig.BASE_API_URL, "");
+            String url = article.url.replace(mConstantValues.getUrlsValues().getBaseApiUrl(), "");
 
             //as firebase can't have dots or # in ref path we must replace it...
             url = url.replaceAll("#", "____");
@@ -1600,7 +1600,7 @@ public class ApiClient implements ApiClientModel<Article> {
                 subscriber.onError(new IllegalArgumentException("firebase user is null"));
                 return;
             }
-            String url = article.url.replace(BuildConfig.BASE_API_URL, "");
+            String url = article.url.replace(mConstantValues.getUrlsValues().getBaseApiUrl(), "");
 
             //as firebase can't have dots or # in ref path we must replace it...
             url = url.replaceAll("#", "____");
@@ -1855,7 +1855,7 @@ public class ApiClient implements ApiClientModel<Article> {
                 .map(articles -> {
                     for (Article article : articles) {
                         if (!article.url.startsWith("http://")) {
-                            String start = BuildConfig.BASE_API_URL;
+                            String start = mConstantValues.getUrlsValues().getBaseApiUrl();
                             if (!article.url.startsWith("/")) {
                                 start += "/";
                             }
@@ -1875,5 +1875,9 @@ public class ApiClient implements ApiClientModel<Article> {
                     }
                     return tags;
                 }));
+    }
+
+    public ConstantValues getConstantValues() {
+        return mConstantValues;
     }
 }
