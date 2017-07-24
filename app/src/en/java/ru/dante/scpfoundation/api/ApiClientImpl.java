@@ -15,7 +15,9 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
+import ru.dante.scpfoundation.BuildConfig;
 import ru.dante.scpfoundation.MyApplicationImpl;
 import ru.dante.scpfoundation.R;
 import ru.kuchanov.scp.downloads.ScpParseException;
@@ -50,25 +52,30 @@ public class ApiClientImpl extends ApiClient {
         Timber.d("getRandomUrl");
         return bindWithUtils(Observable.unsafeCreate(subscriber -> {
             Request.Builder request = new Request.Builder();
-            request.url(Constants.Api.RANDOM_PAGE_SCRIPT_URL);
-            request.addHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-            request.addHeader("Accept-Encoding", "gzip, deflate, br");
-            request.addHeader("Accept-Language", "en-US,en;q=0.8,de-DE;q=0.5,de;q=0.3");
-            request.addHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101 Firefox/45.0");
+            request.url(mConstantValues.getApiValues().getRandomPageUrl());
             request.get();
 
             try {
-                Response response = mOkHttpClient.newCall(request.build()).execute();
+                OkHttpClient client = new OkHttpClient.Builder()
+                        .followRedirects(true)
+                        .addInterceptor(new HttpLoggingInterceptor(message -> Timber.d(message)).setLevel(BuildConfig.DEBUG
+                                ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE))
+                        .build();
+                Response response = client.newCall(request.build()).execute();
 
-                Request requestResult = response.request();
-                Timber.d("requestResult:" + requestResult);
-                Timber.d("requestResult.url().url():" + requestResult.url().url());
-
-                String randomURL = requestResult.url().url().toString();
-                Timber.d("randomUrl = " + randomURL);
-
-                subscriber.onNext(randomURL);
-                subscriber.onCompleted();
+                ResponseBody requestResult = response.body();
+                if (requestResult != null) {
+                    String html = requestResult.string();
+                    html = html.substring(html.indexOf("<iframe src=\"http://snippets.wdfiles.com/local--code/code:iframe-redirect#") +
+                            "<iframe src=\"http://snippets.wdfiles.com/local--code/code:iframe-redirect#".length());
+                    html = html.substring(0, html.indexOf("\""));
+                    String randomURL = html;
+                    Timber.d("randomUrl = " + randomURL);
+                    subscriber.onNext(randomURL);
+                    subscriber.onCompleted();
+                } else {
+                    subscriber.onError(new ScpParseException(MyApplicationImpl.getAppInstance().getString(R.string.error_parse)));
+                }
             } catch (IOException e) {
                 Timber.e(e);
                 subscriber.onError(e);
