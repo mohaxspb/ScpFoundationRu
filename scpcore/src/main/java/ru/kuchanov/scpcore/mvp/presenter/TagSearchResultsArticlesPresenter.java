@@ -32,7 +32,11 @@ public class TagSearchResultsArticlesPresenter
     private List<ArticleTag> mQueryTags;
     private List<Article> mSearchData;
 
-    public TagSearchResultsArticlesPresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
+    public TagSearchResultsArticlesPresenter(
+            MyPreferenceManager myPreferencesManager,
+            DbProviderFactory dbProviderFactory,
+            ApiClient apiClient
+    ) {
         super(myPreferencesManager, dbProviderFactory, apiClient);
     }
 

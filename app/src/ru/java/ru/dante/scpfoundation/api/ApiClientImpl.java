@@ -104,4 +104,9 @@ public class ApiClientImpl extends ApiClient {
             }
         }));
     }
+
+    @Override
+    protected String getScpServerWiki() {
+        return "scp-ru";
+    }
 }

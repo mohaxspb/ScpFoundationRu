@@ -159,12 +159,8 @@ public class ArticleActivity
             link = mConstantValues.getUrlsValues().getObjects3();
         } else if (id == R.id.objects_IV) {
             link = mConstantValues.getUrlsValues().getObjects4();
-        } else if (id == R.id.objects_RU) {
-            link = mConstantValues.getUrlsValues().getObjectsRu();
         } else if (id == R.id.files) {
             startMaterialsActivity();
-        } else if (id == R.id.stories) {
-            link = mConstantValues.getUrlsValues().getStories();
         } else if (id == R.id.favorite) {
             link = Constants.Urls.FAVORITES;
         } else if (id == R.id.offline) {
@@ -176,6 +172,10 @@ public class ArticleActivity
         } else if (id == R.id.tagsSearch) {
             startTagsSearchActivity();
             return true;
+        } else if (id == R2.id.objects_RU) {
+            link = mConstantValues.getUrlsValues().getObjectsRu();
+        } else if (id == R2.id.stories) {
+            link = Constants.Urls.STORIES;
         } else {
             Timber.e("unexpected item ID");
         }

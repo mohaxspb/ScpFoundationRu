@@ -10,6 +10,7 @@ import java.util.List;
 import ru.kuchanov.scpcore.BaseApplication;
 import ru.kuchanov.scpcore.Constants;
 import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.R2;
 import ru.kuchanov.scpcore.db.model.Article;
 import ru.kuchanov.scpcore.db.model.ArticleTag;
 import ru.kuchanov.scpcore.mvp.contract.DataSyncActions;
@@ -106,13 +107,9 @@ public class TagSearchActivity
             link = mConstantValues.getUrlsValues().getObjects3();
         } else if (id == R.id.objects_IV) {
             link = mConstantValues.getUrlsValues().getObjects4();
-        } else if (id == R.id.objects_RU) {
-            link = mConstantValues.getUrlsValues().getObjectsRu();
         } else if (id == R.id.files) {
             startMaterialsActivity();
-        } else if (id == R.id.stories) {
-            link = mConstantValues.getUrlsValues().getStories();
-        }else if (id == R.id.favorite) {
+        } else if (id == R.id.favorite) {
             link = Constants.Urls.FAVORITES;
         } else if (id == R.id.offline) {
             link = Constants.Urls.OFFLINE;
@@ -122,6 +119,10 @@ public class TagSearchActivity
             link = Constants.Urls.SEARCH;
         } else if (id == R.id.tagsSearch) {
             getSupportFragmentManager().popBackStackImmediate(TagsSearchFragment.TAG, 0);
+        } else if (id == R2.id.objects_RU) {
+            link = mConstantValues.getUrlsValues().getObjectsRu();
+        } else if (id == R2.id.stories) {
+            link = Constants.Urls.STORIES;
         } else {
             Timber.e("unexpected item ID");
         }

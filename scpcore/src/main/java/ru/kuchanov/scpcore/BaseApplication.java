@@ -32,10 +32,6 @@ public abstract class BaseApplication extends MultiDexApplication {
         return sAppComponent;
     }
 
-//    public AppComponent getAppComponent() {
-//        return sAppComponent;
-//    }
-
     public static BaseApplication getAppInstance() {
         return sAppInstance;
     }
@@ -129,8 +125,4 @@ public abstract class BaseApplication extends MultiDexApplication {
     }
 
     protected abstract AppComponent buildAppComponentImpl();
-
-    public AppComponent getAppComponentImpl() {
-        return sAppComponent;
-    }
 }

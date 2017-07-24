@@ -14,9 +14,9 @@ import rx.Observable;
  */
 public interface ScpServer {
 
-    @GET("find?wiki=scp-ru")
-    Observable<List<ArticleFromSearchTagsOnSite>> getArticlesByTags(@Query("tag") List<String> tags);
+    @GET("find")
+    Observable<List<ArticleFromSearchTagsOnSite>> getArticlesByTags(@Query("wiki") String wiki, @Query("tag") List<String> tags);
 
-    @GET("list?wiki=scp-ru")
-    Observable<List<String>> getTagsList();
+    @GET("list")
+    Observable<List<String>> getTagsList(@Query("wiki") String wiki);
 }

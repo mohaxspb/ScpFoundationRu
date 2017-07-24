@@ -117,8 +117,7 @@ public class ArticleFragment
 
     @Override
     protected void callInjections() {
-//        BaseApplication.getAppComponent().inject(this);
-        BaseApplication.getAppInstance().getAppComponentImpl().inject(this);
+        BaseApplication.getAppComponent().inject(this);
     }
 
     @Override

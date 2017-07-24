@@ -2,7 +2,6 @@ package ru.kuchanov.scpcore.ui.dialog;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -36,7 +35,6 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.OnClick;
 import ru.kuchanov.scpcore.BaseApplication;
-import ru.kuchanov.scpcore.BuildConfig;
 import ru.kuchanov.scpcore.Constants;
 import ru.kuchanov.scpcore.R;
 import ru.kuchanov.scpcore.R2;
@@ -87,7 +85,7 @@ public class SubscriptionsFragmentDialog
 
     @Override
     protected void callInjection() {
-        BaseApplication.getAppInstance().getAppComponentImpl().inject(this);
+        BaseApplication.getAppComponent().inject(this);
     }
 
     @Override

@@ -34,7 +34,9 @@ public class TagsSearchResultsArticlesFragment
 //        args.putParcelable(EXTRA_TAGS, Parcels.wrap(tags));
 //        args.putParcelable(EXTRA_ARTICLES, Parcels.wrap(articles));
         args.putSerializable(EXTRA_TAGS, new ArrayList<>(tags));
-        args.putSerializable(EXTRA_ARTICLES, new ArrayList<>(articles));
+        if (articles != null) {
+            args.putSerializable(EXTRA_ARTICLES, new ArrayList<>(articles));
+        }
         fragment.setArguments(args);
         return fragment;
     }
@@ -43,8 +45,11 @@ public class TagsSearchResultsArticlesFragment
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         Timber.d("onViewCreated");
 //        List<Article> articles = Parcels.unwrap(getArguments().getParcelable(EXTRA_ARTICLES));
-        List<Article> articles = (List<Article>) getArguments().getSerializable(EXTRA_ARTICLES);
         List<ArticleTag> tags = (List<ArticleTag>) getArguments().getSerializable(EXTRA_TAGS);
+        List<Article> articles = null;
+        if(getArguments().containsKey(EXTRA_ARTICLES)) {
+          articles = (List<Article>) getArguments().getSerializable(EXTRA_ARTICLES);
+        }
         Timber.d("articles: %s", articles);
         Timber.d("tags: %s", tags);
         mPresenter.setQueryTags(tags);

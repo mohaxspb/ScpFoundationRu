@@ -1868,7 +1868,7 @@ public class ApiClient implements ApiClientModel<Article> {
     }
 
     public Observable<List<Article>> getArticlesByTags(List<ArticleTag> tags) {
-        return bindWithUtils(mScpServer.getArticlesByTags(ArticleTag.getStringsFromTags(tags)))
+        return bindWithUtils(mScpServer.getArticlesByTags(getScpServerWiki(), ArticleTag.getStringsFromTags(tags)))
                 .map(ArticleFromSearchTagsOnSite::getArticlesFromSiteArticles)
                 .map(articles -> {
                     for (Article article : articles) {
@@ -1885,7 +1885,7 @@ public class ApiClient implements ApiClientModel<Article> {
     }
 
     public Observable<List<ArticleTag>> getTagsFromSite() {
-        return bindWithUtils(mScpServer.getTagsList()
+        return bindWithUtils(mScpServer.getTagsList(getScpServerWiki())
                 .map(strings -> {
                     List<ArticleTag> tags = new ArrayList<>();
                     for (String divWithTagData : strings) {
@@ -1893,6 +1893,10 @@ public class ApiClient implements ApiClientModel<Article> {
                     }
                     return tags;
                 }));
+    }
+
+    protected String getScpServerWiki() {
+        return "scp-ru";
     }
 
     public ConstantValues getConstantValues() {

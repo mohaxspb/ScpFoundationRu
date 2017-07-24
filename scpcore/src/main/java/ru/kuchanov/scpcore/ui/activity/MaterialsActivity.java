@@ -12,6 +12,7 @@ import javax.inject.Inject;
 import ru.kuchanov.scpcore.BaseApplication;
 import ru.kuchanov.scpcore.Constants;
 import ru.kuchanov.scpcore.R;
+import ru.kuchanov.scpcore.R2;
 import ru.kuchanov.scpcore.mvp.contract.DataSyncActions;
 import ru.kuchanov.scpcore.mvp.contract.MaterialsScreenMvp;
 import ru.kuchanov.scpcore.ui.base.BaseActivity;
@@ -99,13 +100,9 @@ public class MaterialsActivity
             link = mConstantValues.getUrlsValues().getObjects3();
         } else if (id == R.id.objects_IV) {
             link = mConstantValues.getUrlsValues().getObjects4();
-        } else if (id == R.id.objects_RU) {
-            link = mConstantValues.getUrlsValues().getObjectsRu();
         } else if (id == R.id.files) {
             getSupportFragmentManager().popBackStackImmediate(MaterialsAllFragment.TAG, 0);
             return false;
-        } else if (id == R.id.stories) {
-            link = Constants.Urls.STORIES;
         } else if (id == R.id.favorite) {
             link = Constants.Urls.FAVORITES;
         } else if (id == R.id.offline) {
@@ -117,6 +114,10 @@ public class MaterialsActivity
         } else if (id == R.id.tagsSearch) {
             startTagsSearchActivity();
             return true;
+        } else if (id == R2.id.objects_RU) {
+            link = mConstantValues.getUrlsValues().getObjectsRu();
+        } else if (id == R2.id.stories) {
+            link = Constants.Urls.STORIES;
         } else {
             Timber.e("unexpected item ID");
         }
@@ -158,45 +159,6 @@ public class MaterialsActivity
         Timber.d("onMaterialsListItemClicked: %s", materials.get(position));
 
         mMaterialClickListener.onMaterialClick(position, this);
-
-//        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-//        switch (position) {
-//            case 0:
-//                fragmentTransaction.replace(R.id.content, MaterialsExperimentsFragment.newInstance());
-//                fragmentTransaction.addToBackStack(null);
-//                fragmentTransaction.commit();
-//                break;
-//            case 1:
-//                fragmentTransaction.replace(R.id.content, MaterialsIncidentsFragment.newInstance());
-//                fragmentTransaction.addToBackStack(null);
-//                fragmentTransaction.commit();
-//                break;
-//            case 2:
-//                fragmentTransaction.replace(R.id.content,  MaterialsInterviewsFragment.newInstance());
-//                fragmentTransaction.addToBackStack(null);
-//                fragmentTransaction.commit();
-//                break;
-//            case 3:
-//                fragmentTransaction.replace(R.id.content, MaterialsJokesFragment.newInstance());
-//                fragmentTransaction.addToBackStack(null);
-//                fragmentTransaction.commit();
-//                break;
-//            case 4:
-//                fragmentTransaction.replace(R.id.content, MaterialsArchiveFragment.newInstance());
-//                fragmentTransaction.addToBackStack(null);
-//                fragmentTransaction.commit();
-//                break;
-//            case 5:
-//                fragmentTransaction.replace(R.id.content, MaterialsOtherFragment.newInstance());
-//                fragmentTransaction.addToBackStack(null);
-//                fragmentTransaction.commit();
-//                break;
-//            case 6:
-//                startArticleActivity(Constants.Urls.LEAKS);
-//                break;
-//            default:
-//                throw new RuntimeException("unexpected position in materials list");
-//        }
     }
 
     @Override

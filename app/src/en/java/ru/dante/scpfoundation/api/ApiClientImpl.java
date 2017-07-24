@@ -218,4 +218,9 @@ public class ApiClientImpl extends ApiClient {
 
         return articles;
     }
+
+    @Override
+    protected String getScpServerWiki() {
+        return "scp-wiki";
+    }
 }
