@@ -224,4 +224,5 @@
         <item quantity="many">%1$d очков</item>
         <item quantity="other">%1$d очков</item>
     </plurals>
+    <string name="download">Загрузить</string>
 </resources>

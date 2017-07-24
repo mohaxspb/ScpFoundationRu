@@ -2,7 +2,4 @@
 <resources>
     <string name="error_connection">Ошибка соединения</string>
     <string name="error_parse">Ошибка парсинга HTML</string>
-
-    <string name="not_implemented">Не реализовано</string>
-    <string name="not_implemented_yet">Пока не реализовано</string>
 </resources>
