@@ -5,16 +5,25 @@ import com.google.gson.Gson;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import retrofit2.Retrofit;
-import ru.kuchanov.scpcore.*;
+import ru.dante.scpfoundation.MyApplicationImpl;
+import ru.dante.scpfoundation.R;
+import ru.kuchanov.scp.downloads.ScpParseException;
+import ru.kuchanov.scpcore.BaseApplication;
+import ru.kuchanov.scpcore.ConstantValues;
+import ru.kuchanov.scpcore.Constants;
 import ru.kuchanov.scpcore.api.ApiClient;
+import ru.kuchanov.scpcore.db.model.Article;
 import ru.kuchanov.scpcore.manager.MyPreferenceManager;
 import rx.Observable;
 import timber.log.Timber;
@@ -97,6 +106,65 @@ public class ApiClientImpl extends ApiClient {
                 Integer numOfPages = Integer.valueOf(text.substring(text.lastIndexOf(" ") + 1));
 
                 subscriber.onNext(numOfPages);
+                subscriber.onCompleted();
+            } catch (Exception e) {
+                Timber.e(e, "error while get arts list");
+                subscriber.onError(e);
+            }
+        }));
+    }
+
+    public Observable<List<Article>> getRecentArticlesForPage(int page) {
+        return bindWithUtils(Observable.<List<Article>>unsafeCreate(subscriber -> {
+            Request request = new Request.Builder()
+                    .url(mConstantValues.getUrlsValues().getBaseApiUrl() + Constants.Api.MOST_RECENT_URL + page)
+                    .build();
+
+            String responseBody = null;
+            try {
+                Response response = mOkHttpClient.newCall(request).execute();
+                ResponseBody body = response.body();
+                if (body != null) {
+                    responseBody = body.string();
+                } else {
+                    subscriber.onError(new IOException(MyApplicationImpl.getAppInstance().getString(R.string.error_parse)));
+                    return;
+                }
+            } catch (IOException e) {
+                subscriber.onError(new IOException(MyApplicationImpl.getAppInstance().getString(R.string.error_connection)));
+                return;
+            }
+            try {
+                Document doc = Jsoup.parse(responseBody);
+
+                Element contentTypeDescription = doc.getElementsByClass("content-type-description").first();
+                Element pageContent = contentTypeDescription.getElementsByTag("table").first();
+                if (pageContent == null) {
+                    subscriber.onError(new ScpParseException(MyApplicationImpl.getAppInstance().getString(R.string.error_parse)));
+                    return;
+                }
+
+                List<Article> articles = new ArrayList<>();
+                Elements listOfElements = pageContent.getElementsByTag("tr");
+                for (int i = 1/*start from 1 as first row is tables header*/; i < listOfElements.size(); i++) {
+                    Elements listOfTd = listOfElements.get(i).getElementsByTag("td");
+                    Element firstTd = listOfTd.first();
+                    Element tagA = firstTd.getElementsByTag("a").first();
+
+                    String title = tagA.text();
+                    String url = mConstantValues.getUrlsValues().getBaseApiUrl() + tagA.attr("href");
+                    //4 Jun 2017, 22:25
+                    //createdDate
+                    Element createdDateNode = listOfTd.get(1);
+                    String createdDate = createdDateNode.text().trim();
+
+                    Article article = new Article();
+                    article.title = title;
+                    article.url = url.trim();
+                    article.createdDate = createdDate;
+                    articles.add(article);
+                }
+                subscriber.onNext(articles);
                 subscriber.onCompleted();
             } catch (Exception e) {
                 Timber.e(e, "error while get arts list");

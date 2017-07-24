@@ -204,14 +204,14 @@ public class ApiClient implements ApiClientModel<Article> {
     }
 
     public Observable<List<Article>> getRecentArticlesForOffset(int offset) {
-        int page = offset /mConstantValues.getApiValues().getNumOfArticlesOnRecentPage() + 1/*as pages are not zero based*/;
+        int page = offset / mConstantValues.getApiValues().getNumOfArticlesOnRecentPage() + 1/*as pages are not zero based*/;
         return getRecentArticlesForPage(page);
     }
 
     public Observable<List<Article>> getRecentArticlesForPage(int page) {
         return bindWithUtils(Observable.<List<Article>>unsafeCreate(subscriber -> {
             Request request = new Request.Builder()
-                    .url(mConstantValues.getUrlsValues().getBaseApiUrl() +mConstantValues.getApiValues().getMostRecentUrl() + page)
+                    .url(mConstantValues.getUrlsValues().getBaseApiUrl() + mConstantValues.getApiValues().getMostRecentUrl() + page)
                     .build();
 
             String responseBody = null;
@@ -285,10 +285,10 @@ public class ApiClient implements ApiClientModel<Article> {
 
     public Observable<List<Article>> getRatedArticles(int offset) {
         return bindWithUtils(Observable.<List<Article>>unsafeCreate(subscriber -> {
-            int page = offset /mConstantValues.getApiValues().getNumOfArticlesOnRatedPage() + 1/*as pages are not zero based*/;
+            int page = offset / mConstantValues.getApiValues().getNumOfArticlesOnRatedPage() + 1/*as pages are not zero based*/;
 
             Request request = new Request.Builder()
-                    .url(mConstantValues.getUrlsValues().getBaseApiUrl() +mConstantValues.getApiValues().getMostRatedUrl() + page)
+                    .url(mConstantValues.getUrlsValues().getBaseApiUrl() + mConstantValues.getApiValues().getMostRatedUrl() + page)
                     .build();
 
             String responseBody = null;
@@ -352,7 +352,7 @@ public class ApiClient implements ApiClientModel<Article> {
             int page = offset / mConstantValues.getApiValues().getNumOfArticlesOnSearchPage() + 1/*as pages are not zero based*/;
 
             Request request = new Request.Builder()
-                    .url(mConstantValues.getUrlsValues().getBaseApiUrl() + String.format(Locale.ENGLISH,mConstantValues.getApiValues().getSearchSiteUrl(), searchQuery, page))
+                    .url(mConstantValues.getUrlsValues().getBaseApiUrl() + String.format(Locale.ENGLISH, mConstantValues.getApiValues().getSearchSiteUrl(), searchQuery, page))
                     .build();
 
             String responseBody = null;
