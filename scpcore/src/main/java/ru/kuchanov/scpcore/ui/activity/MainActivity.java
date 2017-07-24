@@ -75,7 +75,7 @@ public class MainActivity
             setDrawerItemFromLink(intent.getStringExtra(EXTRA_LINK));
         } else if (intent.getAction() != null && intent.getAction().equals(Intent.ACTION_VIEW)) {
             String link = intent.getDataString();
-            for (String pressedLink : Constants.Urls.ALL_LINKS_ARRAY) {
+            for (String pressedLink : mConstantValues.getUrlsValues().getAllLinksArray()) {
                 if (link.equals(pressedLink)) {
                     setDrawerItemFromLink(link);
                     return;
@@ -87,51 +87,35 @@ public class MainActivity
 
     private void setDrawerItemFromLink(String link) {
         Timber.d("setDrawerItemFromLink: %s", link);
-        switch (link) {
-            //TODO get url from ConstantValues
-            case Constants.Urls.ABOUT_SCP:
-                mCurrentSelectedDrawerItemId = (R.id.about);
-                break;
-            case Constants.Urls.NEWS:
-                mCurrentSelectedDrawerItemId = (R.id.news);
-                break;
-            case Constants.Urls.MAIN:
-            case Constants.Urls.RATE:
-                mCurrentSelectedDrawerItemId = R.id.mostRatedArticles;
-                break;
-            case Constants.Urls.NEW_ARTICLES:
-                mCurrentSelectedDrawerItemId = R.id.mostRecentArticles;
-                break;
-            case Constants.Urls.OBJECTS_1:
-                mCurrentSelectedDrawerItemId = (R.id.objects_I);
-                break;
-            case Constants.Urls.OBJECTS_2:
-                mCurrentSelectedDrawerItemId = (R.id.objects_II);
-                break;
-            case Constants.Urls.OBJECTS_3:
-                mCurrentSelectedDrawerItemId = (R.id.objects_III);
-                break;
-            case Constants.Urls.OBJECTS_4:
-                mCurrentSelectedDrawerItemId = (R.id.objects_IV);
-                break;
-            case Constants.Urls.OBJECTS_RU:
-                mCurrentSelectedDrawerItemId = (R.id.objects_RU);
-                break;
-            case Constants.Urls.STORIES:
-                mCurrentSelectedDrawerItemId = (R.id.stories);
-                break;
-            case Constants.Urls.FAVORITES:
-                mCurrentSelectedDrawerItemId = (R.id.favorite);
-                break;
-            case Constants.Urls.OFFLINE:
-                mCurrentSelectedDrawerItemId = (R.id.offline);
-                break;
-            case Constants.Urls.SEARCH:
-                mCurrentSelectedDrawerItemId = (R.id.siteSearch);
-                break;
-            default:
-                mCurrentSelectedDrawerItemId = SELECTED_DRAWER_ITEM_NONE;
-                break;
+        if (link.equals(mConstantValues.getUrlsValues().getAbout())) {
+            mCurrentSelectedDrawerItemId = (R.id.about);
+        } else if (link.equals(mConstantValues.getUrlsValues().getNews())) {
+            mCurrentSelectedDrawerItemId = (R.id.news);
+        } else if (link.equals(mConstantValues.getUrlsValues().getMain())
+                || link.equals(mConstantValues.getUrlsValues().getMostRated())) {
+            mCurrentSelectedDrawerItemId = R.id.mostRatedArticles;
+        } else if (link.equals(mConstantValues.getUrlsValues().getNewArticles())) {
+            mCurrentSelectedDrawerItemId = R.id.mostRecentArticles;
+        } else if (link.equals(mConstantValues.getUrlsValues().getObjects1())) {
+            mCurrentSelectedDrawerItemId = (R.id.objects_I);
+        } else if (link.equals(mConstantValues.getUrlsValues().getObjects2())) {
+            mCurrentSelectedDrawerItemId = (R.id.objects_II);
+        } else if (link.equals(mConstantValues.getUrlsValues().getObjects3())) {
+            mCurrentSelectedDrawerItemId = (R.id.objects_III);
+        } else if (link.equals(mConstantValues.getUrlsValues().getObjects4())) {
+            mCurrentSelectedDrawerItemId = (R.id.objects_IV);
+        } else if (link.equals(mConstantValues.getUrlsValues().getObjectsRu())) {
+            mCurrentSelectedDrawerItemId = (R.id.objects_RU);
+        } else if (link.equals(mConstantValues.getUrlsValues().getStories())) {
+            mCurrentSelectedDrawerItemId = (R.id.stories);
+        } else if (link.equals(Constants.Urls.FAVORITES)) {
+            mCurrentSelectedDrawerItemId = (R.id.favorite);
+        } else if (link.equals(Constants.Urls.OFFLINE)) {
+            mCurrentSelectedDrawerItemId = (R.id.offline);
+        } else if (link.equals(Constants.Urls.SEARCH)) {
+            mCurrentSelectedDrawerItemId = (R.id.siteSearch);
+        } else {
+            mCurrentSelectedDrawerItemId = SELECTED_DRAWER_ITEM_NONE;
         }
         getIntent().removeExtra(EXTRA_LINK);
     }
@@ -189,14 +173,13 @@ public class MainActivity
         setToolbarTitleByDrawerItemId(id);
         if (id == R.id.about) {
             mCurrentSelectedDrawerItemId = id;
-            //TODO get url from ConstantValues
-            showFragment(ArticleFragment.newInstance(Constants.Urls.ABOUT_SCP),
-                    ArticleFragment.TAG + "#" + Constants.Urls.ABOUT_SCP);
+            showFragment(ArticleFragment.newInstance(mConstantValues.getUrlsValues().getAbout()),
+                    ArticleFragment.TAG + "#" + mConstantValues.getUrlsValues().getAbout());
             return true;
         } else if (id == R.id.news) {
             mCurrentSelectedDrawerItemId = id;
-            //TODO get url from ConstantValues
-            showFragment(ArticleFragment.newInstance(Constants.Urls.NEWS), ArticleFragment.TAG + "#" + Constants.Urls.NEWS);
+            showFragment(ArticleFragment.newInstance(mConstantValues.getUrlsValues().getNews()),
+                    ArticleFragment.TAG + "#" + mConstantValues.getUrlsValues().getNews());
             return true;
         } else if (id == R.id.mostRatedArticles) {
             mCurrentSelectedDrawerItemId = id;
@@ -252,9 +235,8 @@ public class MainActivity
             return true;
         } else if (id == R2.id.stories) {
             mCurrentSelectedDrawerItemId = id;
-            //TODO get url from ConstantValues
-            showFragment(ArticleFragment.newInstance(Constants.Urls.STORIES),
-                    ArticleFragment.TAG + "#" + Constants.Urls.STORIES);
+            showFragment(ArticleFragment.newInstance(mConstantValues.getUrlsValues().getStories()),
+                    ArticleFragment.TAG + "#" + mConstantValues.getUrlsValues().getStories());
             return true;
         } else {
             Timber.e("unexpected item ID");
@@ -267,13 +249,9 @@ public class MainActivity
         hideFragments(transaction);
         Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
         if (fragment == null) {
-            transaction
-                    .add(mContent.getId(), fragmentToShow, tag)
-                    .commit();
+            transaction.add(mContent.getId(), fragmentToShow, tag).commit();
         } else {
-            transaction
-                    .show(fragment)
-                    .commit();
+            transaction.show(fragment).commit();
         }
     }
 
