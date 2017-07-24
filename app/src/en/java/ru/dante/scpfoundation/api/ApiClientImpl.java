@@ -178,4 +178,37 @@ public class ApiClientImpl extends ApiClient {
 
         return articles;
     }
+
+    @Override
+    protected List<Article> parseForObjectArticles(Document doc) throws ScpParseException {
+        Element pageContent = doc.getElementById("page-content");
+        if (pageContent == null) {
+            throw new ScpParseException(MyApplicationImpl.getAppInstance().getString(R.string.error_parse));
+        }
+        Elements listPagesBox = pageContent.getElementsByTag("h1");
+        listPagesBox.remove();
+        Element collapsibleBlock = pageContent.getElementsByTag("ul").first();
+        collapsibleBlock.remove();
+        Element table = pageContent.getElementsByClass("content-toc").first();
+        table.remove();
+        Elements allUls = pageContent.getElementsByClass("content-panel").first().getElementsByTag("ul");
+
+        List<Article> articles = new ArrayList<>();
+
+        for (Element ul : allUls) {
+            Elements allLi = ul.children();
+            for (Element li : allLi) {
+                //do not add empty articles
+                if (li.getElementsByTag("a").first().hasClass("newpage")) {
+                    continue;
+                }
+                Article article = new Article();
+                article.url = mConstantValues.getUrlsValues().getBaseApiUrl() + li.getElementsByTag("a").first().attr("href");
+                article.title = li.text();
+                articles.add(article);
+            }
+        }
+
+        return articles;
+    }
 }

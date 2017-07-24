@@ -444,67 +444,73 @@ public class ApiClient implements ApiClientModel<Article> {
             }
             try {
                 Document doc = Jsoup.parse(responseBody);
-                Element pageContent = doc.getElementById("page-content");
-                if (pageContent == null) {
-                    subscriber.onError(new ScpParseException(BaseApplication.getAppInstance().getString(R.string.error_parse)));
-                    return;
-                }
 
-                List<Article> articles = new ArrayList<>();
-                //parse
-                Element listPagesBox = pageContent.getElementsByClass("list-pages-box").first();
-                listPagesBox.remove();
-                Element collapsibleBlock = pageContent.getElementsByClass("collapsible-block").first();
-                collapsibleBlock.remove();
-                Element table = pageContent.getElementsByTag("table").first();
-                table.remove();
-                Element h2 = doc.getElementById("toc0");
-                h2.remove();
+                List<Article> articles = parseForObjectArticles(doc);
 
-                //now we will remove all html code before tag h2,with id toc1
-                String allHtml = pageContent.html();
-                int indexOfh2WithIdToc1 = allHtml.indexOf("<h2 id=\"toc1\">");
-                int indexOfhr = allHtml.indexOf("<hr>");
-                allHtml = allHtml.substring(indexOfh2WithIdToc1, indexOfhr);
-
-                doc = Jsoup.parse(allHtml);
-
-                Element h2withIdToc1 = doc.getElementById("toc1");
-                h2withIdToc1.remove();
-
-                Elements allh2Tags = doc.getElementsByTag("h2");
-                for (Element h2Tag : allh2Tags) {
-                    Element brTag = new Element(Tag.valueOf("br"), "");
-                    h2Tag.replaceWith(brTag);
-                }
-
-                String allArticles = doc.getElementsByTag("body").first().html();
-                String[] arrayOfArticles = allArticles.split("<br>");
-                for (String arrayItem : arrayOfArticles) {
-                    doc = Jsoup.parse(arrayItem);
-                    //type of object
-                    String imageURL = doc.getElementsByTag("img").first().attr("src");
-                    @Article.ObjectType
-                    String type = getObjectTypeByImageUrl(imageURL);
-
-                    String url = mConstantValues.getUrlsValues().getBaseApiUrl() + doc.getElementsByTag("a").first().attr("href");
-                    String title = doc.text();
-
-                    Article article = new Article();
-
-                    article.url = url;
-                    article.title = title;
-                    article.type = type;
-                    articles.add(article);
-                }
-                //parse end
                 subscriber.onNext(articles);
                 subscriber.onCompleted();
-            } catch (Exception e) {
+            } catch (Exception | ScpParseException e) {
                 Timber.e(e, "error while get arts list");
                 subscriber.onError(e);
             }
         }));
+    }
+
+    protected List<Article> parseForObjectArticles(Document doc) throws ScpParseException{
+        Element pageContent = doc.getElementById("page-content");
+        if (pageContent == null) {
+            throw new ScpParseException(BaseApplication.getAppInstance().getString(R.string.error_parse));
+        }
+
+        List<Article> articles = new ArrayList<>();
+        //parse
+        Element listPagesBox = pageContent.getElementsByClass("list-pages-box").first();
+        listPagesBox.remove();
+        Element collapsibleBlock = pageContent.getElementsByClass("collapsible-block").first();
+        collapsibleBlock.remove();
+        Element table = pageContent.getElementsByTag("table").first();
+        table.remove();
+        Element h2 = doc.getElementById("toc0");
+        h2.remove();
+
+        //now we will remove all html code before tag h2,with id toc1
+        String allHtml = pageContent.html();
+        int indexOfh2WithIdToc1 = allHtml.indexOf("<h2 id=\"toc1\">");
+        int indexOfhr = allHtml.indexOf("<hr>");
+        allHtml = allHtml.substring(indexOfh2WithIdToc1, indexOfhr);
+
+        doc = Jsoup.parse(allHtml);
+
+        Element h2withIdToc1 = doc.getElementById("toc1");
+        h2withIdToc1.remove();
+
+        Elements allh2Tags = doc.getElementsByTag("h2");
+        for (Element h2Tag : allh2Tags) {
+            Element brTag = new Element(Tag.valueOf("br"), "");
+            h2Tag.replaceWith(brTag);
+        }
+
+        String allArticles = doc.getElementsByTag("body").first().html();
+        String[] arrayOfArticles = allArticles.split("<br>");
+        for (String arrayItem : arrayOfArticles) {
+            doc = Jsoup.parse(arrayItem);
+            //type of object
+            String imageURL = doc.getElementsByTag("img").first().attr("src");
+            @Article.ObjectType
+            String type = getObjectTypeByImageUrl(imageURL);
+
+            String url = mConstantValues.getUrlsValues().getBaseApiUrl() + doc.getElementsByTag("a").first().attr("href");
+            String title = doc.text();
+
+            Article article = new Article();
+
+            article.url = url;
+            article.title = title;
+            article.type = type;
+            articles.add(article);
+        }
+
+        return articles;
     }
 
     @Nullable
