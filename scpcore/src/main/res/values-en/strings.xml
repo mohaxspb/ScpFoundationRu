@@ -15,6 +15,9 @@
     <string name="drawer_item_14">Gallery</string>
     <string name="drawer_item_15">Search</string>
     <string name="drawer_item_objects4">Series IV</string>
+
+    <string name="drawer_item_11">Tales</string>
+    <string name="drawer_item_9">Series Ru</string>
     <!--настройки-->
     <string name="settings">Settings</string>
     <string name="night_mode">Night mode</string>
@@ -168,8 +171,8 @@
     <string name="refreshed">Updated at %s</string>
     <string name="progress_leaderboard">Contacting the HR Department of the Foundation…</string>
     <string name="level">%d Level</string>
-    <string name="i_read_and_accept">I\'ve read and understood</string>
-    <string name="relogin">Log in</string>
+    <!--<string name="i_read_and_accept">I\'ve read and understood</string>-->
+    <!--<string name="relogin">Log in</string>-->
     <string name="warning">Attention!</string>
     <string name="dialog_logout_content">When you logout the account, all articles you have selected will be reset! Make sure you synchronized. You can perform the synchronization in Settings..</string>
     <string name="logout">Logout</string>
@@ -205,15 +208,35 @@
     <string name="filter_read">Read only</string>
     <string name="filter_rating">By rating</string>
     <string name="filter_title">By title</string>
-    <string name="restoring_data">Restoring data</string>
-    <string name="restored_data">Restored data: read - %1$d, favorites - %2$d</string>
+
+    <string name="filter_neutral_or_not_added">Neutral or not added</string>
+    <string name="filter_save">Save</string>
+    <string name="filter_euclid">Euclid</string>
+    <string name="filter_keter">Keter</string>
+    <string name="filter_thaumiel">Thaumiel</string>
+
+    <string name="restoring_data" translatable="false">Restoring data</string>
+    <string name="restored_data"  translatable="false">Restored data: read - %1$d, favorites - %2$d</string>
     <string name="notif_new_arts_title">New articles:  %1$d%2$s</string>
-    <string name="drawer_item_11">Tales</string>
-    <string name="drawer_item_9">Series Ru</string>
-    <string name="error_connection">Connection error</string>
     <string name="enter">Log in</string>
-    <string name="error_parse">Error while parse HTML</string>
     <string name="feedback_title">Rewiew SCP Database</string>
     <string name="stories">Tales</string>
+    <string name="materials_archive">Archived SCPs</string>
+    <string name="materials_jokes">Joke SCPs</string>
+    <string name="materials_others">Other</string>
+    <string name="materials_interview">Interviews</string>
+    <string name="materials_incidents">Incidents</string>
+    <string name="materials_experiments">Experiments</string>
+
+    <string name="error_connection">Connection error</string>
+    <string name="error_parse">Error while HTML parsing</string>
+
+    <string-array name="materials_titles">
+        <item>Joke SCPs</item>
+        <item>Archived SCPs</item>
+        <item>Explained SCPs</item>
+        <item>Log of Extranormal Events</item>
+    </string-array>
+    <string name="social_provider_vk_title">VK</string>
 
 </resources>

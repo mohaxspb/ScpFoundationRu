@@ -43,6 +43,8 @@ ext {
 
             //TODO use firebase remote config for it
             variant.resValue('string', 'non_cracked_user_uid', properties.get("nonCrackedUserUid"))
+
+            variant.resValue('integer', 'realm_version', properties.get("realmVersion"))
         } else {
             logger.lifecycle('pathToFileWithData: {}', pathToFileWithData)
             throw new GradleException("You need to have apiKeys.properties file in projectRoot/config/{FLAVOR_NAME} with " +

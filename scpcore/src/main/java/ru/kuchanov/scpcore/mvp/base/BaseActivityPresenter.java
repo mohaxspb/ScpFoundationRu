@@ -11,7 +11,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
-import com.vk.sdk.VKSdk;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -52,14 +51,14 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
 
             listenToChangesInFirebase(false);
 
-            if (VKSdk.isLoggedIn()) {
-                //this can be after update to 1.1.x.x+ (have vk login and do not have firebase one)
-                //so we can show popup with info and let user relogin
-                if (mMyPreferencesManager.isTimeToShowNeedReloginPopup()) {
-                    mMyPreferencesManager.setLastTimeNeedReloginPopupShown(System.currentTimeMillis());
-                    getView().showNeedReloginPopup();
-                }
-            }
+//            if (VKSdk.isLoggedIn()) {
+//                //this can be after update to 1.1.x.x+ (have vk login and do not have firebase one)
+//                //so we can show popup with info and let user relogin
+//                if (mMyPreferencesManager.isTimeToShowNeedReloginPopup()) {
+//                    mMyPreferencesManager.setLastTimeNeedReloginPopupShown(System.currentTimeMillis());
+//                    getView().showNeedReloginPopup();
+//                }
+//            }
         }
     };
 
@@ -284,7 +283,8 @@ abstract class BaseActivityPresenter<V extends BaseActivityMvp.View>
         Timber.d("reactOnCrackEvent");
         mApiClient.setCrackedInFirebase()
                 .onErrorResumeNext(e -> Observable.just(null))
-                .flatMap(aVoid -> mDbProviderFactory.getDbProvider().updateUserScore(0))
+                //do not punish users anymore
+//                .flatMap(aVoid -> mDbProviderFactory.getDbProvider().updateUserScore(0))
                 .subscribe(
                         newTotalScore -> {
                             Timber.d("reactOnCrackEvent onNext");

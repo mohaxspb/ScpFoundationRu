@@ -1,11 +1,4 @@
 <resources>
-    <!--no need to translate-->
-    <string name="app_name" translatable="false">SCP Foundation RU On/Offline</string>
-    <string name="market_url" translatable="false">market://details?id=%s</string>
-    <string name="social_provider_facebook_title" translatable="false">Facebook</string>
-    <string name="social_provider_google_title" translatable="false">Google</string>
-    <string name="feedback_email" translatable="false">neva.spb.rx@gmail.com</string>
-    <string name="image_title" translatable="false">scp_image</string>
     <!--drawer items-->
     <string name="drawer_item_1">Об организации</string>
     <string name="drawer_item_2">Новости</string>
@@ -225,4 +218,25 @@
         <item quantity="other">%1$d очков</item>
     </plurals>
     <string name="download">Загрузить</string>
+
+    <string name="error_connection">Ошибка соединения</string>
+    <string name="error_parse">Ошибка парсинга HTML</string>
+
+    <string-array name="materials_titles">
+        <item>Протоколы экспериментов</item>
+        <item>Отчёты об инцидентах</item>
+        <item>Интервью с очевидцами</item>
+        <item>Шуточные SCP</item>
+        <item>Архивные SCP</item>
+        <item>Прочие материалы</item>
+        <item>За кадром</item>
+    </string-array>
+
+    <string name="materials_experiments" translatable="false">Протоколы экспериментов</string>
+    <string name="materials_incidents" translatable="false">Отчёты об инцидентах</string>
+    <string name="materials_interview" translatable="false">Интервью с очевидцами</string>
+    <string name="materials_jokes" translatable="false">Шуточные SCP</string>
+    <string name="materials_archive" translatable="false">Архивные SCP</string>
+    <string name="materials_others" translatable="false">Прочие материалы</string>
+    <string name="materials_kadr" translatable="false">За кадром</string>
 </resources>

@@ -30,12 +30,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.gson.Gson;
-import com.vk.sdk.VKSdk;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
-import ru.kuchanov.scpcore.BuildConfig;
 import ru.kuchanov.scpcore.Constants;
 import ru.kuchanov.scpcore.R;
 import ru.kuchanov.scpcore.R2;
@@ -222,12 +220,12 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
                     .show()
             );
 
-            if (VKSdk.isLoggedIn() && FirebaseAuth.getInstance().getCurrentUser() == null) {
-                headerViewHolder.relogin.setVisibility(View.VISIBLE);
-                headerViewHolder.relogin.setOnClickListener(view -> showNeedReloginPopup());
-            } else {
+//            if (VKSdk.isLoggedIn() && FirebaseAuth.getInstance().getCurrentUser() == null) {
+//                headerViewHolder.relogin.setVisibility(View.VISIBLE);
+//                headerViewHolder.relogin.setOnClickListener(view -> showNeedReloginPopup());
+//            } else {
                 headerViewHolder.relogin.setVisibility(View.GONE);
-            }
+//            }
 
             headerViewHolder.levelUp.setOnClickListener(view -> InappHelper.getInappsListToBuyObserveble(getIInAppBillingService()).subscribe(
                     items -> new MaterialDialog.Builder(view.getContext())

@@ -29,7 +29,7 @@ public class MyPreferenceManager implements MyPreferenceManagerModel {
      * check if user joined app vk group each 2 hours
      */
     private static final long PERIOD_BETWEEN_APP_VK_GROUP_JOINED_CHECK_IN_MILLIS = 1000 * 60 * 60 * 2;
-    private static final long PERIOD_BETWEEN_NEED_RELOGIN_POPUP_IN_MILLIS = 1000 * 60 * 5;
+//    private static final long PERIOD_BETWEEN_NEED_RELOGIN_POPUP_IN_MILLIS = 1000 * 60 * 5;
 
     public interface Keys {
         String NIGHT_MODE = "NIGHT_MODE";
@@ -64,7 +64,7 @@ public class MyPreferenceManager implements MyPreferenceManagerModel {
         //        String HAS_LEVEL_UP_INAPP = "HAS_LEVEL_UP_INAPP";
         String APP_VK_GROUP_JOINED_LAST_TIME_CHECKED = "APP_VK_GROUP_JOINED_LAST_TIME_CHECKED";
         String APP_VK_GROUP_JOINED = "APP_VK_GROUP_JOINED";
-        String NEED_RELOGIN_POPUP_LAST_TIME_CHECKED = "NEED_RELOGIN_POPUP_LAST_TIME_CHECKED";
+//        String NEED_RELOGIN_POPUP_LAST_TIME_CHECKED = "NEED_RELOGIN_POPUP_LAST_TIME_CHECKED";
     }
 
     private Gson mGson;
@@ -381,23 +381,23 @@ public class MyPreferenceManager implements MyPreferenceManagerModel {
         return System.currentTimeMillis() - getLastTimeAppVkGroupJoinedChecked() >= PERIOD_BETWEEN_APP_VK_GROUP_JOINED_CHECK_IN_MILLIS;
     }
 
-    public void setLastTimeNeedReloginPopupShown(long timeInMillis) {
-        mPreferences.edit().putLong(Keys.NEED_RELOGIN_POPUP_LAST_TIME_CHECKED, timeInMillis).apply();
-    }
-
-    private long getLastTimeNeedReloginPopupShown() {
-        long timeFromLastShow = mPreferences.getLong(Keys.NEED_RELOGIN_POPUP_LAST_TIME_CHECKED, 0);
-        if (timeFromLastShow == 0) {
-            long curTime = System.currentTimeMillis();
-            setLastTimeAdsShows(curTime);
-            timeFromLastShow = curTime;
-        }
-        return timeFromLastShow;
-    }
-
-    public boolean isTimeToShowNeedReloginPopup() {
-        return System.currentTimeMillis() - getLastTimeNeedReloginPopupShown() >= PERIOD_BETWEEN_NEED_RELOGIN_POPUP_IN_MILLIS;
-    }
+//    public void setLastTimeNeedReloginPopupShown(long timeInMillis) {
+//        mPreferences.edit().putLong(Keys.NEED_RELOGIN_POPUP_LAST_TIME_CHECKED, timeInMillis).apply();
+//    }
+//
+//    private long getLastTimeNeedReloginPopupShown() {
+//        long timeFromLastShow = mPreferences.getLong(Keys.NEED_RELOGIN_POPUP_LAST_TIME_CHECKED, 0);
+//        if (timeFromLastShow == 0) {
+//            long curTime = System.currentTimeMillis();
+//            setLastTimeAdsShows(curTime);
+//            timeFromLastShow = curTime;
+//        }
+//        return timeFromLastShow;
+//    }
+//
+//    public boolean isTimeToShowNeedReloginPopup() {
+//        return System.currentTimeMillis() - getLastTimeNeedReloginPopupShown() >= PERIOD_BETWEEN_NEED_RELOGIN_POPUP_IN_MILLIS;
+//    }
 
     // secure
     public boolean isAppCracked() {

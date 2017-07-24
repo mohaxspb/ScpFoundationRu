@@ -32,9 +32,6 @@ android {
 
         buildConfigField('String', 'SCP_API_URL', '"https://scpfoundation.net/_api/wikidot_tags_search/"')
 
-        //TODO use res to be able to override value
-        buildConfigField('int', 'REALM_VERSION', '3')
-
         //play market refuses not hardcoded strings as intent filter
         resValue('string', 'receiver_action_timer', '"ru.dante.scpfoundation.receivers.ReceiverTimer"')
 //        manifestPlaceholders = [receiver_action_timer: "ru.dante.scpfoundation.receivers.ReceiverTimer"]
@@ -98,6 +95,8 @@ android {
 
             //TODO use firebase remote config for it
             resValue('string', 'non_cracked_user_uid', properties.get("nonCrackedUserUid"))
+
+            resValue('integer', 'realm_version', properties.get("realmVersion"))
         } else {
             throw new GradleException("You need to have apiKeys.properties file in root of project with " +
                     "yandexMetricaApiKey," +
