@@ -2,7 +2,6 @@ package ru.kuchanov.scpcore.ui.activity;
 
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialogFragment;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.MenuItem;
 
@@ -160,41 +159,34 @@ public class MaterialsActivity
         Timber.d("onMaterialsListItemClicked: %s", materials.get(position));
 
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        Fragment fragment;
         switch (position) {
             case 0:
-                fragment = MaterialsExperimentsFragment.newInstance();
-                fragmentTransaction.replace(R.id.content, fragment);
+                fragmentTransaction.replace(R.id.content, MaterialsExperimentsFragment.newInstance());
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
                 break;
             case 1:
-                fragment = MaterialsIncidentsFragment.newInstance();
-                fragmentTransaction.replace(R.id.content, fragment);
+                fragmentTransaction.replace(R.id.content, MaterialsIncidentsFragment.newInstance());
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
                 break;
             case 2:
-                fragment = MaterialsInterviewsFragment.newInstance();
-                fragmentTransaction.replace(R.id.content, fragment);
+                fragmentTransaction.replace(R.id.content,  MaterialsInterviewsFragment.newInstance());
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
                 break;
             case 3:
-                fragment = MaterialsJokesFragment.newInstance();
-                fragmentTransaction.replace(R.id.content, fragment);
+                fragmentTransaction.replace(R.id.content, MaterialsJokesFragment.newInstance());
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
                 break;
             case 4:
-                fragment = MaterialsArchiveFragment.newInstance();
-                fragmentTransaction.replace(R.id.content, fragment);
+                fragmentTransaction.replace(R.id.content, MaterialsArchiveFragment.newInstance());
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
                 break;
             case 5:
-                fragment = MaterialsOtherFragment.newInstance();
-                fragmentTransaction.replace(R.id.content, fragment);
+                fragmentTransaction.replace(R.id.content, MaterialsOtherFragment.newInstance());
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
                 break;

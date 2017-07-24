@@ -11,6 +11,7 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import ru.kuchanov.scpcore.R;
 import ru.kuchanov.scpcore.mvp.contract.MaterialsScreenMvp;
@@ -35,7 +36,7 @@ public class MaterialsAllFragment extends Fragment {
         View v = new ListView(getActivity());
         ListView listView = (ListView) v;
         String[] materialsTitles = getResources().getStringArray(R.array.materials_titles);
-        final ArrayList<String> materialsTitlesList = new ArrayList<>(Arrays.asList(materialsTitles));
+        List<String> materialsTitlesList = new ArrayList<>(Arrays.asList(materialsTitles));
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this.getActivity(),
                 R.layout.article_item_text, materialsTitlesList);
         listView.setAdapter(adapter);
