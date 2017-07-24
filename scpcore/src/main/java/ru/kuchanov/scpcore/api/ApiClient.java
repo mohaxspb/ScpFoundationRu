@@ -231,56 +231,62 @@ public class ApiClient implements ApiClientModel<Article> {
             try {
                 Document doc = Jsoup.parse(responseBody);
 
-                Element pageContent = doc.getElementsByClass("wiki-content-table").first();
-                if (pageContent == null) {
-                    subscriber.onError(new ScpParseException(BaseApplication.getAppInstance().getString(R.string.error_parse)));
-                    return;
-                }
+                List<Article> articles = parseForRecentArticles(doc);
 
-                List<Article> articles = new ArrayList<>();
-                Elements listOfElements = pageContent.getElementsByTag("tr");
-                for (int i = 1/*start from 1 as first row is tables geader*/; i < listOfElements.size(); i++) {
-                    Element tableRow = listOfElements.get(i);
-                    Elements listOfTd = tableRow.getElementsByTag("td");
-                    //title and url
-                    Element firstTd = listOfTd.first();
-                    Element tagA = firstTd.getElementsByTag("a").first();
-                    String title = tagA.text();
-                    String url = mConstantValues.getUrlsValues().getBaseApiUrl() + tagA.attr("href");
-                    //rating
-                    Element ratingNode = listOfTd.get(1);
-                    int rating = Integer.parseInt(ratingNode.text());
-                    //author
-                    Element spanWithAuthor = listOfTd.get(2)
-                            .getElementsByAttributeValueContaining("class", "printuser").first();
-                    String authorName = spanWithAuthor.text();
-                    Element authorUrlNode = spanWithAuthor.getElementsByTag("a").first();
-                    String authorUrl = authorUrlNode != null ? authorUrlNode.attr("href") : null;
-
-                    //createdDate
-                    Element createdDateNode = listOfTd.get(3);
-                    String createdDate = createdDateNode.text().trim();
-                    //updatedDate
-                    Element updatedDateNode = listOfTd.get(4);
-                    String updatedDate = updatedDateNode.text().trim();
-
-                    Article article = new Article();
-                    article.title = title;
-                    article.url = url.trim();
-                    article.rating = rating;
-                    article.authorName = authorName;
-                    article.authorUrl = authorUrl;
-                    article.createdDate = createdDate;
-                    article.updatedDate = updatedDate;
-                    articles.add(article);
-                }
                 subscriber.onNext(articles);
                 subscriber.onCompleted();
-            } catch (Exception e) {
+            } catch (Exception | ScpParseException e) {
                 Timber.e(e, "error while get arts list");
                 subscriber.onError(e);
             }
         }));
+    }
+
+    protected List<Article> parseForRecentArticles(Document doc) throws ScpParseException {
+        Element pageContent = doc.getElementsByClass("wiki-content-table").first();
+        if (pageContent == null) {
+            throw new ScpParseException(BaseApplication.getAppInstance().getString(R.string.error_parse));
+        }
+
+        List<Article> articles = new ArrayList<>();
+        Elements listOfElements = pageContent.getElementsByTag("tr");
+        for (int i = 1/*start from 1 as first row is tables geader*/; i < listOfElements.size(); i++) {
+            Element tableRow = listOfElements.get(i);
+            Elements listOfTd = tableRow.getElementsByTag("td");
+            //title and url
+            Element firstTd = listOfTd.first();
+            Element tagA = firstTd.getElementsByTag("a").first();
+            String title = tagA.text();
+            String url = mConstantValues.getUrlsValues().getBaseApiUrl() + tagA.attr("href");
+            //rating
+            Element ratingNode = listOfTd.get(1);
+            int rating = Integer.parseInt(ratingNode.text());
+            //author
+            Element spanWithAuthor = listOfTd.get(2)
+                    .getElementsByAttributeValueContaining("class", "printuser").first();
+            String authorName = spanWithAuthor.text();
+            Element authorUrlNode = spanWithAuthor.getElementsByTag("a").first();
+            String authorUrl = authorUrlNode != null ? authorUrlNode.attr("href") : null;
+
+            //createdDate
+            Element createdDateNode = listOfTd.get(3);
+            String createdDate = createdDateNode.text().trim();
+            //updatedDate
+            Element updatedDateNode = listOfTd.get(4);
+            String updatedDate = updatedDateNode.text().trim();
+
+            Article article = new Article();
+            article.title = title;
+            article.url = url.trim();
+            article.rating = rating;
+            article.authorName = authorName;
+            article.authorUrl = authorUrl;
+            article.createdDate = createdDate;
+            article.updatedDate = updatedDate;
+            articles.add(article);
+        }
+
+        return articles;
     }
 
     public Observable<List<Article>> getRatedArticles(int offset) {
@@ -307,44 +313,50 @@ public class ApiClient implements ApiClientModel<Article> {
             }
             try {
                 Document doc = Jsoup.parse(responseBody);
-                Element pageContent = doc.getElementById("page-content");
-                if (pageContent == null) {
-                    subscriber.onError(new ScpParseException(BaseApplication.getAppInstance().getString(R.string.error_parse)));
-                    return;
-                }
-                Element listPagesBox = pageContent.getElementsByClass("list-pages-box").first();
-                if (listPagesBox == null) {
-                    subscriber.onError(new ScpParseException(BaseApplication.getAppInstance().getString(R.string.error_parse)));
-                    return;
-                }
 
-                List<Article> articles = new ArrayList<>();
-                List<Element> listOfElements = listPagesBox.getElementsByClass("list-pages-item");
-                for (Element element : listOfElements) {
-//                    Timber.d("element: %s", element);
-                    Element tagP = element.getElementsByTag("p").first();
-                    Element tagA = tagP.getElementsByTag("a").first();
-                    String title = tagP.text().substring(0, tagP.text().indexOf(", рейтинг"));
-                    String url = mConstantValues.getUrlsValues().getBaseApiUrl() + tagA.attr("href");
-                    //remove a tag to leave only text with rating
-                    tagA.remove();
-                    tagP.text(tagP.text().replace(", рейтинг ", ""));
-                    tagP.text(tagP.text().substring(0, tagP.text().length() - 1));
-                    int rating = Integer.parseInt(tagP.text());
+                List<Article> articles = parseForRatedArticles(doc);
 
-                    Article article = new Article();
-                    article.title = title;
-                    article.url = url;
-                    article.rating = rating;
-                    articles.add(article);
-                }
                 subscriber.onNext(articles);
                 subscriber.onCompleted();
-            } catch (Exception e) {
+            } catch (Exception | ScpParseException e) {
                 Timber.e(e, "error while get arts list");
                 subscriber.onError(e);
             }
         }));
+    }
+
+    protected List<Article> parseForRatedArticles(Document doc) throws ScpParseException {
+        Element pageContent = doc.getElementById("page-content");
+        if (pageContent == null) {
+            throw new ScpParseException(BaseApplication.getAppInstance().getString(R.string.error_parse));
+        }
+        Element listPagesBox = pageContent.getElementsByClass("list-pages-box").first();
+        if (listPagesBox == null) {
+            throw new ScpParseException(BaseApplication.getAppInstance().getString(R.string.error_parse));
+        }
+
+        List<Article> articles = new ArrayList<>();
+        List<Element> listOfElements = listPagesBox.getElementsByClass("list-pages-item");
+        for (Element element : listOfElements) {
+//                    Timber.d("element: %s", element);
+            Element tagP = element.getElementsByTag("p").first();
+            Element tagA = tagP.getElementsByTag("a").first();
+            String title = tagP.text().substring(0, tagP.text().indexOf(", рейтинг"));
+            String url = mConstantValues.getUrlsValues().getBaseApiUrl() + tagA.attr("href");
+            //remove a tag to leave only text with rating
+            tagA.remove();
+            tagP.text(tagP.text().replace(", рейтинг ", ""));
+            tagP.text(tagP.text().substring(0, tagP.text().length() - 1));
+            int rating = Integer.parseInt(tagP.text());
+
+            Article article = new Article();
+            article.title = title;
+            article.url = url;
+            article.rating = rating;
+            articles.add(article);
+        }
+
+        return articles;
     }
 
     public Observable<List<Article>> getSearchArticles(int offset, String searchQuery) {
