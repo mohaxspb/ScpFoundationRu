@@ -12,8 +12,10 @@ import ru.kuchanov.scpcore.db.DbProviderFactory;
 import ru.kuchanov.scpcore.db.model.Article;
 import ru.kuchanov.scpcore.manager.MyPreferenceManager;
 import ru.kuchanov.scpcore.service.DownloadAllServiceDefault;
+import ru.kuchanov.scpcore.ui.activity.MaterialsActivity;
 import ru.kuchanov.scpcore.ui.util.DialogUtils;
 import ru.kuchanov.scpcore.ui.util.DownloadAllChooserDefault;
+import ru.kuchanov.scpcore.ui.util.MaterialClickListenerDefault;
 import ru.kuchanov.scpcore.ui.util.SetTextViewHTML;
 
 /**
@@ -59,5 +61,16 @@ public class HelpersModule {
     @Singleton
     SetTextViewHTML providesSetTextViewHTML(@NonNull ConstantValues constantValues) {
         return new SetTextViewHTML(constantValues);
+    }
+
+    @Provides
+    @NonNull
+    @Singleton
+    MaterialsActivity.MaterialClickListener providesMaterialClickListener(@NonNull ConstantValues constantValues) {
+        return getMaterialClickListenerImpl(constantValues);
+    }
+
+    protected MaterialsActivity.MaterialClickListener getMaterialClickListenerImpl(@NonNull ConstantValues constantValues) {
+        return new MaterialClickListenerDefault(constantValues);
     }
 }

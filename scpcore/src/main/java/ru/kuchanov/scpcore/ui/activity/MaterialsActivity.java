@@ -2,27 +2,23 @@ package ru.kuchanov.scpcore.ui.activity;
 
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialogFragment;
-import android.support.v4.app.FragmentTransaction;
 import android.view.MenuItem;
 
 import java.util.Arrays;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import ru.kuchanov.scpcore.BaseApplication;
 import ru.kuchanov.scpcore.Constants;
 import ru.kuchanov.scpcore.R;
 import ru.kuchanov.scpcore.mvp.contract.DataSyncActions;
 import ru.kuchanov.scpcore.mvp.contract.MaterialsScreenMvp;
+import ru.kuchanov.scpcore.ui.base.BaseActivity;
 import ru.kuchanov.scpcore.ui.base.BaseDrawerActivity;
 import ru.kuchanov.scpcore.ui.dialog.TextSizeDialogFragment;
 import ru.kuchanov.scpcore.ui.fragment.ArticleFragment;
 import ru.kuchanov.scpcore.ui.fragment.MaterialsAllFragment;
-import ru.kuchanov.scpcore.ui.fragment.MaterialsArchiveFragment;
-import ru.kuchanov.scpcore.ui.fragment.MaterialsExperimentsFragment;
-import ru.kuchanov.scpcore.ui.fragment.MaterialsIncidentsFragment;
-import ru.kuchanov.scpcore.ui.fragment.MaterialsInterviewsFragment;
-import ru.kuchanov.scpcore.ui.fragment.MaterialsJokesFragment;
-import ru.kuchanov.scpcore.ui.fragment.MaterialsOtherFragment;
 import timber.log.Timber;
 
 import static ru.kuchanov.scpcore.ui.activity.MainActivity.EXTRA_SHOW_DISABLE_ADS;
@@ -30,6 +26,9 @@ import static ru.kuchanov.scpcore.ui.activity.MainActivity.EXTRA_SHOW_DISABLE_AD
 public class MaterialsActivity
         extends BaseDrawerActivity<MaterialsScreenMvp.View, MaterialsScreenMvp.Presenter>
         implements MaterialsScreenMvp.View, ArticleFragment.ToolbarStateSetter {
+
+    @Inject
+    MaterialsActivity.MaterialClickListener mMaterialClickListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -158,44 +157,46 @@ public class MaterialsActivity
         List<String> materials = Arrays.asList(getResources().getStringArray(R.array.materials_titles));
         Timber.d("onMaterialsListItemClicked: %s", materials.get(position));
 
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        switch (position) {
-            case 0:
-                fragmentTransaction.replace(R.id.content, MaterialsExperimentsFragment.newInstance());
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
-                break;
-            case 1:
-                fragmentTransaction.replace(R.id.content, MaterialsIncidentsFragment.newInstance());
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
-                break;
-            case 2:
-                fragmentTransaction.replace(R.id.content,  MaterialsInterviewsFragment.newInstance());
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
-                break;
-            case 3:
-                fragmentTransaction.replace(R.id.content, MaterialsJokesFragment.newInstance());
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
-                break;
-            case 4:
-                fragmentTransaction.replace(R.id.content, MaterialsArchiveFragment.newInstance());
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
-                break;
-            case 5:
-                fragmentTransaction.replace(R.id.content, MaterialsOtherFragment.newInstance());
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
-                break;
-            case 6:
-                startArticleActivity(Constants.Urls.LEAKS);
-                break;
-            default:
-                throw new RuntimeException("unexpected position in materials list");
-        }
+        mMaterialClickListener.onMaterialClick(position, this);
+
+//        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+//        switch (position) {
+//            case 0:
+//                fragmentTransaction.replace(R.id.content, MaterialsExperimentsFragment.newInstance());
+//                fragmentTransaction.addToBackStack(null);
+//                fragmentTransaction.commit();
+//                break;
+//            case 1:
+//                fragmentTransaction.replace(R.id.content, MaterialsIncidentsFragment.newInstance());
+//                fragmentTransaction.addToBackStack(null);
+//                fragmentTransaction.commit();
+//                break;
+//            case 2:
+//                fragmentTransaction.replace(R.id.content,  MaterialsInterviewsFragment.newInstance());
+//                fragmentTransaction.addToBackStack(null);
+//                fragmentTransaction.commit();
+//                break;
+//            case 3:
+//                fragmentTransaction.replace(R.id.content, MaterialsJokesFragment.newInstance());
+//                fragmentTransaction.addToBackStack(null);
+//                fragmentTransaction.commit();
+//                break;
+//            case 4:
+//                fragmentTransaction.replace(R.id.content, MaterialsArchiveFragment.newInstance());
+//                fragmentTransaction.addToBackStack(null);
+//                fragmentTransaction.commit();
+//                break;
+//            case 5:
+//                fragmentTransaction.replace(R.id.content, MaterialsOtherFragment.newInstance());
+//                fragmentTransaction.addToBackStack(null);
+//                fragmentTransaction.commit();
+//                break;
+//            case 6:
+//                startArticleActivity(Constants.Urls.LEAKS);
+//                break;
+//            default:
+//                throw new RuntimeException("unexpected position in materials list");
+//        }
     }
 
     @Override
@@ -205,5 +206,9 @@ public class MaterialsActivity
         } else {
             super.onBackPressed();
         }
+    }
+
+    public interface MaterialClickListener {
+        void onMaterialClick(int position, BaseActivity activity);
     }
 }

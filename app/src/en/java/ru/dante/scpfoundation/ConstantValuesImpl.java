@@ -69,7 +69,7 @@ public class ConstantValuesImpl implements ConstantValues {
 
         @Override
         public String getExperiments() {
-            return null;
+            return Urls.SCP_EX;
         }
 
         @Override
@@ -77,9 +77,13 @@ public class ConstantValuesImpl implements ConstantValues {
             return Urls.INCEDENTS;
         }
 
+        /**
+         *
+         * @return #Urls.EVENTS
+         */
         @Override
         public String getInterviews() {
-            return null;
+            return Urls.EVENTS;
         }
 
         @Override

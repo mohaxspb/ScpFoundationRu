@@ -33,4 +33,9 @@ public class HelpersModuleImpl extends HelpersModule {
                 DownloadAllServiceImpl.class
         );
     }
+
+    @Override
+    protected MaterialsActivity.MaterialClickListener getMaterialClickListenerImpl(@NonNull ConstantValues constantValues) {
+        return new MaterialClickListenerImpl(constantValues);
+    }
 }
