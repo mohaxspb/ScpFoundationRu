@@ -857,4 +857,31 @@ public class DbProvider implements DbProviderModel<Article> {
                 })
         );
     }
+
+    public Observable<List<Article>> insertRestoredArticlesSync(List<Article> articles) {
+        return Observable.unsafeCreate(subscriber -> {
+            mRealm.executeTransaction(
+                    realm -> {
+                        for (Article article : articles) {
+                            Article articleInDb = realm.where(Article.class)
+                                    .equalTo(Article.FIELD_URL, article.url)
+                                    .findFirst();
+                            if (articleInDb != null) {
+                                articleInDb.isInFavorite = (long) realm.where(Article.class)
+                                        .max(Article.FIELD_IS_IN_FAVORITE) + 1;
+                                if (article.isInReaden) {
+                                    articleInDb.isInReaden = true;
+                                }
+                                articleInDb.synced = Article.SYNCED_NEED;
+                            } else {
+                                article.synced = Article.SYNCED_NEED;
+                                realm.insertOrUpdate(article);
+                            }
+                        }
+                    });
+            mRealm.close();
+            subscriber.onNext(articles);
+            subscriber.onCompleted();
+        });
+    }
 }

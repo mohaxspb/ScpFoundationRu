@@ -64,6 +64,7 @@ public class MyPreferenceManager implements MyPreferenceManagerModel {
         //        String HAS_LEVEL_UP_INAPP = "HAS_LEVEL_UP_INAPP";
         String APP_VK_GROUP_JOINED_LAST_TIME_CHECKED = "APP_VK_GROUP_JOINED_LAST_TIME_CHECKED";
         String APP_VK_GROUP_JOINED = "APP_VK_GROUP_JOINED";
+        String DATA_RESTORED = "DATA_RESTORED";
 //        String NEED_RELOGIN_POPUP_LAST_TIME_CHECKED = "NEED_RELOGIN_POPUP_LAST_TIME_CHECKED";
     }
 
@@ -415,6 +416,14 @@ public class MyPreferenceManager implements MyPreferenceManagerModel {
 
     public void setLicenceAccepted(boolean accepted) {
         mPreferences.edit().putBoolean(Keys.LICENCE_ACCEPTED, accepted).apply();
+    }
+
+    public boolean isDataRestored() {
+        return mPreferences.getBoolean(Keys.DATA_RESTORED, false);
+    }
+
+    public void setDataIsRestored(boolean restored) {
+        mPreferences.edit().putBoolean(Keys.DATA_RESTORED, restored).apply();
     }
 
     public int getCurAppVersion() {

@@ -6,6 +6,9 @@
     <string name="social_provider_google_title" translatable="false">Google</string>
     <string name="feedback_email" translatable="false">neva.spb.rx@gmail.com</string>
     <string name="image_title" translatable="false">scp_image</string>
+
+    <string name="pref_favorites" translatable="false">pref_favorites</string>
+    <string name="read_articles" translatable="false">read_articles</string>
     <!--drawer items-->
     <string name="drawer_item_1">Об организации</string>
     <string name="drawer_item_2">Новости</string>

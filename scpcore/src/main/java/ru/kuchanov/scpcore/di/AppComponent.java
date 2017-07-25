@@ -20,6 +20,7 @@ import ru.kuchanov.scpcore.ui.activity.GalleryActivity;
 import ru.kuchanov.scpcore.ui.activity.LicenceActivity;
 import ru.kuchanov.scpcore.ui.activity.MainActivity;
 import ru.kuchanov.scpcore.ui.activity.MaterialsActivity;
+import ru.kuchanov.scpcore.ui.activity.SplashActivity;
 import ru.kuchanov.scpcore.ui.activity.TagSearchActivity;
 import ru.kuchanov.scpcore.ui.adapter.ArticleRecyclerAdapter;
 import ru.kuchanov.scpcore.ui.adapter.ArticlesListRecyclerAdapter;
@@ -79,6 +80,8 @@ public interface AppComponent {
     void inject(GalleryActivity activity);
 
     void inject(TagSearchActivity activity);
+
+    void inject(SplashActivity activity);
 
     void inject(ArticleFragment fragment);
 
