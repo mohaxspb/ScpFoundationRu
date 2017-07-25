@@ -75,7 +75,7 @@ public class ArticlesListRecyclerAdapter extends RecyclerView.Adapter<HolderSimp
 
     protected List<Article> mData;
 
-    List<Article> mSortedWithFilterData = new ArrayList<>();
+    protected List<Article> mSortedWithFilterData = new ArrayList<>();
 
     private SortType mSortType = SortType.NONE;
 

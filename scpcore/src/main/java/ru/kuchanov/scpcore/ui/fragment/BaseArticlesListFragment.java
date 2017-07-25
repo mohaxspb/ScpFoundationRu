@@ -106,7 +106,7 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
     public boolean onOptionsItemSelected(MenuItem item) {
         int i = item.getItemId();
         if (i == R.id.menuItemSort) {
-            final List<ArticlesListRecyclerAdapter.SortType> sortTypes = Arrays.asList(ArticlesListRecyclerAdapter.SortType.values());
+            List<ArticlesListRecyclerAdapter.SortType> sortTypes = Arrays.asList(ArticlesListRecyclerAdapter.SortType.values());
             new MaterialDialog.Builder(getActivity())
                     .title(R.string.dialog_sort_title)
                     .items(sortTypes)

@@ -1,5 +1,6 @@
 package ru.kuchanov.scpcore.db;
 
+import android.text.TextUtils;
 import android.util.Pair;
 
 import com.facebook.login.LoginManager;
@@ -449,32 +450,35 @@ public class DbProvider implements DbProviderModel<Article> {
         Timber.d("insert/update: %s/%s", article.title, sdf.format(timeStamp));
 
         //check if we have app in db and update
-        Article applicationInDb = realm.where(Article.class)
+        Article articleInDb = realm.where(Article.class)
                 .equalTo(Article.FIELD_URL, article.url)
                 .findFirst();
-        if (applicationInDb != null) {
-            applicationInDb = realm.copyFromRealm(applicationInDb);
-            applicationInDb.text = article.text;
-            applicationInDb.title = article.title;
+        if (articleInDb != null) {
+            articleInDb = realm.copyFromRealm(articleInDb);
+            articleInDb.text = article.text;
+//            articleInDb.title = article.title;
+            if (TextUtils.isEmpty(articleInDb.title) || articleInDb.title.length() < article.title.length()) {
+                articleInDb.title = article.title;
+            }
             //tabs
-            applicationInDb.hasTabs = article.hasTabs;
-            applicationInDb.tabsTitles = article.tabsTitles;
-            applicationInDb.tabsTexts = article.tabsTexts;
+            articleInDb.hasTabs = article.hasTabs;
+            articleInDb.tabsTitles = article.tabsTitles;
+            articleInDb.tabsTexts = article.tabsTexts;
             //textParts
-            applicationInDb.textParts = article.textParts;
-            applicationInDb.textPartsTypes = article.textPartsTypes;
+            articleInDb.textParts = article.textParts;
+            articleInDb.textPartsTypes = article.textPartsTypes;
             //images
-            applicationInDb.imagesUrls = article.imagesUrls;
+            articleInDb.imagesUrls = article.imagesUrls;
             //update localUpdateTimeStamp to be able to sort arts by this value
-            applicationInDb.localUpdateTimeStamp = timeStamp;
+            articleInDb.localUpdateTimeStamp = timeStamp;
 
 //            if (article.tags != null && !article.tags.isEmpty()) {
-            applicationInDb.tags.clear();
-            applicationInDb.tags = article.tags;
+            articleInDb.tags.clear();
+            articleInDb.tags = article.tags;
 //            }
 
             //update it in DB such way, as we add unmanaged items
-            realm.insertOrUpdate(applicationInDb);
+            realm.insertOrUpdate(articleInDb);
         } else {
             //update localUpdateTimeStamp to be able to sort arts by this value
             article.localUpdateTimeStamp = timeStamp;
@@ -486,19 +490,19 @@ public class DbProvider implements DbProviderModel<Article> {
         return Observable.unsafeCreate(subscriber -> mRealm.executeTransactionAsync(
                 realm -> {
                     //check if we have app in db and update
-                    Article applicationInDb = realm.where(Article.class)
+                    Article articleInDb = realm.where(Article.class)
                             .equalTo(Article.FIELD_URL, url)
                             .findFirst();
-                    if (applicationInDb != null) {
-                        if (applicationInDb.isInFavorite == Article.ORDER_NONE) {
-                            applicationInDb.isInFavorite = (long) realm.where(Article.class)
+                    if (articleInDb != null) {
+                        if (articleInDb.isInFavorite == Article.ORDER_NONE) {
+                            articleInDb.isInFavorite = (long) realm.where(Article.class)
 //                                        .notEqualTo(Article.FIELD_IS_IN_FAVORITE, Article.ORDER_NONE)
                                     .max(Article.FIELD_IS_IN_FAVORITE) + 1;
                         } else {
-                            applicationInDb.isInFavorite = Article.ORDER_NONE;
+                            articleInDb.isInFavorite = Article.ORDER_NONE;
                         }
 
-                        subscriber.onNext(realm.copyFromRealm(applicationInDb));
+                        subscriber.onNext(realm.copyFromRealm(articleInDb));
                         subscriber.onCompleted();
                     } else {
                         Timber.e("No article to add to favorites for ID: %s", url);
@@ -509,8 +513,8 @@ public class DbProvider implements DbProviderModel<Article> {
                     subscriber.onCompleted();
                     mRealm.close();
                 },
-                error -> {
-                    subscriber.onError(error);
+                e -> {
+                    subscriber.onError(e);
                     mRealm.close();
                 }));
     }
@@ -556,16 +560,16 @@ public class DbProvider implements DbProviderModel<Article> {
         return Observable.unsafeCreate(subscriber -> mRealm.executeTransactionAsync(
                 realm -> {
                     //check if we have app in db and update
-                    Article applicationInDb = realm.where(Article.class)
+                    Article articleInDb = realm.where(Article.class)
                             .equalTo(Article.FIELD_URL, url)
                             .findFirst();
-                    if (applicationInDb != null) {
-                        applicationInDb.text = null;
-                        applicationInDb.textParts = null;
-                        applicationInDb.textPartsTypes = null;
-                        applicationInDb.hasTabs = false;
-                        applicationInDb.tabsTexts = null;
-                        applicationInDb.tabsTitles = null;
+                    if (articleInDb != null) {
+                        articleInDb.text = null;
+                        articleInDb.textParts = null;
+                        articleInDb.textPartsTypes = null;
+                        articleInDb.hasTabs = false;
+                        articleInDb.tabsTexts = null;
+                        articleInDb.tabsTitles = null;
 
                         subscriber.onNext(url);
                         subscriber.onCompleted();
@@ -608,8 +612,8 @@ public class DbProvider implements DbProviderModel<Article> {
                     subscriber.onCompleted();
                     mRealm.close();
                 },
-                error -> {
-                    subscriber.onError(error);
+                e -> {
+                    subscriber.onError(e);
                     mRealm.close();
                 }));
     }
@@ -636,8 +640,8 @@ public class DbProvider implements DbProviderModel<Article> {
                     subscriber.onCompleted();
                     mRealm.close();
                 },
-                error -> {
-                    subscriber.onError(error);
+                e -> {
+                    subscriber.onError(e);
                     mRealm.close();
                 }));
     }
@@ -675,8 +679,8 @@ public class DbProvider implements DbProviderModel<Article> {
                     subscriber.onCompleted();
                     mRealm.close();
                 },
-                error -> {
-                    subscriber.onError(error);
+                e -> {
+                    subscriber.onError(e);
                     mRealm.close();
                 }));
     }
@@ -731,9 +735,9 @@ public class DbProvider implements DbProviderModel<Article> {
                     subscriber.onNext(inFirebaseList);
                     subscriber.onCompleted();
                 },
-                error -> {
+                e -> {
                     mRealm.close();
-                    subscriber.onError(error);
+                    subscriber.onError(e);
                 })
         );
     }
@@ -847,9 +851,9 @@ public class DbProvider implements DbProviderModel<Article> {
                     subscriber.onNext(data);
                     subscriber.onCompleted();
                 },
-                error -> {
+                e -> {
                     mRealm.close();
-                    subscriber.onError(error);
+                    subscriber.onError(e);
                 })
         );
     }
