@@ -223,7 +223,10 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
     @Override
     public void showLoginProvidersPopup() {
         MaterialDialog dialog;
-        List<Constants.Firebase.SocialProvider> providers = Arrays.asList(Constants.Firebase.SocialProvider.values());
+        List<Constants.Firebase.SocialProvider> providers = new ArrayList<>(Arrays.asList(Constants.Firebase.SocialProvider.values()));
+        if(!getResources().getBoolean(R.bool.social_login_vk_enabled)){
+            providers.remove(Constants.Firebase.SocialProvider.VK);
+        }
         SocialLoginAdapter adapter = new SocialLoginAdapter();
         dialog = new MaterialDialog.Builder(this)
                 .title(R.string.dialog_social_login_title)
@@ -235,7 +238,7 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
             startLogin(data.getSocialProvider());
             dialog.dismiss();
         });
-        adapter.setData(SocialLoginHolder.SocialLoginModel.getModels());
+        adapter.setData(SocialLoginHolder.SocialLoginModel.getModels(providers));
         dialog.getRecyclerView().setOverScrollMode(View.OVER_SCROLL_NEVER);
         dialog.show();
     }

@@ -99,6 +99,8 @@ android {
             resValue('integer', 'realm_version', properties.get("realmVersion"))
 
             resValue('bool', 'filter_by_type_enabled', properties.get("filterByTypeEnabled"))
+
+            resValue('bool', 'social_login_vk_enabled', properties.get("socialLoginVkEnabled"))
         } else {
             throw new GradleException("You need to have apiKeys.properties file in root of project with " +
                     "yandexMetricaApiKey," +

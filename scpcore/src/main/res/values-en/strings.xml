@@ -174,7 +174,7 @@
     <!--<string name="i_read_and_accept">I\'ve read and understood</string>-->
     <!--<string name="relogin">Log in</string>-->
     <string name="warning">Attention!</string>
-    <string name="dialog_logout_content">When you logout the account, all articles you have selected will be reset! Make sure you synchronized. You can perform the synchronization in Settings..</string>
+    <string name="dialog_logout_content">When you logout the account, all articles you have selected will be reset! Make sure you synchronized. You can perform the synchronization in Settings.</string>
     <string name="logout">Logout</string>
     <string name="error_getting_path_to_image">The image could not be saved.Please try again.</string>
     <string name="faq">FAQ</string>

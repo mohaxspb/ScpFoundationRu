@@ -128,7 +128,6 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
             mNavigationView.getMenu().setGroupCheckable(0, false, true);
         }
 
-//        onGetUserFromDB(mPresenter.getUser());
         updateUser(mPresenter.getUser());
     }
 

@@ -65,9 +65,17 @@ public class SocialLoginHolder
             return new SocialLoginModel(socialProvider);
         }
 
-        public static List<SocialLoginModel> getModels() {
+//        public static List<SocialLoginModel> getModels() {
+//            List<SocialLoginModel> models = new ArrayList<>();
+//            for (Constants.Firebase.SocialProvider provider : Constants.Firebase.SocialProvider.values()) {
+//                models.add(getModelForProvider(provider));
+//            }
+//            return models;
+//        }
+
+        public static List<SocialLoginModel> getModels(List<Constants.Firebase.SocialProvider> providers) {
             List<SocialLoginModel> models = new ArrayList<>();
-            for (Constants.Firebase.SocialProvider provider : Constants.Firebase.SocialProvider.values()) {
+            for (Constants.Firebase.SocialProvider provider : providers) {
                 models.add(getModelForProvider(provider));
             }
             return models;
