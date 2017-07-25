@@ -456,7 +456,7 @@ public class ApiClient implements ApiClientModel<Article> {
         }));
     }
 
-    protected List<Article> parseForObjectArticles(Document doc) throws ScpParseException{
+    protected List<Article> parseForObjectArticles(Document doc) throws ScpParseException {
         Element pageContent = doc.getElementById("page-content");
         if (pageContent == null) {
             throw new ScpParseException(BaseApplication.getAppInstance().getString(R.string.error_parse));
@@ -1864,7 +1864,11 @@ public class ApiClient implements ApiClientModel<Article> {
     }
 
     public Observable<LeaderBoardResponse> getLeaderboard() {
-        return bindWithUtils(mVpsServer.getLeaderboard());
+        return bindWithUtils(mVpsServer.getLeaderboard(getAppLang()));
+    }
+
+    protected String getAppLang() {
+        return null;
     }
 
     public Observable<List<Article>> getArticlesByTags(List<ArticleTag> tags) {

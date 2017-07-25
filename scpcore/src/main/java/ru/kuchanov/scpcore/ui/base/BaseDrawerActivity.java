@@ -256,12 +256,8 @@ public abstract class BaseDrawerActivity<V extends DrawerMvp.View, P extends Dra
                                                 .subscribeOn(Schedulers.io())
                                                 .observeOn(AndroidSchedulers.mainThread())
                                                 .subscribe(
-                                                        result -> {
-                                                            Timber.d("consumed result: %s", result);
-                                                        },
-                                                        e -> {
-                                                            Timber.e(e);
-                                                        }
+                                                        result -> Timber.d("consumed result: %s", result),
+                                                        Timber::e
                                                 );
                                     }
                                 } catch (Exception e) {

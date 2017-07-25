@@ -18,14 +18,18 @@ public abstract class BaseDrawerPresenter<V extends DrawerMvp.View>
         extends BaseActivityPresenter<V>
         implements DrawerMvp.Presenter<V> {
 
-    public BaseDrawerPresenter(MyPreferenceManager myPreferencesManager, DbProviderFactory dbProviderFactory, ApiClient apiClient) {
+    public BaseDrawerPresenter(
+            MyPreferenceManager myPreferencesManager,
+            DbProviderFactory dbProviderFactory,
+            ApiClient apiClient
+    ) {
         super(myPreferencesManager, dbProviderFactory, apiClient);
     }
 
     @Override
     public void getRandomArticleUrl() {
-        getView().showProgressDialog(true);
         Timber.d("getRandomArticle");
+        getView().showProgressDialog(true);
         mApiClient.getRandomUrl()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -34,9 +38,9 @@ public abstract class BaseDrawerPresenter<V extends DrawerMvp.View>
                             getView().showProgressDialog(false);
                             getView().onReceiveRandomUrl(url);
                         },
-                        error -> {
+                        e -> {
                             getView().showProgressDialog(false);
-                            getView().showError(error);
+                            getView().showError(e);
                         }
                 );
     }

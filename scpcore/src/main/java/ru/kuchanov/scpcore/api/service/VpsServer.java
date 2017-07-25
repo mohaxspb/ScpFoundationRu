@@ -1,6 +1,7 @@
 package ru.kuchanov.scpcore.api.service;
 
 import retrofit2.http.GET;
+import retrofit2.http.Query;
 import ru.kuchanov.scpcore.api.model.response.LeaderBoardResponse;
 import rx.Observable;
 
@@ -12,5 +13,5 @@ import rx.Observable;
 public interface VpsServer {
 
     @GET("LeaderBoard")
-    Observable<LeaderBoardResponse> getLeaderboard();
+    Observable<LeaderBoardResponse> getLeaderboard(@Query("lang") String lang);
 }

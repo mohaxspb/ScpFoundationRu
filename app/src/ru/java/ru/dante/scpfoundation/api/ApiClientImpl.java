@@ -109,4 +109,9 @@ public class ApiClientImpl extends ApiClient {
     protected String getScpServerWiki() {
         return "scp-ru";
     }
+
+    @Override
+    protected String getAppLang() {
+        return null;
+    }
 }
