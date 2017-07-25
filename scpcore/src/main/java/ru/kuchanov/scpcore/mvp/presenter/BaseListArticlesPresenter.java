@@ -2,8 +2,6 @@ package ru.kuchanov.scpcore.mvp.presenter;
 
 import android.util.Pair;
 
-import com.google.firebase.auth.FirebaseAuth;
-
 import java.util.List;
 
 import io.realm.RealmResults;
@@ -152,10 +150,10 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
 
     @Override
     public void toggleFavoriteState(Article article) {
-        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
-            getView().showNeedLoginPopup();
-            return;
-        }
+//        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+//            getView().showNeedLoginPopup();
+//            return;
+//        }
         if (!article.isValid()) {
             return;
         }
@@ -169,10 +167,10 @@ abstract class BaseListArticlesPresenter<V extends BaseArticlesListMvp.View>
 
     @Override
     public void toggleReadState(Article article) {
-        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
-            getView().showNeedLoginPopup();
-            return;
-        }
+//        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+//            getView().showNeedLoginPopup();
+//            return;
+//        }
         if (!article.isValid()) {
             return;
         }

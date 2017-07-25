@@ -55,7 +55,6 @@ public class ArticleFragment
     public static final String TAG = ArticleFragment.class.getSimpleName();
 
     public static final String EXTRA_URL = "EXTRA_URL";
-//    public static final String EXTRA_ARTICLE = "EXTRA_ARTICLE";
 
     //tabs
     private static final String KEY_CURRENT_SELECTED_TAB = "KEY_CURRENT_SELECTED_TAB";
@@ -92,7 +91,6 @@ public class ArticleFragment
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-//        outState.putParcelable(EXTRA_ARTICLE, Parcels.wrap(mArticle));
         //tabs
         outState.putInt(KEY_CURRENT_SELECTED_TAB, mCurrentSelectedTab);
     }
@@ -103,7 +101,6 @@ public class ArticleFragment
         super.onCreate(savedInstanceState);
         url = getArguments().getString(EXTRA_URL);
         if (savedInstanceState != null) {
-//            mArticle = Parcels.unwrap(savedInstanceState.getParcelable(EXTRA_ARTICLE));
             mCurrentSelectedTab = savedInstanceState.getInt(KEY_CURRENT_SELECTED_TAB);
         }
 

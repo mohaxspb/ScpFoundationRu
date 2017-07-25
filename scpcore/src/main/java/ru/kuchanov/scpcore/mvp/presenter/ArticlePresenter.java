@@ -124,10 +124,10 @@ public class ArticlePresenter
     @Override
     public void setArticleIsReaden(String url) {
         Timber.d("setArticleIsReaden url: %s", url);
-        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
-            getView().showNeedLoginPopup();
-            return;
-        }
+//        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+//            getView().showNeedLoginPopup();
+//            return;
+//        }
         mDbProviderFactory.getDbProvider()
                 .toggleReaden(url)
                 .flatMap(articleUrl -> mDbProviderFactory.getDbProvider().getUnmanagedArticleAsyncOnes(articleUrl))

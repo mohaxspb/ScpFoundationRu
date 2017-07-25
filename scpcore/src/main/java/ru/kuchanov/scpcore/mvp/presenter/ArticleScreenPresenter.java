@@ -1,7 +1,5 @@
 package ru.kuchanov.scpcore.mvp.presenter;
 
-import com.google.firebase.auth.FirebaseAuth;
-
 import ru.kuchanov.scpcore.api.ApiClient;
 import ru.kuchanov.scpcore.db.DbProviderFactory;
 import ru.kuchanov.scpcore.manager.MyPreferenceManager;
@@ -26,10 +24,10 @@ public class ArticleScreenPresenter
     public void toggleFavorite(String url) {
         Timber.d("toggleFavorite url: %s", url);
         //TODO seems to that we can move it to ArticlePresenter
-        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
-            getView().showNeedLoginPopup();
-            return;
-        }
+//        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+//            getView().showNeedLoginPopup();
+//            return;
+//        }
         mDbProviderFactory.getDbProvider().toggleFavorite(url)
                 .flatMap(article1 -> mDbProviderFactory.getDbProvider().setArticleSynced(article1, false))
                 .subscribe(

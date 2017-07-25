@@ -622,18 +622,19 @@ public class DbProvider implements DbProviderModel<Article> {
         return Observable.unsafeCreate(subscriber -> mRealm.executeTransactionAsync(
                 realm -> {
                     realm.delete(User.class);
-                    List<Article> favs = realm.where(Article.class)
-                            .notEqualTo(Article.FIELD_IS_IN_FAVORITE, Article.ORDER_NONE)
-                            .findAll();
-                    for (Article article : favs) {
-                        article.isInFavorite = Article.ORDER_NONE;
-                    }
-                    List<Article> read = realm.where(Article.class)
-                            .equalTo(Article.FIELD_IS_IN_READEN, true)
-                            .findAll();
-                    for (Article article : read) {
-                        article.isInReaden = false;
-                    }
+                    //do not delete it now... As we want to check if it will be better later via Firebase AB testing
+//                    List<Article> favs = realm.where(Article.class)
+//                            .notEqualTo(Article.FIELD_IS_IN_FAVORITE, Article.ORDER_NONE)
+//                            .findAll();
+//                    for (Article article : favs) {
+//                        article.isInFavorite = Article.ORDER_NONE;
+//                    }
+//                    List<Article> read = realm.where(Article.class)
+//                            .equalTo(Article.FIELD_IS_IN_READEN, true)
+//                            .findAll();
+//                    for (Article article : read) {
+//                        article.isInReaden = false;
+//                    }
                 },
                 () -> {
                     subscriber.onNext(null);
