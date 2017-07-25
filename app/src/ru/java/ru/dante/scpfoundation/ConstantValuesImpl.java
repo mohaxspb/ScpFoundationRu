@@ -13,13 +13,11 @@ public class ConstantValuesImpl implements ConstantValues {
 
     @Override
     public ApiValues getApiValues() {
-        Timber.d("getApiValues");
         return new ApiValuesImpl();
     }
 
     @Override
     public UrlsValues getUrlsValues() {
-        Timber.d("getUrlsValues");
         return new UrlsValuesImpl();
     }
 
