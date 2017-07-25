@@ -101,7 +101,7 @@ public class ApiClientImpl extends ApiClient {
                     return;
                 }
             } catch (IOException e) {
-                subscriber.onError(new IOException(BaseApplication.getAppInstance().getString(ru.kuchanov.scpcore.R.string.error_connection)));
+                subscriber.onError(new IOException(BaseApplication.getAppInstance().getString(R.string.error_connection)));
                 return;
             }
             try {

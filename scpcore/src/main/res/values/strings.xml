@@ -225,4 +225,7 @@
         <item quantity="other">%1$d очков</item>
     </plurals>
     <string name="download">Загрузить</string>
+
+    <string name="error_connection">Ошибка соединения</string>
+    <string name="error_parse">Ошибка парсинга HTML</string>
 </resources>
