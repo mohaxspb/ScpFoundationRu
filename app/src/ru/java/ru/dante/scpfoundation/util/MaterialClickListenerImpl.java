@@ -1,9 +1,8 @@
-package ru.kuchanov.scpcore.ui.util;
+package ru.dante.scpfoundation.util;
 
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 
-import ru.kuchanov.scpcore.Constants;
+import ru.kuchanov.scpcore.ConstantValues;
 import ru.kuchanov.scpcore.R;
 import ru.kuchanov.scpcore.ui.activity.MaterialsActivity;
 import ru.kuchanov.scpcore.ui.base.BaseActivity;
@@ -19,11 +18,11 @@ import ru.kuchanov.scpcore.ui.fragment.MaterialsOtherFragment;
  * <p>
  * for ScpFoundationRu
  */
-public class MaterialClickListenerDefault implements MaterialsActivity.MaterialClickListener {
+public class MaterialClickListenerImpl implements MaterialsActivity.MaterialClickListener {
 
     private ConstantValues mConstantValues;
 
-    public MaterialClickListenerDefault(ConstantValues constantValues) {
+    public MaterialClickListenerImpl(ConstantValues constantValues) {
         mConstantValues = constantValues;
     }
 

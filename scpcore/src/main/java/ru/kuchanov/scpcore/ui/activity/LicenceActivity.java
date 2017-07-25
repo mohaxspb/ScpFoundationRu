@@ -23,6 +23,7 @@ import ru.kuchanov.scpcore.BaseApplication;
 import ru.kuchanov.scpcore.R;
 import ru.kuchanov.scpcore.R2;
 import ru.kuchanov.scpcore.manager.MyPreferenceManager;
+import ru.kuchanov.scpcore.util.StorageUtils;
 import timber.log.Timber;
 
 /**
@@ -61,29 +62,12 @@ public class LicenceActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         try {
-            String licence = readFromAssets(this, "licence.txt");
+            String licence = StorageUtils.readFromAssets(this, "licence.txt");
             text.setText(Html.fromHtml(licence));
         } catch (IOException e) {
             Timber.e(e, "error while read licence from file");
             Snackbar.make(mRoot, R.string.error_read_licence, Snackbar.LENGTH_SHORT).show();
         }
-    }
-
-//    protected abstract Class getLaunchActivityClass();
-
-    //TODO move to utils
-    public static String readFromAssets(Context context, String filename) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(context.getAssets().open(filename), "UTF-8"));
-
-        // do reading, usually loop until end of file reading
-        StringBuilder sb = new StringBuilder();
-        String mLine = reader.readLine();
-        while (mLine != null) {
-            sb.append(mLine); // process line
-            mLine = reader.readLine();
-        }
-        reader.close();
-        return sb.toString();
     }
 
     protected Class getLaunchActivityClass() {
