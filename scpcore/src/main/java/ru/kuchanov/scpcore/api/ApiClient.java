@@ -583,10 +583,11 @@ public class ApiClient implements ApiClientModel<Article> {
                 Element spanWithRating = rateDiv.getElementsByClass("rate-points").first();
                 if (spanWithRating != null) {
                     Element ratingSpan = spanWithRating.getElementsByClass("number").first();
-                    Timber.d("ratingSpan: %s", ratingSpan);
+//                    Timber.d("ratingSpan: %s", ratingSpan);
                     if (ratingSpan != null) {
                         try {
                             rating = Integer.parseInt(ratingSpan.text().substring(1, ratingSpan.text().length()));
+//                            Timber.d("rating: %s", rating);
                         } catch (Exception e) {
                             Timber.e(e);
                         }

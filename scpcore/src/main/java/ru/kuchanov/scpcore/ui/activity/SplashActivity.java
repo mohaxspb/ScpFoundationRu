@@ -52,16 +52,19 @@ public class SplashActivity extends AppCompatActivity {
         checkAndRestoreDataIfNeed();
     }
 
-    protected Class getLaunchActivityClass() {
-        if (StorageUtils.fileExistsInAssets("licence.txt")) {
-            return LicenceActivity.class;
-        } else {
-            return MainActivity.class;
-        }
-    }
-
     private void startNextActivity() {
-        startActivity(new Intent(this, getLaunchActivityClass()).putExtra(EXTRA_SHOW_ABOUT, true));
+        Intent intent;
+        if (StorageUtils.fileExistsInAssets("licence.txt") && !mMyPreferenceManager.isLicenceAccepted()) {
+            intent = new Intent(this, LicenceActivity.class);
+        } else {
+            if (!mMyPreferenceManager.isLicenceAccepted()) {
+                intent = new Intent(this, MainActivity.class).putExtra(EXTRA_SHOW_ABOUT, true);
+                mMyPreferenceManager.setLicenceAccepted(true);
+            } else {
+                intent = new Intent(this, MainActivity.class);
+            }
+        }
+        startActivity(intent);
         finishAffinity();
     }
 

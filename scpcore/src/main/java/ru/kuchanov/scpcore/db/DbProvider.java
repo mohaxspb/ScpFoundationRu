@@ -29,11 +29,6 @@ import ru.kuchanov.scpcore.manager.MyPreferenceManager;
 import rx.Observable;
 import timber.log.Timber;
 
-/**
- * Created by y.kuchanov on 21.12.16.
- * <p>
- * for TappAwards
- */
 public class DbProvider implements DbProviderModel<Article> {
 
     private Realm mRealm;
@@ -98,8 +93,9 @@ public class DbProvider implements DbProviderModel<Article> {
                         if (applicationInDb != null) {
                             applicationInDb.isInRecent = offset + i;
 
-                            applicationInDb.rating = applicationToWrite.rating;
-
+                            if (applicationToWrite.rating != 0) {
+                                applicationInDb.rating = applicationToWrite.rating;
+                            }
                             applicationInDb.authorName = applicationToWrite.authorName;
                             applicationInDb.authorUrl = applicationToWrite.authorUrl;
 
@@ -116,8 +112,8 @@ public class DbProvider implements DbProviderModel<Article> {
                     subscriber.onCompleted();
                     mRealm.close();
                 },
-                error -> {
-                    subscriber.onError(error);
+                e -> {
+                    subscriber.onError(e);
                     mRealm.close();
                 }));
     }
@@ -155,8 +151,8 @@ public class DbProvider implements DbProviderModel<Article> {
                     subscriber.onCompleted();
                     mRealm.close();
                 },
-                error -> {
-                    subscriber.onError(error);
+                e -> {
+                    subscriber.onError(e);
                     mRealm.close();
                 }));
     }
@@ -456,9 +452,12 @@ public class DbProvider implements DbProviderModel<Article> {
         if (articleInDb != null) {
             articleInDb = realm.copyFromRealm(articleInDb);
             articleInDb.text = article.text;
-//            articleInDb.title = article.title;
+            //check length as in en site titles in article screen is less that it in articles list
             if (TextUtils.isEmpty(articleInDb.title) || articleInDb.title.length() < article.title.length()) {
                 articleInDb.title = article.title;
+            }
+            if (article.rating != 0) {
+                articleInDb.rating = article.rating;
             }
             //tabs
             articleInDb.hasTabs = article.hasTabs;
@@ -550,8 +549,8 @@ public class DbProvider implements DbProviderModel<Article> {
                     subscriber.onCompleted();
                     mRealm.close();
                 },
-                error -> {
-                    subscriber.onError(error);
+                e -> {
+                    subscriber.onError(e);
                     mRealm.close();
                 }));
     }
