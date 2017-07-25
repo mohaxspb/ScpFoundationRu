@@ -577,14 +577,33 @@ public class ApiClient implements ApiClientModel<Article> {
                 aTag.attr("href", id);
             }
             //remove rating bar
+            int rating = 0;
             Element rateDiv = pageContent.getElementsByClass("page-rate-widget-box").first();
             if (rateDiv != null) {
+                Element spanWithRating = rateDiv.getElementsByClass("rate-points").first();
+                if (spanWithRating != null) {
+                    Element ratingSpan = spanWithRating.getElementsByClass("number").first();
+                    Timber.d("ratingSpan: %s", ratingSpan);
+                    if (ratingSpan != null) {
+                        try {
+                            rating = Integer.parseInt(ratingSpan.text().substring(1, ratingSpan.text().length()));
+                        } catch (Exception e) {
+                            Timber.e(e);
+                        }
+                    }
+                }
+
                 Element span1 = rateDiv.getElementsByClass("rateup").first();
                 span1.remove();
                 Element span2 = rateDiv.getElementsByClass("ratedown").first();
                 span2.remove();
                 Element span3 = rateDiv.getElementsByClass("cancel").first();
                 span3.remove();
+
+                Elements heritageDiv = rateDiv.parent().getElementsByClass("heritage-emblem");
+                if (heritageDiv != null && !heritageDiv.isEmpty()) {
+                    heritageDiv.first().remove();
+                }
             }
             //remove something more
             Element svernut = pageContent.getElementById("toc-action-bar");
@@ -805,6 +824,10 @@ public class ApiClient implements ApiClientModel<Article> {
             article.imagesUrls = imgsUrls;
             //tags
             article.tags = articleTags;
+            //rating
+            if (rating != 0) {
+                article.rating = rating;
+            }
 
             return article;
         } catch (Exception e) {

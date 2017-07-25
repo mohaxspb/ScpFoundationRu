@@ -27,6 +27,8 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
+import static ru.kuchanov.scpcore.ui.activity.LicenceActivity.EXTRA_SHOW_ABOUT;
+
 /**
  * Created by Ivan Semkin on 4/23/2017.
  * <p>
@@ -59,7 +61,7 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void startNextActivity() {
-        startActivity(new Intent(this, getLaunchActivityClass()));
+        startActivity(new Intent(this, getLaunchActivityClass()).putExtra(EXTRA_SHOW_ABOUT, true));
         finishAffinity();
     }
 
