@@ -203,6 +203,10 @@
     </entry>
     <entry>
         <key>gallery_banner_disabled</key>
+        <value>false</value>
+    </entry>
+    <entry>
+        <key>main_banner_disabled</key>
         <value>true</value>
     </entry>
     <entry>

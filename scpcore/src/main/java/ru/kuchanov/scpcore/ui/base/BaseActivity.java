@@ -224,7 +224,7 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
     public void showLoginProvidersPopup() {
         MaterialDialog dialog;
         List<Constants.Firebase.SocialProvider> providers = new ArrayList<>(Arrays.asList(Constants.Firebase.SocialProvider.values()));
-        if(!getResources().getBoolean(R.bool.social_login_vk_enabled)){
+        if (!getResources().getBoolean(R.bool.social_login_vk_enabled)) {
             providers.remove(Constants.Firebase.SocialProvider.VK);
         }
         SocialLoginAdapter adapter = new SocialLoginAdapter();
@@ -457,9 +457,9 @@ public abstract class BaseActivity<V extends BaseActivityMvp.View, P extends Bas
 
     @Override
     public void requestNewInterstitial() {
-        Timber.d("requestNewInterstitial");
-        if (mInterstitialAd.isLoading()) {
-            Timber.d("loading already in progress");
+        Timber.d("requestNewInterstitial loading/loaded: %s/%s", mInterstitialAd.isLoading(), mInterstitialAd.isLoaded());
+        if (mInterstitialAd.isLoading() || mInterstitialAd.isLoaded()) {
+            Timber.d("loading already in progress or already done");
         } else {
             AdRequest.Builder adRequest = new AdRequest.Builder();
 

@@ -132,9 +132,6 @@ public class GalleryActivity
 
         mViewPager.setCurrentItem(mCurPosition);
 
-        //ads
-        initAds();
-
         if (mPresenter.getData() != null) {
             mAdapter.setData(mPresenter.getData());
             mRecyclerAdapter.setData(mPresenter.getData());
@@ -167,7 +164,9 @@ public class GalleryActivity
         }
 
         FirebaseRemoteConfig remoteConfig = FirebaseRemoteConfig.getInstance();
-        if (mMyPreferenceManager.isHasSubscription() || remoteConfig.getBoolean(GALLERY_BANNER_DISABLED)) {
+        if (mMyPreferenceManager.isHasNoAdsSubscription()
+                || mMyPreferenceManager.isHasSubscription()
+                || remoteConfig.getBoolean(GALLERY_BANNER_DISABLED)) {
             mAdView.setVisibility(View.GONE);
         } else {
             mAdView.setVisibility(View.VISIBLE);
