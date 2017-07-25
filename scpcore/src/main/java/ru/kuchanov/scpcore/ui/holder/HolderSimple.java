@@ -121,7 +121,11 @@ public class HolderSimple extends RecyclerView.ViewHolder {
             }
         });
 
-        setTypesIcons(article);
+        if(context.getResources().getBoolean(R.bool.filter_by_type_enabled)) {
+            setTypesIcons(article);
+        } else {
+            typeIcon.setVisibility(View.GONE);
+        }
     }
 
     protected void setTypesIcons(Article article) {

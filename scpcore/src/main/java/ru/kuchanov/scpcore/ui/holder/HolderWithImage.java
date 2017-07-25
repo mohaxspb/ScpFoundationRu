@@ -44,6 +44,7 @@ public class HolderWithImage extends HolderSimple {
         super(itemView, clickListener);
     }
 
+    @Override
     public void bind(Article article) {
         super.bind(article);
         Context context = itemView.getContext();
@@ -79,6 +80,7 @@ public class HolderWithImage extends HolderSimple {
         showTags(article);
     }
 
+    @Override
     protected void setTypesIcons(Article article) {
         switch (article.type) {
             default:

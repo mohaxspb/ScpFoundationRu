@@ -29,6 +29,7 @@ public class HolderMedium extends HolderWithImage {
         title.setTextSize(TypedValue.COMPLEX_UNIT_PX, uiTextScale * textSizeLarge);
     }
 
+    @Override
     protected void setTypesIcons(Article article) {
         switch (article.type) {
             default:

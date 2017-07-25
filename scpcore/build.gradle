@@ -97,6 +97,8 @@ android {
             resValue('string', 'non_cracked_user_uid', properties.get("nonCrackedUserUid"))
 
             resValue('integer', 'realm_version', properties.get("realmVersion"))
+
+            resValue('bool', 'filter_by_type_enabled', properties.get("filterByTypeEnabled"))
         } else {
             throw new GradleException("You need to have apiKeys.properties file in root of project with " +
                     "yandexMetricaApiKey," +

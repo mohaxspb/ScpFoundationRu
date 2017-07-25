@@ -106,12 +106,22 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
     public boolean onOptionsItemSelected(MenuItem item) {
         int i = item.getItemId();
         if (i == R.id.menuItemSort) {
-            List<ArticlesListRecyclerAdapter.SortType> sortTypes = Arrays.asList(ArticlesListRecyclerAdapter.SortType.values());
+            List<ArticlesListRecyclerAdapter.SortType> sortTypes = new ArrayList<>(Arrays.asList(ArticlesListRecyclerAdapter.SortType.values()));
+            if (!getResources().getBoolean(R.bool.filter_by_type_enabled)) {
+                sortTypes.remove(ArticlesListRecyclerAdapter.SortType.EUCLID);
+                sortTypes.remove(ArticlesListRecyclerAdapter.SortType.KETER);
+                sortTypes.remove(ArticlesListRecyclerAdapter.SortType.NEUTRAL_OR_NOT_ADDED);
+                sortTypes.remove(ArticlesListRecyclerAdapter.SortType.SAFE);
+                sortTypes.remove(ArticlesListRecyclerAdapter.SortType.THAUMIEL);
+            }
+
+            int selectedIndex = sortTypes.indexOf(getAdapter().getSortType());
+
             new MaterialDialog.Builder(getActivity())
                     .title(R.string.dialog_sort_title)
                     .items(sortTypes)
                     .alwaysCallSingleChoiceCallback()
-                    .itemsCallbackSingleChoice(ArticlesListRecyclerAdapter.SortType.valueOf(getAdapter().getSortType().name()).ordinal(), (dialog, itemView, which, text) -> {
+                    .itemsCallbackSingleChoice(selectedIndex, (dialog, itemView, which, text) -> {
                         Timber.d("sortBy: %s", text);
                         mSortType = sortTypes.get(which);
                         getAdapter().sortByType(mSortType);
@@ -202,7 +212,7 @@ public abstract class BaseArticlesListFragment<V extends BaseArticlesListMvp.Vie
             @Override
             public void onTagClicked(ArticleTag tag) {
                 Timber.d("onTagClicked: %s", tag);
-               getBaseActivity().startTagsSearchActivity(new ArrayList<>(Collections.singletonList(tag)));
+                getBaseActivity().startTagsSearchActivity(new ArrayList<>(Collections.singletonList(tag)));
             }
         });
         getAdapter().setHasStableIds(true);
