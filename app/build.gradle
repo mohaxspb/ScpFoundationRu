@@ -32,15 +32,6 @@ android {
 //        versionCode buildVersionCode()
 //        versionName version
 
-        manifestPlaceholders = [debuggable: true]
-        //TODO move to config
-//        buildConfigField('String', 'BASE_API_URL', '"http://scpfoundation.ru"')
-
-        buildConfigField "String", "VK_API_VERSION", '"5.62"'
-
-        //TODO move to config
-        buildConfigField('int', 'REALM_VERSION', '3')
-
         //play market refuses not hardcoded strings as intent filter
         resValue('string', 'receiver_action_timer', '"ru.dante.scpfoundation.receivers.ReceiverTimer"')
 //        manifestPlaceholders = [receiver_action_timer: "ru.dante.scpfoundation.receivers.ReceiverTimer"]
@@ -84,7 +75,6 @@ android {
             dimension "mode"
 
             manifestPlaceholders = [myDebuggable: false]
-            buildConfigField "boolean", "TIMBER_ENABLE", "false"
         }
 
         dev {
@@ -131,11 +121,9 @@ dependencies {
     annotationProcessor 'com.google.dagger:dagger-compiler:2.8'
 
     //sub project modules
-    compile('ru.kuchanov.scp:scp-downloads:1.0.5@aar') { transitive = true }
-    compile('ru.kuchanov.utils:rate:1.0.1@aar') { transitive = true }
+//    compile('ru.kuchanov.scp:scp-downloads:1.0.5@aar') { transitive = true }
+//    compile('ru.kuchanov.utils:rate:1.0.1@aar') { transitive = true }
     //test
-//    compile project(':scpcore')
-//    devReleaseCompile project(path: ':scpcore')
     compile project(path: ':scpcore', configuration: 'devRelease')
 }
 
