@@ -10,8 +10,8 @@ gradlew
 gradlew.bat
 *.keystore
 *.jks
-/marketSkus.properties
 *.apk
 google-services.json
 apiKeys.properties
 *.log
+marketSkus.properties
