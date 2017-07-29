@@ -6,8 +6,8 @@ apply plugin: 'me.tatarka.retrolambda'
 //which must be in format major, minor, patch, where patch goes from 0 to 99
 apply from: '../versioning.gradle'
 
-apply from: '../marketSkusCreator.gradle'
-apply from: '../apiKeysCreator.gradle'
+apply from: 'https://raw.githubusercontent.com/mohaxspb/ScpFoundationCore/master/marketSkusCreator.gradle'
+apply from: 'https://raw.githubusercontent.com/mohaxspb/ScpFoundationCore/master/apiKeysCreator.gradle'
 
 android {
     compileSdkVersion 25
@@ -117,7 +117,7 @@ dependencies {
     releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:$leakcanaryVersion"
     testCompile "com.squareup.leakcanary:leakcanary-android-no-op:$leakcanaryVersion"
     //add core itself at last for each configuration
-    String coreVersion = '1.0.5'
+    String coreVersion = '1.0.7'
     ruDevReleaseCompile("ru.kuchanov.scp:core:$coreVersion:devRelease@aar") { transitive = true }
     enDevReleaseCompile("ru.kuchanov.scp:core:$coreVersion:devRelease@aar"){transitive = true}
     ruProdReleaseCompile("ru.kuchanov.scp:core:$coreVersion:prodRelease@aar"){transitive = true}
