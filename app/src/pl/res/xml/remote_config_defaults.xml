@@ -55,7 +55,7 @@
     <!--vk groups-->
     <entry>
         <key>free_vk_groups_enabled</key>
-        <value>true</value>
+        <value>false</value>
     </entry>
     <entry>
         <key>vk_groups_to_join_json</key>
@@ -207,7 +207,7 @@
     </entry>
     <entry>
         <key>main_banner_disabled</key>
-        <value>true</value>
+        <value>false</value>
     </entry>
     <entry>
         <key>article_banner_disabled</key>
