@@ -34,7 +34,7 @@ public class ConstantValuesImpl implements ConstantValues {
 
         @Override
         public String getMostRated() {
-            return Constants.Urls.RATE;
+            return Urls.RATE;
         }
 
         @Override
@@ -109,7 +109,7 @@ public class ConstantValuesImpl implements ConstantValues {
 
         @Override
         public String getNews() {
-            return Constants.Urls.NEWS;
+            return null;
         }
 
         @Override
@@ -132,7 +132,7 @@ public class ConstantValuesImpl implements ConstantValues {
 
         @Override
         public String getMostRatedUrl() {
-            return Constants.Api.MOST_RATED_URL;
+            return Api.MOST_RATED_URL;
         }
 
         @Override
@@ -163,7 +163,7 @@ public class ConstantValuesImpl implements ConstantValues {
 
     interface Api {
         String MOST_RECENT_URL = "/ostatnio-stworzone/p/";
-        String MOST_RATED_URL = "/top-rated-pages/p/";
+        String MOST_RATED_URL = "/najwyzej-ocenione/p/";
         /**
          * first arg is searchQuery with SPACEs replaced by "%20"
          * second - num of page
@@ -182,7 +182,7 @@ public class ConstantValuesImpl implements ConstantValues {
 
         String ABOUT_SCP = BASE_API_URL + "/o-fundacji-scp";
         String NEWS = BASE_API_URL + "/news";
-        String RATE = BASE_API_URL + "/top-rated-pages";
+        String RATE = BASE_API_URL + "/najwyzej-ocenione";
         String NEW_ARTICLES = BASE_API_URL + "/ostatnio-stworzone";
 
         String OBJECTS_1 = BASE_API_URL + "/lista-eng";
