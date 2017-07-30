@@ -2,7 +2,6 @@ package ru.dante.scpfoundation;
 
 import ru.kuchanov.scpcore.ConstantValues;
 import ru.kuchanov.scpcore.Constants;
-import timber.log.Timber;
 
 /**
  * Created by mohax on 15.07.2017.
@@ -25,12 +24,12 @@ public class ConstantValuesImpl implements ConstantValues {
 
         @Override
         public String getBaseApiUrl() {
-            return Constants.Urls.BASE_API_URL;
+            return Urls.BASE_API_URL;
         }
 
         @Override
         public String getMain() {
-            return Constants.Urls.MAIN;
+            return Urls.MAIN;
         }
 
         @Override
@@ -40,32 +39,32 @@ public class ConstantValuesImpl implements ConstantValues {
 
         @Override
         public String getNewArticles() {
-            return Constants.Urls.NEW_ARTICLES;
+            return Urls.NEW_ARTICLES;
         }
 
         @Override
         public String getObjects1() {
-            return Constants.Urls.OBJECTS_1;
+            return Urls.OBJECTS_1;
         }
 
         @Override
         public String getObjects2() {
-            return Constants.Urls.OBJECTS_2;
+            return Urls.OBJECTS_2;
         }
 
         @Override
         public String getObjects3() {
-            return Constants.Urls.OBJECTS_3;
+            return Urls.OBJECTS_3;
         }
 
         @Override
         public String getObjects4() {
-            return Constants.Urls.OBJECTS_4;
+            return Urls.OBJECTS_4;
         }
 
         @Override
         public String getObjectsRu() {
-            return Constants.Urls.OBJECTS_RU;
+            return Urls.OBJECTS_PL;
         }
 
         @Override
@@ -105,7 +104,7 @@ public class ConstantValuesImpl implements ConstantValues {
 
         @Override
         public String getAbout() {
-            return Constants.Urls.ABOUT_SCP;
+            return Urls.ABOUT_SCP;
         }
 
         @Override
@@ -120,7 +119,7 @@ public class ConstantValuesImpl implements ConstantValues {
 
         @Override
         public String[] getAllLinksArray() {
-            return Constants.Urls.ALL_LINKS_ARRAY;
+            return Urls.ALL_LINKS_ARRAY;
         }
     }
 
@@ -128,7 +127,7 @@ public class ConstantValuesImpl implements ConstantValues {
 
         @Override
         public String getMostRecentUrl() {
-            return Constants.Api.MOST_RECENT_URL;
+            return Api.MOST_RECENT_URL;
         }
 
         @Override
@@ -138,7 +137,7 @@ public class ConstantValuesImpl implements ConstantValues {
 
         @Override
         public String getSearchSiteUrl() {
-            return Constants.Api.SEARCH_URL;
+            return Api.SEARCH_URL;
         }
 
         @Override
@@ -148,17 +147,70 @@ public class ConstantValuesImpl implements ConstantValues {
 
         @Override
         public int getNumOfArticlesOnRecentPage() {
-            return Constants.Api.NUM_OF_ARTICLES_ON_RECENT_PAGE;
+            return Api.NUM_OF_ARTICLES_ON_RECENT_PAGE;
         }
 
         @Override
         public int getNumOfArticlesOnRatedPage() {
-            return Constants.Api.NUM_OF_ARTICLES_ON_RATED_PAGE;
+            return Api.NUM_OF_ARTICLES_ON_RATED_PAGE;
         }
 
         @Override
         public int getNumOfArticlesOnSearchPage() {
-            return Constants.Api.NUM_OF_ARTICLES_ON_SEARCH_PAGE;
+            return Api.NUM_OF_ARTICLES_ON_SEARCH_PAGE;
         }
+    }
+
+    interface Api {
+        String MOST_RECENT_URL = "/ostatnio-stworzone/p/";
+        String MOST_RATED_URL = "/top-rated-pages/p/";
+        /**
+         * first arg is searchQuery with SPACEs replaced by "%20"
+         * second - num of page
+         */
+        String SEARCH_URL = "/search:site/a/p/q/%1$s/p/%2$s";
+        String RANDOM_PAGE_SCRIPT_URL = Urls.BASE_API_URL + "/random:random-scp";
+        int NUM_OF_ARTICLES_ON_RECENT_PAGE = 30;
+        int NUM_OF_ARTICLES_ON_RATED_PAGE = 100;
+        int NUM_OF_ARTICLES_ON_SEARCH_PAGE = 10;
+    }
+
+    interface Urls {
+        String BASE_API_URL = "http://scp-pl.wikidot.com";
+
+        String MAIN = BASE_API_URL + "/";
+
+        String ABOUT_SCP = BASE_API_URL + "/o-fundacji-scp";
+        String NEWS = BASE_API_URL + "/news";
+        String RATE = BASE_API_URL + "/top-rated-pages";
+        String NEW_ARTICLES = BASE_API_URL + "/ostatnio-stworzone";
+
+        String OBJECTS_1 = BASE_API_URL + "/lista-eng";
+        String OBJECTS_2 = BASE_API_URL + "/lista-eng-2";
+        String OBJECTS_3 = BASE_API_URL + "/lista-eng-3";
+        String OBJECTS_4 = BASE_API_URL + "/lista-eng-4";
+
+        String OBJECTS_PL = BASE_API_URL + "/lista-pl";
+
+        String SEARCH = "SEARCH";
+        String FAVORITES = "FAVORITES";
+        String OFFLINE = "OFFLINE";
+        String MATERIALS_ALL = "MATERIALS_ALL";
+        //TODO catch this link from system
+        String TAGS_SEARCH_ON_SITE = BASE_API_URL + "/tags";
+        String TAGS_SEARCH = "TAGS_SEARCH";
+
+        String ARCHIVE = BASE_API_URL + "/archived-scps";
+        String JOKES = BASE_API_URL + "/joke-scps";
+        String SCP_EX = BASE_API_URL + "/scp-ex";
+        String LOCATIONS = BASE_API_URL + "/log-of-anomalous-locations";
+        String EVENTS = BASE_API_URL + "/log-of-extranormal-events";
+        String ANOMALS = BASE_API_URL + "/log-of-anomalous-items";
+        String INCEDENTS = BASE_API_URL + "/incident-reports-eye-witness-interviews-and-personal-logs";
+
+        String[] ALL_LINKS_ARRAY = {MAIN, RATE, NEW_ARTICLES,
+                EVENTS, INCEDENTS, LOCATIONS, ANOMALS, JOKES, ARCHIVE, SCP_EX,
+                OBJECTS_1, OBJECTS_2, OBJECTS_3, OBJECTS_4,
+                NEWS, SEARCH};
     }
 }

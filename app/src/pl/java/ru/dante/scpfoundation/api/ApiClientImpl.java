@@ -5,16 +5,27 @@ import com.google.gson.Gson;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
-import ru.kuchanov.scpcore.*;
+import ru.dante.scpfoundation.BuildConfig;
+import ru.dante.scpfoundation.MyApplicationImpl;
+import ru.dante.scpfoundation.R;
+import ru.kuchanov.scp.downloads.ScpParseException;
+import ru.kuchanov.scpcore.BaseApplication;
+import ru.kuchanov.scpcore.ConstantValues;
+import ru.kuchanov.scpcore.Constants;
 import ru.kuchanov.scpcore.api.ApiClient;
+import ru.kuchanov.scpcore.db.model.Article;
 import ru.kuchanov.scpcore.manager.MyPreferenceManager;
 import rx.Observable;
 import timber.log.Timber;
@@ -41,25 +52,30 @@ public class ApiClientImpl extends ApiClient {
         Timber.d("getRandomUrl");
         return bindWithUtils(Observable.unsafeCreate(subscriber -> {
             Request.Builder request = new Request.Builder();
-            request.url(Constants.Api.RANDOM_PAGE_SCRIPT_URL);
-            request.addHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-            request.addHeader("Accept-Encoding", "gzip, deflate, br");
-            request.addHeader("Accept-Language", "en-US,en;q=0.8,de-DE;q=0.5,de;q=0.3");
-            request.addHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101 Firefox/45.0");
+            request.url(mConstantValues.getApiValues().getRandomPageUrl());
             request.get();
 
             try {
-                Response response = mOkHttpClient.newCall(request.build()).execute();
+                OkHttpClient client = new OkHttpClient.Builder()
+                        .followRedirects(true)
+                        .addInterceptor(new HttpLoggingInterceptor(message -> Timber.d(message)).setLevel(BuildConfig.DEBUG
+                                ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE))
+                        .build();
+                Response response = client.newCall(request.build()).execute();
 
-                Request requestResult = response.request();
-                Timber.d("requestResult:" + requestResult);
-                Timber.d("requestResult.url().url():" + requestResult.url().url());
-
-                String randomURL = requestResult.url().url().toString();
-                Timber.d("randomUrl = " + randomURL);
-
-                subscriber.onNext(randomURL);
-                subscriber.onCompleted();
+                ResponseBody requestResult = response.body();
+                if (requestResult != null) {
+                    String html = requestResult.string();
+                    html = html.substring(html.indexOf("<iframe src=\"http://snippets.wdfiles.com/local--code/code:iframe-redirect#") +
+                            "<iframe src=\"http://snippets.wdfiles.com/local--code/code:iframe-redirect#".length());
+                    html = html.substring(0, html.indexOf("\""));
+                    String randomURL = html;
+                    Timber.d("randomUrl = " + randomURL);
+                    subscriber.onNext(randomURL);
+                    subscriber.onCompleted();
+                } else {
+                    subscriber.onError(new ScpParseException(MyApplicationImpl.getAppInstance().getString(R.string.error_parse)));
+                }
             } catch (IOException e) {
                 Timber.e(e);
                 subscriber.onError(e);
@@ -85,7 +101,7 @@ public class ApiClientImpl extends ApiClient {
                     return;
                 }
             } catch (IOException e) {
-                subscriber.onError(new IOException(BaseApplication.getAppInstance().getString(ru.kuchanov.scpcore.R.string.error_connection)));
+                subscriber.onError(new IOException(BaseApplication.getAppInstance().getString(R.string.error_connection)));
                 return;
             }
             try {
@@ -106,12 +122,110 @@ public class ApiClientImpl extends ApiClient {
     }
 
     @Override
+    protected List<Article> parseForRecentArticles(Document doc) throws ScpParseException {
+        Element contentTypeDescription = doc.getElementsByClass("content-type-description").first();
+        Element pageContent = contentTypeDescription.getElementsByTag("table").first();
+        if (pageContent == null) {
+            throw new ScpParseException(MyApplicationImpl.getAppInstance().getString(R.string.error_parse));
+        }
+
+        List<Article> articles = new ArrayList<>();
+        Elements listOfElements = pageContent.getElementsByTag("tr");
+        for (int i = 1/*start from 1 as first row is tables header*/; i < listOfElements.size(); i++) {
+            Elements listOfTd = listOfElements.get(i).getElementsByTag("td");
+            Element firstTd = listOfTd.first();
+            Element tagA = firstTd.getElementsByTag("a").first();
+
+            String title = tagA.text();
+            String url = mConstantValues.getUrlsValues().getBaseApiUrl() + tagA.attr("href");
+            //4 Jun 2017, 22:25
+            //createdDate
+            Element createdDateNode = listOfTd.get(1);
+            String createdDate = createdDateNode.text().trim();
+
+            Article article = new Article();
+            article.title = title;
+            article.url = url.trim();
+            article.createdDate = createdDate;
+            articles.add(article);
+        }
+
+        return articles;
+    }
+
+    @Override
+    protected List<Article> parseForRatedArticles(Document doc) throws ScpParseException {
+        Element pageContent = doc.getElementById("page-content");
+        if (pageContent == null) {
+            throw new ScpParseException(MyApplicationImpl.getAppInstance().getString(R.string.error_parse));
+        }
+        Element listPagesBox = pageContent.getElementsByClass("list-pages-box").first();
+        if (listPagesBox == null) {
+            throw new ScpParseException(MyApplicationImpl.getAppInstance().getString(R.string.error_parse));
+        }
+
+        String allArticles = listPagesBox.getElementsByTag("p").first().html();
+        String[] arrayOfArticles = allArticles.split("<br>");
+        List<Article> articles = new ArrayList<>();
+        for (String arrayItem : arrayOfArticles) {
+            doc = Jsoup.parse(arrayItem);
+            Element aTag = doc.getElementsByTag("a").first();
+            String url = mConstantValues.getUrlsValues().getBaseApiUrl() + aTag.attr("href");
+            String title = aTag.text();
+
+            String rating = arrayItem.substring(arrayItem.indexOf("rating: ") + "rating: ".length());
+            rating = rating.substring(0, rating.indexOf(", "));
+
+            Article article = new Article();
+            article.url = url;
+            article.rating = Integer.parseInt(rating);
+            article.title = title;
+            articles.add(article);
+        }
+
+        return articles;
+    }
+
+    @Override
+    protected List<Article> parseForObjectArticles(Document doc) throws ScpParseException {
+        Element pageContent = doc.getElementById("page-content");
+        if (pageContent == null) {
+            throw new ScpParseException(MyApplicationImpl.getAppInstance().getString(R.string.error_parse));
+        }
+        Elements listPagesBox = pageContent.getElementsByTag("h1");
+        listPagesBox.remove();
+//        Element collapsibleBlock = pageContent.getElementsByTag("ul").first();
+//        collapsibleBlock.remove();
+        Element table = pageContent.getElementsByClass("content-toc").first();
+        table.remove();
+        Elements allUls = pageContent.getElementsByClass("content-panel").first().getElementsByTag("ul");
+
+        List<Article> articles = new ArrayList<>();
+
+        for (Element ul : allUls) {
+            Elements allLi = ul.children();
+            for (Element li : allLi) {
+                //do not add empty articles
+                if (li.getElementsByTag("a").first().hasClass("newpage")) {
+                    continue;
+                }
+                Article article = new Article();
+                article.url = mConstantValues.getUrlsValues().getBaseApiUrl() + li.getElementsByTag("a").first().attr("href");
+                article.title = li.text();
+                articles.add(article);
+            }
+        }
+
+        return articles;
+    }
+
+    @Override
     protected String getScpServerWiki() {
-        return "scp-ru";
+        return "scp-wiki";
     }
 
     @Override
     protected String getAppLang() {
-        return null;
+        return "en";
     }
 }
