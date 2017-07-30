@@ -75,6 +75,12 @@ android {
             applicationIdSuffix ".eng"
         }
 
+        pl {
+            dimension "lang"
+
+            applicationIdSuffix ".pl"
+        }
+
         applicationVariants.all { variant ->
             fillArrays(variant, false)
             fillApiArrays(variant, false)
