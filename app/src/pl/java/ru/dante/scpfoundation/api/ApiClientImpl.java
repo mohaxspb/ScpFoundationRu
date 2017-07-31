@@ -17,7 +17,6 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
-import ru.dante.scpfoundation.BuildConfig;
 import ru.dante.scpfoundation.MyApplicationImpl;
 import ru.dante.scpfoundation.R;
 import ru.kuchanov.scp.downloads.ScpParseException;
@@ -57,17 +56,16 @@ public class ApiClientImpl extends ApiClient {
 
             try {
                 OkHttpClient client = new OkHttpClient.Builder()
-                        .followRedirects(true)
-                        .addInterceptor(new HttpLoggingInterceptor(message -> Timber.d(message)).setLevel(BuildConfig.DEBUG
-                                ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE))
+                        .followRedirects(false)
+                        .addInterceptor(new HttpLoggingInterceptor(message -> Timber.d(message)).setLevel(HttpLoggingInterceptor.Level.NONE))
                         .build();
                 Response response = client.newCall(request.build()).execute();
 
                 ResponseBody requestResult = response.body();
                 if (requestResult != null) {
                     String html = requestResult.string();
-                    html = html.substring(html.indexOf("<iframe src=\"http://snippets.wdfiles.com/local--code/code:iframe-redirect#") +
-                            "<iframe src=\"http://snippets.wdfiles.com/local--code/code:iframe-redirect#".length());
+                    String patternToFindUrl = "<iframe src=\"http://snippets.wdfiles.com/local--code/code:iframe-redirect#";
+                    html = html.substring(html.indexOf(patternToFindUrl) + patternToFindUrl.length());
                     html = html.substring(0, html.indexOf("\""));
                     String randomURL = html;
                     Timber.d("randomUrl = " + randomURL);
@@ -229,6 +227,6 @@ public class ApiClientImpl extends ApiClient {
 
     @Override
     protected String getAppLang() {
-        return "en";
+        return "pl";
     }
 }

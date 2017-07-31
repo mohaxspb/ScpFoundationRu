@@ -1,7 +1,6 @@
 package ru.dante.scpfoundation;
 
 import ru.kuchanov.scpcore.ConstantValues;
-import ru.kuchanov.scpcore.Constants;
 
 /**
  * Created by mohax on 15.07.2017.
@@ -20,7 +19,7 @@ public class ConstantValuesImpl implements ConstantValues {
         return new UrlsValuesImpl();
     }
 
-    public class UrlsValuesImpl implements UrlsValues {
+    private class UrlsValuesImpl implements UrlsValues {
 
         @Override
         public String getBaseApiUrl() {
@@ -69,37 +68,37 @@ public class ConstantValuesImpl implements ConstantValues {
 
         @Override
         public String getExperiments() {
-            return Constants.Urls.EXPERIMENTS;
+            return null;
         }
 
         @Override
         public String getIncidents() {
-            return Constants.Urls.INCEDENTS;
+            return null;
         }
 
         @Override
         public String getInterviews() {
-            return Constants.Urls.INTERVIEWS;
+            return null;
         }
 
         @Override
         public String getJokes() {
-            return Constants.Urls.JOKES;
+            return null;
         }
 
         @Override
         public String getArchive() {
-            return Constants.Urls.ARCHIVE;
+            return null;
         }
 
         @Override
         public String getOthers() {
-            return Constants.Urls.OTHERS;
+            return null;
         }
 
         @Override
         public String getLeaks() {
-            return Constants.Urls.LEAKS;
+            return null;
         }
 
         @Override
@@ -114,7 +113,7 @@ public class ConstantValuesImpl implements ConstantValues {
 
         @Override
         public String getStories() {
-            return Constants.Urls.STORIES;
+            return null;
         }
 
         @Override
@@ -123,7 +122,7 @@ public class ConstantValuesImpl implements ConstantValues {
         }
     }
 
-    public class ApiValuesImpl implements ApiValues {
+    private class ApiValuesImpl implements ApiValues {
 
         @Override
         public String getMostRecentUrl() {
@@ -142,7 +141,7 @@ public class ConstantValuesImpl implements ConstantValues {
 
         @Override
         public String getRandomPageUrl() {
-            return Constants.Api.RANDOM_PAGE_SCRIPT_URL;
+            return Api.RANDOM_PAGE_SCRIPT_URL;
         }
 
         @Override
@@ -193,12 +192,8 @@ public class ConstantValuesImpl implements ConstantValues {
         String OBJECTS_PL = BASE_API_URL + "/lista-pl";
 
         String SEARCH = "SEARCH";
-        String FAVORITES = "FAVORITES";
-        String OFFLINE = "OFFLINE";
-        String MATERIALS_ALL = "MATERIALS_ALL";
         //TODO catch this link from system
         String TAGS_SEARCH_ON_SITE = BASE_API_URL + "/tags";
-        String TAGS_SEARCH = "TAGS_SEARCH";
 
         String ARCHIVE = BASE_API_URL + "/archived-scps";
         String JOKES = BASE_API_URL + "/joke-scps";
