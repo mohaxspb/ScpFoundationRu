@@ -171,7 +171,7 @@ public class ConstantValuesImpl implements ConstantValues {
         String SEARCH_URL = "/search:site/a/p/q/%1$s/p/%2$s";
         String RANDOM_PAGE_SCRIPT_URL = Urls.BASE_API_URL + "/random:random-scp";
         int NUM_OF_ARTICLES_ON_RECENT_PAGE = 30;
-        int NUM_OF_ARTICLES_ON_RATED_PAGE = 100;
+        int NUM_OF_ARTICLES_ON_RATED_PAGE = 20;
         int NUM_OF_ARTICLES_ON_SEARCH_PAGE = 10;
     }
 

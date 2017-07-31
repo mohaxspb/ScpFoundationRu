@@ -164,21 +164,24 @@ public class ApiClientImpl extends ApiClient {
             throw new ScpParseException(MyApplicationImpl.getAppInstance().getString(R.string.error_parse));
         }
 
-        String allArticles = listPagesBox.getElementsByTag("p").first().html();
-        String[] arrayOfArticles = allArticles.split("<br>");
+        Elements articlesDivs = listPagesBox.getElementsByClass("list-pages-item");
         List<Article> articles = new ArrayList<>();
-        for (String arrayItem : arrayOfArticles) {
-            doc = Jsoup.parse(arrayItem);
-            Element aTag = doc.getElementsByTag("a").first();
+        for (Element element : articlesDivs) {
+            Element aTag = element.getElementsByTag("a").first();
             String url = mConstantValues.getUrlsValues().getBaseApiUrl() + aTag.attr("href");
             String title = aTag.text();
 
-            String rating = arrayItem.substring(arrayItem.indexOf("rating: ") + "rating: ".length());
-            rating = rating.substring(0, rating.indexOf(", "));
+            Element pTag = element.getElementsByTag("p").first();
+            String ratingString = pTag.text().substring(pTag.text().indexOf("Ocena: ") + "Ocena: ".length());
+            Timber.d("ratingString: %s", ratingString);
+            ratingString = ratingString.substring(0, ratingString.indexOf(", Komentarze"));
+            Timber.d("ratingString: %s", ratingString);
+            int rating = Integer.parseInt(ratingString);
+            //TODO parse date
 
             Article article = new Article();
             article.url = url;
-            article.rating = Integer.parseInt(rating);
+            article.rating = rating;
             article.title = title;
             articles.add(article);
         }
