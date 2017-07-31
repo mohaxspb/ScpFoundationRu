@@ -13,7 +13,8 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import retrofit2.Retrofit;
-import ru.kuchanov.scpcore.*;
+import ru.kuchanov.scp.downloads.ConstantValues;
+import ru.kuchanov.scpcore.BaseApplication;
 import ru.kuchanov.scpcore.api.ApiClient;
 import ru.kuchanov.scpcore.manager.MyPreferenceManager;
 import rx.Observable;
@@ -41,7 +42,7 @@ public class ApiClientImpl extends ApiClient {
         Timber.d("getRandomUrl");
         return bindWithUtils(Observable.unsafeCreate(subscriber -> {
             Request.Builder request = new Request.Builder();
-            request.url(Constants.Api.RANDOM_PAGE_SCRIPT_URL);
+            request.url(mConstantValues.getRandomPageUrl());
             request.addHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
             request.addHeader("Accept-Encoding", "gzip, deflate, br");
             request.addHeader("Accept-Language", "en-US,en;q=0.8,de-DE;q=0.5,de;q=0.3");
@@ -71,7 +72,7 @@ public class ApiClientImpl extends ApiClient {
     public Observable<Integer> getRecentArticlesPageCountObservable() {
         return bindWithUtils(Observable.<Integer>unsafeCreate(subscriber -> {
             Request request = new Request.Builder()
-                    .url(mConstantValues.getUrlsValues().getBaseApiUrl() + Constants.Api.MOST_RECENT_URL + 1)
+                    .url(mConstantValues.getMostRecentUrl() + 1)
                     .build();
 
             String responseBody = null;
@@ -111,7 +112,7 @@ public class ApiClientImpl extends ApiClient {
     }
 
     @Override
-    protected String getAppLang() {
+    public String getAppLang() {
         return null;
     }
 }

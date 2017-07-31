@@ -19,9 +19,9 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import ru.dante.scpfoundation.MyApplicationImpl;
 import ru.dante.scpfoundation.R;
+import ru.kuchanov.scp.downloads.ConstantValues;
 import ru.kuchanov.scp.downloads.ScpParseException;
 import ru.kuchanov.scpcore.BaseApplication;
-import ru.kuchanov.scpcore.ConstantValues;
 import ru.kuchanov.scpcore.Constants;
 import ru.kuchanov.scpcore.api.ApiClient;
 import ru.kuchanov.scpcore.db.model.Article;
@@ -51,7 +51,7 @@ public class ApiClientImpl extends ApiClient {
         Timber.d("getRandomUrl");
         return bindWithUtils(Observable.unsafeCreate(subscriber -> {
             Request.Builder request = new Request.Builder();
-            request.url(mConstantValues.getApiValues().getRandomPageUrl());
+            request.url(mConstantValues.getRandomPageUrl());
             request.get();
 
             try {
@@ -85,7 +85,7 @@ public class ApiClientImpl extends ApiClient {
     public Observable<Integer> getRecentArticlesPageCountObservable() {
         return bindWithUtils(Observable.<Integer>unsafeCreate(subscriber -> {
             Request request = new Request.Builder()
-                    .url(mConstantValues.getUrlsValues().getBaseApiUrl() + Constants.Api.MOST_RECENT_URL + 1)
+                    .url(mConstantValues.getBaseApiUrl() + Constants.Api.MOST_RECENT_URL + 1)
                     .build();
 
             String responseBody = null;
@@ -135,7 +135,7 @@ public class ApiClientImpl extends ApiClient {
             Element tagA = firstTd.getElementsByTag("a").first();
 
             String title = tagA.text();
-            String url = mConstantValues.getUrlsValues().getBaseApiUrl() + tagA.attr("href");
+            String url = mConstantValues.getBaseApiUrl() + tagA.attr("href");
             //4 Jun 2017, 22:25
             //createdDate
             Element createdDateNode = listOfTd.get(1);
@@ -166,7 +166,7 @@ public class ApiClientImpl extends ApiClient {
         List<Article> articles = new ArrayList<>();
         for (Element element : articlesDivs) {
             Element aTag = element.getElementsByTag("a").first();
-            String url = mConstantValues.getUrlsValues().getBaseApiUrl() + aTag.attr("href");
+            String url = mConstantValues.getBaseApiUrl() + aTag.attr("href");
             String title = aTag.text();
 
             Element pTag = element.getElementsByTag("p").first();
@@ -211,7 +211,7 @@ public class ApiClientImpl extends ApiClient {
                     continue;
                 }
                 Article article = new Article();
-                article.url = mConstantValues.getUrlsValues().getBaseApiUrl() + li.getElementsByTag("a").first().attr("href");
+                article.url = mConstantValues.getBaseApiUrl() + li.getElementsByTag("a").first().attr("href");
                 article.title = li.text();
                 articles.add(article);
             }
@@ -226,7 +226,7 @@ public class ApiClientImpl extends ApiClient {
     }
 
     @Override
-    protected String getAppLang() {
+    public String getAppLang() {
         return "pl";
     }
 }

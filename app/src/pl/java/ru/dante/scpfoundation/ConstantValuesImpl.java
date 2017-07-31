@@ -1,6 +1,6 @@
 package ru.dante.scpfoundation;
 
-import ru.kuchanov.scpcore.ConstantValues;
+import ru.kuchanov.scp.downloads.ConstantValues;
 
 /**
  * Created by mohax on 15.07.2017.
@@ -10,159 +10,142 @@ import ru.kuchanov.scpcore.ConstantValues;
 public class ConstantValuesImpl implements ConstantValues {
 
     @Override
-    public ApiValues getApiValues() {
-        return new ApiValuesImpl();
+    public String getBaseApiUrl() {
+        return Urls.BASE_API_URL;
     }
 
     @Override
-    public UrlsValues getUrlsValues() {
-        return new UrlsValuesImpl();
+    public String getMain() {
+        return Urls.MAIN;
     }
 
-    private class UrlsValuesImpl implements UrlsValues {
-
-        @Override
-        public String getBaseApiUrl() {
-            return Urls.BASE_API_URL;
-        }
-
-        @Override
-        public String getMain() {
-            return Urls.MAIN;
-        }
-
-        @Override
-        public String getMostRated() {
-            return Urls.RATE;
-        }
-
-        @Override
-        public String getNewArticles() {
-            return Urls.NEW_ARTICLES;
-        }
-
-        @Override
-        public String getObjects1() {
-            return Urls.OBJECTS_1;
-        }
-
-        @Override
-        public String getObjects2() {
-            return Urls.OBJECTS_2;
-        }
-
-        @Override
-        public String getObjects3() {
-            return Urls.OBJECTS_3;
-        }
-
-        @Override
-        public String getObjects4() {
-            return Urls.OBJECTS_4;
-        }
-
-        @Override
-        public String getObjectsRu() {
-            return Urls.OBJECTS_PL;
-        }
-
-        @Override
-        public String getExperiments() {
-            return null;
-        }
-
-        @Override
-        public String getIncidents() {
-            return null;
-        }
-
-        @Override
-        public String getInterviews() {
-            return null;
-        }
-
-        @Override
-        public String getJokes() {
-            return null;
-        }
-
-        @Override
-        public String getArchive() {
-            return null;
-        }
-
-        @Override
-        public String getOthers() {
-            return null;
-        }
-
-        @Override
-        public String getLeaks() {
-            return null;
-        }
-
-        @Override
-        public String getAbout() {
-            return Urls.ABOUT_SCP;
-        }
-
-        @Override
-        public String getNews() {
-            return null;
-        }
-
-        @Override
-        public String getStories() {
-            return null;
-        }
-
-        @Override
-        public String[] getAllLinksArray() {
-            return Urls.ALL_LINKS_ARRAY;
-        }
+    @Override
+    public String getMostRated() {
+        return Urls.RATE;
     }
 
-    private class ApiValuesImpl implements ApiValues {
+    @Override
+    public String getNewArticles() {
+        return Urls.NEW_ARTICLES;
+    }
 
-        @Override
-        public String getMostRecentUrl() {
-            return Api.MOST_RECENT_URL;
-        }
+    @Override
+    public String getObjects1() {
+        return Urls.OBJECTS_1;
+    }
 
-        @Override
-        public String getMostRatedUrl() {
-            return Api.MOST_RATED_URL;
-        }
+    @Override
+    public String getObjects2() {
+        return Urls.OBJECTS_2;
+    }
 
-        @Override
-        public String getSearchSiteUrl() {
-            return Api.SEARCH_URL;
-        }
+    @Override
+    public String getObjects3() {
+        return Urls.OBJECTS_3;
+    }
 
-        @Override
-        public String getRandomPageUrl() {
-            return Api.RANDOM_PAGE_SCRIPT_URL;
-        }
+    @Override
+    public String getObjects4() {
+        return Urls.OBJECTS_4;
+    }
 
-        @Override
-        public int getNumOfArticlesOnRecentPage() {
-            return Api.NUM_OF_ARTICLES_ON_RECENT_PAGE;
-        }
+    @Override
+    public String getObjectsRu() {
+        return Urls.OBJECTS_PL;
+    }
 
-        @Override
-        public int getNumOfArticlesOnRatedPage() {
-            return Api.NUM_OF_ARTICLES_ON_RATED_PAGE;
-        }
+    @Override
+    public String getExperiments() {
+        return null;
+    }
 
-        @Override
-        public int getNumOfArticlesOnSearchPage() {
-            return Api.NUM_OF_ARTICLES_ON_SEARCH_PAGE;
-        }
+    @Override
+    public String getIncidents() {
+        return null;
+    }
+
+    @Override
+    public String getInterviews() {
+        return null;
+    }
+
+    @Override
+    public String getJokes() {
+        return null;
+    }
+
+    @Override
+    public String getArchive() {
+        return null;
+    }
+
+    @Override
+    public String getOthers() {
+        return null;
+    }
+
+    @Override
+    public String getLeaks() {
+        return null;
+    }
+
+    @Override
+    public String getAbout() {
+        return Urls.ABOUT_SCP;
+    }
+
+    @Override
+    public String getNews() {
+        return null;
+    }
+
+    @Override
+    public String getStories() {
+        return null;
+    }
+
+    @Override
+    public String[] getAllLinksArray() {
+        return Urls.ALL_LINKS_ARRAY;
+    }
+
+    @Override
+    public String getMostRecentUrl() {
+        return Api.MOST_RECENT_URL;
+    }
+
+    @Override
+    public String getMostRatedUrl() {
+        return Urls.RATE;
+    }
+
+    @Override
+    public String getSearchSiteUrl() {
+        return Api.SEARCH_URL;
+    }
+
+    @Override
+    public String getRandomPageUrl() {
+        return Api.RANDOM_PAGE_SCRIPT_URL;
+    }
+
+    @Override
+    public int getNumOfArticlesOnRecentPage() {
+        return Api.NUM_OF_ARTICLES_ON_RECENT_PAGE;
+    }
+
+    @Override
+    public int getNumOfArticlesOnRatedPage() {
+        return Api.NUM_OF_ARTICLES_ON_RATED_PAGE;
+    }
+
+    @Override
+    public int getNumOfArticlesOnSearchPage() {
+        return Api.NUM_OF_ARTICLES_ON_SEARCH_PAGE;
     }
 
     interface Api {
         String MOST_RECENT_URL = "/ostatnio-stworzone/p/";
-        String MOST_RATED_URL = "/najwyzej-ocenione/p/";
         /**
          * first arg is searchQuery with SPACEs replaced by "%20"
          * second - num of page
