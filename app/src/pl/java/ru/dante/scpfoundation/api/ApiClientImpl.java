@@ -22,6 +22,7 @@ import ru.dante.scpfoundation.R;
 import ru.kuchanov.scp.downloads.ConstantValues;
 import ru.kuchanov.scp.downloads.ScpParseException;
 import ru.kuchanov.scpcore.BaseApplication;
+import ru.kuchanov.scpcore.BuildConfig;
 import ru.kuchanov.scpcore.Constants;
 import ru.kuchanov.scpcore.api.ApiClient;
 import ru.kuchanov.scpcore.db.model.Article;
@@ -57,7 +58,9 @@ public class ApiClientImpl extends ApiClient {
             try {
                 OkHttpClient client = new OkHttpClient.Builder()
                         .followRedirects(false)
-                        .addInterceptor(new HttpLoggingInterceptor(message -> Timber.d(message)).setLevel(HttpLoggingInterceptor.Level.NONE))
+                        .addInterceptor(new HttpLoggingInterceptor(message -> Timber.d(message)).setLevel(BuildConfig.FLAVOR.equals("dev")
+                                ? HttpLoggingInterceptor.Level.BODY
+                                : HttpLoggingInterceptor.Level.NONE))
                         .build();
                 Response response = client.newCall(request.build()).execute();
 
