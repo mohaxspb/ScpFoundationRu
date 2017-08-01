@@ -26,6 +26,7 @@ import ru.kuchanov.scpcore.BuildConfig;
 import ru.kuchanov.scpcore.Constants;
 import ru.kuchanov.scpcore.api.ApiClient;
 import ru.kuchanov.scpcore.db.model.Article;
+import ru.kuchanov.scpcore.db.model.ArticleTag;
 import ru.kuchanov.scpcore.manager.MyPreferenceManager;
 import rx.Observable;
 import timber.log.Timber;
@@ -221,6 +222,108 @@ public class ApiClientImpl extends ApiClient {
         }
 
         return articles;
+    }
+
+    @Override
+    public Observable<List<ArticleTag>> getTagsFromSite() {
+        return bindWithUtils(Observable.<List<ArticleTag>>unsafeCreate(subscriber -> {
+            Request request = new Request.Builder()
+                    .url(mConstantValues.getBaseApiUrl() + "/system:page-tags/")
+                    .build();
+
+            String responseBody = null;
+            try {
+                Response response = mOkHttpClient.newCall(request).execute();
+                ResponseBody body = response.body();
+                if (body != null) {
+                    responseBody = body.string();
+                } else {
+                    subscriber.onError(new IOException(BaseApplication.getAppInstance().getString(R.string.error_parse)));
+                    return;
+                }
+            } catch (IOException e) {
+                subscriber.onError(new IOException(BaseApplication.getAppInstance().getString(R.string.error_connection)));
+                return;
+            }
+            try {
+                Document doc = Jsoup.parse(responseBody);
+                Element pageContent = doc.getElementById("page-content");
+                if (pageContent == null) {
+                    subscriber.onError(new ScpParseException(BaseApplication.getAppInstance().getString(R.string.error_parse)));
+                    return;
+                }
+
+                List<ArticleTag> tags = new ArrayList<>();
+
+                Element allTags = doc.getElementsByClass("pages-tag-cloud-box").first();
+                for (Element tagNode : allTags.getElementsByClass("tag")) {
+                    ArticleTag tag = new ArticleTag();
+                    tag.title = tagNode.text();
+                    tags.add(tag);
+                }
+                //parse end
+                subscriber.onNext(tags);
+                subscriber.onCompleted();
+            } catch (Exception e) {
+                Timber.e(e, "error while get arts list");
+                subscriber.onError(e);
+            }
+        }));
+    }
+
+    @Override
+    public Observable<List<Article>> getArticlesByTags(List<ArticleTag> tags) {
+//        Timber.d("getArticlesByTags: %s", tags);
+//        String tagName = tags.get(0).title;
+//        Timber.d("tagName: %s", tagName);
+        List<String> tagsTitles = ArticleTag.getStringsFromTags(tags);
+//        Timber.d("tagsTitles: %s", tagsTitles);
+        String tagTitle = tagsTitles.get(0);
+//        Timber.d("tagTitle: %s", tagTitle);
+        return bindWithUtils(Observable.<List<Article>>unsafeCreate(subscriber -> {
+            Request request = new Request.Builder()
+                    .url(mConstantValues.getBaseApiUrl() + "/system:page-tags/tag/" + tagTitle)
+                    .build();
+
+            String responseBody = null;
+            try {
+                Response response = mOkHttpClient.newCall(request).execute();
+                ResponseBody body = response.body();
+                if (body != null) {
+                    responseBody = body.string();
+                } else {
+                    subscriber.onError(new IOException(BaseApplication.getAppInstance().getString(R.string.error_parse)));
+                    return;
+                }
+            } catch (IOException e) {
+                subscriber.onError(new IOException(BaseApplication.getAppInstance().getString(R.string.error_connection)));
+                return;
+            }
+            try {
+                Document doc = Jsoup.parse(responseBody);
+                Element pageContent = doc.getElementById("page-content");
+                if (pageContent == null) {
+                    subscriber.onError(new ScpParseException(BaseApplication.getAppInstance().getString(R.string.error_parse)));
+                    return;
+                }
+
+                List<Article> articles = new ArrayList<>();
+
+                Element allTags = doc.getElementById("tagged-pages-list");
+                for (Element tagNode : allTags.getElementsByTag("a")) {
+                    Article tag = new Article();
+                    tag.title = tagNode.text();
+                    tag.url = mConstantValues.getBaseApiUrl() + tagNode.attr("href");
+                    articles.add(tag);
+                }
+                //parse end
+                subscriber.onNext(articles);
+                subscriber.onCompleted();
+            } catch (Exception e) {
+                Timber.e(e, "error while get arts list");
+                subscriber.onError(e);
+            }
+        }));
     }
 
     @Override
