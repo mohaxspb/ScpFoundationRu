@@ -71,7 +71,7 @@ public class ConstantValuesImpl implements ConstantValues {
 
     @Override
     public String getJokes() {
-        return null;
+        return Urls.JOKES;
     }
 
     @Override
@@ -157,7 +157,7 @@ public class ConstantValuesImpl implements ConstantValues {
         int NUM_OF_ARTICLES_ON_SEARCH_PAGE = 10;
     }
 
-    interface Urls {
+    public interface Urls {
         String BASE_API_URL = "http://scp-pl.wikidot.com";
 
         String MAIN = BASE_API_URL + "/";
@@ -178,12 +178,14 @@ public class ConstantValuesImpl implements ConstantValues {
         //TODO catch this link from system
         String TAGS_SEARCH_ON_SITE = BASE_API_URL + "/tags";
 
+        String JOKES = BASE_API_URL + "/joke";
+
         String ARCHIVE = BASE_API_URL + "/archived-scps";
-        String JOKES = BASE_API_URL + "/joke-scps";
         String SCP_EX = BASE_API_URL + "/scp-ex";
-        String LOCATIONS = BASE_API_URL + "/log-of-anomalous-locations";
+        String LOCATIONS = BASE_API_URL + "/niewyjasnione";
         String EVENTS = BASE_API_URL + "/log-of-extranormal-events";
-        String ANOMALS = BASE_API_URL + "/log-of-anomalous-items";
+        String ANOMALS = BASE_API_URL + "/anomalne";
+        String NADNATURALNE = BASE_API_URL + "/nadnaturalne";
         String INCEDENTS = BASE_API_URL + "/incident-reports-eye-witness-interviews-and-personal-logs";
 
         String[] ALL_LINKS_ARRAY = {MAIN, RATE, NEW_ARTICLES,

@@ -72,7 +72,7 @@ public class ApiClientImpl extends ApiClient {
     public Observable<Integer> getRecentArticlesPageCountObservable() {
         return bindWithUtils(Observable.<Integer>unsafeCreate(subscriber -> {
             Request request = new Request.Builder()
-                    .url(mConstantValues.getMostRecentUrl() + 1)
+                    .url(mConstantValues.getBaseApiUrl() + mConstantValues.getMostRecentUrl() + 1)
                     .build();
 
             String responseBody = null;
