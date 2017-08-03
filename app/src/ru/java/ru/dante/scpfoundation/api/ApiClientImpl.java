@@ -113,6 +113,6 @@ public class ApiClientImpl extends ApiClient {
 
     @Override
     public String getAppLang() {
-        return null;
+        return "ru";
     }
 }
