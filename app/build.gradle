@@ -75,6 +75,12 @@ android {
             applicationIdSuffix ".eng"
         }
 
+        pl {
+            dimension "lang"
+
+            applicationIdSuffix ".pl"
+        }
+
         applicationVariants.all { variant ->
             fillArrays(variant, false)
             fillApiArrays(variant, false)
@@ -99,8 +105,10 @@ android {
 configurations {
     ruDevReleaseCompile
     enDevReleaseCompile
+    plDevReleaseCompile
     ruProdReleaseCompile
     enProdReleaseCompile
+    plProdReleaseCompile
 }
 
 dependencies {
@@ -117,11 +125,13 @@ dependencies {
     releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:$leakcanaryVersion"
     testCompile "com.squareup.leakcanary:leakcanary-android-no-op:$leakcanaryVersion"
     //add core itself at last for each configuration
-    String coreVersion = '1.0.7'
+    String coreVersion = '1.0.15'
     ruDevReleaseCompile("ru.kuchanov.scp:core:$coreVersion:devRelease@aar") { transitive = true }
     enDevReleaseCompile("ru.kuchanov.scp:core:$coreVersion:devRelease@aar"){transitive = true}
+    plDevReleaseCompile("ru.kuchanov.scp:core:$coreVersion:devRelease@aar"){transitive = true}
     ruProdReleaseCompile("ru.kuchanov.scp:core:$coreVersion:prodRelease@aar"){transitive = true}
     enProdReleaseCompile("ru.kuchanov.scp:core:$coreVersion:prodRelease@aar"){transitive = true}
+    plProdReleaseCompile("ru.kuchanov.scp:core:$coreVersion:prodRelease@aar"){transitive = true}
 }
 
 apply plugin: 'com.google.gms.google-services'
