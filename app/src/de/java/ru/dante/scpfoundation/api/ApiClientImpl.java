@@ -25,7 +25,6 @@ import ru.kuchanov.scp.downloads.ConstantValues;
 import ru.kuchanov.scp.downloads.ScpParseException;
 import ru.kuchanov.scpcore.BaseApplication;
 import ru.kuchanov.scpcore.BuildConfig;
-import ru.kuchanov.scpcore.Constants;
 import ru.kuchanov.scpcore.api.ApiClient;
 import ru.kuchanov.scpcore.db.model.Article;
 import ru.kuchanov.scpcore.db.model.ArticleTag;
@@ -198,10 +197,10 @@ public class ApiClientImpl extends ApiClient {
         }
         Elements listPagesBox = pageContent.getElementsByTag("h1");
         listPagesBox.remove();
-//        Element collapsibleBlock = pageContent.getElementsByTag("ul").first();
-//        collapsibleBlock.remove();
-        Element table = pageContent.getElementsByClass("content-toc").first();
-        table.remove();
+        Element collapsibleBlock = pageContent.getElementsByTag("ul").first();
+        collapsibleBlock.remove();
+//        Element table = pageContent.getElementsByClass("content-toc").first();
+//        table.remove();
         Elements allUls = pageContent.getElementsByClass("content-panel").first().getElementsByTag("ul");
 
         List<Article> articles = new ArrayList<>();
@@ -333,6 +332,6 @@ public class ApiClientImpl extends ApiClient {
     @NonNull
     @Override
     public String getAppLang() {
-        return "pl";
+        return "de";
     }
 }
