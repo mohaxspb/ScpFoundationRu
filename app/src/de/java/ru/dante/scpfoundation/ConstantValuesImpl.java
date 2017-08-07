@@ -76,7 +76,7 @@ public class ConstantValuesImpl implements ConstantValues {
 
     @Override
     public String getArchive() {
-        return null;
+        return Urls.ARCHIVE;
     }
 
     @Override
@@ -178,13 +178,13 @@ public class ConstantValuesImpl implements ConstantValues {
         //TODO catch this link from system
         String TAGS_SEARCH_ON_SITE = BASE_API_URL + "/tags";
 
-        String JOKES = BASE_API_URL + "/joke";
-
-        String ARCHIVE = BASE_API_URL + "/archived-scps";
+        String JOKES = BASE_API_URL + "/joke-scps";
         String SCP_EX = BASE_API_URL + "/scp-ex";
+        String ARCHIVE = BASE_API_URL + "/archived-scps";
+        String ANOMALS = BASE_API_URL + "/anomalien";
+
         String LOCATIONS = BASE_API_URL + "/niewyjasnione";
         String EVENTS = BASE_API_URL + "/log-of-extranormal-events";
-        String ANOMALS = BASE_API_URL + "/anomalne";
         String NADNATURALNE = BASE_API_URL + "/nadnaturalne";
         String INCEDENTS = BASE_API_URL + "/incident-reports-eye-witness-interviews-and-personal-logs";
 
