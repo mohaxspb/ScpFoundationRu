@@ -158,7 +158,7 @@ public class ConstantValuesImpl implements ConstantValues {
     }
 
     public interface Urls {
-        String BASE_API_URL = "http://scp-wiki-de.wikidot.com/";
+        String BASE_API_URL = "http://scp-wiki-de.wikidot.com";
 
         String MAIN = BASE_API_URL + "/";
 
