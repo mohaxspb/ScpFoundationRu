@@ -72,7 +72,7 @@ public class ApiClientImpl extends ApiClient {
     public Observable<Integer> getRecentArticlesPageCountObservable() {
         return bindWithUtils(Observable.<Integer>unsafeCreate(subscriber -> {
             Request request = new Request.Builder()
-                    .url(mConstantValues.getBaseApiUrl() + mConstantValues.getMostRecentUrl() + 1)
+                    .url(mConstantValues.getNewArticles() + "/p/1")
                     .build();
 
             String responseBody = null;
@@ -109,10 +109,5 @@ public class ApiClientImpl extends ApiClient {
     @Override
     protected String getScpServerWiki() {
         return "scp-ru";
-    }
-
-    @Override
-    public String getAppLang() {
-        return "ru";
     }
 }
