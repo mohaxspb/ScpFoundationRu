@@ -17,9 +17,7 @@ allprojects {
     repositories {
         jcenter()
         mavenCentral()
-
-        //use jcenter when it will be ready
-        maven { url 'https://dl.bintray.com/mohaxspb/scp-downloads' }
+        maven { url "https://maven.google.com" }
 
         maven { url "https://jitpack.io" }
 
