@@ -10,15 +10,15 @@ apply from: 'https://raw.githubusercontent.com/mohaxspb/ScpFoundationCore/master
 apply from: 'https://raw.githubusercontent.com/mohaxspb/ScpFoundationCore/master/apiKeysCreator.gradle'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.3'
+    compileSdkVersion 26
+    buildToolsVersion '26.0.1'
 
     defaultConfig {
         applicationId "ru.dante.scpfoundation"
         minSdkVersion 17
         //TODO check when we can update it
         //noinspection OldTargetApi
-        targetSdkVersion 25
+        targetSdkVersion 26
 
         // Enabling multidex support.
         multiDexEnabled true
@@ -133,7 +133,7 @@ dependencies {
     releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:$leakcanaryVersion"
     testCompile "com.squareup.leakcanary:leakcanary-android-no-op:$leakcanaryVersion"
     //add core itself at last for each configuration
-    String coreVersion = '1.0.15'
+    String coreVersion = '1.0.21'
     ruDevReleaseCompile("ru.kuchanov.scp:core:$coreVersion:devRelease@aar") { transitive = true }
     enDevReleaseCompile("ru.kuchanov.scp:core:$coreVersion:devRelease@aar") { transitive = true }
     plDevReleaseCompile("ru.kuchanov.scp:core:$coreVersion:devRelease@aar") { transitive = true }
