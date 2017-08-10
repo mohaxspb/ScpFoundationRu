@@ -1,7 +1,5 @@
 package ru.dante.scpfoundation.api;
 
-import android.support.annotation.NonNull;
-
 import com.google.gson.Gson;
 
 import org.jsoup.Jsoup;
@@ -25,7 +23,6 @@ import ru.kuchanov.scp.downloads.ConstantValues;
 import ru.kuchanov.scp.downloads.ScpParseException;
 import ru.kuchanov.scpcore.BaseApplication;
 import ru.kuchanov.scpcore.BuildConfig;
-import ru.kuchanov.scpcore.Constants;
 import ru.kuchanov.scpcore.api.ApiClient;
 import ru.kuchanov.scpcore.db.model.Article;
 import ru.kuchanov.scpcore.db.model.ArticleTag;
@@ -91,7 +88,7 @@ public class ApiClientImpl extends ApiClient {
     public Observable<Integer> getRecentArticlesPageCountObservable() {
         return bindWithUtils(Observable.<Integer>unsafeCreate(subscriber -> {
             Request request = new Request.Builder()
-                    .url(mConstantValues.getBaseApiUrl() + mConstantValues.getMostRecentUrl() + 1)
+                    .url(mConstantValues.getNewArticles() + "/p/1")
                     .build();
 
             String responseBody = null;
@@ -331,11 +328,5 @@ public class ApiClientImpl extends ApiClient {
     @Override
     protected String getScpServerWiki() {
         return "scp-wiki";
-    }
-
-    @NonNull
-    @Override
-    public String getAppLang() {
-        return "pl";
     }
 }
