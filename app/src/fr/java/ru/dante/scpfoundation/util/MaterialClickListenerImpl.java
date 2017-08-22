@@ -24,14 +24,17 @@ public class MaterialClickListenerImpl implements MaterialsActivity.MaterialClic
             case 0:
                 activity.startArticleActivity(mConstantValues.getJokes());
                 break;
+//            case 1:
+//                activity.startArticleActivity(ConstantValuesImpl.Urls.SCP_EX);
+//                break;
+//            case 2:
+//                activity.startArticleActivity(ConstantValuesImpl.Urls.ARCHIVE);
+//                break;
             case 1:
-                activity.startArticleActivity(ConstantValuesImpl.Urls.SCP_EX);
+                activity.startArticleActivity(ConstantValuesImpl.Urls.ANOMALS);
                 break;
             case 2:
-                activity.startArticleActivity(ConstantValuesImpl.Urls.ARCHIVE);
-                break;
-            case 3:
-                activity.startArticleActivity(ConstantValuesImpl.Urls.ANOMALS);
+                activity.startArticleActivity(ConstantValuesImpl.Urls.EVENTS);
                 break;
             default:
                 throw new RuntimeException("unexpected position in materials list");

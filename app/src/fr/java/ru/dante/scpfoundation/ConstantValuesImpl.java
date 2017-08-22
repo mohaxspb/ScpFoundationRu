@@ -71,7 +71,7 @@ public class ConstantValuesImpl implements ConstantValues {
 
     @Override
     public String getArchive() {
-        return Urls.ARCHIVE;
+        return null;
     }
 
     @Override
@@ -131,7 +131,7 @@ public class ConstantValuesImpl implements ConstantValues {
 
     @Override
     public String getAppLang() {
-        return "de";
+        return "fr";
     }
 
     interface Api {
@@ -168,18 +168,19 @@ public class ConstantValuesImpl implements ConstantValues {
         //TODO catch this link from system
         String TAGS_SEARCH_ON_SITE = BASE_API_URL + "/tags";
 
-        String JOKES = BASE_API_URL + "/joke-scps";
-        String SCP_EX = BASE_API_URL + "/scp-ex";
-        String ARCHIVE = BASE_API_URL + "/archived-scps";
-        String ANOMALS = BASE_API_URL + "/anomalien";
+        String JOKES = BASE_API_URL + "/scps-humoristiques-francais";
+        //        String SCP_EX = BASE_API_URL + "/scp-ex";
+//        String ARCHIVE = BASE_API_URL + "/archived-scps";
+        String ANOMALS = BASE_API_URL + "/enregistrement-des-objets-anormaux-fr";
+        String EVENTS = BASE_API_URL + "/enregistrement-des-evenements-extranormaux-fr";
 
         String LOCATIONS = BASE_API_URL + "/niewyjasnione";
-        String EVENTS = BASE_API_URL + "/log-of-extranormal-events";
-        String NADNATURALNE = BASE_API_URL + "/nadnaturalne";
         String INCEDENTS = BASE_API_URL + "/incident-reports-eye-witness-interviews-and-personal-logs";
 
         String[] ALL_LINKS_ARRAY = {MAIN, RATE, NEW_ARTICLES,
-                EVENTS, INCEDENTS, LOCATIONS, ANOMALS, JOKES, ARCHIVE, SCP_EX,
+                EVENTS, INCEDENTS, LOCATIONS, ANOMALS,
+                JOKES,
+// ARCHIVE, SCP_EX,
                 OBJECTS_1, OBJECTS_2, OBJECTS_3, OBJECTS_4,
                 NEWS, SEARCH};
     }
