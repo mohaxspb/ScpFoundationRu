@@ -41,7 +41,7 @@
                 <category android:name="android.intent.category.BROWSABLE"/>
 
                 <data
-                    android:host="scp-wiki-de.wikidot.com"
+                    android:host="fondationscp.wikidot.com"
                     android:scheme="http"/>
             </intent-filter>
         </activity>
