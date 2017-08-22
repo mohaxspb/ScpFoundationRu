@@ -1,10 +1,10 @@
 <resources>
     <!--no need to translate-->
-    <string name="app_name" translatable="false">SCP Foundation Deutsch On/Offline</string>
+    <string name="app_name" translatable="false">SCP Foundation Francophone On/Offline</string>
     <!--end no need to translate-->
 
-    <string name="drawer_item_9">Serie DE</string>
-    <string name="type_ru">Serie DE</string>
+    <string name="drawer_item_9">Série SCP-FR</string>
+    <string name="type_ru">Série SCP-FR</string>
 
     <string-array name="materials_titles">
         <item>Witz-SCPs</item>

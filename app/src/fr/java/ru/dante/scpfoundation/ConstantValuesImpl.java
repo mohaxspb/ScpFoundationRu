@@ -46,7 +46,7 @@ public class ConstantValuesImpl implements ConstantValues {
 
     @Override
     public String getObjectsRu() {
-        return Urls.OBJECTS_PL;
+        return Urls.OBJECTS_FR;
     }
 
     @Override
@@ -148,7 +148,7 @@ public class ConstantValuesImpl implements ConstantValues {
     }
 
     public interface Urls {
-        String BASE_API_URL = "http://scp-wiki-de.wikidot.com";
+        String BASE_API_URL = "http://fondationscp.wikidot.com";
 
         String MAIN = BASE_API_URL + "/";
 
@@ -162,7 +162,7 @@ public class ConstantValuesImpl implements ConstantValues {
         String OBJECTS_3 = BASE_API_URL + "/scp-series-3";
         String OBJECTS_4 = BASE_API_URL + "/scp-series-4";
 
-        String OBJECTS_PL = BASE_API_URL + "/scp-de";
+        String OBJECTS_FR = BASE_API_URL + "/liste-francaise";
 
         String SEARCH = "SEARCH";
         //TODO catch this link from system
