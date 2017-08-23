@@ -1,14 +1,10 @@
-<b>Version 1.0.3.1</b>
+<b>Version 1.1.0.1</b>
 <br/><br/>
-<b>Improvements</b>
+<b>Main</b>
 <br/>
- - Add deutsche interface translation.
+ - Add french interface translation, traduit Lucie.
 <br/>
- - Reduce traffic and memory usage.
-<br/><br/>
-<b>Bug fixes</b>
-<br/>
- - Fix some rare crashes.
+ - New way of showing expanded texts - now they correctly support tables, images etc.
 <br/><br/>
 If you have any questions you can contact us via email:
 <br/>
