@@ -16,8 +16,6 @@ android {
     defaultConfig {
         applicationId "ru.dante.scpfoundation"
         minSdkVersion 17
-        //TODO check when we can update it
-        //noinspection OldTargetApi
         targetSdkVersion 26
 
         // Enabling multidex support.
@@ -87,6 +85,12 @@ android {
             applicationIdSuffix ".de"
         }
 
+        fr {
+            dimension "lang"
+
+            applicationIdSuffix ".fr"
+        }
+
         applicationVariants.all { variant ->
             fillArrays(variant, false)
             fillApiArrays(variant, false)
@@ -113,10 +117,12 @@ configurations {
     enDevReleaseCompile
     plDevReleaseCompile
     deDevReleaseCompile
+    frDevReleaseCompile
     ruProdReleaseCompile
     enProdReleaseCompile
     plProdReleaseCompile
     deProdReleaseCompile
+    frProdReleaseCompile
 }
 
 dependencies {
@@ -133,15 +139,17 @@ dependencies {
     releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:$leakcanaryVersion"
     testCompile "com.squareup.leakcanary:leakcanary-android-no-op:$leakcanaryVersion"
     //add core itself at last for each configuration
-    String coreVersion = '1.0.21'
+    String coreVersion = '1.0.27'
     ruDevReleaseCompile("ru.kuchanov.scp:core:$coreVersion:devRelease@aar") { transitive = true }
     enDevReleaseCompile("ru.kuchanov.scp:core:$coreVersion:devRelease@aar") { transitive = true }
     plDevReleaseCompile("ru.kuchanov.scp:core:$coreVersion:devRelease@aar") { transitive = true }
     deDevReleaseCompile("ru.kuchanov.scp:core:$coreVersion:devRelease@aar") { transitive = true }
+    frDevReleaseCompile("ru.kuchanov.scp:core:$coreVersion:devRelease@aar") { transitive = true }
     ruProdReleaseCompile("ru.kuchanov.scp:core:$coreVersion:prodRelease@aar") { transitive = true }
     enProdReleaseCompile("ru.kuchanov.scp:core:$coreVersion:prodRelease@aar") { transitive = true }
     plProdReleaseCompile("ru.kuchanov.scp:core:$coreVersion:prodRelease@aar") { transitive = true }
     deProdReleaseCompile("ru.kuchanov.scp:core:$coreVersion:prodRelease@aar") { transitive = true }
+    frProdReleaseCompile("ru.kuchanov.scp:core:$coreVersion:prodRelease@aar") { transitive = true }
 }
 
 apply plugin: 'com.google.gms.google-services'
