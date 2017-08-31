@@ -131,38 +131,37 @@ public class ConstantValuesImpl implements ConstantValues {
 
     @Override
     public String getAppLang() {
-        return "fr";
+        return "es";
     }
 
     interface Api {
-        String MOST_RECENT_URL = "/most-recently-created/p/";
         /**
          * first arg is searchQuery with SPACEs replaced by "%20"
          * second - num of page
          */
         String SEARCH_URL = "/search:site/a/p/q/%1$s/p/%2$s";
-        String RANDOM_PAGE_SCRIPT_URL = Urls.BASE_API_URL + "/random:random-scp";
+        String RANDOM_PAGE_SCRIPT_URL = Urls.BASE_API_URL + "/relato-aleatorio";
         int NUM_OF_ARTICLES_ON_RECENT_PAGE = 30;
         int NUM_OF_ARTICLES_ON_RATED_PAGE = 100;
         int NUM_OF_ARTICLES_ON_SEARCH_PAGE = 10;
     }
 
     public interface Urls {
-        String BASE_API_URL = "http://fondationscp.wikidot.com";
+        String BASE_API_URL = "http://lafundacionscp.wikidot.com";
 
         String MAIN = BASE_API_URL + "/";
 
-        String ABOUT_SCP = BASE_API_URL + "/about-the-scp-foundation";
+        String ABOUT_SCP = BASE_API_URL + "/sobre-la-fundacion";
         String NEWS = BASE_API_URL + "/news";
-        String RATE = BASE_API_URL + "/top-rated-pages";
-        String NEW_ARTICLES = BASE_API_URL + "/most-recently-created";
+        String RATE = BASE_API_URL + "/paginas-mejor-puntuadas";
+        String NEW_ARTICLES = BASE_API_URL + "/recientemente-creados";
 
-        String OBJECTS_1 = BASE_API_URL + "/scp-series";
-        String OBJECTS_2 = BASE_API_URL + "/scp-series-2";
-        String OBJECTS_3 = BASE_API_URL + "/scp-series-3";
-        String OBJECTS_4 = BASE_API_URL + "/scp-series-4";
+        String OBJECTS_1 = BASE_API_URL + "/serie-scp-1";
+        String OBJECTS_2 = BASE_API_URL + "/serie-scp-2";
+        String OBJECTS_3 = BASE_API_URL + "/serie-scp-3";
+        String OBJECTS_4 = BASE_API_URL + "/serie-scp-4";
 
-        String OBJECTS_FR = BASE_API_URL + "/liste-francaise";
+        String OBJECTS_FR = BASE_API_URL + "/serie-scp-es";
 
         String SEARCH = "SEARCH";
         //TODO catch this link from system

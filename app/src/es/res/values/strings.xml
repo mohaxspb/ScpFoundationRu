@@ -3,8 +3,8 @@
     <string name="app_name" translatable="false">SCP Foundation Francophone On/Offline</string>
     <!--end no need to translate-->
 
-    <string name="drawer_item_9">Série SCP-FR</string>
-    <string name="type_ru">Série SCP-FR</string>
+    <string name="drawer_item_9">Serie SCP-ES</string>
+    <string name="type_ru">Serie SCP-ES</string>
 
     <string-array name="materials_titles">
         <item>SCP Humoristiques</item>
