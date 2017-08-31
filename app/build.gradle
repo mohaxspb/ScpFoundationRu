@@ -91,6 +91,12 @@ android {
             applicationIdSuffix ".fr"
         }
 
+        es {
+            dimension "lang"
+
+            applicationIdSuffix ".es"
+        }
+
         applicationVariants.all { variant ->
             fillArrays(variant, false)
             fillApiArrays(variant, false)
@@ -113,16 +119,20 @@ android {
 }
 
 configurations {
+    //dev
     ruDevReleaseCompile
     enDevReleaseCompile
     plDevReleaseCompile
     deDevReleaseCompile
     frDevReleaseCompile
+    esDevReleaseCompile
+    //prod
     ruProdReleaseCompile
     enProdReleaseCompile
     plProdReleaseCompile
     deProdReleaseCompile
     frProdReleaseCompile
+    esProdReleaseCompile
 }
 
 dependencies {
@@ -145,11 +155,13 @@ dependencies {
     plDevReleaseCompile("ru.kuchanov.scp:core:$coreVersion:devRelease@aar") { transitive = true }
     deDevReleaseCompile("ru.kuchanov.scp:core:$coreVersion:devRelease@aar") { transitive = true }
     frDevReleaseCompile("ru.kuchanov.scp:core:$coreVersion:devRelease@aar") { transitive = true }
+    esDevReleaseCompile("ru.kuchanov.scp:core:$coreVersion:devRelease@aar") { transitive = true }
     ruProdReleaseCompile("ru.kuchanov.scp:core:$coreVersion:prodRelease@aar") { transitive = true }
     enProdReleaseCompile("ru.kuchanov.scp:core:$coreVersion:prodRelease@aar") { transitive = true }
     plProdReleaseCompile("ru.kuchanov.scp:core:$coreVersion:prodRelease@aar") { transitive = true }
     deProdReleaseCompile("ru.kuchanov.scp:core:$coreVersion:prodRelease@aar") { transitive = true }
     frProdReleaseCompile("ru.kuchanov.scp:core:$coreVersion:prodRelease@aar") { transitive = true }
+    esProdReleaseCompile("ru.kuchanov.scp:core:$coreVersion:prodRelease@aar") { transitive = true }
 }
 
 apply plugin: 'com.google.gms.google-services'
