@@ -131,7 +131,7 @@ public class ConstantValuesImpl implements ConstantValues {
 
     @Override
     public String getAppLang() {
-        return "es";
+        return "it";
     }
 
     interface Api {
@@ -140,6 +140,7 @@ public class ConstantValuesImpl implements ConstantValues {
          * second - num of page
          */
         String SEARCH_URL = "/search:site/a/p/q/%1$s/p/%2$s";
+        //TODO
         String RANDOM_PAGE_SCRIPT_URL = Urls.BASE_API_URL + "/relato-aleatorio";
         int NUM_OF_ARTICLES_ON_RECENT_PAGE = 30;
         int NUM_OF_ARTICLES_ON_RATED_PAGE = 100;
@@ -147,15 +148,20 @@ public class ConstantValuesImpl implements ConstantValues {
     }
 
     public interface Urls {
-        String BASE_API_URL = "http://lafundacionscp.wikidot.com";
+        String BASE_API_URL = "http://fondazionescp.wikidot.com";
 
         String MAIN = BASE_API_URL + "/";
 
+        //TODO
         String ABOUT_SCP = BASE_API_URL + "/sobre-la-fundacion";
+        //TODO
         String NEWS = BASE_API_URL + "/news";
+        //TODO
         String RATE = BASE_API_URL + "/paginas-mejor-puntuadas";
+        //TODO
         String NEW_ARTICLES = BASE_API_URL + "/recientemente-creados";
 
+        //TODO
         String OBJECTS_1 = BASE_API_URL + "/serie-scp-1";
         String OBJECTS_2 = BASE_API_URL + "/serie-scp-2";
         String OBJECTS_3 = BASE_API_URL + "/serie-scp-3";
@@ -167,13 +173,18 @@ public class ConstantValuesImpl implements ConstantValues {
         //TODO catch this link from system
         String TAGS_SEARCH_ON_SITE = BASE_API_URL + "/tags";
 
+        //TODO
         String JOKES = BASE_API_URL + "/scps-humoristiques-francais";
         //        String SCP_EX = BASE_API_URL + "/scp-ex";
 //        String ARCHIVE = BASE_API_URL + "/archived-scps";
+        //TODO
         String ANOMALS = BASE_API_URL + "/enregistrement-des-objets-anormaux-fr";
+        //TODO
         String EVENTS = BASE_API_URL + "/enregistrement-des-evenements-extranormaux-fr";
 
+        //TODO
         String LOCATIONS = BASE_API_URL + "/niewyjasnione";
+        //TODO
         String INCEDENTS = BASE_API_URL + "/incident-reports-eye-witness-interviews-and-personal-logs";
 
         String[] ALL_LINKS_ARRAY = {MAIN, RATE, NEW_ARTICLES,
