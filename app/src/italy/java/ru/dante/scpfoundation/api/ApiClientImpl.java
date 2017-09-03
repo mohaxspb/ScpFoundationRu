@@ -175,7 +175,7 @@ public class ApiClientImpl extends ApiClient {
             String url = mConstantValues.getBaseApiUrl() + aTag.attr("href");
             String title = aTag.text();
 
-            String rating = arrayItem.substring(arrayItem.indexOf("Puntuación: ") + "Puntuación: ".length());
+            String rating = arrayItem.substring(arrayItem.indexOf("Voto: ") + "Voto: ".length());
             rating = rating.substring(0, rating.indexOf(", "));
 
             Article article = new Article();

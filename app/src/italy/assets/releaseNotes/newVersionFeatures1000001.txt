@@ -1,11 +1,9 @@
-<b>Version 1.0.0.1</b>
+<b>Versione 1.0.0.1</b>
 <br/><br/>
 <b>Principale</b>
 <br/>
- - Première publication.
+ - Versione iniziale.
 <br/><br/>
-E-mail: <a href="mailto:neva.spb.rx@gmail.com">Pour toute question</a>
+E-mail: <a href="mailto:neva.spb.rx@gmail.com">Per tutte le domande</a>
 <br/><br/>
-Merci d'utiliser notre application!
-<br/><br/>
-Traduit Lucie.
+Grazie per aver utilizzato la nostra applicazione!
