@@ -3,14 +3,13 @@
     <string name="app_name" translatable="false">SCP Foundation Francophone On/Offline</string>
     <!--end no need to translate-->
 
-    <string name="drawer_item_9">Serie SCP-ES</string>
-    <string name="type_ru">Serie SCP-ES</string>
+    <string name="drawer_item_9">SCP-IT Serie I</string>
+    <string name="type_ru">SCP-IT Serie I</string>
 
     <string-array name="materials_titles">
-        <item>SCP Humoristiques</item>
-        <!--<item>SCP-EX</item>-->
-        <!--<item>Archivierte SCPs</item>-->
-        <item>Enregistrement Des Objets Anormaux</item>
-        <item>Enregistrement Des Événements Extranormaux</item>
+        <item>SCP Scherzo</item>
+        <item>SCP Risolti</item>
+        <item>Log degli Elementi Anomali</item>
+        <item>Log degli Eventi Paranormali</item>
     </string-array>
 </resources>
