@@ -157,7 +157,7 @@ dependencies {
     releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:$leakcanaryVersion"
     testCompile "com.squareup.leakcanary:leakcanary-android-no-op:$leakcanaryVersion"
     //add core itself at last for each configuration
-    String coreVersion = '1.1.6'
+    String coreVersion = '1.1.8'
     ruDevReleaseCompile("ru.kuchanov.scp:core:$coreVersion:devRelease@aar") { transitive = true }
     enDevReleaseCompile("ru.kuchanov.scp:core:$coreVersion:devRelease@aar") { transitive = true }
     plDevReleaseCompile("ru.kuchanov.scp:core:$coreVersion:devRelease@aar") { transitive = true }
