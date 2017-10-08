@@ -207,7 +207,7 @@
     </entry>
     <entry>
         <key>main_banner_disabled</key>
-        <value>false</value>
+        <value>true</value>
     </entry>
     <entry>
         <key>article_banner_disabled</key>
