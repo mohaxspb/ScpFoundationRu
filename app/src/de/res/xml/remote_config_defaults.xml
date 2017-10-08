@@ -279,6 +279,6 @@
     </entry>
     <entry>
         <key>native_in_article_enabled</key>
-        <value>true</value>
+        <value>false</value>
     </entry>
 </defaultsMap>
