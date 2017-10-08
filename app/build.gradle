@@ -146,18 +146,18 @@ configurations {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     //dagger2
-    String daggerVersion = '2.8'
+    String daggerVersion = '2.11'
     compile "com.google.dagger:dagger:$daggerVersion"
     annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
 
     //to use lib via gradle add this lines:
     //leakcanary (we need it here too according to https://github.com/square/leakcanary/issues/514#issuecomment-318203708)
-    String leakcanaryVersion = '1.5.1'
+    String leakcanaryVersion = '1.5.4'
     debugCompile "com.squareup.leakcanary:leakcanary-android:$leakcanaryVersion"
     releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:$leakcanaryVersion"
     testCompile "com.squareup.leakcanary:leakcanary-android-no-op:$leakcanaryVersion"
     //add core itself at last for each configuration
-    String coreVersion = '1.0.37'
+    String coreVersion = '1.1.15'
     ruDevReleaseCompile("ru.kuchanov.scp:core:$coreVersion:devRelease@aar") { transitive = true }
     enDevReleaseCompile("ru.kuchanov.scp:core:$coreVersion:devRelease@aar") { transitive = true }
     plDevReleaseCompile("ru.kuchanov.scp:core:$coreVersion:devRelease@aar") { transitive = true }
