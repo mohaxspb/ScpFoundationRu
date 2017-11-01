@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'me.tatarka.retrolambda'
 
 //here is script to generate version code from version name
 //which is set in gradle.properties as value of version var
@@ -11,7 +10,7 @@ apply from: 'https://raw.githubusercontent.com/mohaxspb/ScpFoundationCore/master
 
 android {
     compileSdkVersion 26
-    buildToolsVersion '26.0.1'
+    buildToolsVersion '26.0.2'
 
     defaultConfig {
         applicationId "ru.dante.scpfoundation"
@@ -65,42 +64,49 @@ android {
 
         ru {
             dimension "lang"
+            matchingFallbacks = ['debug', 'release']
         }
 
         en {
             dimension "lang"
 
             applicationIdSuffix ".eng"
+            matchingFallbacks = ['debug', 'release']
         }
 
         pl {
             dimension "lang"
 
             applicationIdSuffix ".pl"
+            matchingFallbacks = ['debug', 'release']
         }
 
         de {
             dimension "lang"
 
             applicationIdSuffix ".de"
+            matchingFallbacks = ['debug', 'release']
         }
 
         fr {
             dimension "lang"
 
             applicationIdSuffix ".fr"
+            matchingFallbacks = ['debug', 'release']
         }
 
         es {
             dimension "lang"
 
             applicationIdSuffix ".es"
+            matchingFallbacks = ['debug', 'release']
         }
 
         italy {
             dimension "lang"
 
             applicationIdSuffix ".it"
+            matchingFallbacks = ['debug', 'release']
         }
 
         applicationVariants.all { variant ->
@@ -109,6 +115,14 @@ android {
 
             variant.mergedFlavor.versionCode = buildVersionCodeFromVariant(variant)
             variant.mergedFlavor.versionName = getVersionValueAsString(variant)
+
+            //need this as in new gradle plugin there broken functionality of iterating variant during build
+            //so we need to set version so
+            //see https://developer.android.com/studio/build/gradle-plugin-3-0-0-migration.html#variant_output
+            variant.outputs.all { output ->
+                output.versionCodeOverride = versionCode
+                output.versionNameOverride = versionName
+            }
         }
     }
 
@@ -125,54 +139,78 @@ android {
 }
 
 configurations {
-    //dev
-    ruDevReleaseCompile
-    enDevReleaseCompile
-    plDevReleaseCompile
-    deDevReleaseCompile
-    frDevReleaseCompile
-    esDevReleaseCompile
-    italyDevReleaseCompile
-    //prod
-    ruProdReleaseCompile
-    enProdReleaseCompile
-    plProdReleaseCompile
-    deProdReleaseCompile
-    frProdReleaseCompile
-    esProdReleaseCompile
-    italyProdReleaseCompile
+//    //dev
+//    ruDevReleaseCompile
+//    enDevReleaseCompile
+//    plDevReleaseCompile
+//    deDevReleaseCompile
+//    frDevReleaseCompile
+//    esDevReleaseCompile
+//    italyDevReleaseCompile
+//    //prod
+//    ruProdReleaseCompile
+//    enProdReleaseCompile
+//    plProdReleaseCompile
+//    deProdReleaseCompile
+//    frProdReleaseCompile
+//    esProdReleaseCompile
+//    italyProdReleaseCompile
+
+//    //dev
+//    ruDevReleaseImplementation
+//    enDevReleaseImplementation
+//    plDevReleaseImplementation
+//    deDevReleaseImplementation
+//    frDevReleaseImplementation
+//    esDevReleaseImplementation
+//    italyDevReleaseImplementation
+//    //prod
+//    ruProdReleaseImplementation
+//    enProdReleaseImplementation
+//    plProdReleaseImplementation
+//    deProdReleaseImplementation
+//    frProdReleaseImplementation
+//    esProdReleaseImplementation
+//    italyProdReleaseImplementation
+
+
+    ruDevReleaseApi
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
     //dagger2
     String daggerVersion = '2.11'
-    compile "com.google.dagger:dagger:$daggerVersion"
+    implementation "com.google.dagger:dagger:$daggerVersion"
     annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
 
     //to use lib via gradle add this lines:
     //leakcanary (we need it here too according to https://github.com/square/leakcanary/issues/514#issuecomment-318203708)
     String leakcanaryVersion = '1.5.4'
-    debugCompile "com.squareup.leakcanary:leakcanary-android:$leakcanaryVersion"
-    releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:$leakcanaryVersion"
-    testCompile "com.squareup.leakcanary:leakcanary-android-no-op:$leakcanaryVersion"
+    debugImplementation "com.squareup.leakcanary:leakcanary-android:$leakcanaryVersion"
+    releaseImplementation "com.squareup.leakcanary:leakcanary-android-no-op:$leakcanaryVersion"
+    testImplementation "com.squareup.leakcanary:leakcanary-android-no-op:$leakcanaryVersion"
     //add core itself at last for each configuration
-    String coreVersion = '1.1.15'
-    ruDevReleaseCompile("ru.kuchanov.scp:core:$coreVersion:devRelease@aar") { transitive = true }
-    enDevReleaseCompile("ru.kuchanov.scp:core:$coreVersion:devRelease@aar") { transitive = true }
-    plDevReleaseCompile("ru.kuchanov.scp:core:$coreVersion:devRelease@aar") { transitive = true }
-    deDevReleaseCompile("ru.kuchanov.scp:core:$coreVersion:devRelease@aar") { transitive = true }
-    frDevReleaseCompile("ru.kuchanov.scp:core:$coreVersion:devRelease@aar") { transitive = true }
-    esDevReleaseCompile("ru.kuchanov.scp:core:$coreVersion:devRelease@aar") { transitive = true }
-    italyDevReleaseCompile("ru.kuchanov.scp:core:$coreVersion:devRelease@aar") { transitive = true }
-    //prod
-    ruProdReleaseCompile("ru.kuchanov.scp:core:$coreVersion:prodRelease@aar") { transitive = true }
-    enProdReleaseCompile("ru.kuchanov.scp:core:$coreVersion:prodRelease@aar") { transitive = true }
-    plProdReleaseCompile("ru.kuchanov.scp:core:$coreVersion:prodRelease@aar") { transitive = true }
-    deProdReleaseCompile("ru.kuchanov.scp:core:$coreVersion:prodRelease@aar") { transitive = true }
-    frProdReleaseCompile("ru.kuchanov.scp:core:$coreVersion:prodRelease@aar") { transitive = true }
-    esProdReleaseCompile("ru.kuchanov.scp:core:$coreVersion:prodRelease@aar") { transitive = true }
-    italyProdReleaseCompile("ru.kuchanov.scp:core:$coreVersion:prodRelease@aar") { transitive = true }
+    String coreVersion = '1.2.2'
+//    ruDevReleaseCompile("ru.kuchanov.scp:core:$coreVersion@aar") { transitive = true }
+//    ruDevReleaseCompile("ru.kuchanov.scp:core:$coreVersion:devRelease@aar") { transitive = true }
+//    enDevReleaseCompile("ru.kuchanov.scp:core:$coreVersion:devRelease@aar") { transitive = true }
+//    plDevReleaseCompile("ru.kuchanov.scp:core:$coreVersion:devRelease@aar") { transitive = true }
+//    deDevReleaseCompile("ru.kuchanov.scp:core:$coreVersion:devRelease@aar") { transitive = true }
+//    frDevReleaseCompile("ru.kuchanov.scp:core:$coreVersion:devRelease@aar") { transitive = true }
+//    esDevReleaseCompile("ru.kuchanov.scp:core:$coreVersion:devRelease@aar") { transitive = true }
+//    italyDevReleaseCompile("ru.kuchanov.scp:core:$coreVersion:devRelease@aar") { transitive = true }
+//    //prod
+//    ruProdReleaseCompile("ru.kuchanov.scp:core:$coreVersion:prodRelease@aar") { transitive = true }
+//    enProdReleaseCompile("ru.kuchanov.scp:core:$coreVersion:prodRelease@aar") { transitive = true }
+//    plProdReleaseCompile("ru.kuchanov.scp:core:$coreVersion:prodRelease@aar") { transitive = true }
+//    deProdReleaseCompile("ru.kuchanov.scp:core:$coreVersion:prodRelease@aar") { transitive = true }
+//    frProdReleaseCompile("ru.kuchanov.scp:core:$coreVersion:prodRelease@aar") { transitive = true }
+//    esProdReleaseCompile("ru.kuchanov.scp:core:$coreVersion:prodRelease@aar") { transitive = true }
+//    italyProdReleaseCompile("ru.kuchanov.scp:core:$coreVersion:prodRelease@aar") { transitive = true }
+//    ruDevReleaseImplementation("ru.kuchanov.scp:core:$coreVersion:devRelease@aar")
+
+    ruDevReleaseApi 'ru.kuchanov.scp:core:1.2.2'
 }
 
 apply plugin: 'com.google.gms.google-services'
