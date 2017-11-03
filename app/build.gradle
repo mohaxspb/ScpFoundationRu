@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'realm-android'
 
 //here is script to generate version code from version name
 //which is set in gradle.properties as value of version var
@@ -19,6 +20,12 @@ android {
 
         // Enabling multidex support.
         multiDexEnabled true
+    }
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
     }
 
     signingConfigs {
@@ -64,7 +71,8 @@ android {
 
         ru {
             dimension "lang"
-            matchingFallbacks = ['debug', 'release']
+//            matchingFallbacks = ['debug', 'release']
+            matchingFallbacks = ['debug', 'release', 'prod', 'dev']
         }
 
         en {
@@ -174,10 +182,13 @@ configurations {
 //    italyProdReleaseImplementation
 
 
-    ruDevReleaseApi
+    ruDevReleaseImplementation
 }
 
 dependencies {
+    String supportLibraryVersion = '26.1.0'
+    String googleLibraryVersion = '11.4.2'
+
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     //dagger2
     String daggerVersion = '2.11'
@@ -191,7 +202,7 @@ dependencies {
     releaseImplementation "com.squareup.leakcanary:leakcanary-android-no-op:$leakcanaryVersion"
     testImplementation "com.squareup.leakcanary:leakcanary-android-no-op:$leakcanaryVersion"
     //add core itself at last for each configuration
-    String coreVersion = '1.2.2'
+    String coreVersion = '1.2.5'
 //    ruDevReleaseCompile("ru.kuchanov.scp:core:$coreVersion@aar") { transitive = true }
 //    ruDevReleaseCompile("ru.kuchanov.scp:core:$coreVersion:devRelease@aar") { transitive = true }
 //    enDevReleaseCompile("ru.kuchanov.scp:core:$coreVersion:devRelease@aar") { transitive = true }
@@ -208,9 +219,110 @@ dependencies {
 //    frProdReleaseCompile("ru.kuchanov.scp:core:$coreVersion:prodRelease@aar") { transitive = true }
 //    esProdReleaseCompile("ru.kuchanov.scp:core:$coreVersion:prodRelease@aar") { transitive = true }
 //    italyProdReleaseCompile("ru.kuchanov.scp:core:$coreVersion:prodRelease@aar") { transitive = true }
-//    ruDevReleaseImplementation("ru.kuchanov.scp:core:$coreVersion:devRelease@aar")
+//    ruDevReleaseImplementation("ru.kuchanov.scp:core:$coreVersion:@aar")
 
-    ruDevReleaseApi 'ru.kuchanov.scp:core:1.2.2'
+    ruDevReleaseImplementation ("ru.kuchanov.scp:core:$coreVersion:devRelease@aar") { transitive = true }
+
+
+    //dialogs
+    implementation 'com.afollestad.material-dialogs:core:0.9.5.0'
+//    //vk
+//    implementation 'com.vk:androidsdk:1.6.9'
+
+
+    //support libs
+    api "com.android.support:appcompat-v7:$supportLibraryVersion"
+    api "com.android.support:recyclerview-v7:$supportLibraryVersion"
+    api "com.android.support:design:$supportLibraryVersion"
+    api "com.android.support:cardview-v7:$supportLibraryVersion"
+    //need this as gradle place warning on libs versions
+    api "com.android.support:support-annotations:$supportLibraryVersion"
+    api "com.android.support:customtabs:$supportLibraryVersion"
+    api "com.android.support:animated-vector-drawable:$supportLibraryVersion"
+    api "com.android.support:support-v13:$supportLibraryVersion"
+    api "com.android.support:support-v4:$supportLibraryVersion"
+    api "com.android.support:support-compat:$supportLibraryVersion"
+    //multidex to support more than 65K methods
+    api 'com.android.support:multidex:1.0.2'
+    //rx
+    api 'io.reactivex:rxandroid:1.2.1'
+    api 'io.reactivex:rxjava:1.3.2'
+    // Retrofit
+    api('com.squareup.retrofit2:retrofit:2.3.0') { exclude module: 'okhttp' }
+    api 'com.squareup.okhttp3:okhttp:3.9.0'
+    api 'com.squareup.okhttp3:logging-interceptor:3.9.0'
+    api 'com.squareup.retrofit2:converter-gson:2.3.0'
+    api 'com.squareup.retrofit2:adapter-rxjava:2.3.0'
+    //jsoup
+    api 'org.jsoup:jsoup:1.10.3'
+    //logs
+    api 'com.jakewharton.timber:timber:4.5.1'
+    //dagger2
+//    String daggerVersion = '2.11'
+//    api "com.google.dagger:dagger:$daggerVersion"
+//    annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
+    //butterKnife
+    String butterKnifeVersion = '8.8.1'
+    api "com.jakewharton:butterknife:$butterKnifeVersion"
+    annotationProcessor "com.jakewharton:butterknife-compiler:$butterKnifeVersion"
+    //image
+    api 'com.github.bumptech.glide:glide:3.8.0'
+    api 'com.github.chrisbanes:PhotoView:2.1.3'
+    api 'de.hdodenhof:circleimageview:2.1.0'
+    //mvp
+    //WARNING!!!
+    //Do not update to 3+ version, as there are problems with caching presenters that are not singleton
+    //WARNING!!!
+    api 'com.hannesdorfmann.mosby:mvp:2.0.1'
+//    compile 'com.hannesdorfmann.mosby3:mvp-nullobject-presenter:3.0.4'
+    //vk
+    api 'com.vk:androidsdk:1.6.9'
+    //facebook
+    api 'com.facebook.android:facebook-android-sdk:4.27.0'
+    //dialogs
+//    api 'com.afollestad.material-dialogs:core:0.9.4.5'
+    //fonts
+    api 'uk.co.chrisjenx:calligraphy:2.3.0'
+    //firebase
+    api "com.google.firebase:firebase-config:$googleLibraryVersion"
+    api "com.google.firebase:firebase-crash:$googleLibraryVersion"
+    api "com.google.firebase:firebase-core:$googleLibraryVersion"
+    api "com.google.firebase:firebase-analytics:$googleLibraryVersion"
+    api "com.google.firebase:firebase-invites:$googleLibraryVersion"
+    api "com.google.firebase:firebase-ads:$googleLibraryVersion"
+    api "com.google.firebase:firebase-database:$googleLibraryVersion"
+    api "com.google.firebase:firebase-auth:$googleLibraryVersion"
+    api "com.google.firebase:firebase-messaging:$googleLibraryVersion"
+    //google login
+    api "com.google.android.gms:play-services-auth:$googleLibraryVersion"
+    //appodeal
+    api "com.google.android.gms:play-services-ads:$googleLibraryVersion"
+    api "com.google.android.gms:play-services-location:$googleLibraryVersion"
+    api 'com.squareup.picasso:picasso:2.5.2' //for Inmobi
+    api 'com.adcolony:sdk:3.2.1'
+    //end of appodeal
+    // AppMetrica
+    //we add it here and delete jar from appodeal
+    api 'com.yandex.android:mobmetricalib:2.77'
+    //recyclerView fast scroller
+    api 'xyz.danoz:recyclerviewfastscroller:0.1.3'
+    //circular progress
+    api 'com.github.jakob-grabner:Circle-Progress-View:v1.3'
+    //tags layout
+    api 'com.google.android:flexbox:0.3.0-alpha3'
+    //range seekbar
+    api 'com.crystal:crystalrangeseekbar:1.1.3'
+    //leakcanary
+//    String leakcanaryVersion = '1.5.4'
+//    debugImplementation "com.squareup.leakcanary:leakcanary-android:$leakcanaryVersion"
+//    releaseImplementation "com.squareup.leakcanary:leakcanary-android-no-op:$leakcanaryVersion"
+//    testImplementation "com.squareup.leakcanary:leakcanary-android-no-op:$leakcanaryVersion"
+    //time operations
+    api 'joda-time:joda-time:2.9.9'
+
+    //sub project modules
+    api('ru.kuchanov.scp:downloads:1.0.24@aar') { transitive = true }
+    api('ru.kuchanov.utils:rate:1.0.5@aar') { transitive = true }
 }
 
 apply plugin: 'com.google.gms.google-services'

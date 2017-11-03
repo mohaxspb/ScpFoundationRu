@@ -4,12 +4,14 @@ buildscript {
         google()
         mavenCentral()
         maven { url "https://jitpack.io" }
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.0'
         classpath 'com.google.gms:google-services:3.1.1'
         classpath "io.realm:realm-gradle-plugin:3.7.2"
-        classpath 'com.jakewharton:butterknife-gradle-plugin:8.8.1'
+//        classpath 'com.jakewharton:butterknife-gradle-plugin:8.8.1'
+        classpath 'com.jakewharton:butterknife-gradle-plugin:9.0.0-SNAPSHOT'
     }
 }
 
