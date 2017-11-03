@@ -221,7 +221,7 @@ dependencies {
 //    italyProdReleaseCompile("ru.kuchanov.scp:core:$coreVersion:prodRelease@aar") { transitive = true }
 //    ruDevReleaseImplementation("ru.kuchanov.scp:core:$coreVersion:@aar")
 
-    ruDevReleaseImplementation ("ru.kuchanov.scp:core:$coreVersion:devRelease@aar") { transitive = true }
+    ruDevReleaseImplementation ("ru.kuchanov.scp:core:$coreVersion:devRelease@aar")
 
 
     //dialogs
